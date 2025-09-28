@@ -73,6 +73,24 @@ CREATE TABLE GPU (
 );
 
 -- ==============================================
+-- Table: Motherboard
+-- ==============================================
+CREATE TABLE Motherboard (
+    MotherboardID INT AUTO_INCREMENT PRIMARY KEY,
+    ProductID INT UNIQUE,
+    Socket VARCHAR(50),
+    Chipset VARCHAR(50),
+    FormFactor VARCHAR(50),
+    RAMType VARCHAR(50),
+    RAMSlots INT,
+    MaxRAMSize INT,
+    PCIEVersion VARCHAR(20),
+    M2Slots INT,
+    SataPorts INT,
+    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+        ON DELETE CASCADE
+);
+-- ==============================================
 -- Table: Memory (RAM)
 -- ==============================================
 CREATE TABLE Memory (
