@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Staff</title>
+</head>
+<body>
+<h2>Edit Staff</h2>
+
+<form th:action="@{/staff/edit}" method="post" th:object="${detail}">
+    <input type="hidden" th:field="*{accountDetailId}"/>
+    <input type="hidden" th:field="*{account.accountId}"/>
+
+    <table>
+        <tr>
+            <td>First Name:</td>
+            <td><input type="text" th:field="*{firstName}"/></td>
+        </tr>
+        <tr>
+            <td>Last Name:</td>
+            <td><input type="text" th:field="*{lastName}"/></td>
+        </tr>
+        <tr>
+            <td>Email:</td>
+            <td><input type="email" th:field="*{email}"/></td>
+        </tr>
+        <tr>
+            <td>Address:</td>
+            <td><input type="text" th:field="*{address}"/></td>
+        </tr>
+        <tr>
+            <td>Phone:</td>
+            <td><input type="text" th:field="*{account.phoneNumber}"/></td>
+        </tr>
+        <tr>
+            <td>Password:</td>
+            <td><input type="password" th:field="*{account.password}"/></td>
+        </tr>
+        <tr>
+            <td>Status:</td>
+            <td>
+                <input type="radio" th:field="*{account.enabled}" value="true"/> Active
+                <input type="radio" th:field="*{account.enabled}" value="false"/> Inactive
+            </td>
+        </tr>
+    </table>
+
+    <button type="submit">Save</button>
+</form>
+
+<a href="/staff/list">Back to List</a>
+</body>
+</html>

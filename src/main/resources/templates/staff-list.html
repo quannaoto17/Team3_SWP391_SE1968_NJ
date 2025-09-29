@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Staff List</title></head>
+<body>
+<h2>Staff List</h2>
+<a href="/staff/add">Add Staff</a>
+<table border="1">
+    <tr>
+        <th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Action</th>
+    </tr>
+    <tr th:each="d : ${staffList}">
+        <td th:text="${d.accountDetailId}"></td>
+        <td th:text="${d.firstName} + ' ' + ${d.lastName}"></td>
+        <td th:text="${d.email}"></td>
+        <td th:text="${d.account.role}"></td>
+        <td th:text="${d.account.enabled ? 'Active' : 'Inactive'}"></td>
+        <td><a th:href="@{'/staff/edit/' + ${d.accountDetailId}}">View and Edit</a></td>
+    </tr>
+</table>
+</body>
+</html>

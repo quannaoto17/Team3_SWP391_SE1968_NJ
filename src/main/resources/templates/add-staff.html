@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Add Staff</title>
+</head>
+<body>
+<h2>Add Staff</h2>
+
+<form th:action="@{/staff/add}" method="post">
+  <table>
+    <tr>
+      <td>Name:</td>
+      <td><input type="text" name="firstName" placeholder="First Name"/></td>
+    </tr>
+    <tr>
+      <td>Last Name:</td>
+      <td><input type="text" name="lastName" placeholder="Last Name"/></td>
+    </tr>
+    <tr>
+      <td>Email:</td>
+      <td><input type="email" name="email"/></td>
+    </tr>
+    <tr>
+      <td>Phone:</td>
+      <td><input type="text" name="phoneNumber"/></td>
+    </tr>
+    <tr>
+      <td>Address:</td>
+      <td><input type="text" name="address"/></td>
+    </tr>
+    <tr>
+      <td>Username:</td>
+      <td><input type="text" name="account.phoneNumber"/></td>
+    </tr>
+    <tr>
+      <td>Password:</td>
+      <td><input type="password" name="account.password"/></td>
+    </tr>
+    <tr>
+      <td>Status:</td>
+      <td>
+        <span>Active</span>
+        <input type="hidden" name="account.enabled" value="true"/>
+      </td>
+    </tr>
+  </table>
+
+  <button type="submit">Save</button>
+</form>
+
+<a href="/staff/list">Back to List</a>
+</body>
+</html>
