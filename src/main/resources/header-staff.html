@@ -3,168 +3,81 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Staff/Admin Header</title>
+    <title>Staff List</title>
     <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            overflow-x: hidden; /* tránh scroll ngang */
+            overflow-x: hidden;
         }
-
-        .container {
-            display: flex;
-            height: 100vh;
-            transition: margin-left 0.3s ease;
-        }
-
-        /* Sidebar */
-
+        .container { display: flex; height: 100vh; transition: margin-left 0.3s ease; }
         .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 200px;
-            height: 100%;
-            background-color: #444;
-            color: white;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 1000;
-
-            transform: translateX(-100%);   /* 👈 Ẩn bằng transform */
-            transition: transform 0.3s ease; /* 👈 Hiệu ứng trượt */
+            position: fixed; top: 0; left: 0; width: 200px; height: 100%;
+            background-color: #444; color: white; padding: 15px;
+            display: flex; flex-direction: column; align-items: center;
+            z-index: 1000; transform: translateX(-100%);
+            transition: transform 0.3s ease;
         }
-
-        .sidebar.active {
-            transform: translateX(0);  /* 👈 Hiện sidebar */
-        }
-
-
-        .sidebar img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            margin-bottom: 8px;
-        }
-
-        .sidebar h2 {
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-
+        .sidebar.active { transform: translateX(0); }
+        .sidebar img { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 8px; }
+        .sidebar h2 { font-size: 16px; margin-bottom: 15px; }
         .sidebar button {
-            width: 100%;
-            margin: 4px 0;
-            padding: 6px;
-            border: none;
-            cursor: pointer;
-            background-color: #eee;
-            color: #333;
-            border-radius: 4px;
-            font-size: 14px;
+            width: 100%; margin: 4px 0; padding: 6px; border: none;
+            cursor: pointer; background-color: #eee; color: #333;
+            border-radius: 4px; font-size: 14px;
         }
-
-        .sidebar button:hover {
-            background-color: #ddd;
-        }
-
-        /* Main content */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            transition: margin-left 0.3s ease;
-        }
-
-        .main-content.shifted {
-            margin-left: 200px;
-        }
-
-
-        /* Top bar */
+        .sidebar button:hover { background-color: #ddd; }
+        .main-content { flex: 1; display: flex; flex-direction: column; width: 100%; transition: margin-left 0.3s ease; }
+        .main-content.shifted { margin-left: 200px; }
         .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            border-bottom: 1px solid #ccc;
-            background-color: #f9f9f9;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 12px; border-bottom: 1px solid #ccc; background-color: #f9f9f9;
         }
-
-        .menu-icon {
-            font-size: 22px;
-            cursor: pointer;
-            padding: 5px 10px;
-            margin-left: 8px;   /* 👈 Thêm khoảng cách so với mép trái */
-            user-select: none;
+        .menu-icon { font-size: 22px; cursor: pointer; padding: 5px 10px; margin-left: 8px; user-select: none; }
+        .search-bar { display: flex; flex: 1; max-width: 500px; margin: 0 15px; }
+        .search-bar input { flex: 1; padding: 5px; border: 1px solid #ccc; border-right: none; }
+        .search-bar button { padding: 5px 10px; border: 1px solid #ccc; background: #eee; cursor: pointer; }
+        .logout-btn { border: 1px solid #ccc; padding: 5px 10px; background: white; cursor: pointer; }
+        .logout-btn:hover { background: #f5f5f5; }
+        .content { flex: 1; padding: 15px; }
+        /* Staff List */
+        .staff-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+        .staff-header h2 { margin: 0; }
+        .staff-search { margin-bottom: 15px; }
+        .staff-search input, .staff-search select, .staff-search button {
+            padding: 6px; margin-right: 5px;
         }
-
-
-        .search-bar {
-            display: flex;
-            flex: 1;
-            max-width: 500px;
-            margin: 0 15px;
-        }
-
-        .search-bar input {
-            flex: 1;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-right: none;
-        }
-
-        .search-bar button {
-            padding: 5px 10px;
-            border: 1px solid #ccc;
-            background: #eee;
-            cursor: pointer;
-        }
-
-        .logout-btn {
-            border: 1px solid #ccc;
-            padding: 5px 10px;
-            background: white;
-            cursor: pointer;
-        }
-
-        .logout-btn:hover {
-            background: #f5f5f5;
-        }
-
-        /* Content area */
-        .content {
-            flex: 1;
-            padding: 15px;
+        table { width: 100%; border-collapse: collapse; background: #fff; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background: #f1f1f1; }
+        .pagination { text-align: center; margin-top: 10px; }
+        .add-staff { margin-top: 10px; text-align: right; }
+        .add-staff a {
+            padding: 6px 12px; background: #4CAF50; color: white;
+            text-decoration: none; border-radius: 4px;
         }
     </style>
 </head>
 <body>
-<div class="container" th:fragment="staff-header">
+<div class="container">
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <img src="https://via.placeholder.com/60" alt="Profile">
         <h2>Role</h2>
         <button>Dashboard</button>
-        <button>Category Manage</button>
-        <button>Product Manage</button>
-        <button>...</button>
+        <button>Staff List</button>
+        <button>Add Staff</button>
     </aside>
 
-    <!-- Main area -->
+    <!-- Main -->
     <div class="main-content" id="main-content">
-        <!-- Top bar -->
+        <!-- Topbar -->
         <div class="topbar">
             <div class="menu-icon" id="menu-btn">☰</div>
-
             <div class="search-bar">
                 <input type="text" placeholder="Search bar">
                 <button>Search</button>
             </div>
-
             <form th:action="@{/logout}" method="post">
                 <button type="submit" class="logout-btn">Logout</button>
             </form>
@@ -172,13 +85,46 @@
 
         <!-- Content -->
         <div class="content">
-            <!-- Nội dung Staff/Admin -->
+            <div class="staff-header">
+                <h2>Staff List</h2>
+            </div>
+
+            <div class="staff-search">
+                <input type="text" placeholder="Search by Name or Email">
+                <button>Search</button>
+                <select>
+                    <option>Status</option>
+                    <option>Active</option>
+                    <option>Inactive</option>
+                </select>
+            </div>
+
+            <table>
+                <tr>
+                    <th>Staff ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Detail</th>
+                </tr>
+                <tr th:each="d : ${staffList}">
+                    <td th:text="${d.accountDetailId}"></td>
+                    <td th:text="${d.firstName + ' ' + d.lastName}"></td>
+                    <td th:text="${d.email}"></td>
+                    <td th:text="${d.account.role}"></td>
+                    <td th:text="${d.account.enabled ? 'Active' : 'Inactive'}"></td>
+                    <td><a th:href="@{'/staff/edit/' + ${d.accountDetailId}}">View and Edit</a></td>
+                </tr>
+            </table>
+
+            <div class="pagination">1/10</div>
+            <div class="add-staff"><a href="/staff/add">Add Staff</a></div>
         </div>
     </div>
 </div>
 
 <script>
-    // Toggle sidebar + shift content
     const menuBtn = document.getElementById("menu-btn");
     const sidebar = document.getElementById("sidebar");
     const mainContent = document.getElementById("main-content");

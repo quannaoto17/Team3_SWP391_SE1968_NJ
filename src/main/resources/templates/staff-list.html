@@ -1,21 +1,172 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Staff List</title></head>
+<head>
+    <title>Staff List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f6f7fb;
+        }
+        .layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: 100vh;
+        }
+        /* Sidebar */
+        .sidebar {
+            background: #e6e7eb;
+            padding: 16px;
+        }
+        .sidebar .avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: #cfd1d6;
+            margin: 0 auto 16px;
+        }
+        .sidebar h3 {
+            text-align: center;
+            margin: 8px 0 16px;
+        }
+        .nav button {
+            display: block;
+            width: 100%;
+            padding: 10px 12px;
+            margin: 8px 0;
+            border: 0;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+        }
+        /* Header */
+        .header {
+            background: #fff;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd;
+        }
+        .header input[type="text"] {
+            width: 200px;
+            padding: 6px;
+        }
+        .header button {
+            padding: 6px 10px;
+        }
+        /* Content */
+        .content {
+            padding: 20px;
+        }
+        .content h2 {
+            margin-bottom: 12px;
+        }
+        .search-bar {
+            margin-bottom: 16px;
+        }
+        .search-bar input {
+            padding: 6px;
+            width: 250px;
+        }
+        .search-bar button {
+            padding: 6px 10px;
+        }
+        .search-bar select {
+            padding: 6px;
+            margin-left: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background: #f1f1f1;
+        }
+        .pagination {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .add-staff {
+            margin-top: 10px;
+            text-align: right;
+        }
+        .add-staff a {
+            padding: 8px 12px;
+            background: #4caf50;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+    </style>
+</head>
 <body>
-<h2>Staff List</h2>
-<a href="/staff/add">Add Staff</a>
-<table border="1">
-    <tr>
-        <th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Action</th>
-    </tr>
-    <tr th:each="d : ${staffList}">
-        <td th:text="${d.accountDetailId}"></td>
-        <td th:text="${d.firstName} + ' ' + ${d.lastName}"></td>
-        <td th:text="${d.email}"></td>
-        <td th:text="${d.account.role}"></td>
-        <td th:text="${d.account.enabled ? 'Active' : 'Inactive'}"></td>
-        <td><a th:href="@{'/staff/edit/' + ${d.accountDetailId}}">View and Edit</a></td>
-    </tr>
-</table>
+<div class="layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="avatar"></div>
+        <h3>Role</h3>
+        <div class="nav">
+            <button>Dashboard</button>
+            <button>Staff List</button>
+            <button>Add Staff</button>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div>
+        <div class="header">
+            <input type="text" placeholder="Search bar">
+            <button>Search</button>
+            <button>Logout</button>
+        </div>
+
+        <div class="content">
+            <h2>Staff List</h2>
+            <div class="search-bar">
+                <input type="text" placeholder="Search by Name or Email">
+                <button>Search</button>
+                <select>
+                    <option>Status</option>
+                    <option>Active</option>
+                    <option>Inactive</option>
+                </select>
+            </div>
+
+            <table>
+                <tr>
+                    <th>Staff ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Detail</th>
+                </tr>
+                <tr th:each="d : ${staffList}">
+                    <td th:text="${d.accountDetailId}"></td>
+                    <td th:text="${d.firstName + ' ' + d.lastName}"></td>
+                    <td th:text="${d.email}"></td>
+                    <td th:text="${d.account.role}"></td>
+                    <td th:text="${d.account.enabled ? 'Active' : 'Inactive'}"></td>
+                    <td><a th:href="@{'/staff/edit/' + ${d.accountDetailId}}">View and Edit</a></td>
+                </tr>
+            </table>
+
+            <div class="pagination">
+                <span>1/10</span>
+            </div>
+
+            <div class="add-staff">
+                <a href="/staff/add">Add Staff</a>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

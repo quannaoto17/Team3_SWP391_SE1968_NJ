@@ -1,52 +1,165 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
+    <meta charset="UTF-8">
     <title>Edit Staff</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; overflow-x: hidden; }
+        .container { display: flex; height: 100vh; transition: margin-left 0.3s ease; }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed; top: 0; left: 0; width: 200px; height: 100%;
+            background-color: #444; color: #fff; padding: 15px;
+            display: flex; flex-direction: column; align-items: center;
+            z-index: 1000; transform: translateX(-100%); transition: transform 0.3s ease;
+        }
+        .sidebar.active { transform: translateX(0); }
+        .sidebar img { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 8px; }
+        .sidebar h2 { font-size: 16px; margin-bottom: 15px; }
+        .sidebar button {
+            width: 100%; margin: 4px 0; padding: 6px; border: none; cursor: pointer;
+            background: #eee; color: #333; border-radius: 4px; font-size: 14px;
+        }
+        .sidebar button:hover { background: #ddd; }
+
+        /* Main */
+        .main-content { flex: 1; display: flex; flex-direction: column; width: 100%; transition: margin-left 0.3s ease; }
+        .main-content.shifted { margin-left: 200px; }
+
+        /* Topbar */
+        .topbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 12px; border-bottom: 1px solid #ccc; background: #f9f9f9;
+        }
+        .menu-icon { font-size: 22px; cursor: pointer; padding: 5px 10px; margin-left: 8px; user-select: none; }
+        .search-bar { display: flex; flex: 1; max-width: 500px; margin: 0 15px; }
+        .search-bar input { flex: 1; padding: 5px; border: 1px solid #ccc; border-right: none; }
+        .search-bar button { padding: 5px 10px; border: 1px solid #ccc; background: #eee; cursor: pointer; }
+
+        /* Logout button – trắng viền xám */
+        .logout-btn {
+            background: #fff; border: 1px solid #ccc; border-radius: 4px;
+            padding: 6px 14px; font-size: 14px; cursor: pointer; color: #333;
+        }
+        .logout-btn:hover { background: #f0f0f0; }
+
+        .content { flex: 1; padding: 15px; }
+
+        /* Form Edit Staff */
+        .staff-form {
+            background: #fff; padding: 20px; border-radius: 6px;
+            max-width: 600px; margin: auto;
+        }
+        .staff-form table { width: 100%; border-collapse: collapse; }
+        .staff-form td { padding: 8px; vertical-align: middle; }
+        .staff-form input[type="text"],
+        .staff-form input[type="email"],
+        .staff-form input[type="password"] {
+            width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px;
+        }
+        .staff-form .inline {
+            display: inline-flex; align-items: center; gap: 12px;
+        }
+
+        /* Save button chỉ trong form */
+        .staff-form button[type="submit"]{
+            margin-top: 12px; padding: 8px 16px; background: #4CAF50;
+            border: none; color: #fff; border-radius: 4px; cursor: pointer;
+        }
+        .staff-form button[type="submit"]:hover { background: #45a049; }
+
+        .back-link { display: inline-block; margin-top: 10px; color: #007BFF; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
-<h2>Edit Staff</h2>
+<div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <img src="https://via.placeholder.com/60" alt="Profile">
+        <h2>Role</h2>
+        <button>Dashboard</button>
+        <button>Staff List</button>
+        <button>Add Staff</button>
+    </aside>
 
-<form th:action="@{/staff/edit}" method="post" th:object="${detail}">
-    <input type="hidden" th:field="*{accountDetailId}"/>
-    <input type="hidden" th:field="*{account.accountId}"/>
+    <!-- Main -->
+    <div class="main-content" id="main-content">
+        <!-- Topbar -->
+        <div class="topbar">
+            <div class="menu-icon" id="menu-btn">☰</div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search bar">
+                <button>Search</button>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        </div>
 
-    <table>
-        <tr>
-            <td>First Name:</td>
-            <td><input type="text" th:field="*{firstName}"/></td>
-        </tr>
-        <tr>
-            <td>Last Name:</td>
-            <td><input type="text" th:field="*{lastName}"/></td>
-        </tr>
-        <tr>
-            <td>Email:</td>
-            <td><input type="email" th:field="*{email}"/></td>
-        </tr>
-        <tr>
-            <td>Address:</td>
-            <td><input type="text" th:field="*{address}"/></td>
-        </tr>
-        <tr>
-            <td>Phone:</td>
-            <td><input type="text" th:field="*{account.phoneNumber}"/></td>
-        </tr>
-        <tr>
-            <td>Password:</td>
-            <td><input type="password" th:field="*{account.password}"/></td>
-        </tr>
-        <tr>
-            <td>Status:</td>
-            <td>
-                <input type="radio" th:field="*{account.enabled}" value="true"/> Active
-                <input type="radio" th:field="*{account.enabled}" value="false"/> Inactive
-            </td>
-        </tr>
-    </table>
+        <!-- Content -->
+        <div class="content">
+            <h2>Edit Staff</h2>
 
-    <button type="submit">Save</button>
-</form>
+            <form th:action="@{/staff/edit}" method="post" class="staff-form">
+                <input type="hidden" th:value="${detail.accountDetailId}" name="accountDetailId"/>
+                <table>
+                    <tr>
+                        <td>First Name:</td>
+                        <td><input type="text" name="firstName" th:value="${detail.firstName}"/></td>
+                    </tr>
+                    <tr>
+                        <td>Last Name:</td>
+                        <td><input type="text" name="lastName" th:value="${detail.lastName}"/></td>
+                    </tr>
+                    <tr>
+                        <td>Email:</td>
+                        <td><input type="email" name="email" th:value="${detail.email}"/></td>
+                    </tr>
+                    <tr>
+                        <td>Phone:</td>
+                        <td><input type="text" name="phoneNumber" th:value="${detail.account.phoneNumber}"/></td>
+                    </tr>
+                    <tr>
+                        <td>Address:</td>
+                        <td><input type="text" name="address" th:value="${detail.address}"/></td>
+                    </tr>
+                    <tr>
+                        <td>Username:</td>
+                        <td><input type="text" name="account.phoneNumber" th:value="${detail.account.phoneNumber}"/></td>
+                    </tr>
+                    <tr>
+                        <td>Password:</td>
+                        <td><input type="password" name="account.password" th:value="${detail.account.password}"/></td>
+                    </tr>
+                    <tr>
+                        <td>Status:</td>
+                        <td class="inline">
+                            <label><input type="radio" name="account.enabled" value="true"
+                                          th:checked="${detail.account.enabled}"> Active</label>
+                            <label><input type="radio" name="account.enabled" value="false"
+                                          th:checked="${!detail.account.enabled}"> Inactive</label>
+                        </td>
+                    </tr>
+                </table>
+                <button type="submit">Save</button>
+            </form>
 
-<a href="/staff/list">Back to List</a>
+            <a href="/staff/list" class="back-link">← Back to List</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const menuBtn = document.getElementById("menu-btn");
+    const sidebar = document.getElementById("sidebar");
+    const mainContent = document.getElementById("main-content");
+    menuBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("active");
+        mainContent.classList.toggle("shifted");
+    });
+</script>
 </body>
 </html>
