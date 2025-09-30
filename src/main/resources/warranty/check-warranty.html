@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Check Warranty Date</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f6f7fb; margin: 0; }
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar { background: #e6e7eb; padding: 16px; }
+    .sidebar .avatar { width: 72px; height: 72px; border-radius: 50%; background: #cfd1d6; margin: 0 auto 16px; }
+    .sidebar h3 { text-align: center; margin: 8px 0 16px; }
+    .sidebar .menu button { width: 100%; margin: 8px 0; padding: 8px; border: 0; border-radius: 4px; background: #fff; cursor: pointer; }
+    .sidebar .menu button.active { background: #d0f0d4; font-weight: bold; }
+
+    /* Main */
+    .main { padding: 24px; }
+    .header { display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+    .searchbar input[type=text]{ width: 420px; padding: 8px; }
+    .btn{ padding: 8px 12px; border: 0; background: #1976d2; color:#fff; border-radius: 4px; cursor: pointer; }
+    .btn.gray{ background:#9e9e9e; }
+    .btn.link{ background: transparent; color: #1976d2; text-decoration: underline; padding: 0; }
+
+    h1{ text-align: center; margin: 12px 0 20px; }
+    .muted{ color: #777; }
+    .danger{ color: #d32f2f; font-weight: bold; }
+
+    table{ width: 100%; border-collapse: collapse; background: #fff; }
+    th, td{ border: 1px solid #e5e7eb; padding: 10px; }
+    th{ background: #f1f5f9; text-align: left; }
+    .block{ background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.06); margin-bottom: 20px; }
+    .row{ display:flex; align-items: center; gap: 8px; }
+
+    .grid-2{ display: grid; grid-template-columns: 1fr 200px; gap: 8px; }
+    .right{ text-align: right; }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="avatar"></div>
+    <h3>Role</h3>
+    <div class="menu">
+      <button>Dashboard</button>
+      <button>Order List</button>
+      <button class="active">Check Warranty Date</button>
+      <button>...</button>
+      <button>...</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="header">
+      <div class="searchbar">
+        <input type="text" placeholder="Search bar"/>
+        <button class="btn">Search</button>
+      </div>
+      <button class="btn gray">Logout</button>
+    </div>
+
+    <h1>Check Warranty Date</h1>
+
+    <!-- Form nhập số điện thoại -->
+    <div class="block">
+      <form class="grid-2" th:action="@{/warranty/search}" method="get">
+        <div class="row">
+          <label><b>Enter Phone</b>&nbsp;</label>
+          <input type="text" name="phone" th:value="${queryPhone}" placeholder="Nhập số điện thoại" required/>
+          <button type="submit" class="btn">Search</button>
+          <a th:href="@{/warranty}" class="btn link">Clear</a>
+        </div>
+        <div class="right">
+          <span><b>Name Customer:</b></span>
+          <span th:text="${result != null && result.customerName != null ? result.customerName : '-'}">-</span>
+        </div>
+      </form>
+    </div>
+
+    <!-- Nếu không tìm thấy -->
+    <div class="block" th:if="${result != null and #lists.isEmpty(result.orders)}">
+      <span class="danger">Không tìm thấy đơn hàng cho số: </span>
+      <b th:text="${queryPhone}">---</b>
+    </div>
+
+    <!-- Nếu có đơn hàng -->
+    <div th:if="${result != null and !#lists.isEmpty(result.orders)}">
+      <!-- Bảng Orders -->
+      <div class="block">
+        <h3 class="danger" style="color:#d32f2f; margin-top:0;">Customer Orders Found</h3>
+        <table>
+          <thead>
+          <tr>
+            <th style="width:120px;">Order ID</th>
+            <th style="width:200px;">Date Create</th>
+            <th>Total Value</th>
+            <th style="width:160px;">Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="o : ${result.orders}">
+            <td th:text="${o.orderId}">1</td>
+            <td th:text="${o.createdDate}">2025-01-10</td>
+            <td th:text="${#numbers.formatInteger(o.totalValue, 0, 'POINT')} + ' USD'">100.000 USD</td>
+            <td>
+              <a class="btn link"
+                 th:href="@{/warranty/search(phone=${queryPhone}, orderId=${o.orderId})}">
+                View Products
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Bảng Products của order đang chọn -->
+      <div class="block" th:if="${itemsOfSelectedOrder != null}">
+        <h3 th:text="'View Products in Order ID ' + ${selectedOrderId}">View Products in Order ID 1</h3>
+        <table>
+          <thead>
+          <tr>
+            <th>Product</th>
+            <th style="width:120px;">Quantity</th>
+            <th style="width:160px;">Warranty</th>
+            <th style="width:180px;">Expiry Date</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="it : ${itemsOfSelectedOrder}">
+            <td th:text="${it.productName}">Asus core i5</td>
+            <td th:text="${it.quantity}">1</td>
+            <td th:text="${it.warrantyMonths} + ' months'">12 months</td>
+            <td th:text="${it.expiryDate}">2026-01-10</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+</body>
+</html>
