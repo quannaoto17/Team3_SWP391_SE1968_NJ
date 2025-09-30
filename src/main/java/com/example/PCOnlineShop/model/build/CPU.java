@@ -1,29 +1,32 @@
 package com.example.PCOnlineShop.model.build;
-import com.example.PCOnlineShop.model.product.Product;
-import lombok.*;
+
 import jakarta.persistence.*;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "cpu")
-
+@Table(name = "cpu")              // đúng với tên bảng của bạn
 public class CPU {
+
     @Id
-    private int productId;
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    // Nếu productId do bạn tự set = ProductID bên Product, giữ nguyên KHÔNG @GeneratedValue
+    private Integer productId;
+
     private String name;
     private String brand;
     private String model;
-    private int cores;
-    private int threads;
-    private double baseClock; // in GHz
-    private double boostClock; // in GHz
+    private Integer cores;
+    private Integer threads;
+    private Double baseClock;     // GHz
+    private Double boostClock;    // GHz
     private String socketType;
-    private int tdp; // in Watts
+    private Integer tdp;          // Watts
 
-    @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
-    private Product product;
+    // ❌ Bỏ hoàn toàn quan hệ với Product
+    // @OneToOne
+    // private Product product;
 }
