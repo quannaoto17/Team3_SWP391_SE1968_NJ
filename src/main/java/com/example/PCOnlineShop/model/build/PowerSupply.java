@@ -21,5 +21,7 @@ public class PowerSupply {
     private boolean modular; // whether the PSU is modular
 
     @OneToOne
+    @MapsId
+    @JoinColumn(name = "productId")
     private Product product;
 }

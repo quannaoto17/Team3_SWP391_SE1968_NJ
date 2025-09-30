@@ -22,11 +22,4 @@ public class AccountDetail {
     private String lastName;
     private String address;
 
-//    public Account getAccount() {
-//        return account;
-//    }
-//
-//    public void setAccount(Account account) {
-//        this.account = account;
-//    }
 }

@@ -14,6 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Product {
 
+    @Setter
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int productId;
@@ -31,11 +33,4 @@ public class Product {
     @JoinColumn(name = "brandId", nullable = false)
     private Brand brand;
 
-    public int getProductId() {
-        return productId;
-    }
-
-    public void setProductId(int productId) {
-        this.productId = productId;
-    }
 }

@@ -25,6 +25,7 @@ public class Case {
     private boolean hasTemperedGlass; // whether
 
     @OneToOne
-    @JoinColumn(name = "productId")
+    @MapsId // dùng chung id với Product
+    @JoinColumn(name = "productid")
     private Product product;
 }

@@ -15,6 +15,7 @@ D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\model\
 D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\model\build\Other.java
 D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\model\build\PowerSupply.java
 D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\model\build\Storage.java
+D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\model\customer\Customer.java
 D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\model\product\Brand.java
 D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\model\product\Category.java
 D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\model\product\Image.java
@@ -24,6 +25,7 @@ D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\model\
 D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\PcOnlineShopApplication.java
 D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\repository\build\CpuRepository.java
 D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\repository\build\MotherboardRepository.java
+D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\repository\product\BrandRepository.java
 D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\repository\product\ProductRepository.java
 D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\repository\staff\AccountDetailRepository.java
 D:\FU\FAL25\Team3_SWP391_SE1968_NJ\src\main\java\com\example\PCOnlineShop\repository\staff\AccountRepository.java

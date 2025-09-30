@@ -1,5 +1,6 @@
 package com.example.PCOnlineShop.model.build;
 
+import com.example.PCOnlineShop.model.product.Product;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,10 +24,12 @@ public class CPU {
     private Integer threads;
     private Double baseClock;     // GHz
     private Double boostClock;    // GHz
-    private String socketType;
+    private String socket;
     private Integer tdp;          // Watts
 
-    // ❌ Bỏ hoàn toàn quan hệ với Product
-    // @OneToOne
-    // private Product product;
+
+     @OneToOne
+     @MapsId
+     @JoinColumn( name = "productId" )
+     private Product product;
 }

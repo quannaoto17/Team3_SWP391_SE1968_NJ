@@ -21,6 +21,6 @@ public class Storage {
     private String interfaceType; // e.g., SATA, PCIe
 
     @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    @JoinColumn(name = "productId")
     private Product product;
 }

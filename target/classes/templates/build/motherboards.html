@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Select Motherboard</title>
+    <link rel="stylesheet" th:href="@{/css/BuildStyle.css}">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Auto Build</h2>
+            <ul>
+                <li>MainBoard</li>
+                <li>CPU</li>
+                <li>GPU</li>
+                <li>Case</li>
+                <li>Cooling</li>
+                <li>Memory</li>
+                <li>Storage</li>
+                <li>PSU</li>
+                <li>Fan</li>
+                <li>Other</li>
+            </ul>
+            <button class="overview-btn">Overview</button>
+            <a href="#">Start over</a>
+        </div>
+
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="filter-bar">
+                <input type="text" placeholder="Search..." />
+                <button>Go!</button>
+                <select>
+                    <option>Manufacturer</option>
+                </select>
+                <a href="#" class="clear-filter">Clear filter</a>
+            </div>
+
+            <div class="product-grid">
+                <!-- ví dụ 1 sản phẩm -->
+                <div class="product-card"></div>
+                <div class="product-card"></div>
+                <div class="product-card"></div>
+                <div class="product-card"></div>
+            </div>
+
+            <div class="footer-bar">
+                <span>Total Price: <strong>$0.00</strong></span>
+                <button class="next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- Detail panel -->
+        <div class="detail-panel">
+            <div class="detail-header">SELECT ....</div>
+            <div class="detail-body">
+                <h3>Name Product</h3>
+                <div class="detail-image"></div>
+                <div class="detail-spec">
+                    <h4>SPECIFICATION</h4>
+                    <p>Socket: ...</p>
+                    <p>RAM: ...</p>
+                    <p>Form Factor: ...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script th:src="@{/js/BuildJs.js}"></script>
+</body>
+
+</html>

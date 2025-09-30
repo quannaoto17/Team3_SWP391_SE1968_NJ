@@ -22,6 +22,7 @@ public class Memory {
     private int modules; // number of modules (e.g., 2 for a 2x8GB kit)
 
     @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    @MapsId
+    @JoinColumn(name = "productId")
     private Product product;
 }
