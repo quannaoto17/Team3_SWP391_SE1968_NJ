@@ -12,7 +12,7 @@ import  lombok.*;
 public class Case {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int productId; // Primary key, also a foreign key to Product
     private String name;
     private String brand;
     private String model;
@@ -25,6 +25,6 @@ public class Case {
     private boolean hasTemperedGlass; // whether
 
     @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    @JoinColumn(name = "productId")
     private Product product;
 }

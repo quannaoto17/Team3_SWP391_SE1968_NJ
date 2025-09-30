@@ -7,5 +7,4 @@ import java.util.Optional;
 
 @Repository
 public interface CpuRepository extends JpaRepository<CPU, Integer> {
-    Optional<CPU> findByProductid(Integer productId);
 }

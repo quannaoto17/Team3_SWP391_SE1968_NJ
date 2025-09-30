@@ -11,6 +11,10 @@ import java.util.List;
 public class MotherboardService {
     private final MotherboardRepository motherboardRepository;
 
+    public MotherboardService(MotherboardRepository motherboardRepository) {
+        this.motherboardRepository = motherboardRepository;
+    }
+
     public List<Motherboard> getAllMotherboards() {
         return motherboardRepository.findAll();
     }

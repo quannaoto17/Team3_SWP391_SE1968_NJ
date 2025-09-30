@@ -11,6 +11,10 @@ import java.util.List;
 public class CpuService {
     private final CpuRepository cpuRepository;
 
+    public CpuService(CpuRepository cpuRepository) {
+        this.cpuRepository = cpuRepository;
+    }
+
     public List<CPU> getAllCpus() {
         return cpuRepository.findAll();
     }

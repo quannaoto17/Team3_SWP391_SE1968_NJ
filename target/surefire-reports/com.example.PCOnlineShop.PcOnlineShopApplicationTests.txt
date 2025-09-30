@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.example.PCOnlineShop.PcOnlineShopApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.294 s -- in com.example.PCOnlineShop.PcOnlineShopApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.795 s -- in com.example.PCOnlineShop.PcOnlineShopApplicationTests

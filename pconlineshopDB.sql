@@ -46,8 +46,7 @@ CREATE TABLE Product (
 -- Table: CPU
 -- ==============================================
 CREATE TABLE CPU (
-    CPU_ID INT AUTO_INCREMENT PRIMARY KEY,
-    ProductID INT UNIQUE, -- ensures 1–0..1 relationship
+    ProductID INT AUTO_INCREMENT PRIMARY KEY,
     Socket VARCHAR(50),
     TDP INT,
     MaxMemorySize INT,
@@ -61,8 +60,7 @@ CREATE TABLE CPU (
 -- Table: GPU
 -- ==============================================
 CREATE TABLE GPU (
-    GPU_ID INT AUTO_INCREMENT PRIMARY KEY,
-    ProductID INT UNIQUE,
+    ProductID INT AUTO_INCREMENT PRIMARY KEY,
     VRAM INT,
     MemoryType VARCHAR(50),
     TDP INT,
@@ -76,8 +74,7 @@ CREATE TABLE GPU (
 -- Table: Motherboard
 -- ==============================================
 CREATE TABLE Motherboard (
-    MotherboardID INT AUTO_INCREMENT PRIMARY KEY,
-    ProductID INT UNIQUE,
+    ProductID INT AUTO_INCREMENT PRIMARY KEY,
     Socket VARCHAR(50),
     Chipset VARCHAR(50),
     FormFactor VARCHAR(50),
@@ -94,8 +91,7 @@ CREATE TABLE Motherboard (
 -- Table: Memory (RAM)
 -- ==============================================
 CREATE TABLE Memory (
-    MemoryID INT AUTO_INCREMENT PRIMARY KEY,
-    ProductID INT UNIQUE,
+    ProductID INT AUTO_INCREMENT PRIMARY KEY,
     Type VARCHAR(50),
     Capacity INT,
     Speed INT,
@@ -108,8 +104,7 @@ CREATE TABLE Memory (
 -- Table: Storage
 -- ==============================================
 CREATE TABLE Storage (
-    StorageID INT AUTO_INCREMENT PRIMARY KEY,
-    ProductID INT UNIQUE,
+	ProductID INT AUTO_INCREMENT PRIMARY KEY,
     Type VARCHAR(50),
     Capacity INT,
     Interface VARCHAR(50),
@@ -123,8 +118,7 @@ CREATE TABLE Storage (
 -- Table: Case
 -- ==============================================
 CREATE TABLE PC_Case (
-    CaseID INT AUTO_INCREMENT PRIMARY KEY,
-    ProductID INT UNIQUE,
+    ProductID INT AUTO_INCREMENT PRIMARY KEY,
     FormFactor VARCHAR(50),
     GPUMaxLength INT,
     CPUMaxCoolerHeight INT,
@@ -137,8 +131,7 @@ CREATE TABLE PC_Case (
 -- Table: Power Supply
 -- ==============================================
 CREATE TABLE PowerSupply (
-    PSU_ID INT AUTO_INCREMENT PRIMARY KEY,
-    ProductID INT UNIQUE,
+    ProductID INT AUTO_INCREMENT PRIMARY KEY,
     Wattage INT,
     Efficiency VARCHAR(50),
     Modular BIT,
@@ -150,8 +143,7 @@ CREATE TABLE PowerSupply (
 -- Table: Cooling
 -- ==============================================
 CREATE TABLE Cooling (
-    CoolingID INT AUTO_INCREMENT PRIMARY KEY,
-    ProductID INT UNIQUE,
+    ProductID INT AUTO_INCREMENT PRIMARY KEY,
     Type VARCHAR(50),
     MaxTDP INT,
     FanSize INT,
