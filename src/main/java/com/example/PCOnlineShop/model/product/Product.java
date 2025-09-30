@@ -3,7 +3,9 @@ package com.example.PCOnlineShop.model.product;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -22,4 +24,10 @@ public class Product {
     private String description;
     private String specification;
     private Date createAt;
+    @ManyToOne
+    @JoinColumn(name = "categoryId", nullable = false)
+    private Category category;
+    @ManyToOne
+    @JoinColumn(name = "brandId", nullable = false)
+    private Brand brand;
 }
