@@ -21,6 +21,5 @@ public class PowerSupply {
     private boolean modular; // whether the PSU is modular
 
     @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
     private Product product;
 }

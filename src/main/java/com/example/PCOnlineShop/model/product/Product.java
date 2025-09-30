@@ -30,4 +30,12 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "brandId", nullable = false)
     private Brand brand;
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
 }

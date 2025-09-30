@@ -6,6 +6,7 @@ import lombok.*;
 @Entity
 @Table(name = "AccountDetail")
 @Getter @Setter
+@Data
 @NoArgsConstructor @AllArgsConstructor
 public class AccountDetail {
     @Id
@@ -20,4 +21,12 @@ public class AccountDetail {
     private String firstName;
     private String lastName;
     private String address;
+
+//    public Account getAccount() {
+//        return account;
+//    }
+//
+//    public void setAccount(Account account) {
+//        this.account = account;
+//    }
 }

@@ -16,8 +16,6 @@ com\example\PCOnlineShop\repository\build\MotherboardRepository.class
 com\example\PCOnlineShop\service\product\ProductService.class
 com\example\PCOnlineShop\repository\build\CpuRepository.class
 com\example\PCOnlineShop\exception\NotFoundException.class
-com\example\PCOnlineShop\controller\build\BuildController.class
-com\example\PCOnlineShop\config\WebConfig.class
 com\example\PCOnlineShop\model\build\Other.class
 com\example\PCOnlineShop\service\build\CompatibilityService.class
 com\example\PCOnlineShop\service\impl\build\IBuildService.class
@@ -26,7 +24,6 @@ com\example\PCOnlineShop\model\product\Image.class
 com\example\PCOnlineShop\model\product\Category.class
 com\example\PCOnlineShop\model\product\Product.class
 com\example\PCOnlineShop\service\staff\StaffService.class
-com\example\PCOnlineShop\controller\product\ProductController.class
 com\example\PCOnlineShop\model\build\Case.class
 com\example\PCOnlineShop\model\build\Memory.class
 com\example\PCOnlineShop\model\build\CPU.class
