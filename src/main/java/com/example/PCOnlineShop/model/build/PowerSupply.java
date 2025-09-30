@@ -1,4 +1,5 @@
 package com.example.PCOnlineShop.model.build;
+import com.example.PCOnlineShop.model.product.Product;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -11,13 +12,15 @@ import jakarta.persistence.*;
 
 public class PowerSupply {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int productId;
     private String name;
     private String brand;
     private String model;
     private int wattage; // in Watts
     private String efficiencyRating; // e.g., 80 Plus Bronze, 80 Plus Gold
     private boolean modular; // whether the PSU is modular
-    private double price; // in USD
+
+    @OneToOne
+    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    private Product product;
 }

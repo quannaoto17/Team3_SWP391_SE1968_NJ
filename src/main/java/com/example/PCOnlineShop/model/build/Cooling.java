@@ -1,4 +1,5 @@
 package com.example.PCOnlineShop.model.build;
+import com.example.PCOnlineShop.model.product.Product;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -11,13 +12,15 @@ import jakarta.persistence.*;
 
 public class Cooling {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int productId;
     private String name;
     private String brand;
     private String model;
     private String type; // e.g., Air, Liquid
     private int fanSize; // in mm
     private int noiseLevel; // in dBA
-    private double price; // in USD
+
+    @OneToOne
+    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    private Product product;
 }

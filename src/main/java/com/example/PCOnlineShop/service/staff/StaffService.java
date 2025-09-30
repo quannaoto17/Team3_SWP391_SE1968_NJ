@@ -2,8 +2,8 @@ package com.example.PCOnlineShop.service.staff;
 
 import com.example.PCOnlineShop.model.staff.Account;
 import com.example.PCOnlineShop.model.staff.AccountDetail;
-import com.example.PCOnlineShop.repository.build.staff.AccountRepository;
-import com.example.PCOnlineShop.repository.build.staff.AccountDetailRepository;
+import com.example.PCOnlineShop.repository.staff.AccountRepository;
+import com.example.PCOnlineShop.repository.staff.AccountDetailRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

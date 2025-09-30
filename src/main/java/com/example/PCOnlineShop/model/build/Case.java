@@ -1,4 +1,5 @@
 package com.example.PCOnlineShop.model.build;
+import com.example.PCOnlineShop.model.product.Product;
 import jakarta.persistence.*;
 import  lombok.*;
 
@@ -11,7 +12,7 @@ import  lombok.*;
 public class Case {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
     private String name;
     private String brand;
     private String model;
@@ -22,6 +23,8 @@ public class Case {
     private int numOfDriveBays; // total number of drive bays
     private int numOfFrontUsbPorts; // number of front USB ports
     private boolean hasTemperedGlass; // whether
-    private double price; // in USD
-    private String imageUrl; // URL to an image of the case
+
+    @OneToOne
+    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    private Product product;
 }

@@ -1,4 +1,5 @@
 package com.example.PCOnlineShop.model.build;
+import com.example.PCOnlineShop.model.product.Product;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -11,13 +12,15 @@ import jakarta.persistence.*;
 
 public class Storage {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int productId;
     private String name;
     private String brand;
     private String model;
     private int capacity; // in GB or TB
     private String type; // e.g., SSD, HDD, NVMe
     private String interfaceType; // e.g., SATA, PCIe
-    private double price; // in USD
+
+    @OneToOne
+    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    private Product product;
 }

@@ -1,4 +1,5 @@
 package com.example.PCOnlineShop.model.build;
+import com.example.PCOnlineShop.model.product.Product;
 import lombok.*;
 import  jakarta.persistence.*;
 
@@ -11,12 +12,9 @@ import  jakarta.persistence.*;
 
 public class Motherboard {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int productId;
     private String name;
-    private String brand;
-    private String model;
-    private String socketType; // e.g., LGA1200, AM4
+    private String socket; // e.g., LGA1200, AM4
     private String formFactor; // e.g., ATX, Micro-ATX, Mini-ITX
     private int numOfMemorySlots; // number of RAM slots
     private String maxMemorySupported; // e.g., 64GB, 128GB
@@ -26,5 +24,8 @@ public class Motherboard {
     private int numOfM2Slots; // number of M.2 slots
     private boolean hasWifi; // whether it has built-in WiFi
     private boolean hasBluetooth; // whether it has built-in Bluetooth
-    private double price; // in USD
+
+    @OneToOne
+    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    private Product product;
 }
