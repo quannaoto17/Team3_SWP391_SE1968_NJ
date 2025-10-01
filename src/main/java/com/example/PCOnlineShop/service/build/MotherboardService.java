@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Service
 public class MotherboardService {
     private final MotherboardRepository motherboardRepository;

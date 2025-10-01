@@ -26,6 +26,7 @@ public class Motherboard {
     private boolean hasBluetooth; // whether it has built-in Bluetooth
 
     @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    @MapsId
+    @JoinColumn(name = "productId")
     private Product product;
 }

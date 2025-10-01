@@ -21,6 +21,7 @@ public class Cooling {
     private int noiseLevel; // in dBA
 
     @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    @MapsId
+    @JoinColumn(name = "productId")
     private Product product;
 }

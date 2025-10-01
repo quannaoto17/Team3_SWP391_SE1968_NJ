@@ -21,6 +21,7 @@ public class GPU {
     private int tdp; // in Watts
 
     @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    @MapsId
+    @JoinColumn(name = "productId")
     private Product product;
 }
