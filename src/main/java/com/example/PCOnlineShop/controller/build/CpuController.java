@@ -1,12 +1,9 @@
 package com.example.PCOnlineShop.controller.build;
 
-import com.example.PCOnlineShop.repository.build.CpuRepository;
 import com.example.PCOnlineShop.service.build.BuildService;
 import com.example.PCOnlineShop.service.build.CpuService;
-import com.example.PCOnlineShop.service.build.MotherboardService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @AllArgsConstructor

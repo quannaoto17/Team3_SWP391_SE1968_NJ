@@ -12,7 +12,7 @@ import jakarta.persistence.*;
 
 public class Memory {
     @Id
-    private int productId;
+    private int productID;
     private String name;
     private String brand;
     private String model;
@@ -23,6 +23,6 @@ public class Memory {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "productId")
+    @JoinColumn(name = "productID")
     private Product product;
 }

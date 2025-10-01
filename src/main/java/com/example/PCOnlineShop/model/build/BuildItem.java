@@ -10,7 +10,7 @@ public class BuildItem {
     private GPU gpu;
     private Memory memory;
     private Storage storage;
-    private Motherboard motherboard;
+    private Mainboard mainboard;
     private PowerSupply powerSupply;
     private Case pcCase;
     private Cooling cooling;

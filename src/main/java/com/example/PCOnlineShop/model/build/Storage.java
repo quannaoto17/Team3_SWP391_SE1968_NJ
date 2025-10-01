@@ -12,7 +12,7 @@ import jakarta.persistence.*;
 
 public class Storage {
     @Id
-    private int productId;
+    private int productID;
     private String name;
     private String brand;
     private String model;
@@ -21,6 +21,6 @@ public class Storage {
     private String interfaceType; // e.g., SATA, PCIe
 
     @OneToOne
-    @JoinColumn(name = "productId")
+    @JoinColumn(name = "productID")
     private Product product;
 }

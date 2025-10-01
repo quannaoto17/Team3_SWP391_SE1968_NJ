@@ -8,11 +8,11 @@ import  jakarta.persistence.*;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "motherboard")
+@Table(name = "mainboard")
 
-public class Motherboard {
+public class Mainboard {
     @Id
-    private int productId;
+    private int productID;
     private String name;
     private String socket; // e.g., LGA1200, AM4
     private String formFactor; // e.g., ATX, Micro-ATX, Mini-ITX
@@ -27,6 +27,6 @@ public class Motherboard {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "productId")
+    @JoinColumn(name = "productID")
     private Product product;
 }

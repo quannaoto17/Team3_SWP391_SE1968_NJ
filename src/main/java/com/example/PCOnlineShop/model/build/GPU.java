@@ -12,7 +12,7 @@ import jakarta.persistence.*;
 
 public class GPU {
     @Id
-    private int productId;
+    private int productID;
     private String name;
     private String model;
     private int vram; // in GB
@@ -22,6 +22,6 @@ public class GPU {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "productId")
+    @JoinColumn(name = "productID")
     private Product product;
 }
