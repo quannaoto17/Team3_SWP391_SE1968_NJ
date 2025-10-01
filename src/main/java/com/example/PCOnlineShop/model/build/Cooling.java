@@ -12,7 +12,8 @@ import jakarta.persistence.*;
 
 public class Cooling {
     @Id
-    private int productID;
+    @Column(name = "productID")
+    private int productId;
     private String name;
     private String brand;
     private String model;
