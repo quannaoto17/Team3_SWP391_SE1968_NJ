@@ -55,4 +55,3 @@ public class StaffController {
         return "redirect:/staff/list";
     }
 }
-
