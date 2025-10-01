@@ -12,7 +12,8 @@ import jakarta.persistence.*;
 
 public class Storage {
     @Id
-    private int productID;
+    @Column(name = "productID")
+    private int productId;
     private String name;
     private String brand;
     private String model;
