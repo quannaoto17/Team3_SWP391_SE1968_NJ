@@ -73,7 +73,7 @@ CREATE TABLE GPU (
 -- ==============================================
 -- Table: Motherboard
 -- ==============================================
-CREATE TABLE Motherboard (
+CREATE TABLE Mainboard (
     ProductID INT AUTO_INCREMENT PRIMARY KEY,
     Socket VARCHAR(50),
     Chipset VARCHAR(50),
