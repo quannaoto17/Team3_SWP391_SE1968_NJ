@@ -18,7 +18,7 @@ public class Product {
     @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int productID;
+    private int productId;
 
     private String productName;
     private double price;
@@ -27,10 +27,12 @@ public class Product {
     private String specification;
     private Date createAt;
     @ManyToOne
-    @JoinColumn(name = "categoryID", nullable = false)
+    @JoinColumn(name = "CategoryID", nullable = false)
     private Category category;
+
     @ManyToOne
-    @JoinColumn(name = "brandID", nullable = false)
+    @JoinColumn(name = "BrandID", nullable = false)
     private Brand brand;
+
 
 }

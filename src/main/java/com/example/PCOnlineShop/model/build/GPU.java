@@ -12,8 +12,7 @@ import jakarta.persistence.*;
 
 public class GPU {
     @Id
-    @Column(name = "productID")
-    private int productId;
+    private int productID;
     private String name;
     private String model;
     private int vram; // in GB

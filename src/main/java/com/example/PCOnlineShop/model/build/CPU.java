@@ -13,8 +13,7 @@ import lombok.*;
 public class CPU {
 
     @Id
-    @Column(name = "productID")
-    private Integer productId;
+    private Integer productID;
 
     private String name;
     private String brand;

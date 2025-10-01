@@ -172,15 +172,25 @@ CREATE TABLE Account (
     PhoneNumber VARCHAR(20) UNIQUE NOT NULL,
     Password VARCHAR(255) NOT NULL,
     Role VARCHAR(50) DEFAULT 'Customer',
+    Enabled BIT DEFAULT 1
+);
+
+-- ==============================================
+-- Table: Account Detail
+-- ==============================================
+CREATE TABLE AccountDetail (
+    AccountDetailID INT AUTO_INCREMENT PRIMARY KEY,
+    AccountID INT NOT NULL,
     Email VARCHAR(100),
     FirstName VARCHAR(50),
     LastName VARCHAR(50),
     Gender BIT,
+    PhoneNumber VARCHAR(20),
     Address VARCHAR(255),
     Avatar VARCHAR(255),
-    Enabled BIT DEFAULT 1
+    FOREIGN KEY (AccountID) REFERENCES Account(AccountID)
+        ON DELETE CASCADE
 );
-
 
 -- ==============================================
 -- Table: Cart

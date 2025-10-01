@@ -12,8 +12,7 @@ import  jakarta.persistence.*;
 
 public class Mainboard {
     @Id
-    @Column(name = "productID")
-    private int productId;
+    private int productID;
     private String name;
     private String socket; // e.g., LGA1200, AM4
     private String formFactor; // e.g., ATX, Micro-ATX, Mini-ITX
