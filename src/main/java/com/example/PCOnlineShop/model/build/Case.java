@@ -11,7 +11,7 @@ import  lombok.*;
 @ToString
 public class Case {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "productID")
     private int productId; // Primary key, also a foreign key to Product
     private String name;
     private String brand;
@@ -26,6 +26,6 @@ public class Case {
 
     @OneToOne
     @MapsId // dùng chung id với Product
-    @JoinColumn(name = "productid")
+    @JoinColumn(name = "productID")
     private Product product;
 }

@@ -12,6 +12,7 @@ import jakarta.persistence.*;
 
 public class PowerSupply {
     @Id
+    @Column(name = "productID")
     private int productId;
     private String name;
     private String brand;
@@ -22,6 +23,6 @@ public class PowerSupply {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "productId")
+    @JoinColumn(name = "productID")
     private Product product;
 }

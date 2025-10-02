@@ -27,10 +27,12 @@ public class Product {
     private String specification;
     private Date createAt;
     @ManyToOne
-    @JoinColumn(name = "categoryId", nullable = false)
+    @JoinColumn(name = "CategoryID", nullable = false)
     private Category category;
+
     @ManyToOne
-    @JoinColumn(name = "brandId", nullable = false)
+    @JoinColumn(name = "BrandID", nullable = false)
     private Brand brand;
+
 
 }

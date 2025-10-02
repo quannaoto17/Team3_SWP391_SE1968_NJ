@@ -13,8 +13,7 @@ import lombok.*;
 public class CPU {
 
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    // Nếu productId do bạn tự set = ProductID bên Product, giữ nguyên KHÔNG @GeneratedValue
+    @Column(name = "productID")
     private Integer productId;
 
     private String name;
@@ -30,6 +29,6 @@ public class CPU {
 
      @OneToOne
      @MapsId
-     @JoinColumn( name = "productId" )
+     @JoinColumn( name = "productID" )
      private Product product;
 }
