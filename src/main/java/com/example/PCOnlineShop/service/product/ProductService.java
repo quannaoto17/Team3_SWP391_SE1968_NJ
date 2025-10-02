@@ -7,22 +7,29 @@ import com.example.PCOnlineShop.repository.product.ImageRepository;
 import org.springframework.stereotype.Service;
 import com.example.PCOnlineShop.repository.product.ProductRepository;
 
+import java.util.List;
+
 @Service
 public class ProductService {
-//    private final ProductRepository productRepository;
-//    private final CategoryRepository categoryRepository;
-//    private final ImageRepository imageRepository;
-//    private final BrandRepository brandRepository;
-//
-////    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, ImageRepository imageRepository, BrandRepository brandRepository) {
-////        this.productRepository = productRepository;
-////        this.categoryRepository = categoryRepository;
-////        this.imageRepository = imageRepository;
-////        this.brandRepository = brandRepository;
-////    }
-//
-//    public int createProduct(Product product) {
-//        Product saveProduct = productRepository.save(product);
-//        return saveProduct.getProductId();
-//    }
+    private  ProductRepository productRepository;
+    private BrandRepository brandRepository;
+    private CategoryRepository categoryRepository;
+    private ImageRepository imageRepository;
+
+    public List<Product> getProducts(){
+        return productRepository.findAll();
+    }
+
+    public Product getProductById(int id){
+        return productRepository.findById(id).get();
+    }
+
+    public Product addProduct(Product product){
+        return productRepository.save(product);
+    }
+
+    public Product updateProduct(Product product){
+        return productRepository.save(product);
+    }
+
 }

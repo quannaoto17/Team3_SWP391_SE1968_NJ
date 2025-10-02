@@ -1,9 +1,7 @@
 package com.example.PCOnlineShop.model.product;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
@@ -15,12 +13,24 @@ import java.util.List;
 @AllArgsConstructor
 public class Category {
     @Id
+    @Getter
+    @Setter
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column (name = "CategoryID")
     private int categoryId;
+
+    @Column (name = "CategoryName")
     private String categoryName;
+
+    @Column (name = "Description")
     private String description;
+
+    @Column (name = "DisplayOrder")
     private int displayOrder;
+
+    @Column (name = "CreatedAt")
     private Date createdAt;
+
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
 }

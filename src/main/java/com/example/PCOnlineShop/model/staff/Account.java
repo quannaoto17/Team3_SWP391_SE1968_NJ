@@ -1,4 +1,4 @@
-package com.example.PCOnlineShop.model.customer;
+package com.example.PCOnlineShop.model.staff;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,9 +8,8 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-public class Customer {
+public class Account {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "AccountID")
@@ -22,15 +21,15 @@ public class Customer {
     private String password;
 
     @Column(name = "Role", length = 50)
-    private String role = "Customer";
+    private String role = "Staff";
 
     @Column(name = "Email", length = 100)
     private String email;
 
-    @Column(name = "FirstName", length = 50)
+
     private String firstname;
 
-    @Column(name = "LastName", length = 50)
+
     private String lastname;
 
     @Column(name = "Gender")
@@ -44,5 +43,4 @@ public class Customer {
 
     @Column(name = "Enabled")
     private Boolean enabled = true;
-
 }
