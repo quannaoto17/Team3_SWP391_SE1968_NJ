@@ -2,250 +2,234 @@ CREATE DATABASE IF NOT EXISTS pconlineshop;
 USE pconlineshop;
 
 -- ==============================================
--- Table: Brand
+-- Table: brand
 -- ==============================================
-CREATE TABLE Brand (
-    BrandID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL,
-    Description VARCHAR(500),
-    Website VARCHAR(255)
+CREATE TABLE brand (
+    brand_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description VARCHAR(500),
+    website VARCHAR(255)
 );
 
 -- ==============================================
--- Table: Category
+-- Table: category
 -- ==============================================
-CREATE TABLE Category (
-    CategoryID INT AUTO_INCREMENT PRIMARY KEY,
-    CategoryName VARCHAR(100) NOT NULL,
-    Description VARCHAR(500),
-    DisplayOrder INT,
-    CreatedAt DATE
+CREATE TABLE category (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(100) NOT NULL,
+    description VARCHAR(500),
+    display_order INT,
+    created_at DATE
 );
 
 -- ==============================================
--- Table: Product
--- This table is the central entity.
--- Every specific component (CPU, GPU, etc.)
--- links to Product with a 1–0..1 relation.
+-- Table: product
 -- ==============================================
-CREATE TABLE Product (
-    ProductID INT AUTO_INCREMENT PRIMARY KEY,
-    CategoryID INT NOT NULL,
-    BrandID INT,
-    ProductName VARCHAR(255) NOT NULL,
-    Price DECIMAL(10,2) NOT NULL,
-    Status BIT DEFAULT 1,
-    Description VARCHAR(500),
-    Specification VARCHAR(500),
-    CreatedAt DATE DEFAULT (CURRENT_DATE),
-    FOREIGN KEY (CategoryID) REFERENCES Category(CategoryID),
-    FOREIGN KEY (BrandID) REFERENCES Brand(BrandID)
+CREATE TABLE product (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_id INT NOT NULL,
+    brand_id INT,
+    product_name VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    status BIT DEFAULT 1,
+    description VARCHAR(500),
+    specification VARCHAR(500),
+    created_at DATE DEFAULT (CURRENT_DATE),
+    FOREIGN KEY (category_id) REFERENCES category(category_id),
+    FOREIGN KEY (brand_id) REFERENCES brand(brand_id)
 );
 
 -- ==============================================
--- Table: CPU
+-- Table: cpu
 -- ==============================================
-CREATE TABLE CPU (
-    ProductID INT AUTO_INCREMENT PRIMARY KEY,
-    Socket VARCHAR(50),
-    TDP INT,
-    MaxMemorySize INT,
-    MemoryChannels INT,
-    HasIGPU BIT,
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
-        ON DELETE CASCADE
+CREATE TABLE cpu (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    socket VARCHAR(50),
+    tdp INT,
+    max_memory_size INT,
+    memory_channels INT,
+    has_igpu BIT,
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );
 
 -- ==============================================
--- Table: GPU
+-- Table: gpu
 -- ==============================================
-CREATE TABLE GPU (
-    ProductID INT AUTO_INCREMENT PRIMARY KEY,
-    VRAM INT,
-    MemoryType VARCHAR(50),
-    TDP INT,
-    Interface VARCHAR(50),
-    Length INT,
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
-        ON DELETE CASCADE
+CREATE TABLE gpu (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    vram INT,
+    memory_type VARCHAR(50),
+    tdp INT,
+    gpu_interface VARCHAR(50),
+    length INT,
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );
 
 -- ==============================================
--- Table: Motherboard
+-- Table: mainboard
 -- ==============================================
-CREATE TABLE Mainboard (
-    ProductID INT AUTO_INCREMENT PRIMARY KEY,
-    Socket VARCHAR(50),
-    Chipset VARCHAR(50),
-    FormFactor VARCHAR(50),
-    RAMType VARCHAR(50),
-    RAMSlots INT,
-    MaxRAMSize INT,
-    PCIEVersion VARCHAR(20),
-    M2Slots INT,
-    SataPorts INT,
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
-        ON DELETE CASCADE
-);
--- ==============================================
--- Table: Memory (RAM)
--- ==============================================
-CREATE TABLE Memory (
-    ProductID INT AUTO_INCREMENT PRIMARY KEY,
-    Type VARCHAR(50),
-    Capacity INT,
-    Speed INT,
-    Voltage DECIMAL(4,2),
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
-        ON DELETE CASCADE
+CREATE TABLE mainboard (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    socket VARCHAR(50),
+    chipset VARCHAR(50),
+    form_factor VARCHAR(50),
+    ram_type VARCHAR(50),
+    ram_slots INT,
+    max_ram_size INT,
+    pcie_version VARCHAR(20),
+    m2_slots INT,
+    sata_ports INT,
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );
 
 -- ==============================================
--- Table: Storage
+-- Table: memory
 -- ==============================================
-CREATE TABLE Storage (
-	ProductID INT AUTO_INCREMENT PRIMARY KEY,
-    Type VARCHAR(50),
-    Capacity INT,
-    Interface VARCHAR(50),
-    ReadSpeed INT,
-    WriteSpeed INT,
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
-        ON DELETE CASCADE
+CREATE TABLE memory (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    type VARCHAR(50),
+    capacity INT,
+    speed INT,
+    voltage DECIMAL(4,2),
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );
 
 -- ==============================================
--- Table: Case
+-- Table: storage
 -- ==============================================
-CREATE TABLE PC_Case (
-    ProductID INT AUTO_INCREMENT PRIMARY KEY,
-    FormFactor VARCHAR(50),
-    GPUMaxLength INT,
-    CPUMaxCoolerHeight INT,
-    PSUMaxLength INT,
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
-        ON DELETE CASCADE
+CREATE TABLE storage (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    type VARCHAR(50),
+    capacity INT,
+    interface VARCHAR(50),
+    read_speed INT,
+    write_speed INT,
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );
 
 -- ==============================================
--- Table: Power Supply
+-- Table: pc_case
 -- ==============================================
-CREATE TABLE PowerSupply (
-    ProductID INT AUTO_INCREMENT PRIMARY KEY,
-    Wattage INT,
-    Efficiency VARCHAR(50),
-    Modular BIT,
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
-        ON DELETE CASCADE
+CREATE TABLE pc_case (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    form_factor VARCHAR(50),
+    gpu_max_length INT,
+    cpu_max_cooler_height INT,
+    psu_max_length INT,
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );
 
 -- ==============================================
--- Table: Cooling
+-- Table: power_supply
 -- ==============================================
-CREATE TABLE Cooling (
-    ProductID INT AUTO_INCREMENT PRIMARY KEY,
-    Type VARCHAR(50),
-    MaxTDP INT,
-    FanSize INT,
-    RadiatorSize INT,
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
-        ON DELETE CASCADE
+CREATE TABLE power_supply (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    wattage INT,
+    efficiency VARCHAR(50),
+    modular BIT,
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );
 
 -- ==============================================
--- Table: Image
+-- Table: cooling
 -- ==============================================
-CREATE TABLE Image (
-    ImageID INT AUTO_INCREMENT PRIMARY KEY,
-    ProductID INT NOT NULL,
-    ImageUrl VARCHAR(255), -- store as URL or path instead of binary
-    CreatedAt DATE DEFAULT (CURRENT_DATE),
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
-        ON DELETE CASCADE
+CREATE TABLE cooling (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    type VARCHAR(50),
+    max_tdp INT,
+    fan_size INT,
+    radiator_size INT,
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );
 
 -- ==============================================
--- Table: Account
+-- Table: image
 -- ==============================================
-CREATE TABLE Account (
-    AccountID INT AUTO_INCREMENT PRIMARY KEY,
-    PhoneNumber VARCHAR(20) UNIQUE NOT NULL,
-    Password VARCHAR(255) NOT NULL,
-    Role VARCHAR(50) DEFAULT 'Customer',
-    Email VARCHAR(100),
-    FirstName VARCHAR(50),
-    LastName VARCHAR(50),
-    Gender BIT,
-    Address VARCHAR(255),
-    Avatar VARCHAR(255),
-    Enabled BIT DEFAULT 1
-);
-
-
--- ==============================================
--- Table: Cart
--- ==============================================
-CREATE TABLE Cart (
-    CartID INT AUTO_INCREMENT PRIMARY KEY,
-    AccountID INT NOT NULL,
-    Status VARCHAR(50),
-    UpdatedDate DATE,
-    FOREIGN KEY (AccountID) REFERENCES Account(AccountID)
-        ON DELETE CASCADE
+CREATE TABLE image (
+    image_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    image_url VARCHAR(255),
+    created_at DATE DEFAULT (CURRENT_DATE),
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );
 
 -- ==============================================
--- Table: Cart Item
+-- Table: account
 -- ==============================================
-CREATE TABLE CartItem (
-    CartItemID INT AUTO_INCREMENT PRIMARY KEY,
-    CartID INT NOT NULL,
-    ProductID INT NOT NULL,
-    Quantity INT DEFAULT 1,
-    FOREIGN KEY (CartID) REFERENCES Cart(CartID)
-        ON DELETE CASCADE,
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+CREATE TABLE account (
+    account_id INT AUTO_INCREMENT PRIMARY KEY,
+    phone_number VARCHAR(20) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) DEFAULT 'Customer',
+    email VARCHAR(100),
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    gender BIT,
+    address VARCHAR(255),
+    enabled BIT DEFAULT 1
 );
 
 -- ==============================================
--- Table: Order
+-- Table: cart
 -- ==============================================
-CREATE TABLE `Order` (
-    OrderID INT AUTO_INCREMENT PRIMARY KEY,
-    AccountID INT NOT NULL,
-    TotalAmount DECIMAL(10,2),
-    DiscountAmount DECIMAL(10,2),
-    FinalAmount DECIMAL(10,2),
-    VoucherCode VARCHAR(50),
-    Status VARCHAR(50),
-    CreatedDate DATE DEFAULT (CURRENT_DATE),
-    FOREIGN KEY (AccountID) REFERENCES Account(AccountID)
+CREATE TABLE cart (
+    cart_id INT AUTO_INCREMENT PRIMARY KEY,
+    account_id INT NOT NULL,
+    status VARCHAR(50),
+    updated_date DATE,
+    FOREIGN KEY (account_id) REFERENCES account(account_id) ON DELETE CASCADE
 );
 
 -- ==============================================
--- Table: Order Detail
+-- Table: cart_item
 -- ==============================================
-CREATE TABLE OrderDetail (
-    OrderDetailID INT AUTO_INCREMENT PRIMARY KEY,
-    OrderID INT NOT NULL,
-    ProductID INT NOT NULL,
-    Quantity INT NOT NULL,
-    Price DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (OrderID) REFERENCES `Order`(OrderID)
-        ON DELETE CASCADE,
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+CREATE TABLE cart_item (
+    cart_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    cart_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT DEFAULT 1,
+    FOREIGN KEY (cart_id) REFERENCES cart(cart_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
 
 -- ==============================================
--- Table: Feedback
+-- Table: order
 -- ==============================================
-CREATE TABLE Feedback (
-    FeedbackID INT AUTO_INCREMENT PRIMARY KEY,
-    AccountID INT NOT NULL,
-    ProductID INT NOT NULL,
-    Comment VARCHAR(500),
-    CommentStatus VARCHAR(50),
-    CreatedAt DATE DEFAULT (CURRENT_DATE),
-    FOREIGN KEY (AccountID) REFERENCES Account(AccountID),
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    account_id INT NOT NULL,
+    total_amount DECIMAL(10,2),
+    discount_amount DECIMAL(10,2),
+    final_amount DECIMAL(10,2),
+    voucher_code VARCHAR(50),
+    status VARCHAR(50),
+    created_date DATE DEFAULT (CURRENT_DATE),
+    FOREIGN KEY (account_id) REFERENCES account(account_id)
+);
+
+-- ==============================================
+-- Table: order_detail
+-- ==============================================
+CREATE TABLE order_detail (
+    order_detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
+);
+
+-- ==============================================
+-- Table: feedback
+-- ==============================================
+CREATE TABLE feedback (
+    feedback_id INT AUTO_INCREMENT PRIMARY KEY,
+    account_id INT NOT NULL,
+    product_id INT NOT NULL,
+    comment VARCHAR(500),
+    comment_status VARCHAR(50),
+    created_at DATE DEFAULT (CURRENT_DATE),
+    FOREIGN KEY (account_id) REFERENCES account(account_id),
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
