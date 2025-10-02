@@ -20,8 +20,7 @@ public class PowerSupply {
     private String efficiency; // e.g., 80 Plus Bronze, Gold
     @Column(name = "modular")
     private boolean modular; // true if modular, false otherwise
-    @Column(name = "form_factor")
-    private String formFactor; // e.g., ATX, SFX
+
     @OneToOne
     @MapsId
     @JoinColumn(name = "product_id")

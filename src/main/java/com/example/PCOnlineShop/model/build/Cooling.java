@@ -25,6 +25,6 @@ public class Cooling {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "productID")
+    @JoinColumn(name = "product_id")
     private Product product;
 }

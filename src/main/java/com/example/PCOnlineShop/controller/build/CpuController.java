@@ -22,9 +22,9 @@ public class CpuController {
     // Hiển thị danh sách CPU
     @GetMapping("/cpu")
     public String showCpuPage(@ModelAttribute("buildItems") BuildItem buildItem, Model model) {
-        model.addAttribute("build", buildService.getCompatibleCpus(buildItem.getMainboardId()));
-        return "/build/cpu/build-cpu";
+        model.addAttribute("cpus", cpuService.getAllCpus());
+        return "/build/build-cpu";
     }
-    // Hiển thị chi tiết CPU
+    // Hiển thị chi tiết CPUbuildService.getCompatibleCpus(buildItem.getMainboardId())
     // Thêm, sửa, xóa CPU sẽ do admin thực hiện qua trang admin
 }
