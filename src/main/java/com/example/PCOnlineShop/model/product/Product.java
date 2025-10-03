@@ -18,25 +18,25 @@ public class Product {
     @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column (name = "Product_id")
+    @Column (name = "product_id")
     private int productId;
-    @Column (name = "Product_name")
+    @Column (name = "product_name")
     private String productName;
-    @Column (name = "Price")
+    @Column (name = "price")
     private double price;
-    @Column (name = "Status")
+    @Column (name = "status")
     private boolean status;
-    @Column (name = "Description")
+    @Column (name = "description")
     private String description;
-    @Column (name = "Specification")
+    @Column (name = "specification")
     private String specification;
-    @Column (name = "Created_at")
+    @Column (name = "created_at")
     private Date createAt;
     @ManyToOne
-    @JoinColumn(name = "Category_id", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
     @ManyToOne
-    @JoinColumn(name = "Brand_id", nullable = false)
+    @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 
 }

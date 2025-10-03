@@ -12,35 +12,32 @@ public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "AccountID")
+    @Column(name = "account_id")
     private int accountId;
 
     private String phonenumber;
 
-    @Column(name = "Password", nullable = false, length = 255)
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "Role", length = 50)
+    @Column(name = "role", length = 50)
     private String role = "Staff";
 
-    @Column(name = "Email", length = 100)
+    @Column(name = "email", length = 100)
     private String email;
 
-
+    @Column (name = "first_name")
     private String firstname;
 
-
+    @Column (name = "last_name")
     private String lastname;
 
-    @Column(name = "Gender")
+    @Column(name = "gender")
     private Boolean gender;
 
-    @Column(name = "Address", length = 255)
+    @Column(name = "address", length = 255)
     private String address;
 
-    @Column(name = "Avatar", length = 255)
-    private String avatar;
-
-    @Column(name = "Enabled")
+    @Column(name = "enabled")
     private Boolean enabled = true;
 }
