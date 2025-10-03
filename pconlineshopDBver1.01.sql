@@ -48,6 +48,7 @@ CREATE TABLE cpu (
     tdp INT,
     max_memory_size INT,
     memory_channels INT,
+    pcie_version VARCHAR(20),
     has_igpu BIT,
     FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );

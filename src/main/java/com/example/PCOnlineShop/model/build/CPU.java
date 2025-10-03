@@ -19,12 +19,14 @@ public class CPU {
     private String socket; // e.g., LGA1200, AM4
     @Column(name = "tdp")
     private Integer tdp; // in Watts
-    @Column(name = "max_memory_size")
-    private Integer maxMemorySize; // in GB
+    @Column(name = "max_memory_speed")
+    private Integer maxMemorySpeed; // in GB
     @Column(name = "memory_channels")
     private Integer memoryChannels; // e.g., Dual, Quad
     @Column(name = "has_igpu")
     private Boolean hasIGPU; // Integrated GPU presence
+    @Column(name = "pcie_version")
+    private String pcieVersion; // e.g., PCIe 4.0
 
      @OneToOne
      @MapsId
