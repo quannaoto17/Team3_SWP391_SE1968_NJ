@@ -24,6 +24,8 @@ public class GPU {
     private int length; // in mm
     @Column(name = "gpu_interface")
     private String gpuInterface; // e.g., PCIe 4.0
+    @Column(name = "pcie_version")
+    private String pcieVersion; // e.g., PCIe 4.0
     @OneToOne
     @MapsId
     @JoinColumn(name = "product_id")

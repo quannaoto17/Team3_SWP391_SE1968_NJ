@@ -1,19 +1,19 @@
 package com.example.PCOnlineShop.dto.build;
 
+import com.example.PCOnlineShop.model.build.*;
 import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class BuildItem {
-    private int mainboardId;
-    private int cpuId;
-    private int ramId;
-    private int gpuId;
-    private int storageId;
-    private int psuId;
-    private int caseId;
-    private int coolerId;
-    private int otherId;
-    private double totalPrice;
+    Mainboard mainboard;
+    CPU cpu;
+    Memory memory;
+    GPU gpu;
+    Storage storage;
+    PowerSupply powerSupply;
+    Case pcCase;
+    Cooling cooling;
+    Other other;
 }
