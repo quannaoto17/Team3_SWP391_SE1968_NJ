@@ -13,7 +13,7 @@ public class Brand {
     @Getter
     @Setter
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column (name = "BrandID")
+    @Column (name = "Brand_id")
     private int brandId;
 
     @Column (name = "Name")

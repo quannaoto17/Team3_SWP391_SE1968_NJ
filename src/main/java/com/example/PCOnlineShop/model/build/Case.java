@@ -11,21 +11,19 @@ import  lombok.*;
 @ToString
 public class Case {
     @Id
-    @Column(name = "productID")
-    private int productId; // Primary key, also a foreign key to Product
-    private String name;
-    private String brand;
-    private String model;
-    private String formFactor; // e.g., ATX, Micro-ATX, Mini-ITX
-    private String color;
-    private int maxGpuLength; // in mm
-    private int maxCpuCoolerHeight; // in mm
-    private int numOfDriveBays; // total number of drive bays
-    private int numOfFrontUsbPorts; // number of front USB ports
-    private boolean hasTemperedGlass; // whether
+    @Column(name = "product_id")
+    private int productId;
+    @Column(name = "form_factor")
+    private String formFactor; // e.g., ATX, Micro-ATX, Mini
+    @Column(name = "gpu_max_length")
+    private int gpuMaxLength; // in mm
+    @Column(name = "cpu_max_cooler_height")
+    private int cpuMaxCoolerHeight; // in mm
+    @Column(name = "psu_max_length")
+    private int psuMaxLength; // in mm
 
     @OneToOne
     @MapsId // dùng chung id với Product
-    @JoinColumn(name = "productID")
+    @JoinColumn(name = "product_id")
     private Product product;
 }

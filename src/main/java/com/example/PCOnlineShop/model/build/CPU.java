@@ -13,22 +13,21 @@ import lombok.*;
 public class CPU {
 
     @Id
-    @Column(name = "productID")
+    @Column(name = "product_id")
     private Integer productId;
-
-    private String name;
-    private String brand;
-    private String model;
-    private Integer cores;
-    private Integer threads;
-    private Double baseClock;     // GHz
-    private Double boostClock;    // GHz
-    private String socket;
-    private Integer tdp;          // Watts
-
+    @Column(name = "socket")
+    private String socket; // e.g., LGA1200, AM4
+    @Column(name = "tdp")
+    private Integer tdp; // in Watts
+    @Column(name = "max_memory_size")
+    private Integer maxMemorySize; // in GB
+    @Column(name = "memory_channels")
+    private Integer memoryChannels; // e.g., Dual, Quad
+    @Column(name = "has_igpu")
+    private Boolean hasIGPU; // Integrated GPU presence
 
      @OneToOne
      @MapsId
-     @JoinColumn( name = "productID" )
+     @JoinColumn( name = "product_id" )
      private Product product;
 }

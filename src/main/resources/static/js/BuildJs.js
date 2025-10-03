@@ -1,46 +1,53 @@
-// Xử lý click chọn sản phẩm -> hiển thị chi tiết bên phải
-function showDetails(id, name, socket, formFactor, ram, wifi, bluetooth, description, price) {
-    const detailsPanel = document.getElementById("product-details");
-
-    detailsPanel.innerHTML = `
-    <h2>${name}</h2>
-    <p><strong>Socket:</strong> ${socket}</p>
-    <p><strong>Form Factor:</strong> ${formFactor}</p>
-    <p><strong>RAM:</strong> ${ram}</p>
-    <p><strong>WiFi:</strong> ${wifi ? "Yes" : "No"}</p>
-    <p><strong>Bluetooth:</strong> ${bluetooth ? "Yes" : "No"}</p>
-    <p><strong>Description:</strong> ${description}</p>
-    <p><strong>Price:</strong> $${price}</p>
-    <button class="select-btn" onclick="selectProduct(${id})">Chọn sản phẩm này</button>
-  `;
-
-    detailsPanel.classList.add("active");
-}
-
-// Giả lập chọn sản phẩm
-function selectProduct(id) {
-    alert("Bạn đã chọn sản phẩm ID: " + id);
-    // TODO: Gửi request về server lưu vào build hiện tại
-}
-
-// Tìm kiếm sản phẩm theo tên
-function searchProducts() {
-    const keyword = document.getElementById("searchInput").value.toLowerCase();
+document.addEventListener("DOMContentLoaded", function () {
     const cards = document.querySelectorAll(".product-card");
+    const priceTotal = document.getElementById("priceTotal");
+
+    const hiddenInput = document.querySelector("input[type=hidden]");
+
+    const detailName = document.getElementById("detailName");
+    const detailSocket = document.getElementById("detailSocket");
+    const detailRAM = document.getElementById("detailRAM");
+    const detailForm = document.getElementById("detailForm");
+    const detailChipset = document.getElementById("detailChipset");
+    const detailTdp = document.getElementById("detailTdp");
+    const detailIGPU = document.getElementById("detailIGPU");
 
     cards.forEach(card => {
-        const name = card.querySelector("h3").innerText.toLowerCase();
-        card.style.display = name.includes(keyword) ? "block" : "none";
+        card.addEventListener("click", function () {
+            cards.forEach(c => c.classList.remove("selected"));
+            this.classList.add("selected");
+
+            const id = this.getAttribute("data-id");
+            const name = this.getAttribute("data-name");
+            const socket = this.getAttribute("data-socket");
+            const price = this.querySelector("strong").innerText;
+
+            hiddenInput.value = id;
+
+            // Update detail panel (tuỳ trang)
+            if (detailName) detailName.innerText = name;
+            if (detailSocket) detailSocket.innerText = "Socket: " + socket;
+            if (detailRAM) detailRAM.innerText = "RAM: " + this.getAttribute("data-ramtype");
+            if (detailForm) detailForm.innerText = "Form Factor: " + this.getAttribute("data-formfactor");
+            if (detailChipset) detailChipset.innerText = "Chipset: " + this.getAttribute("data-chipset");
+            if (detailTdp) detailTdp.innerText = "TDP: " + this.getAttribute("data-tdp");
+            if (detailIGPU) detailIGPU.innerText = "IGPU: " + (this.getAttribute("data-igpu") === 'true' ? 'Yes' : 'No');
+
+            if (priceTotal) priceTotal.innerText = price;
+        });
+    });
+});
+
+function filterProducts() {
+    const query = document.getElementById("searchBox").value.toLowerCase();
+    document.querySelectorAll(".product-card").forEach(card => {
+        const name = card.getAttribute("data-name").toLowerCase();
+        card.style.display = name.includes(query) ? "block" : "none";
     });
 }
-
-// Lọc sản phẩm theo socket
-function filterProducts() {
-    const selectedSocket = document.getElementById("filterSocket").value;
-    const cards = document.querySelectorAll(".product-card");
-
-    cards.forEach(card => {
-        const socket = card.getAttribute("data-socket");
-        card.style.display = (selectedSocket === "" || socket === selectedSocket) ? "block" : "none";
+function clearFilter() {
+    document.getElementById("searchBox").value = "";
+    document.querySelectorAll(".product-card").forEach(card => {
+        card.style.display = "block";
     });
 }

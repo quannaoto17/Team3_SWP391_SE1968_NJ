@@ -16,19 +16,19 @@ public class Category {
     @Getter
     @Setter
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column (name = "CategoryID")
+    @Column (name = "Category_id")
     private int categoryId;
 
-    @Column (name = "CategoryName")
+    @Column (name = "Category_name")
     private String categoryName;
 
     @Column (name = "Description")
     private String description;
 
-    @Column (name = "DisplayOrder")
+    @Column (name = "Display_order")
     private int displayOrder;
 
-    @Column (name = "CreatedAt")
+    @Column (name = "Created_at")
     private Date createdAt;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

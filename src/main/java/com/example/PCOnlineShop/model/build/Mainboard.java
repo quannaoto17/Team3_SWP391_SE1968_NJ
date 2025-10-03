@@ -12,22 +12,29 @@ import  jakarta.persistence.*;
 
 public class Mainboard {
     @Id
-    @Column(name = "productID")
+    @Column(name = "product_id")
     private int productId;
-    private String name;
-    private String socket; // e.g., LGA1200, AM4
-    private String formFactor; // e.g., ATX, Micro-ATX, Mini-ITX
-    private int numOfMemorySlots; // number of RAM slots
-    private String maxMemorySupported; // e.g., 64GB, 128GB
-    private String memoryType; // e.g., DDR4, DDR5
-    private int numOfPciSlots; // number of PCIe slots
-    private int numOfSataPorts; // number of SATA ports
-    private int numOfM2Slots; // number of M.2 slots
-    private boolean hasWifi; // whether it has built-in WiFi
-    private boolean hasBluetooth; // whether it has built-in Bluetooth
+    @Column(name = "form_factor")
+    private String formFactor; // e.g., ATX, Micro-ATX, Mini
+    @Column(name = "chipset")
+    private String chipset; // e.g., B550, Z490
+    @Column(name = "socket")
+    private String socket; // e.g., AM4, LGA1200
+    @Column(name = "ram_type")
+    private String ramType; // e.g., DDR4, DDR5
+    @Column(name = "ram_slots")
+    private int ramSlots; // number of RAM slots
+    @Column(name = "max_ram_size")
+    private int maxRamSize; // in GB
+    @Column(name = "pcie_version")
+    private String pcieVersion; // e.g., PCIe 4.0, PCIe 3.0
+    @Column(name = "m2_slots")
+    private int m2Slots; // number of M.2 slots
+    @Column(name = "sata_ports")
+    private int sataPorts; // number of SATA portsq
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "productID")
+    @JoinColumn(name = "product_id")
     private Product product;
 }

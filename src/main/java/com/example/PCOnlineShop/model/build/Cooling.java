@@ -12,17 +12,19 @@ import jakarta.persistence.*;
 
 public class Cooling {
     @Id
-    @Column(name = "productID")
+    @Column(name = "product_id")
     private int productId;
-    private String name;
-    private String brand;
-    private String model;
+    @Column(name = "type")
     private String type; // e.g., Air, Liquid
+    @Column(name = "fan_size")
     private int fanSize; // in mm
-    private int noiseLevel; // in dBA
+    @Column(name = "radiator_size")
+    private String radiatorSize; // e.g., 120mm, 240mm
+    @Column(name = "max_tdp")
+    private int maxTdp; // in Watts
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "productID")
+    @JoinColumn(name = "product_id")
     private Product product;
 }

@@ -18,16 +18,16 @@ public class Image {
     @Setter
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    @Column (name = "ImageID")
+    @Column (name = "Image_id")
     private int imageId;
 
-    @Column (name = "ImageUrl")
+    @Column (name = "Image_url")
     private String imageUrl;
 
-    @Column (name = "CreatedAt")
+    @Column (name = "Created_at")
     private Date createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ProductID", nullable = false)
+    @JoinColumn(name = "Product_id", nullable = false)
     private Product product;
 }
