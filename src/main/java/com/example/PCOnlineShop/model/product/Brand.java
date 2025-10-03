@@ -13,16 +13,16 @@ public class Brand {
     @Getter
     @Setter
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column (name = "Brand_id")
+    @Column (name = "brand_id")
     private int brandId;
 
-    @Column (name = "Name")
+    @Column (name = "name")
     private String name;
 
-    @Column (name = "Description")
+    @Column (name = "description")
     private String description;
 
-    @Column (name = "Website")
+    @Column (name = "website")
     private String website;
 
 }
