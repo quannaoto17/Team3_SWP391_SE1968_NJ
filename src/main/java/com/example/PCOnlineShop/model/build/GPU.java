@@ -12,15 +12,22 @@ import jakarta.persistence.*;
 
 public class GPU {
     @Id
+    @Column(name = "product_id")
     private int productId;
-    private String name;
-    private String model;
+    @Column(name = "vram")
     private int vram; // in GB
-    private double baseClock; // in GHz
-    private double boostClock; // in GHz
+    @Column(name = "memory_type")
+    private String memoryType; // e.g., GDDR6, HBM2
+    @Column(name = "tdp")
     private int tdp; // in Watts
-
+    @Column(name = "length")
+    private int length; // in mm
+    @Column(name = "gpu_interface")
+    private String gpuInterface; // e.g., PCIe 4.0
+    @Column(name = "pcie_version")
+    private String pcieVersion; // e.g., PCIe 4.0
     @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    @MapsId
+    @JoinColumn(name = "product_id")
     private Product product;
 }

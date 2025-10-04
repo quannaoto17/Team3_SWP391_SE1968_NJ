@@ -14,20 +14,29 @@ import java.util.List;
 @AllArgsConstructor
 public class Product {
 
+    @Setter
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column (name = "product_id")
     private int productId;
-
+    @Column (name = "product_name")
     private String productName;
+    @Column (name = "price")
     private double price;
+    @Column (name = "status")
     private boolean status;
+    @Column (name = "description")
     private String description;
+    @Column (name = "specification")
     private String specification;
+    @Column (name = "created_at")
     private Date createAt;
     @ManyToOne
-    @JoinColumn(name = "categoryId", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
     @ManyToOne
-    @JoinColumn(name = "brandId", nullable = false)
+    @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
+
 }

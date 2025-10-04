@@ -1,15 +1,17 @@
 package com.example.PCOnlineShop.service.build;
 import com.example.PCOnlineShop.model.build.CPU;
 import com.example.PCOnlineShop.repository.build.CpuRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Service
 public class CpuService {
     private final CpuRepository cpuRepository;
+
+    public CpuService(CpuRepository cpuRepository) {
+        this.cpuRepository = cpuRepository;
+    }
 
     public List<CPU> getAllCpus() {
         return cpuRepository.findAll();

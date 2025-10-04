@@ -12,16 +12,19 @@ import jakarta.persistence.*;
 
 public class Memory {
     @Id
+    @Column(name = "product_id")
     private int productId;
-    private String name;
-    private String brand;
-    private String model;
+    @Column(name = "capacity")
     private int capacity; // in GB
-    private int speed; // in MHz
+    @Column(name = "type")
     private String type; // e.g., DDR4, DDR5
-    private int modules; // number of modules (e.g., 2 for a 2x8GB kit)
+    @Column(name = "speed")
+    private int speed; // in MHz
+    @Column(name = "voltage")
+    private double voltage; // in Volts
 
     @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    @MapsId
+    @JoinColumn(name = "product_id")
     private Product product;
 }

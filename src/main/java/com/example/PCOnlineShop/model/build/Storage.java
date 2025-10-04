@@ -12,15 +12,20 @@ import jakarta.persistence.*;
 
 public class Storage {
     @Id
+    @Column(name = "product_id")
     private int productId;
-    private String name;
-    private String brand;
-    private String model;
-    private int capacity; // in GB or TB
-    private String type; // e.g., SSD, HDD, NVMe
-    private String interfaceType; // e.g., SATA, PCIe
+    @Column(name = "capacity")
+    private int capacity; // in GB
+    @Column(name = "type")
+    private String type; // e.g., SSD, HDD
+    @Column(name = "interface")
+    private String interfaceType; // e.g., SATA, NVMe
+    @Column(name = "read_speed")
+    private int readSpeed; // in MB/s
+    @Column(name = "write_speed")
+    private int writeSpeed; // in MB/s
 
     @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    @JoinColumn(name = "product_id")
     private Product product;
 }

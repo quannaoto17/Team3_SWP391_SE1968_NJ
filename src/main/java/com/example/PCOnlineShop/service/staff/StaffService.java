@@ -1,39 +1,38 @@
 package com.example.PCOnlineShop.service.staff;
 
 import com.example.PCOnlineShop.model.staff.Account;
-import com.example.PCOnlineShop.model.staff.AccountDetail;
 import com.example.PCOnlineShop.repository.staff.AccountRepository;
-import com.example.PCOnlineShop.repository.staff.AccountDetailRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class StaffService {
-    private final AccountRepository accountRepo;
-    private final AccountDetailRepository detailRepo;
+    private final AccountRepository accountRepository;
 
-    public StaffService(AccountRepository accountRepo, AccountDetailRepository detailRepo) {
-        this.accountRepo = accountRepo;
-        this.detailRepo = detailRepo;
+    public StaffService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
 
-    public List<AccountDetail> getAllStaff() {
-        return detailRepo.findAll();
+    public List<Account> getAllStaff() {
+        return accountRepository.findAll();
     }
 
-    public AccountDetail addStaff(Account account, AccountDetail detail) {
-        Account savedAcc = accountRepo.save(account);
-        detail.setAccount(savedAcc);
-        return detailRepo.save(detail);
+    public Account saveStaff(Account account) {
+        return accountRepository.save(account);
     }
 
-    public AccountDetail updateStaff(AccountDetail detail) {
-        return detailRepo.save(detail);
+    public Account getById(int id) {
+        return accountRepository.findById(id).orElse(null);
     }
 
-    public AccountDetail getStaffById(int id) {
-        return detailRepo.findById(id).orElse(null);
+    public void deactivateStaff(int id) {
+        Account account = accountRepository.findById(id).orElse(null);
+        if (account != null) {
+            account.setEnabled(false); // chuyển sang Inactive
+            accountRepository.save(account);
+        }
     }
 }
+
 

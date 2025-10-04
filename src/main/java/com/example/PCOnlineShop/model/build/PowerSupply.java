@@ -8,19 +8,21 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "powersupply")
+@Table(name = "power_supply")
 
 public class PowerSupply {
     @Id
+    @Column(name = "product_id")
     private int productId;
-    private String name;
-    private String brand;
-    private String model;
+    @Column(name = "wattage")
     private int wattage; // in Watts
-    private String efficiencyRating; // e.g., 80 Plus Bronze, 80 Plus Gold
-    private boolean modular; // whether the PSU is modular
+    @Column(name = "efficiency")
+    private String efficiency; // e.g., 80 Plus Bronze, Gold
+    @Column(name = "modular")
+    private boolean modular; // true if modular, false otherwise
 
     @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    @MapsId
+    @JoinColumn(name = "product_id")
     private Product product;
 }
