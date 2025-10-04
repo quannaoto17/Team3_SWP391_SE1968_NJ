@@ -27,8 +27,8 @@ public class BuildService {
     public List<GPU> getCompatibleGPUs(BuildItemId buildItemId) {
         BuildItem buildItem = new BuildItem();
         CPU cpu = cpuRepository.findById(buildItemId.getCpuId()).orElse(null);
-        buildItem.setCpu(cpu);
         Mainboard mainboard = mainboardRepository.findById(buildItemId.getMainboardId()).orElse(null);
+        buildItem.setCpu(cpu);
         buildItem.setMainboard(mainboard);
         // This is a placeholder implementation. In a real scenario, you would check compatibility based on
         List<GPU> allGpus = gpuRepository.findAll();

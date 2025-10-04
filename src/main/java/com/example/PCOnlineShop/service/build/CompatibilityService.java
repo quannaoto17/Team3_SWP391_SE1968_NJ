@@ -1,6 +1,5 @@
 package com.example.PCOnlineShop.service.build;
 
-import com.example.PCOnlineShop.dto.build.BuildItemId;
 import com.example.PCOnlineShop.model.build.*;
 import com.example.PCOnlineShop.repository.build.*;
 import lombok.AllArgsConstructor;
@@ -9,8 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class CompatibilityService {
-    private final CpuRepository cpuRepository;
-    private final MainboardRepository mainboardRepository;
+
 
 
     public boolean checkMotherboardCpuCompatibility(Mainboard mainboard, CPU cpu) {
@@ -25,7 +23,9 @@ public class CompatibilityService {
         CPU cpu = buildItem.getCpu();
         Mainboard mainboard = buildItem.getMainboard();
 
-        if (Math.min(parseVersion(cpu.getPcieVersion()),parseVersion(cpu.getPcieVersion()))
+        if (parseVersion(cpu.getPcieVersion())
+            < parseVersion(gpu.getPcieVersion())) return false;
+        if (parseVersion(mainboard.getPcieVersion())
             < parseVersion(gpu.getPcieVersion())) return false;
         return true;
     }
