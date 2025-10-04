@@ -1,0 +1,19 @@
+package com.example.PCOnlineShop.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Account {
+    private Integer id;
+    private String phoneNumber;
+    private String password;
+
+    // all role has prefix "ROLE_", e.g., "ROLE_USER", "ROLE_ADMIN"
+    private String role;
+}
