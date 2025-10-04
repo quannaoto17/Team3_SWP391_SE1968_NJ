@@ -46,7 +46,7 @@ CREATE TABLE cpu (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     socket VARCHAR(50),
     tdp INT,
-    max_memory_size INT,
+    max_memory_speed INT,
     memory_channels INT,
     pcie_version VARCHAR(20),
     has_igpu BIT,
@@ -62,6 +62,7 @@ CREATE TABLE gpu (
     memory_type VARCHAR(50),
     tdp INT,
     gpu_interface VARCHAR(50),
+    pcie_version VARCHAR(20),
     length INT,
     FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );
@@ -74,9 +75,9 @@ CREATE TABLE mainboard (
     socket VARCHAR(50),
     chipset VARCHAR(50),
     form_factor VARCHAR(50),
-    ram_type VARCHAR(50),
-    ram_slots INT,
-    max_ram_size INT,
+    memory_slots INT,
+    max_memory_speed INT,
+	memory_type VARCHAR(50),
     pcie_version VARCHAR(20),
     m2_slots INT,
     sata_ports INT,
@@ -91,7 +92,7 @@ CREATE TABLE memory (
     type VARCHAR(50),
     capacity INT,
     speed INT,
-    voltage DECIMAL(4,2),
+    tdp INT,
     FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );
 
