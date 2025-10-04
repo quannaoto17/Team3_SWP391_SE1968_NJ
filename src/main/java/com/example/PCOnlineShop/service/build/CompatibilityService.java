@@ -25,7 +25,9 @@ public class CompatibilityService {
         CPU cpu = buildItem.getCpu();
         Mainboard mainboard = buildItem.getMainboard();
 
-        if (Math.min(parseVersion(cpu.getPcieVersion()),parseVersion(cpu.getPcieVersion()))
+        if (parseVersion(cpu.getPcieVersion())
+            < parseVersion(gpu.getPcieVersion())) return false;
+        if (parseVersion(mainboard.getPcieVersion())
             < parseVersion(gpu.getPcieVersion())) return false;
         return true;
     }

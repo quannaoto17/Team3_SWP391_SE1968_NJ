@@ -20,9 +20,8 @@ public class Memory {
     private String type; // e.g., DDR4, DDR5
     @Column(name = "speed")
     private int speed; // in MHz
-    @Column(name = "voltage")
-    private double voltage; // in Volts
-
+    @Column(name = "tdp")
+    private int tdp; // in Watts
     @OneToOne
     @MapsId
     @JoinColumn(name = "product_id")
