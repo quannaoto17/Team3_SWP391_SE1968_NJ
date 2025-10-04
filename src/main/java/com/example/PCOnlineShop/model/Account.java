@@ -1,5 +1,6 @@
 package com.example.PCOnlineShop.model;
 
+import com.example.PCOnlineShop.constant.RoleName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +16,6 @@ public class Account {
     private String password;
 
     // all role has prefix "ROLE_", e.g., "ROLE_USER", "ROLE_ADMIN"
-    private String role;
+    private RoleName role;
+    private boolean active;
 }
