@@ -9,7 +9,7 @@ public class CompatibilityService {
 
 
     public boolean checkMotherboardCpuCompatibility(int motherboardId, int cpuId) {
-        if ()
+
         return true; // Placeholder
     }
 }
