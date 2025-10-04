@@ -1,6 +1,5 @@
 package com.example.PCOnlineShop.service.build;
 
-import com.example.PCOnlineShop.dto.build.BuildItemId;
 import com.example.PCOnlineShop.model.build.*;
 import com.example.PCOnlineShop.repository.build.*;
 import lombok.AllArgsConstructor;
@@ -9,8 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class CompatibilityService {
-    private final CpuRepository cpuRepository;
-    private final MainboardRepository mainboardRepository;
+
 
 
     public boolean checkMotherboardCpuCompatibility(Mainboard mainboard, CPU cpu) {
