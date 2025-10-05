@@ -13,20 +13,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/staff/products")
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
 
-    @Autowired
-    private BrandRepository brandRepository;
+    private final CategoryRepository categoryRepository;
+
+
+    private final  BrandRepository brandRepository;
+
+    public ProductController(ProductService productService, CategoryRepository categoryRepository, BrandRepository brandRepository) {
+        this.productService = productService;
+        this.categoryRepository = categoryRepository;
+        this.brandRepository = brandRepository;
+    }
 
     // ===== LIST =====
     @GetMapping("/list")
     public String listProducts(Model model) {
         model.addAttribute("products", productService.getProducts());
-        return "staff/product-list";  // thymeleaf file: templates/product/product-list.html
+        return "product/product-list";  // thymeleaf file: templates/product/product-list.html
     }
 
     // ===== DETAIL =====
@@ -34,7 +39,7 @@ public class ProductController {
     public String detailProduct(@PathVariable("id") int id, Model model) {
         Product product = productService.getProductById(id);
         model.addAttribute("product", product);
-        return "staff/product-detail"; // thymeleaf file: templates/product/product-detail.html
+        return "product/product-detail"; // thymeleaf file: templates/product/product-detail.html
     }
 
     // ===== ADD FORM =====
@@ -43,7 +48,7 @@ public class ProductController {
         model.addAttribute("product", new Product());
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("brands", brandRepository.findAll());
-        return "staff/product-form";   // form dùng cho cả add và edit
+        return "product/product-form";   // form dùng cho cả add và edit
     }
 
     // ===== SAVE PRODUCT =====
@@ -60,7 +65,7 @@ public class ProductController {
         model.addAttribute("product", product);
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("brands", brandRepository.findAll());
-        return "staff/product-form";   // dùng chung form
+        return "product/product-form";   // dùng chung form
     }
 
     // ===== UPDATE PRODUCT =====
@@ -69,5 +74,6 @@ public class ProductController {
         productService.updateProduct(product);
         return "redirect:/staff/products/list";
     }
+
 
 }

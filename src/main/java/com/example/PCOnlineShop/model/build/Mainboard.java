@@ -20,12 +20,12 @@ public class Mainboard {
     private String chipset; // e.g., B550, Z490
     @Column(name = "socket")
     private String socket; // e.g., AM4, LGA1200
-    @Column(name = "ram_type")
-    private String ramType; // e.g., DDR4, DDR5
-    @Column(name = "ram_slots")
-    private int ramSlots; // number of RAM slots
-    @Column(name = "max_ram_size")
-    private int maxRamSize; // in GB
+    @Column(name = "memory_type")
+    private String memoryType; // e.g., DDR4, DDR5
+    @Column(name = "memory_slots")
+    private int memorySlots; // number of RAM slots
+    @Column(name = "max_memory_speed")
+    private int maxMemorySpeed; // in MHz
     @Column(name = "pcie_version")
     private String pcieVersion; // e.g., PCIe 4.0, PCIe 3.0
     @Column(name = "m2_slots")

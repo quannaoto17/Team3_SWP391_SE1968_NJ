@@ -1,6 +1,6 @@
 package com.example.PCOnlineShop.controller.build;
 
-import com.example.PCOnlineShop.dto.build.BuildItem;
+import com.example.PCOnlineShop.dto.build.BuildItemId;
 import com.example.PCOnlineShop.model.build.Mainboard;
 import com.example.PCOnlineShop.service.build.MainboardService;
 import lombok.AllArgsConstructor;
@@ -16,8 +16,8 @@ public class MainboardController {
     private final MainboardService mainboardService;
 
     @ModelAttribute("buildItems")
-    public BuildItem buildItem() {
-        return new BuildItem();
+    public BuildItemId buildItem() {
+        return new BuildItemId();
     }
 
     // Hiển thị danh sách motherboard
@@ -38,9 +38,9 @@ public class MainboardController {
     //Chọn motherboard
     @PostMapping("/selectMainboard")
     public String selectMainboard(@RequestParam int mainboardId,
-                                  @ModelAttribute("buildItems") BuildItem buildItem) {
-        buildItem.setMainboardId(mainboardId);
-        return "redirect:/build/case";
+                                  @ModelAttribute("buildItems") BuildItemId buildItemId) {
+        buildItemId.setMainboardId(mainboardId);
+        return "redirect:/build/cpu";
     }
     // Thêm, sửa, xóa motherboard sẽ do admin thực hiện qua trang admin
 }

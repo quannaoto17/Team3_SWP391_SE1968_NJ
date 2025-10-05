@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      border: 1px solid #333;
+      padding: 30px 40px;
+      width: 500px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      background: #ccc;
+      padding: 5px;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      margin-bottom: 15px;
+    }
+
+    .options a {
+      color: blue;
+      text-decoration: none;
+    }
+
+    .options a:hover {
+      text-decoration: underline;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #555;
+      background: #f2f2f2;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background: #ddd;
+    }
+
+    .google-signin {
+      margin: 20px 0;
+    }
+
+    .google-signin img {
+      width: 80px;
+      height: 80px;
+      background: #eee;
+      border: 1px solid #ccc;
+      display: inline-block;
+    }
+
+    .register-link {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .register-link a {
+      color: blue;
+      text-decoration: none;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <form>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password">
+      </div>
+
+      <div class="options">
+        <label><input type="checkbox" id="remember"> Remember Password</label>
+        <a href="#">Forget password</a>
+      </div>
+
+      <button type="submit" class="btn">Login</button>
+    </form>
+
+    <p>Or sign up with Google account</p>
+    <div class="google-signin">
+      <img src="https://via.placeholder.com/80" alt="Google">
+    </div>
+
+    <p class="register-link">
+      You do not have an account yet? <a href="register.html">Register</a>
+    </p>
+  </div>
+</body>
+</html>

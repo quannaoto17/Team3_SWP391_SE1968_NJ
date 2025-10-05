@@ -1,15 +1,12 @@
 package com.example.PCOnlineShop.controller.build;
 
-import com.example.PCOnlineShop.dto.build.BuildItem;
+import com.example.PCOnlineShop.dto.build.BuildItemId;
 import com.example.PCOnlineShop.service.build.BuildService;
 import com.example.PCOnlineShop.service.build.CpuService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @Controller
@@ -21,10 +18,19 @@ public class CpuController {
 
     // Hiển thị danh sách CPU
     @GetMapping("/cpu")
-    public String showCpuPage(@ModelAttribute("buildItems") BuildItem buildItem, Model model) {
-        model.addAttribute("cpus", cpuService.getAllCpus());
+    public String showCpuPage(@ModelAttribute("buildItems") BuildItemId buildItemId, Model model) {
+        model.addAttribute("cpus", buildService.getCompatibleCpus(buildItemId.getMainboardId()));
         return "/build/build-cpu";
     }
-    // Hiển thị chi tiết CPUbuildService.getCompatibleCpus(buildItem.getMainboardId())
+
+    // Chọn CPU
+    // Chọn CPU sẽ lưu vào buildItem và chuyển sang bước chọn linh kiện tiếp theo
+    @PostMapping("/selectCpu")
+    public String selectCpu(@RequestParam int cpuId,
+                            @ModelAttribute("buildItems") BuildItemId buildItemId) {
+        buildItemId.setCpuId(cpuId);
+        return "redirect:/build/gpu";
+    }
+    // Hiển thị chi tiết CPU
     // Thêm, sửa, xóa CPU sẽ do admin thực hiện qua trang admin
 }
