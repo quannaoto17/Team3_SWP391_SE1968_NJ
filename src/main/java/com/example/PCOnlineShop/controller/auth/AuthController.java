@@ -1,6 +1,6 @@
 package com.example.PCOnlineShop.controller.auth;
 
-import com.example.PCOnlineShop.model.Account;
+import com.example.PCOnlineShop.model.staff.Account;
 import com.example.PCOnlineShop.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
