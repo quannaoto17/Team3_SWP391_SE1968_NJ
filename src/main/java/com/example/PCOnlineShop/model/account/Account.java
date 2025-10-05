@@ -24,7 +24,7 @@ public class Account {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 50)
-    private RoleName role = RoleName.Customer;
+    private RoleName role;
 
     @Column(name = "email", length = 100)
     private String email;

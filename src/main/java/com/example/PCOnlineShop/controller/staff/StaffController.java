@@ -1,5 +1,6 @@
 package com.example.PCOnlineShop.controller.staff;
 
+import com.example.PCOnlineShop.constant.RoleName;
 import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.service.staff.StaffService;
 import org.springframework.data.domain.Page;
@@ -31,16 +32,21 @@ public class StaffController {
     // Form thêm nhân viên
     @GetMapping("/add")
     public String addStaffForm(Model model) {
-        model.addAttribute("account", new Account());
+        Account account = new Account();           // tạo object
+        account.setRole(RoleName.Staff);           // ✅ gán mặc định Staff
+        model.addAttribute("account", account);    // add vào model
         return "staff/add-staff";
     }
+
 
     // Lưu nhân viên
     @PostMapping("/add")
     public String saveStaff(@ModelAttribute("account") Account account) {
+        account.setRole(RoleName.Staff); // Ép role thành Staff (thêm dòng này)
         staffService.saveStaff(account);
         return "redirect:/staff/list";
     }
+
 
     // Form edit
     @GetMapping("/edit/{id}")
