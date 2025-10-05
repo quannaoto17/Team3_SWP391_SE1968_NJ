@@ -2,6 +2,7 @@ package com.example.PCOnlineShop.controller.staff;
 
 import com.example.PCOnlineShop.model.staff.Account;
 import com.example.PCOnlineShop.service.staff.StaffService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +19,14 @@ public class StaffController {
 
     // Danh sách nhân viên
     @GetMapping("/list")
-    public String listStaff(Model model) {
-        model.addAttribute("staffList", staffService.getAllStaff());
+    public String listStaff(@RequestParam(defaultValue = "0") int page,
+                            @RequestParam(defaultValue = "10") int size,
+                            Model model) {
+        Page<Account> staffPage = staffService.getStaffPage(page, size);
+        model.addAttribute("staffPage", staffPage);
         return "staff/staff-list";
     }
+
 
     // Form thêm nhân viên
     @GetMapping("/add")
@@ -58,4 +63,3 @@ public class StaffController {
         return "redirect:/staff/list";
     }
 }
-
