@@ -2,6 +2,9 @@ package com.example.PCOnlineShop.service.staff;
 
 import com.example.PCOnlineShop.model.staff.Account;
 import com.example.PCOnlineShop.repository.staff.AccountRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +16,11 @@ public class StaffService {
     public StaffService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
-
+    // Lấy danh sách staff có phân trang
+    public Page<Account> getStaffPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return accountRepository.findAllByRole("Staff", pageable);
+    }
     public List<Account> getAllStaff() {
         return accountRepository.findAll();
     }
@@ -33,6 +40,5 @@ public class StaffService {
             accountRepository.save(account);
         }
     }
+
 }
-
-

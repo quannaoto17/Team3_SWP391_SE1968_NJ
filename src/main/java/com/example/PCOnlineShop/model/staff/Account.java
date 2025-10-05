@@ -15,7 +15,8 @@ public class Account {
     @Column(name = "account_id")
     private int accountId;
 
-    private String phonenumber;
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
     @Column(name = "password", nullable = false, length = 255)
     private String password;
@@ -26,10 +27,10 @@ public class Account {
     @Column(name = "email", length = 100)
     private String email;
 
-    @Column (name = "first_name")
+    @Column(name = "first_name")
     private String firstname;
 
-    @Column (name = "last_name")
+    @Column(name = "last_name")
     private String lastname;
 
     @Column(name = "gender")
@@ -37,6 +38,7 @@ public class Account {
 
     @Column(name = "address", length = 255)
     private String address;
+
 
     @Column(name = "enabled")
     private Boolean enabled = true;
