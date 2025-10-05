@@ -1,6 +1,6 @@
 package com.example.PCOnlineShop.config.auth;
 
-import com.example.PCOnlineShop.model.staff.Account;
+import com.example.PCOnlineShop.model.account.Account;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

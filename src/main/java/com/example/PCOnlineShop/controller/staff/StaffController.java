@@ -1,6 +1,6 @@
 package com.example.PCOnlineShop.controller.staff;
 
-import com.example.PCOnlineShop.model.staff.Account;
+import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.service.staff.StaffService;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;

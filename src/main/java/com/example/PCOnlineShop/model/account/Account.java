@@ -1,4 +1,4 @@
-package com.example.PCOnlineShop.model.staff;
+package com.example.PCOnlineShop.model.account;
 
 import jakarta.persistence.*;
 import lombok.*;

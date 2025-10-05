@@ -1,7 +1,7 @@
 package com.example.PCOnlineShop.service.staff;
 
-import com.example.PCOnlineShop.model.staff.Account;
-import com.example.PCOnlineShop.repository.staff.AccountRepository;
+import com.example.PCOnlineShop.model.account.Account;
+import com.example.PCOnlineShop.repository.account.AccountRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
