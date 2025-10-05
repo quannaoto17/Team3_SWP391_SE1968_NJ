@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Product</title>
+    <style>
+        body {margin: 0; font-family: Arial, sans-serif; background: #f6f7fb;}
+        .container {width: 70%; margin: 40px auto; background: #fff; padding: 20px 30px;
+            border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);}
+        h2 {text-align: center; margin-bottom: 20px;}
+        label {display: block; margin-top: 12px; font-weight: bold;}
+        select, input, textarea {width: 100%; padding: 8px; margin-top: 6px;
+            border: 1px solid #ccc; border-radius: 4px;}
+        button {margin-top: 18px; padding: 10px 20px; background-color: #007bff;
+            border: none; color: #fff; border-radius: 4px; cursor: pointer;}
+        button:hover {background-color: #0056b3;}
+        .back-link {display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none;}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Add New Product</h2>
+
+    <form th:action="@{/staff/products/save}" th:object="${product}" method="post">
+        <label for="category">Category:</label>
+        <select id="category" name="category.categoryId" required>
+            <option value="">-- Choose Category --</option>
+            <option th:each="cat : ${categories}"
+                    th:value="${cat.categoryId}"
+                    th:text="${cat.categoryName}"></option>
+        </select>
+
+        <label for="brand">Brand:</label>
+        <select id="brand" name="brand.brandId" required>
+            <option value="">-- Choose Brand --</option>
+            <option th:each="brand : ${brands}"
+                    th:value="${brand.brandId}"
+                    th:text="${brand.name}"></option>
+        </select>
+
+        <label>Product Name:</label>
+        <input type="text" th:field="*{productName}" required>
+
+        <label>Price ($):</label>
+        <input type="number" th:field="*{price}" min="0" step="0.01" required>
+
+        <label>Description:</label>
+        <textarea th:field="*{description}" rows="3"></textarea>
+
+        <label>Specification:</label>
+        <textarea th:field="*{specification}" rows="3"></textarea>
+
+        <label>Status:</label>
+        <select th:field="*{status}">
+            <option th:value="true" selected>Available</option>
+            <option th:value="false">Unavailable</option>
+        </select>
+
+        <button type="submit">Save Product</button>
+    </form>
+
+    <a th:href="@{/staff/products/list}" class="back-link">← Back to Product List</a>
+</div>
+</body>
+</html>
