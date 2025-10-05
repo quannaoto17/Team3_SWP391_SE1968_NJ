@@ -1,5 +1,6 @@
 package com.example.PCOnlineShop.model.account;
 
+import com.example.PCOnlineShop.constant.RoleName;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,8 +22,9 @@ public class Account {
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 50)
-    private String role = "Staff";
+    private RoleName role = RoleName.Customer;
 
     @Column(name = "email", length = 100)
     private String email;

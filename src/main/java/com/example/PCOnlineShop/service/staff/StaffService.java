@@ -1,5 +1,6 @@
 package com.example.PCOnlineShop.service.staff;
 
+import com.example.PCOnlineShop.constant.RoleName;
 import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.repository.account.AccountRepository;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,7 @@ public class StaffService {
     // Lấy danh sách staff có phân trang
     public Page<Account> getStaffPage(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return accountRepository.findAllByRole("Staff", pageable);
+        return accountRepository.findAllByRole(RoleName.Staff, pageable);
     }
     public List<Account> getAllStaff() {
         return accountRepository.findAll();

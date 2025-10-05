@@ -32,4 +32,25 @@ public class AccountUserDetails implements UserDetails {
     public String getUsername() {
         return account.getPhoneNumber();
     }
+
+    // Các method còn lại của UserDetails
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // hoặc tùy bạn muốn kiểm soát ngày hết hạn
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // hoặc thêm cột "locked" trong DB nếu cần
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return account.getEnabled(); // lấy từ DB
+    }
 }
