@@ -50,7 +50,13 @@
                     <tr><td>Phone:</td><td><input type="text" th:field="*{phoneNumber}"/></td></tr>
                     <tr><td>Address:</td><td><input type="text" th:field="*{address}"/></td></tr>
                     <tr><td>Password:</td><td><input type="text" th:field="*{password}"/></td></tr>
-                    <tr><td>Role:</td><td><input type="text" th:field="*{role}"/></td></tr>
+                    <tr>
+                        <td>Role:</td>
+                        <td>
+                            <input type="text" th:field="*{role}" readonly/>
+                        </td>
+                    </tr>
+
                     <tr>
                         <td>Status:</td>
                         <td>

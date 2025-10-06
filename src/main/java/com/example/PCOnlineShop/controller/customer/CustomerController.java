@@ -21,8 +21,10 @@ public class CustomerController {
     @GetMapping("/list")
     public String listCustomers(@RequestParam(defaultValue = "0") int page,
                                 @RequestParam(defaultValue = "10") int size,
+                                @RequestParam(defaultValue = "") String searchQuery,
+                                @RequestParam(defaultValue = "asc") String sortOrder,
                                 Model model) {
-        Page<Account> customerPage = customerService.getCustomerPage(page, size);
+        Page<Account> customerPage = customerService.getCustomerPage(page, size, searchQuery, sortOrder);
         model.addAttribute("customerPage", customerPage);
         return "customer/customer-list";
     }
@@ -38,7 +40,7 @@ public class CustomerController {
     @PostMapping("/add")
     public String saveCustomer(@ModelAttribute("account") Account account) {
         customerService.saveCustomer(account);
-        return "redirect:/customer/list";
+        return "redirect:/customer/list?sortOrder=" + (account.getAccountId() > 0 ? "asc" : "asc"); // Default to asc after save
     }
 
     // Form edit
@@ -52,13 +54,13 @@ public class CustomerController {
     @PostMapping("/edit")
     public String updateCustomer(@ModelAttribute("account") Account account) {
         customerService.saveCustomer(account);
-        return "redirect:/customer/list";
+        return "redirect:/customer/list?sortOrder=" + (account.getAccountId() > 0 ? "asc" : "asc"); // Default to asc after update
     }
 
     // Chuyển khách hàng sang Inactive thay vì xóa
     @GetMapping("/delete/{id}")
     public String deactivateCustomer(@PathVariable int id) {
         customerService.deactivateCustomer(id);
-        return "redirect:/customer/list";
+        return "redirect:/customer/list?sortOrder=asc"; // Default to asc after delete
     }
 }
