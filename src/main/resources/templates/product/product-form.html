@@ -2,64 +2,317 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Add Product</title>
+    <title>Create Product</title>
     <style>
-        body {margin: 0; font-family: Arial, sans-serif; background: #f6f7fb;}
-        .container {width: 70%; margin: 40px auto; background: #fff; padding: 20px 30px;
-            border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);}
-        h2 {text-align: center; margin-bottom: 20px;}
-        label {display: block; margin-top: 12px; font-weight: bold;}
-        select, input, textarea {width: 100%; padding: 8px; margin-top: 6px;
-            border: 1px solid #ccc; border-radius: 4px;}
-        button {margin-top: 18px; padding: 10px 20px; background-color: #007bff;
-            border: none; color: #fff; border-radius: 4px; cursor: pointer;}
-        button:hover {background-color: #0056b3;}
-        .back-link {display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none;}
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f6f7fb;
+        }
+
+        /* ========== Layout chung ========== */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: #555;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .sidebar img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .sidebar h3 {
+            margin: 6px 0 16px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            padding: 8px;
+            margin: 6px 0;
+            border: none;
+            border-radius: 4px;
+            background: #eee;
+            cursor: pointer;
+        }
+
+        .sidebar button:hover {
+            background: #ddd;
+        }
+
+        /* Main content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-bar input {
+            width: 250px;
+            padding: 5px;
+        }
+
+        .search-bar button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            padding: 5px 10px;
+            border: 1px solid #aaa;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        /* ========== Form khu vực chính ========== */
+        .content {
+            flex: 1;
+            padding: 30px 40px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .image-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .image-box {
+            width: 150px;
+            height: 150px;
+            border: 2px dashed #bbb;
+            border-radius: 8px;
+            background: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #999;
+        }
+
+        .image-box img {
+            width: 80px;
+            opacity: 0.7;
+        }
+
+        .choose-btn {
+            padding: 8px 12px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            background: #f1f1f1;
+            cursor: pointer;
+        }
+
+        .choose-btn:hover {
+            background: #e2e2e2;
+        }
+
+        /* Category */
+        .category-select {
+            width: 250px;
+        }
+
+        /* Thông báo khi chưa chọn Category */
+        .category-message {
+            border: 1px solid #ccc;
+            padding: 12px;
+            width: 300px;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* Form thêm sản phẩm */
+        .product-form {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+            width: 60%;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        input, select, textarea {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        /* Nút Create */
+        .create-btn {
+            align-self: flex-end;
+            padding: 10px 20px;
+            font-weight: bold;
+            border: 1px solid #888;
+            background: #f1f1f1;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .create-btn:hover {
+            background: #ddd;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h2>Add New Product</h2>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <img src="https://via.placeholder.com/70" alt="avatar">
+        <h3>Role</h3>
+        <button>Dashboard</button>
+        <button>Category Manage</button>
+        <button>Product Manage</button>
+        <button>...</button>
+    </aside>
 
-    <form th:action="@{/staff/products/save}" th:object="${product}" method="post">
-        <label for="category">Category:</label>
-        <select id="category" name="category.categoryId" required>
-            <option value="">-- Choose Category --</option>
-            <option th:each="cat : ${categories}"
-                    th:value="${cat.categoryId}"
-                    th:text="${cat.categoryName}"></option>
-        </select>
+    <!-- Main -->
+    <div class="main">
+        <!-- Header -->
+        <div class="header">
+            <div class="search-bar">
+                <input type="text" placeholder="Search bar">
+                <button>Search</button>
+            </div>
+            <button class="logout-btn">Logout</button>
+        </div>
 
-        <label for="brand">Brand:</label>
-        <select id="brand" name="brand.brandId" required>
-            <option value="">-- Choose Brand --</option>
-            <option th:each="brand : ${brands}"
-                    th:value="${brand.brandId}"
-                    th:text="${brand.name}"></option>
-        </select>
+        <!-- Content -->
+        <div class="content">
+            <h2>Create Product</h2>
 
-        <label>Product Name:</label>
-        <input type="text" th:field="*{productName}" required>
+            <form th:action="@{/staff/products/save}" th:object="${product}" method="post" enctype="multipart/form-data">
+                <!-- Product Image -->
+                <label>Product Image</label>
+                <div class="image-section">
+                    <div class="image-box" id="imagePreview">
+                        <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png" alt="preview">
+                        <p>No image</p>
+                    </div>
+                    <input type="file" name="imageFile" accept="image/*" id="imageInput" style="display:none;">
+                    <button type="button" class="choose-btn" onclick="document.getElementById('imageInput').click()">Choose Image</button>
+                </div>
 
-        <label>Price ($):</label>
-        <input type="number" th:field="*{price}" min="0" step="0.01" required>
+                <!-- Category -->
+                <label>Category</label>
+                <select class="category-select" id="category" name="category.categoryId" required>
+                    <option value="">Select</option>
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat.categoryId}"
+                            th:text="${cat.categoryName}"></option>
+                </select>
 
-        <label>Description:</label>
-        <textarea th:field="*{description}" rows="3"></textarea>
+                <!-- Category message -->
+                <div class="category-message" id="categoryMessage">
+                    <input type="checkbox" disabled checked> Category not chosen
+                    <p>Choose Category to display creation form</p>
+                </div>
 
-        <label>Specification:</label>
-        <textarea th:field="*{specification}" rows="3"></textarea>
+                <!-- Form thêm sản phẩm -->
+                <div class="product-form" id="productForm">
+                    <label for="brand">Brand:</label>
+                    <select id="brand" name="brand.brandId" required>
+                        <option value="">-- Choose Brand --</option>
+                        <option th:each="brand : ${brands}"
+                                th:value="${brand.brandId}"
+                                th:text="${brand.name}"></option>
+                    </select>
 
-        <label>Status:</label>
-        <select th:field="*{status}">
-            <option th:value="true" selected>Available</option>
-            <option th:value="false">Unavailable</option>
-        </select>
+                    <label>Product Name:</label>
+                    <input type="text" th:field="*{productName}" placeholder="Enter product name">
 
-        <button type="submit">Save Product</button>
-    </form>
+                    <label>Price ($):</label>
+                    <input type="number" th:field="*{price}" min="0" step="0.01" placeholder="Enter price">
 
-    <a th:href="@{/staff/products/list}" class="back-link">← Back to Product List</a>
+                    <label>Description:</label>
+                    <textarea th:field="*{description}" rows="3" placeholder="Product description..."></textarea>
+
+                    <label>Specification:</label>
+                    <textarea th:field="*{specification}" rows="3" placeholder="Specifications..."></textarea>
+
+                    <label>Status:</label>
+                    <select th:field="*{status}">
+                        <option th:value="true" selected>Available</option>
+                        <option th:value="false">Unavailable</option>
+                    </select>
+
+                    <button type="submit" class="create-btn">CREATE</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
+<script>
+    // Preview ảnh
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    imageInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Hiện form khi chọn Category
+    const categorySelect = document.getElementById('category');
+    const categoryMessage = document.getElementById('categoryMessage');
+    const productForm = document.getElementById('productForm');
+
+    categorySelect.addEventListener('change', () => {
+        if (categorySelect.value) {
+            categoryMessage.style.display = 'none';
+            productForm.style.display = 'flex';
+        } else {
+            categoryMessage.style.display = 'block';
+            productForm.style.display = 'none';
+        }
+    });
+</script>
 </body>
 </html>
