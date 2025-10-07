@@ -30,8 +30,9 @@ public class ProductService {
     }
 
     public List<Product> getProducts() {
-        return productRepository.findAll();
+        return productRepository.findAllWithImages();
     }
+
 
     public Product getProductById(int id) {
         return productRepository.findById(id).orElse(null);
@@ -44,6 +45,7 @@ public class ProductService {
     public Product updateProduct(Product product) {
         return productRepository.save(product);
     }
+
 
     // 🧩 Phân trang + Sắp xếp tổng quát
     public Page<Product> getProducts(int page, int size, String sortField, String sortDir) {

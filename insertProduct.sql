@@ -161,3 +161,38 @@ VALUES (3, 1, 'ASUS PRIME B760M-A', 160.00, 1, 'Intel 13th gen support', 'Chipse
 INSERT INTO Mainboard (ProductID, Socket, Chipset, FormFactor, RAMType, RAMSlots, MaxRAMSize, PCIEVersion, M2Slots, SataPorts)
 VALUES (LAST_INSERT_ID(), 'LGA1700', 'B760', 'Micro-ATX', 'DDR5', 4, 128, 'PCIe 4.0', 2, 6);
 
+--insert ảnh sản phẩm--
+
+INSERT INTO image (product_id, image_url) VALUES
+                                              (1, '/image/pid-1.jpg'),
+                                              (2, '/image/pid-2.jpg'),
+                                              (3, '/image/pid-3.jpg'),
+                                              (4, '/image/pid-4.jpg'),
+                                              (5, '/image/pid-5.jpg'),
+                                              (6, '/image/pid-6.jpg'),
+                                              (7, '/image/pid-7.jpg'),
+                                              (8, '/image/pid-8.jpg'),
+                                              (9, '/image/pid-9.jpg'),
+                                              (10, '/image/pid-10.jpg'),
+                                              (11, '/image/pid-11.jpg'),
+                                              (12, '/image/pid-12.jpg'),
+                                              (13, '/image/pid-13.jpg'),
+                                              (14, '/image/pid-14.jpg'),
+                                              (15, '/image/pid-15.jpg'),
+                                              (16, '/image/pid-16.jpg'),
+                                              (17, '/image/pid-17.jpg'),
+                                              (18, '/image/pid-18.jpg'),
+                                              (19, '/image/pid-19.jpg'),
+                                              (20, '/image/pid-20.jpg'),
+                                              (21, '/image/pid-21.jpg'),
+                                              (22, '/image/pid-22.jpg'),
+                                              (23, '/image/pid-23.jpg'),
+                                              (24, '/image/pid-24.jpg'),
+                                              (25, '/image/pid-25.jpg'),
+                                              (26, '/image/pid-26.jpg'),
+                                              (27, '/image/pid-27.jpg'),
+                                              (28, '/image/pid-28.jpg'),
+                                              (29, '/image/pid-29.jpg'),
+                                              (30, '/image/pid-30.jpg');
+
+Select * from image
