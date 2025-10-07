@@ -1,4 +1,23 @@
 package com.example.PCOnlineShop.controller.build;
 
+import com.example.PCOnlineShop.dto.build.BuildItemId;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
+
+@Controller
+@SessionAttributes({"buildItems"})
+@RequestMapping("/build")
 public class BuildController {
+    @ModelAttribute("buildItems")
+    public BuildItemId buildItem() {
+        return new BuildItemId();
+    }
+
+    @GetMapping("/start" )
+    public String startBuild() {
+        return "/build/build-pc";
+    }
 }
