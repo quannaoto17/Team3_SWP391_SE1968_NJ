@@ -15,10 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class MainboardController {
     private final MainboardService mainboardService;
 
-    @ModelAttribute("buildItems")
-    public BuildItemId buildItem() {
-        return new BuildItemId();
-    }
 
     // Hiển thị danh sách motherboard
     @GetMapping("/mainboard")
