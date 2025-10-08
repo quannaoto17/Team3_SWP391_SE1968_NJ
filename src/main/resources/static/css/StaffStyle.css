@@ -1,0 +1,237 @@
+/* ==========================================================
+   STAFF MANAGEMENT - CLEAN MODERN STYLE
+   ========================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background: #f5f6fa;
+    color: #333;
+    min-height: 100vh;
+}
+
+/* ===== HEADER ===== */
+.header {
+    background: #4b7bec;
+    color: #fff;
+    text-align: center;
+    padding: 22px 0;
+    font-size: 26px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== MAIN CONTENT ===== */
+.content {
+    width: 90%;
+    max-width: 1100px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.content h2 {
+    text-align: center;
+    font-size: 20px;
+    color: #4b7bec;
+    margin-bottom: 25px;
+}
+
+/* ===== SEARCH + FILTER + ADD ===== */
+.search-sort-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 50px;
+    margin-bottom: 25px;
+}
+
+/* Search area */
+.search-left .search-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-left input {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    width: 240px;
+}
+
+.search-left .btn-filter {
+    padding: 8px 14px;
+    background: #4b7bec;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.search-left .btn-filter:hover {
+    background: #3867d6;
+}
+
+/* Right section: dropdown + add button */
+.search-right {
+    display: flex;
+    align-items: center;
+    gap: 25px; /* 🌟 khoảng cách rõ giữa dropdown và Add Staff */
+    margin-left: 60px; /* ✅ đẩy xa hẳn khỏi filter */
+}
+
+.search-right select {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fff;
+    font-size: 14px;
+}
+
+/* Add Staff button */
+.add-staff a {
+    background: #20bf6b;
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: 0.25s;
+}
+
+.add-staff a:hover {
+    background: #26de81;
+    transform: translateY(-2px);
+}
+
+/* ===== TABLE ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+table th {
+    background: #f1f2f6;
+    padding: 10px;
+    text-align: center;
+    font-weight: 600;
+    color: #444;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+table tr:hover {
+    background: #f9f9f9;
+}
+
+/* ===== STATUS ===== */
+.status-active {
+    color: #20bf6b;
+    font-weight: 600;
+}
+
+.status-inactive {
+    color: #eb3b5a;
+    font-weight: 600;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.btn-action {
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 13px;
+    margin: 0 2px;
+    color: #fff;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+/* View */
+.btn-view {
+    background: #3867d6;
+}
+.btn-view:hover {
+    background: #4b7bec;
+}
+
+/* Edit */
+.btn-edit {
+    background: #f7b731;
+}
+.btn-edit:hover {
+    background: #fed330;
+}
+
+/* Deactivate / Activate */
+.btn-activate, .btn-deactivate {
+    background: #a5b1c2;
+}
+.btn-activate:hover, .btn-deactivate:hover {
+    background: #808e9b;
+}
+
+/* ===== PAGINATION ===== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+    gap: 10px;
+}
+
+.pagination a {
+    color: #4b7bec;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid #dfe4ea;
+    transition: 0.2s;
+}
+
+.pagination a:hover {
+    background: #f1f2f6;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .search-sort-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .search-right {
+        justify-content: center;
+        margin-left: 0;
+    }
+
+    table th, table td {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .add-staff a {
+        width: 100%;
+        text-align: center;
+    }
+}
