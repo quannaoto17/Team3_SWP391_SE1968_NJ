@@ -3,74 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Add Staff</title>
-    <style>
-        body { margin: 0; font-family: Arial, sans-serif; background: #f6f7fb; }
-        .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
-        .sidebar { background: #e6e7eb; padding: 16px; }
-        .sidebar .avatar { width: 72px; height: 72px; border-radius: 50%; background: #cfd1d6; margin: 0 auto 16px; }
-        .sidebar h3 { text-align: center; margin: 8px 0 16px; }
-        .nav button { display: block; width: 100%; padding: 10px; margin: 8px 0; border: 0; border-radius: 6px; background: #fff; cursor: pointer; }
-        .header { background: #fff; padding: 10px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #ddd; }
-        .content { padding: 20px; }
-        form { background: #fff; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; }
-        table { width: 100%; }
-        td { padding: 8px; }
-        input[type="text"], input[type="email"], input[type="password"] { width: 100%; padding: 6px; }
-        button { margin-top: 10px; padding: 8px 16px; background: #4CAF50; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #45a049; }
-    </style>
+    <link rel="stylesheet" href="/css/StaffStyle.css">
 </head>
 <body>
-<div class="layout">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="avatar"></div>
-        <h3>Admin</h3>
-        <div class="nav">
-            <button>Dashboard</button>
-            <button>Staff List</button>
-            <button>Add Staff</button>
-        </div>
+<div>
+    <div class="header">
+        <h2>Add Staff</h2>
     </div>
 
-    <!-- Main -->
-    <div>
-        <div class="header">
-            <h2>Add Staff</h2>
-            <a href="/logout">Logout</a>
-        </div>
-
-        <div class="content">
-            <form th:action="@{/staff/add}" th:object="${account}" method="post">
-                <table>
-                    <tr><td>First Name:</td><td><input type="text" th:field="*{firstname}"/></td></tr>
-                    <tr><td>Last Name:</td><td><input type="text" th:field="*{lastname}"/></td></tr>
-                    <tr><td>Email:</td><td><input type="email" th:field="*{email}"/></td></tr>
-                    <tr><td>Phone:</td><td><input type="text" th:field="*{phoneNumber}"/></td></tr>
-                    <tr><td>Address:</td><td><input type="text" th:field="*{address}"/></td></tr>
-                    <tr><td>Password:</td><td><input type="password" th:field="*{password}"/></td></tr>
-                    <tr>
-                        <td>Role:</td>
-                        <td>
-                            <input type="text" th:field="*{role}" value="Staff" readonly/>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>Status:</td>
-                        <td>
-                            <label><input type="radio" th:field="*{enabled}" value="true"/> Active</label>
-                            <label><input type="radio" th:field="*{enabled}" value="false"/> Inactive</label>
-                        </td>
-                    </tr>
-                </table>
-                <button type="submit">Save</button>
-            </form>
-            <a href="/staff/list">← Back</a>
-        </div>
+    <div class="content">
+        <form th:action="@{/staff/add}" th:object="${account}" method="post">
+            <table>
+                <tr><td>First Name:</td><td><input type="text" th:field="*{firstname}"/></td></tr>
+                <tr><td>Last Name:</td><td><input type="text" th:field="*{lastname}"/></td></tr>
+                <tr><td>Email:</td><td><input type="email" th:field="*{email}"/></td></tr>
+                <tr><td>Phone:</td><td><input type="text" th:field="*{phoneNumber}"/></td></tr>
+                <tr><td>Address:</td><td><input type="text" th:field="*{address}"/></td></tr>
+                <tr><td>Password:</td><td><input type="password" th:field="*{password}"/></td></tr>
+                <tr>
+                    <td>Status:</td>
+                    <td>
+                        <label><input type="radio" th:field="*{enabled}" value="true"/> Active</label>
+                        <label><input type="radio" th:field="*{enabled}" value="false"/> Inactive</label>
+                    </td>
+                </tr>
+            </table>
+            <button type="submit">Save</button>
+        </form>
+        <a href="/staff/list">← Back</a>
     </div>
 </div>
 </body>
 </html>
-
-
