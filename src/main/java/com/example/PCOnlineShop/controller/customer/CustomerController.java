@@ -29,6 +29,15 @@ public class CustomerController {
         return "customer/customer-list";
     }
 
+    // Hiển thị chi tiết khách hàng
+    @GetMapping("/view/{id}")
+    public String viewCustomer(@PathVariable int id, Model model) {
+        Account account = customerService.getById(id);
+        model.addAttribute("account", account);
+        return "customer/view-customer";
+    }
+
+
     // Form thêm khách hàng
     @GetMapping("/add")
     public String addCustomerForm(Model model) {
