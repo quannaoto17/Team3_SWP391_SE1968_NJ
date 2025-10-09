@@ -10,13 +10,12 @@
             background: #f6f7fb;
         }
 
-        /* ========== Layout chung ========== */
+        /* Layout */
         .container {
             display: flex;
             min-height: 100vh;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 220px;
             background: #555;
@@ -35,10 +34,6 @@
             margin-bottom: 10px;
         }
 
-        .sidebar h3 {
-            margin: 6px 0 16px;
-        }
-
         .sidebar button {
             width: 100%;
             padding: 8px;
@@ -53,14 +48,12 @@
             background: #ddd;
         }
 
-        /* Main content */
         .main {
             flex: 1;
             display: flex;
             flex-direction: column;
         }
 
-        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -70,22 +63,6 @@
             padding: 10px 20px;
         }
 
-        .search-bar {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .search-bar input {
-            width: 250px;
-            padding: 5px;
-        }
-
-        .search-bar button {
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
         .logout-btn {
             padding: 5px 10px;
             border: 1px solid #aaa;
@@ -93,7 +70,6 @@
             cursor: pointer;
         }
 
-        /* ========== Form khu vực chính ========== */
         .content {
             flex: 1;
             padding: 30px 40px;
@@ -107,31 +83,39 @@
             margin-top: 0;
         }
 
+        /* Image preview */
         .image-section {
             display: flex;
-            align-items: center;
-            gap: 20px;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .image-box {
-            width: 150px;
-            height: 150px;
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .preview-box {
+            width: 120px;
+            height: 120px;
             border: 2px dashed #bbb;
             border-radius: 8px;
             background: #f9f9f9;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
-            color: #999;
+            overflow: hidden;
         }
 
-        .image-box img {
-            width: 80px;
-            opacity: 0.7;
+        .preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .choose-btn {
+            width: fit-content;
             padding: 8px 12px;
             border: 1px solid #aaa;
             border-radius: 4px;
@@ -141,30 +125,6 @@
 
         .choose-btn:hover {
             background: #e2e2e2;
-        }
-
-        /* Category */
-        .category-select {
-            width: 250px;
-        }
-
-        /* Thông báo khi chưa chọn Category */
-        .category-message {
-            border: 1px solid #ccc;
-            padding: 12px;
-            width: 300px;
-            background: #fafafa;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        /* Form thêm sản phẩm */
-        .product-form {
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 10px;
-            width: 60%;
         }
 
         label {
@@ -179,7 +139,24 @@
             width: 100%;
         }
 
-        /* Nút Create */
+        /* Category message */
+        .category-message {
+            border: 1px solid #ccc;
+            padding: 12px;
+            width: 350px;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* Product form */
+        .product-form {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            width: 60%;
+        }
+
         .create-btn {
             align-self: flex-end;
             padding: 10px 20px;
@@ -200,7 +177,7 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <img src="https://via.placeholder.com/70" alt="avatar">
-        <h3>Role</h3>
+        <h3>Staff</h3>
         <button>Dashboard</button>
         <button>Category Manage</button>
         <button>Product Manage</button>
@@ -209,73 +186,73 @@
 
     <!-- Main -->
     <div class="main">
-        <!-- Header -->
         <div class="header">
-            <div class="search-bar">
-                <input type="text" placeholder="Search bar">
-                <button>Search</button>
-            </div>
+            <h2>Create Product</h2>
             <button class="logout-btn">Logout</button>
         </div>
 
-        <!-- Content -->
         <div class="content">
-            <h2>Create Product</h2>
-
             <form th:action="@{/staff/products/save}" th:object="${product}" method="post" enctype="multipart/form-data">
-                <!-- Product Image -->
-                <label>Product Image</label>
-                <div class="image-section">
-                    <div class="image-box" id="imagePreview">
-                        <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png" alt="preview">
-                        <p>No image</p>
-                    </div>
-                    <input type="file" name="imageFile" accept="image/*" id="imageInput" style="display:none;">
-                    <button type="button" class="choose-btn" onclick="document.getElementById('imageInput').click()">Choose Image</button>
-                </div>
 
                 <!-- Category -->
-                <label>Category</label>
-                <select class="category-select" id="category" name="category.categoryId" required>
-                    <option value="">Select</option>
+                <label>Category:</label>
+                <select id="categorySelect" name="category.categoryId" required>
+                    <option value="">-- Select Category --</option>
                     <option th:each="cat : ${categories}"
                             th:value="${cat.categoryId}"
                             th:text="${cat.categoryName}"></option>
                 </select>
 
-                <!-- Category message -->
+                <!-- Message nếu chưa chọn Category -->
                 <div class="category-message" id="categoryMessage">
                     <input type="checkbox" disabled checked> Category not chosen
-                    <p>Choose Category to display creation form</p>
+                    <p>Please choose a category to add a product.</p>
                 </div>
 
-                <!-- Form thêm sản phẩm -->
+                <!-- Form nhập sản phẩm (ẩn ban đầu) -->
                 <div class="product-form" id="productForm">
-                    <label for="brand">Brand:</label>
-                    <select id="brand" name="brand.brandId" required>
-                        <option value="">-- Choose Brand --</option>
-                        <option th:each="brand : ${brands}"
-                                th:value="${brand.brandId}"
-                                th:text="${brand.name}"></option>
+
+                    <!-- Brand -->
+                    <label>Brand:</label>
+                    <select name="brand.brandId" required>
+                        <option value="">-- Select Brand --</option>
+                        <option th:each="b : ${brands}"
+                                th:value="${b.brandId}"
+                                th:text="${b.name}"></option>
                     </select>
 
+                    <!-- Name -->
                     <label>Product Name:</label>
-                    <input type="text" th:field="*{productName}" placeholder="Enter product name">
+                    <input type="text" th:field="*{productName}" placeholder="Enter product name" required>
 
+                    <!-- Price -->
                     <label>Price ($):</label>
-                    <input type="number" th:field="*{price}" min="0" step="0.01" placeholder="Enter price">
+                    <input type="number" th:field="*{price}" min="0" step="0.01" placeholder="Enter price" required>
 
+                    <!-- Description -->
                     <label>Description:</label>
                     <textarea th:field="*{description}" rows="3" placeholder="Product description..."></textarea>
 
+                    <!-- Specification -->
                     <label>Specification:</label>
                     <textarea th:field="*{specification}" rows="3" placeholder="Specifications..."></textarea>
 
+                    <!-- Status -->
                     <label>Status:</label>
                     <select th:field="*{status}">
                         <option th:value="true" selected>Available</option>
                         <option th:value="false">Unavailable</option>
                     </select>
+
+                    <!-- Image upload -->
+                    <label>Product Images:</label>
+                    <div class="image-section">
+                        <div class="image-preview" id="imagePreview">
+                            <div class="preview-box"><span>No image</span></div>
+                        </div>
+                        <input type="file" name="imageFiles" multiple accept="image/*" id="imageInput" style="display:none;">
+                        <button type="button" class="choose-btn" onclick="document.getElementById('imageInput').click()">Choose Images</button>
+                    </div>
 
                     <button type="submit" class="create-btn">CREATE</button>
                 </div>
@@ -285,22 +262,8 @@
 </div>
 
 <script>
-    // Preview ảnh
-    const imageInput = document.getElementById('imageInput');
-    const imagePreview = document.getElementById('imagePreview');
-    imageInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                imagePreview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">`;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    // Hiện form khi chọn Category
-    const categorySelect = document.getElementById('category');
+    // ===== Hiển thị / ẩn form thêm sản phẩm =====
+    const categorySelect = document.getElementById('categorySelect');
     const categoryMessage = document.getElementById('categoryMessage');
     const productForm = document.getElementById('productForm');
 
@@ -312,6 +275,30 @@
             categoryMessage.style.display = 'block';
             productForm.style.display = 'none';
         }
+    });
+
+    // ===== Preview ảnh =====
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+
+    imageInput.addEventListener('change', (event) => {
+        const files = event.target.files;
+        imagePreview.innerHTML = ''; // clear preview
+        if (files.length === 0) {
+            imagePreview.innerHTML = '<div class="preview-box"><span>No image</span></div>';
+            return;
+        }
+
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const div = document.createElement('div');
+                div.classList.add('preview-box');
+                div.innerHTML = `<img src="${e.target.result}" alt="preview">`;
+                imagePreview.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
     });
 </script>
 </body>

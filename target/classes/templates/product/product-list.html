@@ -113,6 +113,7 @@
             border: 1px solid #ddd;
             padding: 8px;
             text-align: center;
+            vertical-align: middle;
         }
 
         th {
@@ -121,6 +122,15 @@
 
         tr:hover {
             background-color: #fafafa;
+        }
+
+        /* Product Image */
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
         }
 
         /* Pagination */
@@ -166,7 +176,6 @@
     <div>
         <div class="header">
             <div class="search-bar">
-                <!-- Search giữ lại bộ lọc -->
                 <form th:action="@{/staff/products/list}" method="get">
                     <input type="text" name="keyword" placeholder="Search product..." th:value="${keyword}">
                     <input type="hidden" name="brandId" th:value="${brandId}">
@@ -213,6 +222,7 @@
                 <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Image</th>
                     <th>Category</th>
                     <th>Brand</th>
                     <th>
@@ -223,9 +233,7 @@
                             brandId=${brandId},
                             categoryId=${categoryId},
                             keyword=${keyword}
-                        )}">
-                            Product Name
-                        </a>
+                        )}">Product Name</a>
                     </th>
                     <th>
                         <a th:href="@{/staff/products/list(
@@ -235,9 +243,7 @@
                             brandId=${brandId},
                             categoryId=${categoryId},
                             keyword=${keyword}
-                        )}">
-                            Price ($)
-                        </a>
+                        )}">Price ($)</a>
                     </th>
                     <th>Status</th>
                     <th>Description</th>
@@ -250,15 +256,27 @@
                             brandId=${brandId},
                             categoryId=${categoryId},
                             keyword=${keyword}
-                        )}">
-                            Created At
-                        </a>
+                        )}">Created At</a>
                     </th>
                 </tr>
                 </thead>
+
                 <tbody>
                 <tr th:each="product : ${products}">
                     <td th:text="${product.productId}"></td>
+
+                    <!-- ✅ Cột hiển thị ảnh sản phẩm -->
+                    <td>
+                        <img th:if="${product.images != null and !product.images.isEmpty()}"
+                             th:src="@{${product.images[0].imageUrl}}"
+                             alt="Product Image"
+                             class="product-image" />
+                        <img th:if="${product.images == null or product.images.isEmpty()}"
+                             th:src="@{/image/default-product.png}"
+                             alt="No Image"
+                             class="product-image" />
+                    </td>
+
                     <td th:text="${product.category != null ? product.category.categoryName : 'N/A'}"></td>
                     <td th:text="${product.brand != null ? product.brand.name : 'N/A'}"></td>
                     <td th:text="${product.productName}"></td>
@@ -281,9 +299,7 @@
                         brandId=${brandId},
                         categoryId=${categoryId},
                         keyword=${keyword}
-                   )}">
-                    &laquo; Prev
-                </a>
+                   )}">&laquo; Prev</a>
 
                 <span th:each="i : ${#numbers.sequence(1, totalPages)}">
                     <a th:href="@{/staff/products/list(
@@ -295,8 +311,7 @@
                             keyword=${keyword}
                         )}"
                        th:text="${i}"
-                       th:classappend="${i == currentPage} ? 'active'">
-                    </a>
+                       th:classappend="${i == currentPage} ? 'active'"></a>
                 </span>
 
                 <a th:if="${currentPage < totalPages}"
@@ -307,9 +322,7 @@
                         brandId=${brandId},
                         categoryId=${categoryId},
                         keyword=${keyword}
-                   )}">
-                    Next &raquo;
-                </a>
+                   )}">Next &raquo;</a>
             </div>
         </div>
     </div>
