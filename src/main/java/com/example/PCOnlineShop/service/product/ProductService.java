@@ -46,6 +46,13 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    public Page<Product> getAllProduct(int page, int size) {
+        return productRepository.findAll(PageRequest.of(page, size));
+    }
+
+    public Page<Product> getProductsByCategory(int categoryId, int page, int size) {
+        return productRepository.findByCategory_CategoryId(categoryId, PageRequest.of(page, size));
+    }
 
     // 🧩 Phân trang + Sắp xếp tổng quát
     public Page<Product> getProducts(int page, int size, String sortField, String sortDir) {
