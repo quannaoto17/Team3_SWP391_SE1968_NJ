@@ -1,6 +1,5 @@
 package com.example.PCOnlineShop.controller.staff;
 
-import com.example.PCOnlineShop.constant.RoleName;
 import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.service.staff.StaffService;
 import org.springframework.data.domain.Page;
@@ -18,54 +17,62 @@ public class StaffController {
         this.staffService = staffService;
     }
 
-    // Danh sách nhân viên
+    // 🔹 Danh sách nhân viên (lọc theo trạng thái Active / Inactive / All)
     @GetMapping("/list")
     public String listStaff(@RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "10") int size,
+                            @RequestParam(defaultValue = "") String searchQuery,
+                            @RequestParam(defaultValue = "all") String statusFilter, // ✅ lọc trạng thái
                             Model model) {
-        Page<Account> staffPage = staffService.getStaffPage(page, size);
+
+        Page<Account> staffPage = staffService.getStaffPage(page, size, searchQuery, statusFilter);
+
         model.addAttribute("staffPage", staffPage);
+        model.addAttribute("searchQuery", searchQuery);
+        model.addAttribute("statusFilter", statusFilter);
         return "staff/staff-list";
     }
 
+    // 🔹 Xem chi tiết nhân viên
+    @GetMapping("/view/{id}")
+    public String viewStaff(@PathVariable int id, Model model) {
+        Account account = staffService.getById(id);
+        model.addAttribute("account", account);
+        return "staff/view-staff";
+    }
 
-    // Form thêm nhân viên
+    // 🔹 Form thêm nhân viên
     @GetMapping("/add")
     public String addStaffForm(Model model) {
-        Account account = new Account();           // tạo object
-        account.setRole(RoleName.Staff);           // ✅ gán mặc định Staff
-        model.addAttribute("account", account);    // add vào model
+        model.addAttribute("account", new Account());
         return "staff/add-staff";
     }
 
-
-    // Lưu nhân viên
+    // 🔹 Lưu nhân viên
     @PostMapping("/add")
     public String saveStaff(@ModelAttribute("account") Account account) {
-        account.setRole(RoleName.Staff); // Ép role thành Staff (thêm dòng này)
         staffService.saveStaff(account);
-        return "redirect:/staff/list";
+        return "redirect:/staff/list?statusFilter=all";
     }
 
-
-    // Form edit
+    // 🔹 Form sửa nhân viên
     @GetMapping("/edit/{id}")
     public String editStaffForm(@PathVariable int id, Model model) {
         model.addAttribute("account", staffService.getById(id));
         return "staff/edit-staff";
     }
 
-    // Update nhân viên
+    // 🔹 Cập nhật nhân viên
     @PostMapping("/edit")
     public String updateStaff(@ModelAttribute("account") Account account) {
         staffService.saveStaff(account);
-        return "redirect:/staff/list";
+        return "redirect:/staff/list?statusFilter=all";
     }
 
-    // Chuyển nhân viên sang Inactive thay vì xóa
+    // 🔹 Chuyển trạng thái (Active <-> Inactive)
     @GetMapping("/delete/{id}")
     public String deactivateStaff(@PathVariable int id) {
         staffService.deactivateStaff(id);
-        return "redirect:/staff/list";
+        return "redirect:/staff/list?statusFilter=all";
     }
 }
