@@ -222,7 +222,7 @@
                 <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Image</th> <!-- ✅ thêm cột ảnh -->
+                    <th>Image</th>
                     <th>Category</th>
                     <th>Brand</th>
                     <th>
@@ -260,6 +260,7 @@
                     </th>
                 </tr>
                 </thead>
+
                 <tbody>
                 <tr th:each="product : ${products}">
                     <td th:text="${product.productId}"></td>
@@ -267,13 +268,13 @@
                     <!-- ✅ Cột hiển thị ảnh sản phẩm -->
                     <td>
                         <img th:if="${product.images != null and !product.images.isEmpty()}"
-                             th:src="${product.images[0].imageUrl}"
+                             th:src="@{${product.images[0].imageUrl}}"
                              alt="Product Image"
-                             class="product-image">
+                             class="product-image" />
                         <img th:if="${product.images == null or product.images.isEmpty()}"
-                             src="/image/default-product.png"
+                             th:src="@{/image/default-product.png}"
                              alt="No Image"
-                             class="product-image">
+                             class="product-image" />
                     </td>
 
                     <td th:text="${product.category != null ? product.category.categoryName : 'N/A'}"></td>

@@ -10,129 +10,302 @@
             background: #f6f7fb;
         }
 
-        .container {
-            width: 70%;
-            margin: 40px auto;
+        .layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: 100vh;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            background: #555;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .sidebar img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .sidebar h3 {
+            margin: 8px 0 16px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 4px;
+            background: #eee;
+            cursor: pointer;
+        }
+
+        .sidebar button:hover {
+            background: #ddd;
+        }
+
+        /* ===== Header ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             background: #fff;
-            padding: 20px 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-bar input {
+            width: 300px;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .logout-btn {
+            border: 1px solid #aaa;
+            background: #fff;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .logout-btn:hover {
+            background: #eee;
+        }
+
+        /* ===== Content ===== */
+        .content {
+            padding: 30px 50px;
+            background: #fff;
         }
 
         h2 {
-            text-align: center;
             margin-bottom: 20px;
             color: #333;
         }
 
-        label {
-            display: block;
-            margin-top: 12px;
-            font-weight: bold;
+        form {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            align-items: start;
         }
 
-        select, input, textarea {
-            width: 100%;
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 90%;
             padding: 8px;
-            margin-top: 6px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         textarea {
+            grid-column: span 3;
+            width: 95%;
+            padding: 10px;
             resize: vertical;
         }
 
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            border: none;
-            color: #fff;
+        /* ===== Image Section ===== */
+        .image-section {
+            grid-column: span 3;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .image-box {
+            width: 200px;
+            height: 150px;
+            border: 2px dashed #bbb;
+            border-radius: 8px;
+            background: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .choose-btn {
+            padding: 8px 12px;
+            border: 1px solid #aaa;
+            background: #f1f1f1;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 15px;
         }
 
-        button:hover {
-            background-color: #0056b3;
+        .choose-btn:hover {
+            background: #ddd;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            text-decoration: none;
-            color: #007bff;
+        /* ===== Update Button ===== */
+        .update-btn {
+            grid-column: span 3;
+            justify-self: end;
+            padding: 12px 30px;
+            background: #333;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
         }
 
-        .back-link:hover {
-            text-decoration: underline;
+        .update-btn:hover {
+            background: #111;
         }
     </style>
 </head>
 <body>
+<div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <img src="https://via.placeholder.com/80" alt="avatar">
+        <h3>Role</h3>
+        <button>Dashboard</button>
+        <button>Category Manage</button>
+        <button>Product Manage</button>
+        <button>...</button>
+    </aside>
 
-<div class="container">
-    <h2>Edit Product</h2>
+    <!-- Main -->
+    <div>
+        <!-- Header -->
+        <div class="header">
+            <div class="search-bar">
+                <input type="text" placeholder="Search bar">
+                <button>Search</button>
+            </div>
+            <button class="logout-btn">Logout</button>
+        </div>
 
-    <!-- Form chỉnh sửa sản phẩm -->
-    <form th:action="@{/staff/products/edit}" th:object="${product}" method="post">
+        <!-- Content -->
+        <div class="content">
+            <h2>Product Details</h2>
 
-        <!-- ID ẩn -->
-        <input type="hidden" th:field="*{productId}"/>
+            <form th:action="@{/staff/products/edit}" th:object="${product}" method="post" enctype="multipart/form-data">
+                <input type="hidden" th:field="*{productId}"/>
 
-        <!-- Category -->
-        <label for="category">Category:</label>
-        <select id="category" name="category.categoryId" required>
-            <option value="">-- Choose Category --</option>
-            <option th:each="cat : ${categories}"
-                    th:value="${cat.categoryId}"
-                    th:text="${cat.categoryName}"
-                    th:selected="${cat.categoryId} == ${product.category.categoryId}">
-            </option>
-        </select>
+                <!-- Image -->
+                <div class="image-section">
+                    <div class="image-box" id="imagePreview">
+                        <img th:if="${product.images != null and !#lists.isEmpty(product.images)}"
+                             th:src="@{${product.images[0].imageUrl}}" alt="product image">
+                        <p th:if="${product.images == null or #lists.isEmpty(product.images)}">No image</p>
+                    </div>
+                    <input type="file" name="imageFiles" multiple accept="image/*" id="imageInput" style="display:none;">
+                    <button type="button" class="choose-btn" onclick="document.getElementById('imageInput').click()">Choose Image</button>
+                </div>
 
-        <!-- Brand -->
-        <label for="brand">Brand:</label>
-        <select id="brand" name="brand.brandId" required>
-            <option value="">-- Choose Brand --</option>
-            <option th:each="brand : ${brands}"
-                    th:value="${brand.brandId}"
-                    th:text="${brand.name}"
-                    th:selected="${brand.brandId} == ${product.brand.brandId}">
-            </option>
-        </select>
+                <!-- Product Name -->
+                <div>
+                    <label>Product Name:</label>
+                    <input type="text" th:field="*{productName}" placeholder="Enter product name" required>
+                </div>
 
-        <!-- Product Name -->
-        <label for="productName">Product Name:</label>
-        <input type="text" id="productName" th:field="*{productName}" placeholder="Enter product name" required>
+                <!-- Category -->
+                <div>
+                    <label>Category:</label>
+                    <select name="category.categoryId" required>
+                        <option value="">Select</option>
+                        <option th:each="cat : ${categories}"
+                                th:value="${cat.categoryId}"
+                                th:text="${cat.categoryName}"
+                                th:selected="${product.category != null and cat.categoryId == product.category.categoryId}">
+                        </option>
+                    </select>
+                </div>
 
-        <!-- Price -->
-        <label for="price">Price ($):</label>
-        <input type="number" id="price" th:field="*{price}" placeholder="Enter price" min="0" step="0.01" required>
+                <!-- Brand -->
+                <div>
+                    <label>Brand:</label>
+                    <select name="brand.brandId" required>
+                        <option value="">Select</option>
+                        <option th:each="b : ${brands}"
+                                th:value="${b.brandId}"
+                                th:text="${b.name}"
+                                th:selected="${product.brand != null and b.brandId == product.brand.brandId}">
+                        </option>
+                    </select>
+                </div>
 
-        <!-- Description -->
-        <label for="description">Description:</label>
-        <textarea id="description" th:field="*{description}" rows="3" placeholder="Short description..."></textarea>
+                <!-- Price -->
+                <div>
+                    <label>Price ($):</label>
+                    <input type="number" th:field="*{price}" min="0" step="0.01" placeholder="Enter product price" required>
+                </div>
 
-        <!-- Specification -->
-        <label for="specification">Specification:</label>
-        <textarea id="specification" th:field="*{specification}" rows="3" placeholder="Technical details..."></textarea>
+                <!-- Status -->
+                <div>
+                    <label>Status:</label>
+                    <select th:field="*{status}">
+                        <option th:value="true" th:selected="${product.status == true}">Available</option>
+                        <option th:value="false" th:selected="${product.status == false}">Unavailable</option>
+                    </select>
+                </div>
 
-        <!-- Status -->
-        <label for="status">Status:</label>
-        <select id="status" th:field="*{status}">
-            <option th:value="true" th:selected="${product.status == true}">Available</option>
-            <option th:value="false" th:selected="${product.status == false}">Unavailable</option>
-        </select>
+                <!-- Description -->
+                <div style="grid-column: span 3;">
+                    <label>Description:</label>
+                    <textarea th:field="*{description}" rows="3" placeholder="Product description..."></textarea>
+                </div>
 
-        <!-- Submit -->
-        <button type="submit">Update Product</button>
-    </form>
+                <!-- Specification -->
+                <div style="grid-column: span 3;">
+                    <label>Specification:</label>
+                    <textarea th:field="*{specification}" rows="3" placeholder="Product specifications..."></textarea>
+                </div>
 
-    <a th:href="@{/staff/products/list}" class="back-link">← Back to Product List</a>
+                <!-- Update Button -->
+                <button type="submit" class="update-btn">UPDATE</button>
+            </form>
+        </div>
+    </div>
 </div>
 
+<script>
+    // === Preview ảnh mới khi chọn ===
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+
+    imageInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.innerHTML = `<img src="${e.target.result}" alt="preview">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
 </body>
 </html>
