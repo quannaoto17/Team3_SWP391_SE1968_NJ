@@ -1,7 +1,8 @@
 package com.example.PCOnlineShop.service.build;
 
+
+import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import com.example.PCOnlineShop.model.build.*;
-import com.example.PCOnlineShop.repository.build.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,9 +10,23 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class CompatibilityService {
 
+    public  boolean checkMainboardCompatibility(BuildItemDto buildItem, Mainboard mainboard) {
+        CPU cpu = buildItem.getCpu();
+        if (cpu != null && !mainboard.getSocket().equals(cpu.getSocket())) {
+            return false;
+        }
+        GPU gpu = buildItem.getGpu();
+        if (gpu != null && parseVersion(mainboard.getPcieVersion())
+                < parseVersion(gpu.getPcieVersion())) {
+            return false;
+        }
+        // Add more compatibility checks as needed
+        return true; // Placeholder
+    }
 
+    public boolean checkCpuCompatibility(BuildItemDto buildItem, CPU cpu) {
+        Mainboard mainboard = buildItem.getMainboard();
 
-    public boolean checkMotherboardCpuCompatibility(Mainboard mainboard, CPU cpu) {
         if (!mainboard.getSocket().equals(cpu.getSocket())) {
             return false;
         }
@@ -19,7 +34,7 @@ public class CompatibilityService {
         return true; // Placeholder
     }
 
-    public boolean checkGpuCompatibility(BuildItem buildItem, GPU gpu) {
+    public boolean checkGpuCompatibility(BuildItemDto buildItem, GPU gpu) {
         CPU cpu = buildItem.getCpu();
         Mainboard mainboard = buildItem.getMainboard();
 

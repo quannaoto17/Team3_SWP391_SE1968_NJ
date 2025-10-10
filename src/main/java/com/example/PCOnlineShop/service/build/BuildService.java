@@ -1,6 +1,6 @@
 package com.example.PCOnlineShop.service.build;
 
-import com.example.PCOnlineShop.dto.build.BuildItemId;
+import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import com.example.PCOnlineShop.model.build.*;
 import com.example.PCOnlineShop.repository.build.*;
 import lombok.AllArgsConstructor;
@@ -15,21 +15,24 @@ public class BuildService {
     private final GpuRepository gpuRepository;
     private final CpuRepository cpuRepository;
 
-    public List<CPU> getCompatibleCpus(int mainboardId) {
-        Mainboard mainboard = mainboardRepository.findById(mainboardId).get();
-        // This is a placeholder implementation. In a real scenario, you would check compatibility based on motherboard and CPU socket types.
-        List<CPU> allCpus = cpuRepository.findAll();
-        return allCpus.stream()
-                .filter(cpu -> compatibilityService.checkMotherboardCpuCompatibility(mainboard, cpu)) // Replace null with actual motherboard
+    public  List<Mainboard> getCompatibleMainboards(BuildItemDto buildItem) {
+        // This is a placeholder implementation. In a real scenario, you would check compatibility based on CPU socket types.
+        List<Mainboard> allMainboards = mainboardRepository.findAll();
+        if (buildItem.isEmpty()) return allMainboards;
+        return allMainboards.stream()
+                .filter(mainboard -> compatibilityService.checkMainboardCompatibility(buildItem, mainboard )) // Replace null with actual CPU
                 .toList();
     }
 
-    public List<GPU> getCompatibleGPUs(BuildItemId buildItemId) {
-        BuildItem buildItem = new BuildItem();
-        CPU cpu = cpuRepository.findById(buildItemId.getCpuId()).orElse(null);
-        Mainboard mainboard = mainboardRepository.findById(buildItemId.getMainboardId()).orElse(null);
-        buildItem.setCpu(cpu);
-        buildItem.setMainboard(mainboard);
+    public List<CPU> getCompatibleCpus(BuildItemDto buildItem) {
+        // This is a placeholder implementation. In a real scenario, you would check compatibility based on motherboard and CPU socket types.
+        List<CPU> allCpus = cpuRepository.findAll();
+        return allCpus.stream()
+                .filter(cpu -> compatibilityService.checkCpuCompatibility(buildItem, cpu)) // Replace null with actual motherboard
+                .toList();
+    }
+
+    public List<GPU> getCompatibleGPUs(BuildItemDto buildItem) {
         // This is a placeholder implementation. In a real scenario, you would check compatibility based on
         List<GPU> allGpus = gpuRepository.findAll();
         return allGpus.stream()
