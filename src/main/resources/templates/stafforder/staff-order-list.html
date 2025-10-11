@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý đơn hàng</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f6f7fb; padding: 30px; }
+        h2 { text-align: center; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #ddd; }
+        th { background: #e6e7eb; }
+        a.view-btn, button.save-btn { color: white; background: #007bff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; text-decoration: none; }
+        button.save-btn { background: #28a745; margin-left: 5px; }
+        select { padding: 5px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+<h2>Quản lý đơn hàng</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Mã đơn</th>
+        <th>Khách hàng</th>
+        <th>Ngày tạo</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="order, stat : ${orders}">
+        <td th:text="${stat.count}"></td>
+        <td th:text="${order.orderId}"></td>
+        <td th:text="${order.account.firstname + ' ' + order.account.lastname}"></td>
+        <td th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy')}"></td>
+        <td th:text="${order.status}"></td>
+
+        <td>
+            <form th:action="@{'/staff/orders/update-status/' + ${order.orderId}}" method="post" style="display:inline;">
+                <select name="status">
+                    <option>Pending</option>
+                    <option>Processing</option>
+                    <option>Ready for Pickup</option>
+                    <option>Picked Up</option>
+                    <option>Completed</option>
+                    <option>Cancelled</option>
+                    <option>Returned</option>
+                </select>
+                <button type="submit" class="save-btn">Lưu</button>
+            </form>
+            <a th:href="@{'/staff/orders/detail/' + ${order.orderId}}" class="view-btn">Xem</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
