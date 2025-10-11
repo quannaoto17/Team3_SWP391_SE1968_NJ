@@ -1,5 +1,6 @@
 package com.example.PCOnlineShop.service.auth;
 
+import com.example.PCOnlineShop.constant.RoleName;
 import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.repository.account.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +17,11 @@ public class AuthService {
         // hash password before saving
         account.setPassword(passwordEncoder.encode(account.getPassword()));
 
-//        // set default role
-//        account.setRole(RoleName.ROLE_CUSTOMER);
-//
-//        // set active to true
-//        account.setActive(true);
+         //set default role
+        account.setRole(RoleName.Customer);
+
+         //set enable to true
+        account.setEnabled(true);
 
         // save to db
         accountRepository.save(account);

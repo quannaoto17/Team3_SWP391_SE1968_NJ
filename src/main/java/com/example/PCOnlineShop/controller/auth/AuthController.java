@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -18,15 +19,14 @@ public class AuthController {
 
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
-        Account account = new Account();
-        model.addAttribute("account", account);
+        model.addAttribute("account", new Account());
         return "auth/register";
     }
 
     @PostMapping("/register")
-    public String register(Account account) {
+    public String register(@ModelAttribute("account") Account account) {
         authService.register(account);
-        return "redirect:/auth/login";
+        return "redirect:/auth/login?success";
     }
 
     @GetMapping("/login")
