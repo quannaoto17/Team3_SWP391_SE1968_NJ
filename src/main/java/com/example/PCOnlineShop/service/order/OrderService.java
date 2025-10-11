@@ -35,4 +35,18 @@ public class OrderService {
             return orderDetailRepository.findByOrder(order);
         return Collections.emptyList();
     }
+
+    // ...
+    public void updateOrderStatus(int orderId, String newStatus) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order != null) {
+            order.setStatus(newStatus);
+            orderRepository.save(order);
+        }
+    }
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
 }
