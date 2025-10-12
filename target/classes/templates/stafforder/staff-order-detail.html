@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết đơn hàng</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f6f7fb; padding: 30px; }
+        .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: center; border-bottom: 1px solid #ddd; }
+        th { background: #e6e7eb; }
+        .back-btn { display: inline-block; margin-top: 15px; text-decoration: none; color: white; background: #007bff; padding: 8px 16px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+<h2>Chi tiết đơn hàng</h2>
+
+<div class="card">
+    <p><b>Mã đơn:</b> <span th:text="${order.orderId}"></span></p>
+    <p><b>Trạng thái:</b> <span th:text="${order.status}"></span></p>
+    <p><b>Ngày đặt:</b> <span th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy')}"></span></p>
+    <p><b>Tổng tiền:</b> <span th:text="${#numbers.formatDecimal(order.finalAmount, 0, 'COMMA', 2, 'POINT')} + ' ₫'"></span></p>
+</div>
+
+<div class="card">
+    <h3>Sản phẩm</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Tên sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Đơn giá</th>
+            <th>Tạm tính</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="d, stat : ${details}">
+            <td th:text="${stat.count}"></td>
+            <td th:text="${d.product.productName}"></td>
+            <td th:text="${d.quantity}"></td>
+            <td th:text="${#numbers.formatDecimal(d.price, 0, 'COMMA', 2, 'POINT')} + ' ₫'"></td>
+            <td th:text="${#numbers.formatDecimal(d.price * d.quantity, 0, 'COMMA', 2, 'POINT')} + ' ₫'"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<a th:href="@{/staff/orders/list}" class="back-btn">← Quay lại</a>
+
+</body>
+</html>

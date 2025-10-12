@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>PCOnlineShop - Home</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+</head>
+<body>
+<div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="logo">PcOnlineShop</h2>
+        <ul>
+            <!-- Tất cả sản phẩm -->
+            <li>
+                <a th:href="@{/}"
+                   th:classappend="${currentCategory == null} ? 'active' : ''">
+                    All Products
+                </a>
+            </li>
+
+            <!-- Danh mục lấy từ database -->
+            <li th:each="c : ${categories}">
+                <a th:href="@{/(categoryId=${c.categoryId})}"
+                   th:text="${c.categoryName}"
+                   th:classappend="${currentCategory == c.categoryId} ? 'active' : ''">
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-center">
+                <h3>Header</h3>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="Search product...">
+            </div>
+        </header>
+
+        <!-- Product Grid -->
+        <section class="product-grid">
+
+            <!-- Nếu không có sản phẩm -->
+            <div th:if="${#lists.isEmpty(productPage.content)}" class="empty-msg">
+                <p>No products found.</p>
+            </div>
+
+            <!-- Hiển thị danh sách sản phẩm -->
+            <div th:each="p : ${productPage.content}" class="product-card">
+                <div class="image-box">
+                    <img th:src="${p.images[0].imageUrl}"
+                         alt="Product Image"
+                         onerror="this.src='/images/no-image.png'">
+                </div>
+                <h4 th:text="${p.productName}">Product Name</h4>
+                <p th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</p>
+            </div>
+        </section>
+
+        <!-- Pagination -->
+        <div class="pagination" th:if="${productPage.totalElements > 0}">
+            <div class="pagination-left">
+                <span>Rows per page:</span>
+                <select>
+                    <option>8</option>
+                    <option>12</option>
+                    <option>16</option>
+                </select>
+            </div>
+
+            <div class="pagination-center">
+                <span th:text="${productPage.number * productPage.size + 1} + ' - ' + ${productPage.number * productPage.size + productPage.numberOfElements} + ' of ' + ${productPage.totalElements}">
+                    1 - 8 of 100
+                </span>
+            </div>
+
+            <div class="pagination-right">
+                <a th:if="${!productPage.first}"
+                   th:href="@{/(page=${productPage.number - 1}, size=${productPage.size}, categoryId=${currentCategory})}">⟨</a>
+                <a th:if="${!productPage.last}"
+                   th:href="@{/(page=${productPage.number + 1}, size=${productPage.size}, categoryId=${currentCategory})}">⟩</a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <h4>Footer</h4>
+        </footer>
+    </main>
+</div>
+</body>
+</html>

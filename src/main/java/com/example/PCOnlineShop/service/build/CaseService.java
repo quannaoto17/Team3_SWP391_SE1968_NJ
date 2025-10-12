@@ -1,40 +1,38 @@
 package com.example.PCOnlineShop.service.build;
 
+import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import com.example.PCOnlineShop.model.build.Case;
 import com.example.PCOnlineShop.repository.build.CaseRepository;
-import com.example.PCOnlineShop.repository.build.CpuRepository;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-@AllArgsConstructor
 @Service
 public class CaseService {
-    private  final CaseRepository caseRepository;
 
-    public List<Case> getCases()
-    {
-        return caseRepository.findAll();
+    @Autowired
+    private CaseRepository caseRepository;
+
+    @Autowired
+    private BuildService buildService;
+
+    public List<Case> getAllCompatibleCases(BuildItemDto buildItem) {
+        return buildService.getCompatibleCases(buildItem);
     }
 
-    public Case addCase(Case pcCase)
-    {
-        return caseRepository.save(pcCase);
+    public List<Case> filterCasesByFormFactor(List<Case> cases, String formFactor) {
+        if (formFactor == null || formFactor.isEmpty()) {
+            return cases;
+        }
+        return cases.stream()
+                .filter(c -> c.getFormFactor().equalsIgnoreCase(formFactor))
+                .collect(Collectors.toList());
     }
 
-    public Case updateCase(Case pcCase)
-    {
-        return caseRepository.save(pcCase);
-    }
-
-    public Case getCaseById(int id)
-    {
-        return caseRepository.findById(id).orElse(null);
-    }
-
-    public void deleteCase(int id)
-    {
-        caseRepository.deleteById(id);
+    public Case selectCase(int caseId) {
+        return caseRepository.findById(caseId)
+                .orElseThrow(() -> new RuntimeException("Case not found"));
     }
 }
