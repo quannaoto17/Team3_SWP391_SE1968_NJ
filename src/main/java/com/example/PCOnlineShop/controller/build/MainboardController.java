@@ -1,7 +1,8 @@
 package com.example.PCOnlineShop.controller.build;
 
-import com.example.PCOnlineShop.dto.build.BuildItemId;
+import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import com.example.PCOnlineShop.model.build.Mainboard;
+import com.example.PCOnlineShop.service.build.BuildService;
 import com.example.PCOnlineShop.service.build.MainboardService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -14,12 +15,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/build")
 public class MainboardController {
     private final MainboardService mainboardService;
+    private  final BuildService buildService;
 
 
     // Hiển thị danh sách motherboard
     @GetMapping("/mainboard")
-    public String showMainboardPage(Model model) {
-        model.addAttribute("mainboards", mainboardService.getAllMainboards());
+    public String showMainboardPage(@ModelAttribute("buildItems") BuildItemDto buildItem, Model model) {
+        model.addAttribute("mainboards", buildService.getCompatibleMainboards(buildItem));
         return "build/mainboards";
     }
 
@@ -34,8 +36,8 @@ public class MainboardController {
     //Chọn motherboard
     @PostMapping("/selectMainboard")
     public String selectMainboard(@RequestParam int mainboardId,
-                                  @ModelAttribute("buildItems") BuildItemId buildItemId) {
-        buildItemId.setMainboardId(mainboardId);
+                                  @ModelAttribute("buildItems") BuildItemDto buildItem) {
+        buildItem.setMainboard(mainboardService.getMainboardById(mainboardId));
         return "redirect:/build/cpu";
     }
     // Thêm, sửa, xóa motherboard sẽ do admin thực hiện qua trang admin

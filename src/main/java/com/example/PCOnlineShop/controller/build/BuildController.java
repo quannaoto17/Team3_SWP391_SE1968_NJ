@@ -1,6 +1,6 @@
 package com.example.PCOnlineShop.controller.build;
 
-import com.example.PCOnlineShop.dto.build.BuildItemId;
+import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 @RequestMapping("/build")
 public class BuildController {
     @ModelAttribute("buildItems")
-    public BuildItemId buildItem() {
-        return new BuildItemId();
+    public BuildItemDto buildItem() {
+        return new BuildItemDto();
     }
 
     @GetMapping("/start" )

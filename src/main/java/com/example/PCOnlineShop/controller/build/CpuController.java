@@ -1,6 +1,6 @@
 package com.example.PCOnlineShop.controller.build;
 
-import com.example.PCOnlineShop.dto.build.BuildItemId;
+import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import com.example.PCOnlineShop.service.build.BuildService;
 import com.example.PCOnlineShop.service.build.CpuService;
 import lombok.AllArgsConstructor;
@@ -18,8 +18,8 @@ public class CpuController {
 
     // Hiển thị danh sách CPU
     @GetMapping("/cpu")
-    public String showCpuPage(@ModelAttribute("buildItems") BuildItemId buildItemId, Model model) {
-        model.addAttribute("cpus", buildService.getCompatibleCpus(buildItemId.getMainboardId()));
+    public String showCpuPage(@ModelAttribute("buildItems") BuildItemDto buildItem, Model model) {
+        model.addAttribute("cpus", buildService.getCompatibleCpus(buildItem));
         return "/build/build-cpu";
     }
 
@@ -27,8 +27,8 @@ public class CpuController {
     // Chọn CPU sẽ lưu vào buildItem và chuyển sang bước chọn linh kiện tiếp theo
     @PostMapping("/selectCpu")
     public String selectCpu(@RequestParam int cpuId,
-                            @ModelAttribute("buildItems") BuildItemId buildItemId) {
-        buildItemId.setCpuId(cpuId);
+                            @ModelAttribute("buildItems") BuildItemDto buildItem) {
+        buildItem.setCpu(cpuService.getCpuById(cpuId));
         return "redirect:/build/gpu";
     }
     // Hiển thị chi tiết CPU
