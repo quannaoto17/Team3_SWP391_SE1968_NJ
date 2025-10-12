@@ -4,59 +4,160 @@
     <meta charset="UTF-8">
     <title>Product Management</title>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; background: #f6f7fb; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f6f7fb;
+        }
 
-        .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+        .layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: 100vh;
+        }
 
         /* Sidebar */
-        .sidebar { background: #dcdcdc; padding: 16px; display: flex; flex-direction: column; align-items: center; }
-        .sidebar .avatar { width: 80px; height: 80px; border-radius: 50%; background: #bbb; margin-bottom: 12px; }
-        .sidebar h3 { margin: 4px 0 20px; }
-        .sidebar button { width: 100%; margin: 6px 0; padding: 10px; border: none; border-radius: 4px; background: #fff; cursor: pointer; }
-        .sidebar button:hover { background: #ececec; }
+        .sidebar {
+            background: #dcdcdc;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .sidebar .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #bbb;
+            margin-bottom: 12px;
+        }
+
+        .sidebar h3 {
+            margin: 4px 0 20px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            margin: 6px 0;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .sidebar button:hover {
+            background: #ececec;
+        }
 
         /* Header */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #fff; border-bottom: 1px solid #ddd; }
-        .logout { padding: 8px 12px; border: 1px solid #aaa; background: #fff; cursor: pointer; border-radius: 6px; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .search-bar input {
+            padding: 6px;
+            width: 250px;
+        }
+
+        .search-bar button {
+            padding: 6px 12px;
+            cursor: pointer;
+        }
+
+        .logout {
+            padding: 6px 12px;
+            border: 1px solid #aaa;
+            background: #fff;
+            cursor: pointer;
+        }
 
         /* Content */
-        .content { padding: 20px; }
-        .content h2 { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; }
-
-        .add-btn { background: #007bff; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; }
-        .add-btn:hover { background: #0056b3; }
-
-        /* Toolbar: search + filters trên cùng một hàng */
-        .toolbar{
-            display:flex; align-items:center; gap:16px; flex-wrap:wrap;
-            background:#fff; padding:12px; border:1px solid #ddd; border-radius:8px; margin-bottom:16px;
+        .content {
+            padding: 20px;
         }
-        .toolbar form{ display:flex; align-items:center; gap:8px; margin:0; }
-        .toolbar input[type="text"]{ padding:8px; width:280px; border:1px solid #ccc; border-radius:6px; }
-        .toolbar select{ padding:8px; min-width:140px; border:1px solid #ccc; border-radius:6px; }
-        .toolbar button{ padding:8px 12px; cursor:pointer; border-radius:6px; }
-        .toolbar label{ font-weight:600; margin-right:6px; }
-        .toolbar .spacer{ flex:1; } /* đẩy Search sang trái, Filter sang phải */
+
+        .content h2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .add-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-btn:hover {
+            background: #0056b3;
+        }
 
         /* Table */
-        table { width: 100%; border-collapse: collapse; background: #fff; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle; }
-        th { background: #f1f1f1; }
-        tr:hover { background-color: #fafafa; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #f1f1f1;
+        }
+
+        tr:hover {
+            background-color: #fafafa;
+        }
 
         /* Product Image */
-        .product-image { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; box-shadow: 0 0 4px rgba(0,0,0,0.15); }
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+        }
 
         /* Pagination */
-        .pagination { margin-top: 20px; text-align: center; }
-        .pagination a { padding: 6px 10px; border: 1px solid #aaa; background: #fff; margin: 0 3px; text-decoration: none; color: black; border-radius: 4px; }
-        .pagination a.active { background: #007bff; color: white; }
-        .pagination a:hover { background: #0056b3; color: white; }
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
 
-        /* Small UI touches */
-        .product-link { color: #007bff; text-decoration: none; }
-        .product-link:hover { text-decoration: underline; }
-        mark { background: #fff3b0; padding: 0 2px; }
+        .pagination a {
+            padding: 6px 10px;
+            border: 1px solid #aaa;
+            background: #fff;
+            margin: 0 3px;
+            text-decoration: none;
+            color: black;
+            border-radius: 4px;
+        }
+
+        .pagination a.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .pagination a:hover {
+            background: #0056b3;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -73,63 +174,48 @@
 
     <!-- Main Content -->
     <div>
-        <!-- Header giữ nút Logout -->
         <div class="header">
-            <div></div>
+            <div class="search-bar">
+                <form th:action="@{/staff/products/list}" method="get">
+                    <input type="text" name="keyword" placeholder="Search product..." th:value="${keyword}">
+                    <input type="hidden" name="brandId" th:value="${brandId}">
+                    <input type="hidden" name="categoryId" th:value="${categoryId}">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
             <button class="logout">Logout</button>
         </div>
 
         <div class="content">
-            <!-- 🔹 Toolbar: Search (trái) + Filter (phải) cùng một hàng -->
-            <div class="toolbar">
-                <!-- Search -->
-                <form th:action="@{/staff/products/list}" method="get" id="searchForm" autocomplete="off">
-                    <input id="searchInput" type="text" name="keyword" placeholder="Search product..." th:value="${keyword}">
-                    <!-- giữ filter khi submit search -->
-                    <input type="hidden" name="brandId" th:value="${brandId}">
-                    <input type="hidden" name="categoryId" th:value="${categoryId}">
-                    <!-- giữ sort hiện tại khi submit search (optional) -->
-                    <input type="hidden" name="sortField" th:value="${sortField}">
-                    <input type="hidden" name="sortDir" th:value="${sortDir}">
-                    <button type="submit">Search</button>
-                </form>
-
-                <div class="spacer"></div>
-
-                <!-- Filter -->
-                <form th:action="@{/staff/products/list}" method="get" class="filter-form">
-                    <label>Filter by Brand:</label>
-                    <select name="brandId">
-                        <option value="">All</option>
-                        <option th:each="brand : ${brands}"
-                                th:value="${brand.brandId}"
-                                th:text="${brand.name}"
-                                th:selected="${brand.brandId == brandId}"></option>
-                    </select>
-
-                    <label>Filter by Category:</label>
-                    <select name="categoryId">
-                        <option value="">All</option>
-                        <option th:each="category : ${categories}"
-                                th:value="${category.categoryId}"
-                                th:text="${category.categoryName}"
-                                th:selected="${category.categoryId == categoryId}"></option>
-                    </select>
-
-                    <!-- giữ keyword & sort khi Apply filter -->
-                    <input type="hidden" name="keyword" th:value="${keyword}">
-                    <input type="hidden" name="sortField" th:value="${sortField}">
-                    <input type="hidden" name="sortDir" th:value="${sortDir}">
-                    <button type="submit">Apply</button>
-                </form>
-            </div>
-
             <h2>
                 Product List
                 <a th:href="@{/staff/products/add}">
                     <button class="add-btn">➕ Add New</button>
                 </a>
             </h2>
+
+            <!-- Filter -->
+            <form th:action="@{/staff/products/list}" method="get" style="margin-bottom: 15px;">
+                <label>Filter by Brand:</label>
+                <select name="brandId">
+                    <option value="">All</option>
+                    <option th:each="brand : ${brands}"
+                            th:value="${brand.brandId}"
+                            th:text="${brand.name}"
+                            th:selected="${brand.brandId == brandId}"></option>
+                </select>
+
+                <label>Filter by Category:</label>
+                <select name="categoryId">
+                    <option value="">All</option>
+                    <option th:each="category : ${categories}"
+                            th:value="${category.categoryId}"
+                            th:text="${category.categoryName}"
+                            th:selected="${category.categoryId == categoryId}"></option>
+                </select>
+
+                <button type="submit">Apply</button>
+            </form>
 
             <!-- Product Table -->
             <table>
@@ -162,43 +248,43 @@
                     <th>Status</th>
                     <th>Description</th>
                     <th>Specification</th>
+                    <th>
+                        <a th:href="@{/staff/products/list(
+                            page=1,
+                            sortField='createAt',
+                            sortDir=${reverseSortDir},
+                            brandId=${brandId},
+                            categoryId=${categoryId},
+                            keyword=${keyword}
+                        )}">Created At</a>
+                    </th>
                 </tr>
                 </thead>
 
-                <!-- tbody có id + fragment để controller trả về và JS thay nóng -->
-                <tbody id="productTbody" th:fragment="tbodyRows">
-                <tr th:if="${products == null or #lists.isEmpty(products)}">
-                    <td colspan="9" style="text-align:center;color:#777">No results</td>
-                </tr>
-
+                <tbody>
                 <tr th:each="product : ${products}">
                     <td th:text="${product.productId}"></td>
 
-                    <!-- Ảnh: bọc <a> để click ảnh cũng vào edit -->
+                    <!-- ✅ Cột hiển thị ảnh sản phẩm -->
                     <td>
-                        <a th:href="@{/staff/products/edit/{id}(id=${product.productId})}">
-                            <img th:if="${product.images != null and !product.images.isEmpty()}"
-                                 th:src="@{${product.images[0].imageUrl}}"
-                                 alt="Product Image" class="product-image" />
-                            <img th:if="${product.images == null or product.images.isEmpty()}"
-                                 th:src="@{/image/default-product.png}"
-                                 alt="No Image" class="product-image" />
-                        </a>
+                        <img th:if="${product.images != null and !product.images.isEmpty()}"
+                             th:src="@{${product.images[0].imageUrl}}"
+                             alt="Product Image"
+                             class="product-image" />
+                        <img th:if="${product.images == null or product.images.isEmpty()}"
+                             th:src="@{/image/default-product.png}"
+                             alt="No Image"
+                             class="product-image" />
                     </td>
 
                     <td th:text="${product.category != null ? product.category.categoryName : 'N/A'}"></td>
                     <td th:text="${product.brand != null ? product.brand.name : 'N/A'}"></td>
-
-                    <td>
-                        <a class="product-link"
-                           th:href="@{/staff/products/edit/{id}(id=${product.productId})}"
-                           th:text="${product.productName}"></a>
-                    </td>
-
+                    <td th:text="${product.productName}"></td>
                     <td th:text="${product.price}"></td>
                     <td th:text="${product.status ? 'Available' : 'Unavailable'}"></td>
                     <td th:text="${product.description}"></td>
                     <td th:text="${product.specification}"></td>
+                    <td th:text="${product.createAt != null ? #dates.format(product.createAt, 'yyyy-MM-dd') : '—'}"></td>
                 </tr>
                 </tbody>
             </table>
@@ -241,59 +327,5 @@
         </div>
     </div>
 </div>
-
-<!-- LIVE SEARCH JS -->
-<script>
-    // Debounce
-    function debounce(fn, delay) {
-        let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), delay); };
-    }
-
-    const searchInput    = document.getElementById('searchInput');
-    const brandSelect    = document.querySelector('select[name="brandId"]');
-    const categorySelect = document.querySelector('select[name="categoryId"]');
-
-    async function doLiveSearch() {
-        const keyword    = searchInput.value || '';
-        const brandId    = brandSelect?.value || '';
-        const categoryId = categorySelect?.value || '';
-
-        // giữ sort/size hiện tại trên URL
-        const qs = new URLSearchParams(window.location.search);
-        const sortField = qs.get('sortField') || 'productId';
-        const sortDir   = qs.get('sortDir')   || 'asc';
-        const size      = qs.get('size')      || '8';
-
-        const params = new URLSearchParams({ keyword, sortField, sortDir, page: '1', size });
-        if (brandId)    params.set('brandId', brandId);
-        if (categoryId) params.set('categoryId', categoryId);
-
-        const res = await fetch(`/staff/products/search-fragment?${params.toString()}`, {
-            headers: { 'X-Requested-With': 'fetch' }
-        });
-        const html = await res.text();
-
-        // thay toàn bộ tbody bằng fragment trả về
-        const tbody = document.getElementById('productTbody');
-        tbody.outerHTML = html;
-
-        // highlight keyword (optional)
-        if (keyword.trim()) highlightMatches(keyword.trim());
-    }
-
-    function highlightMatches(term) {
-        const regex = new RegExp(`(${escapeRegExp(term)})`, 'ig');
-        document.querySelectorAll('#productTbody td:nth-child(5) a').forEach(a => {
-            a.innerHTML = a.textContent.replace(regex, '<mark>$1</mark>');
-        });
-    }
-    function escapeRegExp(str){ return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-
-    // Gõ tới đâu tìm tới đó
-    searchInput.addEventListener('input', debounce(doLiveSearch, 300));
-    // Đổi filter brand/category → tìm lại
-    brandSelect?.addEventListener('change', doLiveSearch);
-    categorySelect?.addEventListener('change', doLiveSearch);
-</script>
 </body>
 </html>
