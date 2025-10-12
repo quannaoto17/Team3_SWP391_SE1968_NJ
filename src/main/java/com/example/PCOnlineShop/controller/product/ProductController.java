@@ -40,6 +40,7 @@ public class ProductController {
     }
 
     // ===== DANH SÁCH SẢN PHẨM =====
+    // ===== DANH SÁCH SẢN PHẨM =====
     @GetMapping("/list")
     public String listProducts(
             @RequestParam(defaultValue = "1") int page,
@@ -48,11 +49,15 @@ public class ProductController {
             @RequestParam(defaultValue = "asc") String sortDir,
             @RequestParam(required = false) Integer brandId,
             @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) String keyword,   // <-- NEW
             Model model) {
 
         Page<Product> productPage;
 
-        if (brandId != null) {
+        boolean hasKeyword = (keyword != null && !keyword.isBlank()); // <-- NEW
+        if (hasKeyword) {
+            productPage = productService.search(keyword, brandId, categoryId, page, size, sortField, sortDir); // <-- NEW
+        } else if (brandId != null) {
             productPage = productService.getProductsByBrand(brandId, page, size, sortField, sortDir);
         } else if (categoryId != null) {
             productPage = productService.getProductsByCategory(categoryId, page, size, sortField, sortDir);
@@ -70,12 +75,33 @@ public class ProductController {
 
         model.addAttribute("brandId", brandId);
         model.addAttribute("categoryId", categoryId);
+        model.addAttribute("keyword", keyword); // <-- NEW: để giữ lại trên view
 
         model.addAttribute("brands", brandRepository.findAll());
         model.addAttribute("categories", categoryRepository.findAll());
 
         return "product/product-list";
     }
+
+    // ===== LIVE SEARCH
+    @GetMapping("/search-fragment")
+    public String searchFragment(@RequestParam(required = false) String keyword,
+                                 @RequestParam(required = false) Integer brandId,
+                                 @RequestParam(required = false) Integer categoryId,
+                                 @RequestParam(defaultValue = "productId") String sortField,
+                                 @RequestParam(defaultValue = "asc") String sortDir,
+                                 @RequestParam(defaultValue = "1") int page,
+                                 @RequestParam(defaultValue = "8") int size,
+                                 Model model) {
+
+        Page<Product> productPage =
+                productService.search(keyword, brandId, categoryId, page, size, sortField, sortDir);
+
+        model.addAttribute("products", productPage.getContent());
+        // Nếu muốn update cả pagination theo kết quả search, có thể add currentPage/totalPages và trả fragment lớn hơn
+        return "product/product-list :: tbodyRows";
+    }
+
 
     // ===== FORM THÊM SẢN PHẨM =====
     @GetMapping("/add")
