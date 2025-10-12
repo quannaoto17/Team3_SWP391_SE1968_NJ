@@ -6,12 +6,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
@@ -28,7 +31,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable())
+                // disable csrf
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // filter
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/assets/**", "/home", "/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -37,15 +43,18 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
+                // form login
                 .formLogin(form -> form
-                        .loginPage("/auth/login")          // ✅ Đúng với Controller của bạn
-                        .loginProcessingUrl("/auth/login") // ✅ Khi bấm submit form login
-                        .usernameParameter("phoneNumber")  // ✅ Nếu dùng số điện thoại để login
+                        .loginPage("/auth/login")
+                        .loginProcessingUrl("/auth/login")
+                        .usernameParameter("phoneNumber")
                         .passwordParameter("password")
                         .defaultSuccessUrl("/home", true)
                         .failureUrl("/auth/login?error=true")
                         .permitAll()
                 )
+
+                // logout
                 .logout(logout -> logout
                         .logoutUrl("/auth/logout")
                         .logoutSuccessUrl("/auth/login?logout=true")
