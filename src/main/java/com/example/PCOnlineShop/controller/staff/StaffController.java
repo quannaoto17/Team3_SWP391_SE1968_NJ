@@ -1,21 +1,22 @@
 package com.example.PCOnlineShop.controller.staff;
 
 import com.example.PCOnlineShop.model.account.Account;
+import com.example.PCOnlineShop.service.auth.AuthService;
 import com.example.PCOnlineShop.service.staff.StaffService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/staff")
 public class StaffController {
 
     private final StaffService staffService;
+    private final AuthService authService;
 
-    public StaffController(StaffService staffService) {
-        this.staffService = staffService;
-    }
 
     // 🔹 Danh sách nhân viên (lọc theo trạng thái Active / Inactive / All)
     @GetMapping("/list")
@@ -51,7 +52,7 @@ public class StaffController {
     // 🔹 Lưu nhân viên
     @PostMapping("/add")
     public String saveStaff(@ModelAttribute("account") Account account) {
-        staffService.saveStaff(account);
+    authService.addStaff(account);
         return "redirect:/staff/list?statusFilter=all";
     }
 

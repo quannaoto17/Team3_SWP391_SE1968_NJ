@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/auth/login")
                         .usernameParameter("phoneNumber")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/home", true)
+                        .defaultSuccessUrl("/home", false)
                         .failureUrl("/auth/login?error=true")
                         .permitAll()
                 )
