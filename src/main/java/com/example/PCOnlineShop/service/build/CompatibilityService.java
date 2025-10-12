@@ -45,6 +45,47 @@ public class CompatibilityService {
         return true;
     }
 
+    public boolean checkCaseCompatibility(BuildItemDto buildItem, Case pcCase) {
+        Mainboard mainboard = buildItem.getMainboard();
+        GPU gpu = buildItem.getGpu();
+
+        // Kiểm tra tương thích form factor với mainboard
+        if (mainboard != null) {
+            if (!isCaseFormFactorCompatible(pcCase.getFormFactor(), mainboard.getFormFactor())) {
+                return false;
+            }
+        }
+
+        // Kiểm tra độ dài GPU có phù hợp với case
+        if (gpu != null && pcCase.getGpuMaxLength() < gpu.getLength()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isCaseFormFactorCompatible(String caseFormFactor, String mbFormFactor) {
+        caseFormFactor = caseFormFactor.toUpperCase();
+        mbFormFactor = mbFormFactor.toUpperCase();
+
+        // Case ATX có thể chứa được tất cả loại mainboard
+        if (caseFormFactor.contains("ATX")) {
+            return true;
+        }
+
+        // Case Micro-ATX có thể chứa Micro-ATX và Mini-ITX
+        if (caseFormFactor.contains("MICRO")) {
+            return mbFormFactor.contains("MICRO") || mbFormFactor.contains("MINI");
+        }
+
+        // Case Mini-ITX chỉ có thể chứa Mini-ITX
+        if (caseFormFactor.contains("MINI")) {
+            return mbFormFactor.contains("MINI");
+        }
+
+        return caseFormFactor.equals(mbFormFactor);
+    }
+
     public static double parseVersion(String version) {
         if (version == null) return 0.0;
         try {

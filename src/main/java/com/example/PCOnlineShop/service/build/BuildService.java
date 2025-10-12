@@ -14,6 +14,7 @@ public class BuildService {
     private final MainboardRepository mainboardRepository;
     private final GpuRepository gpuRepository;
     private final CpuRepository cpuRepository;
+    private final CaseRepository caseRepository;
 
     public  List<Mainboard> getCompatibleMainboards(BuildItemDto buildItem) {
         // This is a placeholder implementation. In a real scenario, you would check compatibility based on CPU socket types.
@@ -37,6 +38,13 @@ public class BuildService {
         List<GPU> allGpus = gpuRepository.findAll();
         return allGpus.stream()
                 .filter(gpu -> compatibilityService.checkGpuCompatibility(buildItem, gpu)) // Replace null with actual build item
+                .toList();
+    }
+
+    public List<Case> getCompatibleCases(BuildItemDto buildItem) {
+        List<Case> allCases = caseRepository.findAll();
+        return allCases.stream()
+                .filter(pcCase -> compatibilityService.checkCaseCompatibility(buildItem, pcCase))
                 .toList();
     }
 }
