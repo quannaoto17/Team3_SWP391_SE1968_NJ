@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 @SessionAttributes({"buildItems"})
 @RequestMapping("/build")
@@ -19,5 +21,11 @@ public class BuildController {
     @GetMapping("/start" )
     public String startBuild() {
         return "/build/build-pc";
+    }
+
+    @GetMapping("/startover")
+    public String startOver(HttpSession session) {
+        session.removeAttribute("buildItems"); // Clear buildItems from session to start a fresh build without affecting user login session or other session data
+        return "redirect:/build/mainboard";
     }
 }

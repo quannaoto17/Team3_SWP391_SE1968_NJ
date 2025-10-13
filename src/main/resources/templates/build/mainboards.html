@@ -14,18 +14,17 @@
         <h2>Auto Build</h2>
         <ul>
             <li class="active">MainBoard</li>
-            <li>CPU</li>
-            <li>GPU</li>
-            <li>Case</li>
-            <li>Cooling</li>
-            <li>Memory</li>
-            <li>Storage</li>
-            <li>PSU</li>
-            <li>Fan</li>
-            <li>Other</li>
+            <li><a th:href="@{/build/cpu}">CPU</a></li>
+            <li><a th:href="@{/build/gpu}">GPU</a></li>
+            <li><a th:href="@{/build/case}">Case</a></li>
+            <li><a th:href="@{/build/cooling}">Cooling</a></li>
+            <li><a th:href="@{/build/memory}">Memory</a></li>
+            <li><a th:href="@{/build/storage}">Storage</a></li>
+            <li><a th:href="@{/build/psu}">PSU</a></li>
+            <li><a th:href="@{/build/other}">Other</a></li>
         </ul>
         <button class="overview-btn">Overview</button>
-        <a href="#">Start over</a>
+        <a th:href="@{/build/startover}">Start over</a>
     </div>
 
     <!-- Main content -->
@@ -64,7 +63,7 @@
 
             <!-- Footer -->
             <div class="footer-bar">
-                <span>Total Price: <strong id="priceTotal">$0.00</strong></span>
+                <span>Total Price: <strong id="priceTotal" th:text="'$' + ${buildItems != null ? buildItems.calculateTotalPrice() : 0}"></strong></span>
                 <button type="submit" class="next-btn">Next</button>
             </div>
         </form>

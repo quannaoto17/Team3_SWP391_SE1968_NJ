@@ -32,4 +32,9 @@ public class GpuController {
         buildItem.setGpu(gpuService.getGpuById(gpuId));
         return "redirect:/build/case";
     }
+
+    @ModelAttribute("buildItems")
+    public BuildItemDto buildItems() {
+        return new BuildItemDto();
+    }
 }

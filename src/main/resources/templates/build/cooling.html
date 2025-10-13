@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Select GPU</title>
+    <title>Select Cooling</title>
     <link rel="stylesheet" th:href="@{/css/BuildStyle.css}">
 </head>
-
 <body>
 <div class="container">
     <!-- Sidebar -->
@@ -15,9 +13,9 @@
         <ul>
             <li><a th:href="@{/build/mainboard}">MainBoard</a></li>
             <li><a th:href="@{/build/cpu}">CPU</a></li>
-            <li class="active">GPU</li>
+            <li><a th:href="@{/build/gpu}">GPU</a></li>
             <li><a th:href="@{/build/case}">Case</a></li>
-            <li><a th:href="@{/build/cooling}">Cooling</a></li>
+            <li class="active">Cooling</li>
             <li><a th:href="@{/build/memory}">Memory</a></li>
             <li><a th:href="@{/build/storage}">Storage</a></li>
             <li><a th:href="@{/build/psu}">PSU</a></li>
@@ -33,31 +31,30 @@
         <div class="filter-bar">
             <input type="text" placeholder="Search..." id="searchBox"/>
             <button type="button" onclick="filterProducts()">Go!</button>
-            <select id="vramFilter">
-                <option value="">VRAM</option>
-                <option>4GB+</option>
-                <option>6GB+</option>
-                <option>8GB+</option>
-                <option>12GB+</option>
+            <select id="manufacturerFilter">
+                <option value="">Manufacturer</option>
+                <option>Cooler Master</option>
+                <option>Noctua</option>
+                <option>Corsair</option>
             </select>
             <a href="#" class="clear-filter" onclick="clearFilter()">Clear filter</a>
         </div>
 
         <!-- Product Grid -->
-        <form th:action="@{/build/selectGpu}" method="post" id="gpuForm">
-            <input type="hidden" name="gpuId" id="selectedGpuId"/>
+        <form th:action="@{/build/selectCooling}" method="post" id="coolingForm">
+            <input type="hidden" name="coolingId" id="selectedCoolingId"/>
             <div class="product-grid">
-                <div th:each="gpu : ${gpus}"
+                <div th:each="cl : ${coolings}"
                      class="product-card"
-                     th:attr="data-id=${gpu.productId}"
-                     th:data-name="${gpu.product.productName}"
-                     th:data-pcie="${gpu.pcieVersion}"
-                     th:data-tdp="${gpu.tdp}"
-                     th:data-vram="${gpu.vram}">
-                    <h4 th:text="${gpu.product.productName}"></h4>
-                    <p th:text="'PCIe: ' + ${gpu.pcieVersion}"></p>
-                    <p th:text="'VRAM: ' + ${gpu.vram} + ' GB'"></p>
-                    <strong th:text="'$' + ${gpu.product.price}"></strong>
+                     th:attr="data-id=${cl.product.productId}"
+                     th:data-name="${cl.product.productName}"
+                     th:data-type="${cl.type}"
+                     th:data-fansize="${cl.fanSize}"
+                     th:data-tdp="${cl.tdp}">
+                    <h4 th:text="${cl.product.productName}"></h4>
+                    <p th:text="'Type: ' + ${cl.type}"></p>
+                    <p th:text="'Fan Size: ' + ${cl.fanSize}"></p>
+                    <strong th:text="'$' + ${cl.product.price}"></strong>
                 </div>
             </div>
 
@@ -71,15 +68,15 @@
 
     <!-- Detail panel -->
     <div class="detail-panel">
-        <div class="detail-header">SELECT GPU</div>
+        <div class="detail-header">SELECT COOLING</div>
         <div class="detail-body">
             <h3 id="detailName">Name Product</h3>
             <div class="detail-image"></div>
             <div class="detail-spec">
                 <h4>SPECIFICATION</h4>
-                <p id="detailSocket">PCIe: ...</p>
-                <p id="detailRAM">VRAM: ...</p>
-                <p id="detailTdp">TDP: ...</p>
+                <p id="detailType">Type: ...</p>
+                <p id="detailFanSize">Fan Size: ...</p>
+                <p id="detailTDP">TDP: ...</p>
             </div>
         </div>
     </div>

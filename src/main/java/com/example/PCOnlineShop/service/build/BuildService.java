@@ -15,6 +15,10 @@ public class BuildService {
     private final GpuRepository gpuRepository;
     private final CpuRepository cpuRepository;
     private final CaseRepository caseRepository;
+    private final MemoryRepository memoryRepository;
+    private final StorageRepository storageRepository;
+    private final PowerSupplyRepository powerSupplyRepository;
+    private final CoolingRepository coolingRepository;
 
     public  List<Mainboard> getCompatibleMainboards(BuildItemDto buildItem) {
         // This is a placeholder implementation. In a real scenario, you would check compatibility based on CPU socket types.
@@ -45,6 +49,34 @@ public class BuildService {
         List<Case> allCases = caseRepository.findAll();
         return allCases.stream()
                 .filter(pcCase -> compatibilityService.checkCaseCompatibility(buildItem, pcCase))
+                .toList();
+    }
+
+    public List<Memory> getCompatibleMemory(BuildItemDto buildItem) {
+        List<Memory> allMemory = memoryRepository.findAll();
+        return allMemory.stream()
+                .filter(memory -> compatibilityService.checkMemoryCompatibility(buildItem, memory))
+                .toList();
+    }
+
+    public List<Storage> getCompatibleStorage(BuildItemDto buildItem) {
+        List<Storage> allStorage = storageRepository.findAll();
+        return allStorage.stream()
+                .filter(storage -> compatibilityService.checkStorageCompatibility(buildItem, storage))
+                .toList();
+    }
+
+    public List<PowerSupply> getCompatiblePowerSupplies(BuildItemDto buildItem) {
+        List<PowerSupply> allPowerSupplies = powerSupplyRepository.findAll();
+        return allPowerSupplies.stream()
+                .filter(psu -> compatibilityService.checkPowerSupplyCompatibility(buildItem, psu))
+                .toList();
+    }
+
+    public List<Cooling> getCompatibleCoolings(BuildItemDto buildItem) {
+        List<Cooling> allCoolings = coolingRepository.findAll();
+        return allCoolings.stream()
+                .filter(cooling -> compatibilityService.checkCoolingCompatibility(buildItem, cooling))
                 .toList();
     }
 }

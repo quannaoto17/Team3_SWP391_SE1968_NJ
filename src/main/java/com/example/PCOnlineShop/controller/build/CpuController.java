@@ -33,4 +33,9 @@ public class CpuController {
     }
     // Hiển thị chi tiết CPU
     // Thêm, sửa, xóa CPU sẽ do admin thực hiện qua trang admin
+
+    @ModelAttribute("buildItems")
+    public BuildItemDto buildItems() {
+        return new BuildItemDto();
+    }
 }
