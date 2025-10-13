@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,4 +22,16 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.images")
     List<Product> findAllWithImages();
 
+    @Query("""
+        SELECT p FROM Product p
+        LEFT JOIN p.brand b
+        LEFT JOIN p.category c
+        WHERE (:keyword IS NULL OR :keyword = '' OR LOWER(p.productName) LIKE LOWER(CONCAT('%', :keyword, '%')))
+          AND (:brandId IS NULL OR b.brandId = :brandId)
+          AND (:categoryId IS NULL OR c.categoryId = :categoryId)
+    """)
+    Page<Product> search(@Param("keyword") String keyword,
+                         @Param("brandId") Integer brandId,
+                         @Param("categoryId") Integer categoryId,
+                         Pageable pageable);
 }

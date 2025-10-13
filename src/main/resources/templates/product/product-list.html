@@ -1,163 +1,59 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Product Management</title>
+    <meta charset="UTF-8" />
+    <title>Quản lý sản phẩm</title>
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f6f7fb;
-        }
-
-        .layout {
-            display: grid;
-            grid-template-columns: 240px 1fr;
-            min-height: 100vh;
-        }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f6f7fb; }
+        .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
 
         /* Sidebar */
-        .sidebar {
-            background: #dcdcdc;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .sidebar .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #bbb;
-            margin-bottom: 12px;
-        }
-
-        .sidebar h3 {
-            margin: 4px 0 20px;
-        }
-
-        .sidebar button {
-            width: 100%;
-            margin: 6px 0;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            background: #fff;
-            cursor: pointer;
-        }
-
-        .sidebar button:hover {
-            background: #ececec;
-        }
+        .sidebar { background: #dcdcdc; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+        .sidebar .avatar { width: 80px; height: 80px; border-radius: 50%; background: #bbb; margin-bottom: 12px; }
+        .sidebar h3 { margin: 4px 0 20px; }
+        .sidebar button { width: 100%; margin: 6px 0; padding: 10px; border: none; border-radius: 4px; background: #fff; cursor: pointer; }
+        .sidebar button:hover { background: #ececec; }
 
         /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: #fff;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .search-bar input {
-            padding: 6px;
-            width: 250px;
-        }
-
-        .search-bar button {
-            padding: 6px 12px;
-            cursor: pointer;
-        }
-
-        .logout {
-            padding: 6px 12px;
-            border: 1px solid #aaa;
-            background: #fff;
-            cursor: pointer;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #fff; border-bottom: 1px solid #ddd; }
+        .logout { padding: 8px 12px; border: 1px solid #aaa; background: #fff; cursor: pointer; border-radius: 6px; }
 
         /* Content */
-        .content {
-            padding: 20px;
-        }
+        .content { padding: 20px; }
+        .content h2 { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; }
+        .add-btn { background: #007bff; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; }
+        .add-btn:hover { background: #0056b3; }
 
-        .content h2 {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Toolbar */
+        .toolbar{
+            display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+            background:#fff; padding:12px; border:1px solid #ddd; border-radius:8px; margin-bottom:16px;
         }
-
-        .add-btn {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .add-btn:hover {
-            background: #0056b3;
-        }
+        .toolbar form{ display:flex; align-items:center; gap:8px; margin:0; }
+        .toolbar input[type="text"]{ padding:8px; width:280px; border:1px solid #ccc; border-radius:6px; }
+        .toolbar select{ padding:8px; min-width:140px; border:1px solid #ccc; border-radius:6px; }
+        .toolbar button{ padding:8px 12px; cursor:pointer; border-radius:6px; }
+        .toolbar label{ font-weight:600; margin-right:6px; }
+        .toolbar .spacer{ flex:1; }
 
         /* Table */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #fff;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        th {
-            background: #f1f1f1;
-        }
-
-        tr:hover {
-            background-color: #fafafa;
-        }
+        table { width: 100%; border-collapse: collapse; background: #fff; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle; }
+        th { background: #f1f1f1; }
+        tr:hover { background-color: #fafafa; }
 
         /* Product Image */
-        .product-image {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 6px;
-            box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
-        }
+        .product-image { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; box-shadow: 0 0 4px rgba(0,0,0,0.15); }
 
         /* Pagination */
-        .pagination {
-            margin-top: 20px;
-            text-align: center;
-        }
+        .pagination { margin-top: 20px; text-align: center; }
+        .pagination a { padding: 6px 10px; border: 1px solid #aaa; background: #fff; margin: 0 3px; text-decoration: none; color: black; border-radius: 4px; }
+        .pagination a.active { background: #007bff; color: white; }
+        .pagination a:hover { background: #0056b3; color: white; }
 
-        .pagination a {
-            padding: 6px 10px;
-            border: 1px solid #aaa;
-            background: #fff;
-            margin: 0 3px;
-            text-decoration: none;
-            color: black;
-            border-radius: 4px;
-        }
-
-        .pagination a.active {
-            background: #007bff;
-            color: white;
-        }
-
-        .pagination a:hover {
-            background: #0056b3;
-            color: white;
-        }
+        .product-link { color: #007bff; text-decoration: none; }
+        .product-link:hover { text-decoration: underline; }
+        mark { background: #fff3b0; padding: 0 2px; }
     </style>
 </head>
 <body>
@@ -165,167 +61,288 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="avatar"></div>
-        <h3>Admin</h3>
-        <button>Dashboard</button>
-        <button>Product Manage</button>
-        <button>Category Manage</button>
-        <button>Brand Manage</button>
+        <h3>Quản trị</h3>
+        <button>Bảng điều khiển</button>
+        <button>Quản lý sản phẩm</button>
+        <button>Quản lý danh mục</button>
+        <button>Quản lý thương hiệu</button>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <div>
         <div class="header">
-            <div class="search-bar">
-                <form th:action="@{/staff/products/list}" method="get">
-                    <input type="text" name="keyword" placeholder="Search product..." th:value="${keyword}">
-                    <input type="hidden" name="brandId" th:value="${brandId}">
-                    <input type="hidden" name="categoryId" th:value="${categoryId}">
-                    <button type="submit">Search</button>
-                </form>
-            </div>
-            <button class="logout">Logout</button>
+            <div></div>
+            <button class="logout">Đăng xuất</button>
         </div>
 
         <div class="content">
+            <!-- Toolbar: Tìm kiếm + Lọc cùng hàng -->
+            <div class="toolbar">
+                <!-- Tìm kiếm -->
+                <form th:action="@{/staff/products/list}" method="get" id="searchForm" autocomplete="off">
+                    <input id="searchInput" type="text" name="keyword" placeholder="Tìm kiếm sản phẩm..." th:value="${keyword}">
+                    <input type="hidden" name="brandId" th:value="${brandId}">
+                    <input type="hidden" name="categoryId" th:value="${categoryId}">
+                    <input type="hidden" name="sortField" th:value="${sortField}">
+                    <input type="hidden" name="sortDir" th:value="${sortDir}">
+                    <input id="sizeInput" type="hidden" name="size" th:value="${pageSize}">
+                    <button type="submit">Tìm kiếm</button>
+                </form>
+
+                <div class="spacer"></div>
+
+                <!-- Lọc -->
+                <form th:action="@{/staff/products/list}" method="get" class="filter-form">
+                    <label>Lọc theo Thương hiệu:</label>
+                    <select name="brandId">
+                        <option value="">Tất cả</option>
+                        <option th:each="brand : ${brands}"
+                                th:value="${brand.brandId}"
+                                th:text="${brand.name}"
+                                th:selected="${brand.brandId == brandId}"></option>
+                    </select>
+
+                    <label>Lọc theo Danh mục:</label>
+                    <select name="categoryId">
+                        <option value="">Tất cả</option>
+                        <option th:each="category : ${categories}"
+                                th:value="${category.categoryId}"
+                                th:text="${category.categoryName}"
+                                th:selected="${category.categoryId == categoryId}"></option>
+                    </select>
+
+                    <input type="hidden" name="keyword" th:value="${keyword}">
+                    <input type="hidden" name="sortField" th:value="${sortField}">
+                    <input type="hidden" name="sortDir" th:value="${sortDir}">
+                    <input type="hidden" name="size" th:value="${pageSize}">
+                    <button type="submit">Áp dụng</button>
+                </form>
+            </div>
+
             <h2>
-                Product List
+                Danh sách sản phẩm
                 <a th:href="@{/staff/products/add}">
-                    <button class="add-btn">➕ Add New</button>
+                    <button class="add-btn">➕ Thêm mới</button>
                 </a>
             </h2>
 
-            <!-- Filter -->
-            <form th:action="@{/staff/products/list}" method="get" style="margin-bottom: 15px;">
-                <label>Filter by Brand:</label>
-                <select name="brandId">
-                    <option value="">All</option>
-                    <option th:each="brand : ${brands}"
-                            th:value="${brand.brandId}"
-                            th:text="${brand.name}"
-                            th:selected="${brand.brandId == brandId}"></option>
-                </select>
+            <!-- ===== LIST WRAPPER: bảng + phân trang ===== -->
+            <div id="listWrapper" th:fragment="listWrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Mã</th>
+                        <th>Hình ảnh</th>
+                        <th>Danh mục</th>
+                        <th>Thương hiệu</th>
+                        <th>
+                            <a th:href="@{/staff/products/list(
+                                page=1,
+                                size=${pageSize},
+                                sortField='productName',
+                                sortDir=${reverseSortDir},
+                                brandId=${brandId},
+                                categoryId=${categoryId},
+                                keyword=${keyword}
+                            )}">Tên sản phẩm</a>
+                        </th>
+                        <th>
+                            <a th:href="@{/staff/products/list(
+                                page=1,
+                                size=${pageSize},
+                                sortField='price',
+                                sortDir=${reverseSortDir},
+                                brandId=${brandId},
+                                categoryId=${categoryId},
+                                keyword=${keyword}
+                            )}">Giá ($)</a>
+                        </th>
+                        <th>Trạng thái</th>
+                        <th>Mô tả</th>
+                        <th>Thông số kỹ thuật</th>
+                    </tr>
+                    </thead>
 
-                <label>Filter by Category:</label>
-                <select name="categoryId">
-                    <option value="">All</option>
-                    <option th:each="category : ${categories}"
-                            th:value="${category.categoryId}"
-                            th:text="${category.categoryName}"
-                            th:selected="${category.categoryId == categoryId}"></option>
-                </select>
+                    <tbody id="productTbody">
+                    <tr th:if="${products == null or #lists.isEmpty(products)}">
+                        <td colspan="9" style="text-align:center;color:#777">Không có kết quả</td>
+                    </tr>
 
-                <button type="submit">Apply</button>
-            </form>
+                    <tr th:each="product : ${products}">
+                        <td th:text="${product.productId}"></td>
 
-            <!-- Product Table -->
-            <table>
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Image</th>
-                    <th>Category</th>
-                    <th>Brand</th>
-                    <th>
+                        <!-- Ảnh: bọc <a> để click ảnh cũng vào chỉnh sửa -->
+                        <td>
+                            <a class="to-detail" th:href="@{/staff/products/edit/{id}(id=${product.productId})}">
+                                <img th:if="${product.images != null and !product.images.isEmpty()}"
+                                     th:src="@{${product.images[0].imageUrl}}"
+                                     alt="Ảnh sản phẩm" class="product-image" />
+                                <img th:if="${product.images == null or product.images.isEmpty()}"
+                                     th:src="@{/image/default-product.png}"
+                                     alt="Không có ảnh" class="product-image" />
+                            </a>
+                        </td>
+
+                        <td th:text="${product.category != null ? product.category.categoryName : 'N/A'}"></td>
+                        <td th:text="${product.brand != null ? product.brand.name : 'N/A'}"></td>
+
+                        <td>
+                            <a class="product-link to-detail"
+                               th:href="@{/staff/products/edit/{id}(id=${product.productId})}"
+                               th:text="${product.productName}"></a>
+                        </td>
+
+                        <td th:text="${product.price}"></td>
+                        <td th:text="${product.status ? 'Còn hàng' : 'Hết hàng'}"></td>
+                        <td th:text="${product.description}"></td>
+                        <td th:text="${product.specification}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- Phân trang -->
+                <div class="pagination">
+                    <a th:if="${currentPage > 1}"
+                       th:href="@{/staff/products/list(
+                           page=${currentPage - 1},
+                           size=${pageSize},
+                           sortField=${sortField},
+                           sortDir=${sortDir},
+                           brandId=${brandId},
+                           categoryId=${categoryId},
+                           keyword=${keyword}
+                       )}">&laquo; Trước</a>
+
+                    <span th:each="i : ${#numbers.sequence(1, totalPages)}">
                         <a th:href="@{/staff/products/list(
-                            page=1,
-                            sortField='productName',
-                            sortDir=${reverseSortDir},
-                            brandId=${brandId},
-                            categoryId=${categoryId},
-                            keyword=${keyword}
-                        )}">Product Name</a>
-                    </th>
-                    <th>
-                        <a th:href="@{/staff/products/list(
-                            page=1,
-                            sortField='price',
-                            sortDir=${reverseSortDir},
-                            brandId=${brandId},
-                            categoryId=${categoryId},
-                            keyword=${keyword}
-                        )}">Price ($)</a>
-                    </th>
-                    <th>Status</th>
-                    <th>Description</th>
-                    <th>Specification</th>
-                    <th>
-                        <a th:href="@{/staff/products/list(
-                            page=1,
-                            sortField='createAt',
-                            sortDir=${reverseSortDir},
-                            brandId=${brandId},
-                            categoryId=${categoryId},
-                            keyword=${keyword}
-                        )}">Created At</a>
-                    </th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr th:each="product : ${products}">
-                    <td th:text="${product.productId}"></td>
-
-                    <!-- ✅ Cột hiển thị ảnh sản phẩm -->
-                    <td>
-                        <img th:if="${product.images != null and !product.images.isEmpty()}"
-                             th:src="@{${product.images[0].imageUrl}}"
-                             alt="Product Image"
-                             class="product-image" />
-                        <img th:if="${product.images == null or product.images.isEmpty()}"
-                             th:src="@{/image/default-product.png}"
-                             alt="No Image"
-                             class="product-image" />
-                    </td>
-
-                    <td th:text="${product.category != null ? product.category.categoryName : 'N/A'}"></td>
-                    <td th:text="${product.brand != null ? product.brand.name : 'N/A'}"></td>
-                    <td th:text="${product.productName}"></td>
-                    <td th:text="${product.price}"></td>
-                    <td th:text="${product.status ? 'Available' : 'Unavailable'}"></td>
-                    <td th:text="${product.description}"></td>
-                    <td th:text="${product.specification}"></td>
-                    <td th:text="${product.createAt != null ? #dates.format(product.createAt, 'yyyy-MM-dd') : '—'}"></td>
-                </tr>
-                </tbody>
-            </table>
-
-            <!-- Pagination -->
-            <div class="pagination">
-                <a th:if="${currentPage > 1}"
-                   th:href="@{/staff/products/list(
-                        page=${currentPage - 1},
-                        sortField=${sortField},
-                        sortDir=${sortDir},
-                        brandId=${brandId},
-                        categoryId=${categoryId},
-                        keyword=${keyword}
-                   )}">&laquo; Prev</a>
-
-                <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-                    <a th:href="@{/staff/products/list(
                             page=${i},
+                            size=${pageSize},
                             sortField=${sortField},
                             sortDir=${sortDir},
                             brandId=${brandId},
                             categoryId=${categoryId},
                             keyword=${keyword}
                         )}"
-                       th:text="${i}"
-                       th:classappend="${i == currentPage} ? 'active'"></a>
-                </span>
+                           th:text="${i}"
+                           th:classappend="${i == currentPage} ? 'active'"></a>
+                    </span>
 
-                <a th:if="${currentPage < totalPages}"
-                   th:href="@{/staff/products/list(
-                        page=${currentPage + 1},
-                        sortField=${sortField},
-                        sortDir=${sortDir},
-                        brandId=${brandId},
-                        categoryId=${categoryId},
-                        keyword=${keyword}
-                   )}">Next &raquo;</a>
+                    <a th:if="${currentPage < totalPages}"
+                       th:href="@{/staff/products/list(
+                           page=${currentPage + 1},
+                           size=${pageSize},
+                           sortField=${sortField},
+                           sortDir=${sortDir},
+                           brandId=${brandId},
+                           categoryId=${categoryId},
+                           keyword=${keyword}
+                       )}">Sau &raquo;</a>
+                </div>
             </div>
+            <!-- ===== END LIST WRAPPER ===== -->
+
         </div>
     </div>
 </div>
+
+<!-- AJAX + xử lý Back -->
+<script>
+    function debounce(fn, delay){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), delay); }; }
+
+    const searchInput    = document.getElementById('searchInput');
+    const brandSelect    = document.querySelector('select[name="brandId"]');
+    const categorySelect = document.querySelector('select[name="categoryId"]');
+    const sizeInput      = document.getElementById('sizeInput');
+
+    async function fetchBlock(params){
+        const res  = await fetch(`/staff/products/search-block?${params.toString()}`, { headers:{'X-Requested-With':'fetch'} });
+        const html = await res.text();
+        const wrapper = document.getElementById('listWrapper');
+        wrapper.outerHTML = html;
+
+        // tô đậm từ khóa sau khi thay block
+        const kw = params.get('keyword') || '';
+        if (kw.trim()) highlightMatches(kw.trim());
+    }
+
+    function buildParams(overrides = {}){
+        const qs = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams({
+            keyword:    searchInput?.value || '',
+            brandId:    brandSelect?.value || '',
+            categoryId: categorySelect?.value || '',
+            sortField:  qs.get('sortField') || 'productId',
+            sortDir:    qs.get('sortDir')   || 'asc',
+            page:       '1',
+            size:       sizeInput?.value || qs.get('size') || '8'
+        });
+        Object.entries(overrides).forEach(([k,v]) => { if(v!==undefined && v!==null) params.set(k, v); });
+        ['brandId','categoryId','keyword'].forEach(k=>{ if(!params.get(k)) params.delete(k); });
+        return params;
+    }
+
+    async function doLiveSearch(){
+        const params = buildParams({page:'1'});
+        history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
+        await fetchBlock(params);
+    }
+
+    // click phân trang -> AJAX
+    document.addEventListener('click', async (e)=>{
+        const a = e.target.closest('.pagination a');
+        if(!a) return;
+        e.preventDefault();
+        const url = new URL(a.href, window.location.origin);
+        history.replaceState({}, '', `${location.pathname}${url.search}`);
+        await fetchBlock(new URLSearchParams(url.search));
+        document.getElementById('listWrapper')?.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+
+    // click sort -> AJAX
+    document.addEventListener('click', async (e)=>{
+        const a = e.target.closest('th a');
+        if(!a) return;
+        e.preventDefault();
+        const url = new URL(a.href, window.location.origin);
+        history.replaceState({}, '', `${location.pathname}${url.search}`);
+        await fetchBlock(new URLSearchParams(url.search));
+    });
+
+    // live search & filter change
+    searchInput?.addEventListener('input', debounce(doLiveSearch, 300));
+    brandSelect?.addEventListener('change', doLiveSearch);
+    categorySelect?.addEventListener('change', doLiveSearch);
+
+    // đánh dấu khi rời sang trang chi tiết
+    document.addEventListener('click', (e) => {
+        const toDetail = e.target.closest('a.to-detail');
+        if (toDetail) {
+            sessionStorage.setItem('resetProductListOnBack', '1');
+        }
+    });
+
+    // quay lại bằng Back/bfcache -> xóa từ khóa, về trang 1, nạp lại danh sách
+    window.addEventListener('pageshow', async (event) => {
+        const navEntry = performance.getEntriesByType('navigation')[0];
+        const isBackForward = event.persisted || (navEntry && navEntry.type === 'back_forward');
+        if (isBackForward && sessionStorage.getItem('resetProductListOnBack') === '1') {
+            sessionStorage.removeItem('resetProductListOnBack');
+            if (searchInput) searchInput.value = '';
+            const params = buildParams({ keyword: '', page: '1' });
+            params.delete('keyword');
+            history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
+            await fetchBlock(params);
+        }
+    });
+
+    // highlight từ khóa
+    function highlightMatches(term){
+        const regex = new RegExp(`(${escapeRegExp(term)})`, 'ig');
+        document.querySelectorAll('#productTbody td:nth-child(5) a').forEach(a=>{
+            a.innerHTML = a.textContent.replace(regex, '<mark>$1</mark>');
+        });
+    }
+    function escapeRegExp(str){ return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+</script>
 </body>
 </html>
