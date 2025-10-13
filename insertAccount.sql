@@ -1,0 +1,35 @@
+use pconlineshop;
+INSERT INTO account (phone_number, password, role, email, first_name, last_name, gender, address, enabled)
+VALUES
+('0900000001', 'pass123', 'Customer', 'user1@example.com', 'Nguyen', 'An', 1, 'Hanoi', 1),
+('0900000002', 'pass123', 'Staff', 'user2@example.com', 'Tran', 'Binh', 0, 'HCMC', 1),
+('0900000003', 'pass123', 'Customer', 'user3@example.com', 'Le', 'Cuong', 1, 'Da Nang', 1),
+('0900000004', 'pass123', 'Staff', 'user4@example.com', 'Pham', 'Dung', 0, 'Hai Phong', 1),
+('0900000005', 'pass123', 'Customer', 'user5@example.com', 'Hoang', 'Em', 1, 'Can Tho', 1),
+('0900000006', 'pass123', 'Staff', 'user6@example.com', 'Do', 'Phong', 1, 'Hue', 1),
+('0900000007', 'pass123', 'Customer', 'user7@example.com', 'Vu', 'Lam', 0, 'Quang Ninh', 1),
+('0900000008', 'pass123', 'Staff', 'user8@example.com', 'Dang', 'Hieu', 1, 'Thanh Hoa', 1),
+('0900000009', 'pass123', 'Customer', 'user9@example.com', 'Bui', 'Phuc', 0, 'Nghe An', 1),
+('0900000010', 'pass123', 'Staff', 'user10@example.com', 'Cao', 'Minh', 1, 'Nam Dinh', 1),
+
+('0900000011', 'pass123', 'Customer', 'user11@example.com', 'Nguyen', 'Khanh', 1, 'Hanoi', 1),
+('0900000012', 'pass123', 'Staff', 'user12@example.com', 'Tran', 'Quang', 0, 'HCMC', 1),
+('0900000013', 'pass123', 'Customer', 'user13@example.com', 'Le', 'Huy', 1, 'Da Nang', 1),
+('0900000014', 'pass123', 'Staff', 'user14@example.com', 'Pham', 'Tuan', 0, 'Hai Duong', 1),
+('0900000015', 'pass123', 'Customer', 'user15@example.com', 'Hoang', 'Bao', 1, 'Thai Binh', 1),
+('0900000016', 'pass123', 'Staff', 'user16@example.com', 'Do', 'Son', 1, 'Ha Nam', 1),
+('0900000017', 'pass123', 'Customer', 'user17@example.com', 'Vu', 'Tien', 0, 'Ninh Binh', 1),
+('0900000018', 'pass123', 'Staff', 'user18@example.com', 'Dang', 'Long', 1, 'Hoa Binh', 1),
+('0900000019', 'pass123', 'Customer', 'user19@example.com', 'Bui', 'Nam', 0, 'Lang Son', 1),
+('0900000020', 'pass123', 'Staff', 'user20@example.com', 'Cao', 'Hai', 1, 'Bac Ninh', 1),
+
+('0900000021', 'pass123', 'Customer', 'user21@example.com', 'Nguyen', 'Van', 1, 'Hanoi', 1),
+('0900000022', 'pass123', 'Staff', 'user22@example.com', 'Tran', 'Phong', 0, 'HCMC', 1),
+('0900000023', 'pass123', 'Customer', 'user23@example.com', 'Le', 'Hung', 1, 'Da Nang', 1),
+('0900000024', 'pass123', 'Staff', 'user24@example.com', 'Pham', 'Son', 0, 'Hai Phong', 1),
+('0900000025', 'pass123', 'Customer', 'user25@example.com', 'Hoang', 'Tu', 1, 'Can Tho', 1),
+('0900000026', 'pass123', 'Staff', 'user26@example.com', 'Do', 'Trung', 1, 'Hue', 1),
+('0900000027', 'pass123', 'Customer', 'user27@example.com', 'Vu', 'Khoa', 0, 'Quang Ninh', 1),
+('0900000028', 'pass123', 'Staff', 'user28@example.com', 'Dang', 'Luc', 1, 'Thanh Hoa', 1),
+('0900000029', 'pass123', 'Customer', 'user29@example.com', 'Bui', 'Dat', 0, 'Nghe An', 1),
+('0900000030', 'pass123', 'Staff', 'user30@example.com', 'Cao', 'Manh', 1, 'Nam Dinh', 1);
