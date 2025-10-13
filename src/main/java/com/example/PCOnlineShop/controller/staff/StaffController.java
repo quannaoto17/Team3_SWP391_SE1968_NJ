@@ -52,7 +52,7 @@ public class StaffController {
     // 🔹 Lưu nhân viên
     @PostMapping("/add")
     public String saveStaff(@ModelAttribute("account") Account account) {
-    authService.addStaff(account);
+    authService.saveStaff(account);
         return "redirect:/staff/list?statusFilter=all";
     }
 
@@ -66,7 +66,7 @@ public class StaffController {
     // 🔹 Cập nhật nhân viên
     @PostMapping("/edit")
     public String updateStaff(@ModelAttribute("account") Account account) {
-        staffService.saveStaff(account);
+        authService.saveStaff(account);
         return "redirect:/staff/list?statusFilter=all";
     }
 

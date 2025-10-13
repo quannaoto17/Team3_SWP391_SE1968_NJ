@@ -17,21 +17,23 @@ public class CustomerController {
     private final CustomerService customerService;
     private final AuthService authService;
 
-
-
-    // Danh sách khách hàng
+    // 🔹 Danh sách khách hàng (lọc theo trạng thái)
     @GetMapping("/list")
     public String listCustomers(@RequestParam(defaultValue = "0") int page,
                                 @RequestParam(defaultValue = "10") int size,
                                 @RequestParam(defaultValue = "") String searchQuery,
-                                @RequestParam(defaultValue = "asc") String sortOrder,
+                                @RequestParam(defaultValue = "all") String statusFilter,
                                 Model model) {
-        Page<Account> customerPage = customerService.getCustomerPage(page, size, searchQuery, sortOrder);
+
+        Page<Account> customerPage = customerService.getCustomerPage(Math.max(page, 0), size, searchQuery, statusFilter);
+
         model.addAttribute("customerPage", customerPage);
+        model.addAttribute("searchQuery", searchQuery);
+        model.addAttribute("statusFilter", statusFilter);
         return "customer/customer-list";
     }
 
-    // Hiển thị chi tiết khách hàng
+    // 🔹 Xem chi tiết khách hàng
     @GetMapping("/view/{id}")
     public String viewCustomer(@PathVariable int id, Model model) {
         Account account = customerService.getById(id);
@@ -39,39 +41,38 @@ public class CustomerController {
         return "customer/view-customer";
     }
 
-
-    // Form thêm khách hàng
+    // 🔹 Form thêm khách hàng
     @GetMapping("/add")
     public String addCustomerForm(Model model) {
         model.addAttribute("account", new Account());
         return "customer/add-customer";
     }
 
-    // Lưu khách hàng
+    // 🔹 Lưu khách hàng
     @PostMapping("/add")
     public String addCustomer(@ModelAttribute("account") Account account) {
-        authService.addCustomer(account);
-        return "redirect:/customer/list?sortOrder=" + (account.getAccountId() > 0 ? "asc" : "asc"); // Default to asc after save
+        authService.saveCustomer(account);
+        return "redirect:/customer/list?statusFilter=all";
     }
 
-    // Form edit
+    // 🔹 Form sửa
     @GetMapping("/edit/{id}")
     public String editCustomerForm(@PathVariable int id, Model model) {
         model.addAttribute("account", customerService.getById(id));
         return "customer/edit-customer";
     }
 
-    // Update khách hàng
+    // 🔹 Cập nhật khách hàng
     @PostMapping("/edit")
     public String updateCustomer(@ModelAttribute("account") Account account) {
-        customerService.saveCustomer(account);
-        return "redirect:/customer/list?sortOrder=" + (account.getAccountId() > 0 ? "asc" : "asc"); // Default to asc after update
+        authService.saveCustomer(account);
+        return "redirect:/customer/list?statusFilter=all";
     }
 
-    // Chuyển khách hàng sang Inactive thay vì xóa
+    // 🔹 Chuyển trạng thái (Active <-> Inactive)
     @GetMapping("/delete/{id}")
     public String deactivateCustomer(@PathVariable int id) {
         customerService.deactivateCustomer(id);
-        return "redirect:/customer/list?sortOrder=asc"; // Default to asc after delete
+        return "redirect:/customer/list?statusFilter=all";
     }
 }
