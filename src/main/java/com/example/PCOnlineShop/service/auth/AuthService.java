@@ -15,25 +15,40 @@ public class AuthService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void register(Account account){
+    public void register(Account account) {
         // hash password before saving
         account.setPassword(passwordEncoder.encode(account.getPassword()));
 
-         //set default role
+        //set default role
         account.setRole(RoleName.Customer);
 
-         //set enable to true
+        //set enable to true
         account.setEnabled(true);
 
         // save to db
         accountRepository.save(account);
     }
-    public void addStaff(Account account){
+
+    public void addStaff(Account account) {
         // hash password before saving
         account.setPassword(passwordEncoder.encode(account.getPassword()));
 
         //set default role
         account.setRole(RoleName.Staff);
+
+        //set enable to true
+        account.setEnabled(true);
+
+        // save to db
+        accountRepository.save(account);
+    }
+
+    public void addCustomer(Account account) {
+        // hash password before saving
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+
+        //set default role
+        account.setRole(RoleName.Customer);
 
         //set enable to true
         account.setEnabled(true);
