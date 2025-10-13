@@ -1,5 +1,5 @@
 /* ==========================================================
-   STAFF MANAGEMENT - CLEAN MODERN STYLE
+   STAFF MANAGEMENT - CLEAN MODERN STYLE (FINAL VERSION)
    ========================================================== */
 
 * {
@@ -50,7 +50,7 @@ body {
     justify-content: space-between;
     align-items: center;
     flex-wrap: nowrap;
-    gap: 50px;
+    gap: 40px;
     margin-bottom: 25px;
 }
 
@@ -88,8 +88,8 @@ body {
 .search-right {
     display: flex;
     align-items: center;
-    gap: 25px; /* 🌟 khoảng cách rõ giữa dropdown và Add Staff */
-    margin-left: 60px; /* ✅ đẩy xa hẳn khỏi filter */
+    gap: 25px;
+    margin-left: 60px;
 }
 
 .search-right select {
@@ -183,10 +183,12 @@ table tr:hover {
 }
 
 /* Deactivate / Activate */
-.btn-activate, .btn-deactivate {
+.btn-activate,
+.btn-deactivate {
     background: #a5b1c2;
 }
-.btn-activate:hover, .btn-deactivate:hover {
+.btn-activate:hover,
+.btn-deactivate:hover {
     background: #808e9b;
 }
 
@@ -213,6 +215,16 @@ table tr:hover {
     background: #f1f2f6;
 }
 
+/* 🔒 Chặn click khi disabled */
+.pagination a.disabled {
+    pointer-events: none;
+    color: #aaa;
+    border-color: #ddd;
+    background: #f1f2f6;
+    cursor: default;
+    opacity: 0.6;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .search-sort-container {
@@ -225,7 +237,8 @@ table tr:hover {
         margin-left: 0;
     }
 
-    table th, table td {
+    table th,
+    table td {
         font-size: 12px;
         padding: 8px;
     }

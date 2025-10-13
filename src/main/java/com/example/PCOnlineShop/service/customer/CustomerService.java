@@ -6,41 +6,36 @@ import com.example.PCOnlineShop.repository.account.AccountRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CustomerService {
+
     private final AccountRepository accountRepository;
 
     public CustomerService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
 
-    // Lấy danh sách khách hàng với tìm kiếm và sắp xếp
-    public Page<Account> getCustomerPage(int page, int size, String searchQuery, String sortOrder) {
-        Pageable pageable = getSortedPageable(page, size, sortOrder.toLowerCase()); // Ensure case-insensitive handling
-        return searchCustomers(searchQuery, pageable);
-    }
+    // 🔹 Lấy danh sách khách hàng có thể tìm kiếm & lọc trạng thái
+    public Page<Account> getCustomerPage(int page, int size, String searchQuery, String statusFilter) {
+        Pageable pageable = PageRequest.of(page, size);
 
-    // Tìm kiếm khách hàng theo phone hoặc email
-    private Page<Account> searchCustomers(String searchQuery, Pageable pageable) {
-        if (searchQuery == null || searchQuery.trim().isEmpty()) {
-            return accountRepository.findAllByRole(RoleName.Customer, pageable);
-        } else {
-            return accountRepository.findByPhoneNumberOrEmail(RoleName.Customer, searchQuery, pageable);
-        }
-    }
+        boolean filterActive = "active".equalsIgnoreCase(statusFilter);
+        boolean filterInactive = "inactive".equalsIgnoreCase(statusFilter);
 
-    // Tạo Pageable với sắp xếp theo accountId
-    private Pageable getSortedPageable(int page, int size, String sortOrder) {
-        Sort sort = Sort.by("accountId");
-        if ("desc".equalsIgnoreCase(sortOrder)) {
-            sort = sort.descending();
+        if (filterActive) {
+            return accountRepository.findByRoleAndEnabled(RoleName.Customer, true, searchQuery, pageable);
+        } else if (filterInactive) {
+            return accountRepository.findByRoleAndEnabled(RoleName.Customer, false, searchQuery, pageable);
         } else {
-            sort = sort.ascending();
+            // all
+            if (searchQuery == null || searchQuery.trim().isEmpty()) {
+                return accountRepository.findAllByRole(RoleName.Customer, pageable);
+            } else {
+                return accountRepository.findByPhoneNumberOrEmail(RoleName.Customer, searchQuery, pageable);
+            }
         }
-        return PageRequest.of(page, size, sort);
     }
 
     public Account saveCustomer(Account account) {

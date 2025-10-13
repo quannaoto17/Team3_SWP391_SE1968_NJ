@@ -26,25 +26,31 @@
 
                     <span class="back-button"
                           th:if="${param.searchQuery != null and param.searchQuery != ''}">
-                        <a th:href="@{/customer/list(page=${customerPage.number}, size=${customerPage.size}, sortOrder=${param.sortOrder})}">
+                        <a th:href="@{/customer/list(page=${customerPage.number}, size=${customerPage.size}, statusFilter=${param.statusFilter})}">
                             Back
                         </a>
                     </span>
+
+                    <input type="hidden" name="statusFilter" th:value="${param.statusFilter}"/>
                 </form>
             </div>
 
-            <!-- Sắp xếp và thêm khách hàng -->
+            <!-- Bộ lọc trạng thái + nút thêm -->
             <div class="sort-add-container">
                 <div class="sort-container">
                     <form th:action="@{/customer/list}" method="get">
-                        <select name="sortOrder" onchange="this.form.submit()">
-                            <option value="asc"
-                                    th:selected="${param.sortOrder == null or #strings.equalsIgnoreCase(param.sortOrder, 'asc')}">
-                                Sort Ascending
+                        <select name="statusFilter" onchange="this.form.submit()">
+                            <option value="all"
+                                    th:selected="${param.statusFilter == null or #strings.equalsIgnoreCase(param.statusFilter, 'all')}">
+                                All
                             </option>
-                            <option value="desc"
-                                    th:selected="${#strings.equalsIgnoreCase(param.sortOrder, 'desc')}">
-                                Sort Descending
+                            <option value="active"
+                                    th:selected="${#strings.equalsIgnoreCase(param.statusFilter, 'active')}">
+                                Active
+                            </option>
+                            <option value="inactive"
+                                    th:selected="${#strings.equalsIgnoreCase(param.statusFilter, 'inactive')}">
+                                Inactive
                             </option>
                         </select>
                         <input type="hidden" name="searchQuery" th:value="${param.searchQuery}"/>
@@ -75,7 +81,10 @@
                 <td th:text="${c.email}"></td>
                 <td th:text="${c.phoneNumber}"></td>
                 <td th:text="${c.address}"></td>
-                <td th:text="${c.enabled ? 'Active' : 'Inactive'}"></td>
+                <td>
+                    <span th:text="${c.enabled ? 'Active' : 'Inactive'}"
+                          th:classappend="${c.enabled ? 'status-active' : 'status-inactive'}"></span>
+                </td>
                 <td>
                     <a th:href="@{'/customer/view/' + ${c.accountId}}" class="btn-action btn-view">View</a> |
                     <a th:href="@{'/customer/edit/' + ${c.accountId}}" class="btn-action btn-edit">Edit</a> |
@@ -89,13 +98,13 @@
 
         <!-- Phân trang -->
         <div class="pagination">
-            <a th:href="@{/customer/list(page=${customerPage.number - 1}, size=${customerPage.size}, searchQuery=${param.searchQuery}, sortOrder=${param.sortOrder})}"
+            <a th:href="@{/customer/list(page=${customerPage.number - 1}, size=${customerPage.size}, searchQuery=${param.searchQuery}, statusFilter=${param.statusFilter})}"
                th:classappend="${!customerPage.hasPrevious()} ? 'disabled' : ''">← Prev</a>
 
             <span th:text="${customerPage.number + 1}"></span> /
             <span th:text="${customerPage.totalPages}"></span>
 
-            <a th:href="@{/customer/list(page=${customerPage.number + 1}, size=${customerPage.size}, searchQuery=${param.searchQuery}, sortOrder=${param.sortOrder})}"
+            <a th:href="@{/customer/list(page=${customerPage.number + 1}, size=${customerPage.size}, searchQuery=${param.searchQuery}, statusFilter=${param.statusFilter})}"
                th:classappend="${!customerPage.hasNext()} ? 'disabled' : ''">Next →</a>
         </div>
     </div>
