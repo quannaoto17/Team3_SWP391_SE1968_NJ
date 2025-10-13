@@ -37,9 +37,9 @@ public class SecurityConfig {
                 // filter
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/assets/**", "/home", "/auth/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/staff/**").hasAnyRole("STAFF", "ADMIN")
-                        .requestMatchers("/customer/**").hasRole("CUSTOMER")
+
+                        .requestMatchers("/staff/**").hasAnyRole( "ADMIN")
+                        .requestMatchers("/customer/**").hasAnyRole("ADMIN","STAFF")
                         .anyRequest().authenticated()
                 )
 

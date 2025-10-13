@@ -1,21 +1,23 @@
 package com.example.PCOnlineShop.controller.customer;
 
 import com.example.PCOnlineShop.model.account.Account;
+import com.example.PCOnlineShop.service.auth.AuthService;
 import com.example.PCOnlineShop.service.customer.CustomerService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/customer")
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final AuthService authService;
 
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
-    }
+
 
     // Danh sách khách hàng
     @GetMapping("/list")
@@ -47,8 +49,8 @@ public class CustomerController {
 
     // Lưu khách hàng
     @PostMapping("/add")
-    public String saveCustomer(@ModelAttribute("account") Account account) {
-        customerService.saveCustomer(account);
+    public String addCustomer(@ModelAttribute("account") Account account) {
+        authService.addCustomer(account);
         return "redirect:/customer/list?sortOrder=" + (account.getAccountId() > 0 ? "asc" : "asc"); // Default to asc after save
     }
 
