@@ -25,4 +25,8 @@ public class PowerSupply {
     @MapsId
     @JoinColumn(name = "product_id")
     private Product product;
+
+    public double getPrice() {
+        return product != null ? product.getPrice() : 0;
+    }
 }

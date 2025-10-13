@@ -17,6 +17,10 @@ public class MainboardController {
     private final MainboardService mainboardService;
     private  final BuildService buildService;
 
+    @ModelAttribute("buildItems")
+    public BuildItemDto buildItems() {
+        return new BuildItemDto();
+    }
 
     // Hiển thị danh sách motherboard
     @GetMapping("/mainboard")

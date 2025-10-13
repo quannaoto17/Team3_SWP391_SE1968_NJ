@@ -1,8 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
     const cards = document.querySelectorAll(".product-card");
     const priceTotal = document.getElementById("priceTotal");
-
     const hiddenInput = document.querySelector("input[type=hidden]");
+
+    // Lưu giá trị Total Price ban đầu từ HTML
+    let originalTotalPrice = 0;
+    if (priceTotal) {
+        originalTotalPrice = parseFloat(priceTotal.innerText.replace(/[^\d.]/g, "")) || 0;
+    }
 
     const detailName = document.getElementById("detailName");
     const detailSocket = document.getElementById("detailSocket");
@@ -20,7 +25,10 @@ document.addEventListener("DOMContentLoaded", function () {
             const id = this.getAttribute("data-id");
             const name = this.getAttribute("data-name");
             const socket = this.getAttribute("data-socket");
-            const price = this.querySelector("strong").innerText;
+            const priceStr = this.querySelector("strong").innerText;
+
+            // Lấy giá sản phẩm hiện tại
+            const currentProductPrice = parseFloat(priceStr.replace(/[^\d.]/g, "")) || 0;
 
             hiddenInput.value = id;
 
@@ -33,7 +41,11 @@ document.addEventListener("DOMContentLoaded", function () {
             if (detailTdp) detailTdp.innerText = "TDP: " + this.getAttribute("data-tdp");
             if (detailIGPU) detailIGPU.innerText = "IGPU: " + (this.getAttribute("data-igpu") === 'true' ? 'Yes' : 'No');
 
-            if (priceTotal) priceTotal.innerText = price;
+            // Hiển thị tạm thời: Total Price ban đầu + giá sản phẩm đang chọn
+            if (priceTotal) {
+                const tempTotal = originalTotalPrice + currentProductPrice;
+                priceTotal.innerText = "$" + tempTotal.toFixed(2);
+            }
         });
     });
 });

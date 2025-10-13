@@ -12,37 +12,40 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/build")
-@SessionAttributes("buildItem")
+@SessionAttributes({"buildItems"})
 public class CaseController {
 
     @Autowired
     private CaseService caseService;
 
-    @ModelAttribute("buildItem")
-    public BuildItemDto buildItem() {
+    @ModelAttribute("buildItems")
+    public BuildItemDto buildItems() {
         return new BuildItemDto();
     }
 
+    // Hiển thị danh sách case tương thích
     @GetMapping("/case")
-    public String showCases(Model model, @ModelAttribute("buildItem") BuildItemDto buildItem) {
+    public String showCases(Model model, @ModelAttribute("buildItems") BuildItemDto buildItem) {
         List<Case> compatibleCases = caseService.getAllCompatibleCases(buildItem);
         model.addAttribute("cases", compatibleCases);
         return "build/cases";
     }
 
+    // Chọn case
     @PostMapping("/selectCase")
     public String selectCase(@RequestParam("caseId") int caseId,
-                           @ModelAttribute("buildItem") BuildItemDto buildItem) {
+                           @ModelAttribute("buildItems") BuildItemDto buildItem) {
         Case selectedCase = caseService.selectCase(caseId);
         buildItem.setPcCase(selectedCase);
         return "redirect:/build/cooling";
     }
 
+    // Lọc case theo form factor
     @GetMapping("/filterCases")
     @ResponseBody
     public List<Case> filterCases(
             @RequestParam(required = false) String formFactor,
-            @ModelAttribute("buildItem") BuildItemDto buildItem) {
+            @ModelAttribute("buildItems") BuildItemDto buildItem) {
         List<Case> compatibleCases = caseService.getAllCompatibleCases(buildItem);
         return caseService.filterCasesByFormFactor(compatibleCases, formFactor);
     }

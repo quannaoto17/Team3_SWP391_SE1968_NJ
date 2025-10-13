@@ -1,7 +1,7 @@
 package com.example.PCOnlineShop.service.build;
 
-import com.example.PCOnlineShop.model.build.PowerSupply;
-import com.example.PCOnlineShop.repository.build.PowerSupplyRepository;
+import com.example.PCOnlineShop.model.build.Storage;
+import com.example.PCOnlineShop.repository.build.StorageRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -11,25 +11,26 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class StorageService {
-    private PowerSupplyRepository powerSupplyRepository;
+    private StorageRepository storageRepository;
 
-    public List<PowerSupply> getAllPowerSupply() {
-        return powerSupplyRepository.findAll();
+    public Storage getStorageById(int id) {
+        return storageRepository.findById(id).orElse(null);
     }
 
-    public PowerSupply addPowerSupply(PowerSupply powerSupply) {
-        return powerSupplyRepository.save(powerSupply);
+    public List<Storage> getAllStorages() {
+        return storageRepository.findAll();
     }
 
-    public PowerSupply updatePowerSupply(PowerSupply powerSupply) {
-        return powerSupplyRepository.save(powerSupply);
+
+    public Storage addStorage(Storage storage) {
+        return storageRepository.save(storage);
     }
 
-    public PowerSupply getPowerSupplyById(int id) {
-        return powerSupplyRepository.findById(id).orElse(null);
+    public Storage updateStorage(Storage storage) {
+        return storageRepository.save(storage);
     }
 
-    public void deletePowerSupply(int id) {
-        powerSupplyRepository.deleteById(id);
+    public void deleteStorage(int id) {
+        storageRepository.deleteById(id);
     }
 }
