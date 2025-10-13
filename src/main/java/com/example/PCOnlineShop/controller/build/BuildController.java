@@ -25,7 +25,7 @@ public class BuildController {
 
     @GetMapping("/startover")
     public String startOver(HttpSession session) {
-        session.removeAttribute("buildItems"); // Chỉ xóa buildItems khỏi session
+        session.removeAttribute("buildItems"); // Clear buildItems from session to start a fresh build without affecting user login session or other session data
         return "redirect:/build/mainboard";
     }
 }
