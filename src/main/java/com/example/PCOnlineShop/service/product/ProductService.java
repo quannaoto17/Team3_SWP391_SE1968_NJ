@@ -83,4 +83,20 @@ public class ProductService {
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         return productRepository.findByCategory_CategoryId(categoryId, pageable);
     }
+
+    // Search di dộng
+    public Page<Product> search(String keyword, Integer brandId, Integer categoryId,
+                                int page, int size, String sortField, String sortDir) {
+        String field = (sortField != null && List.of("productId","productName","price","createAt","status")
+                .contains(sortField)) ? sortField : "productId";
+
+        Sort sort = "desc".equalsIgnoreCase(sortDir)
+                ? Sort.by(field).descending()
+                : Sort.by(field).ascending();
+
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        String kw = (keyword == null || keyword.isBlank()) ? null : keyword.trim();
+        return productRepository.search(kw, brandId, categoryId, pageable);
+    }
+
 }

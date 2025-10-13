@@ -39,7 +39,7 @@ public class ProductController {
         this.imageRepository = imageRepository;
     }
 
-    // ===== DANH SÁCH SẢN PHẨM =====
+    // ===== DANH SÁCH SẢN PHẨM (có keyword để search, giữ phân trang + sort) =====
     @GetMapping("/list")
     public String listProducts(
             @RequestParam(defaultValue = "1") int page,
@@ -48,11 +48,15 @@ public class ProductController {
             @RequestParam(defaultValue = "asc") String sortDir,
             @RequestParam(required = false) Integer brandId,
             @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) String keyword,   // NEW
             Model model) {
 
         Page<Product> productPage;
 
-        if (brandId != null) {
+        boolean hasKeyword = (keyword != null && !keyword.isBlank());
+        if (hasKeyword) {
+            productPage = productService.search(keyword, brandId, categoryId, page, size, sortField, sortDir);
+        } else if (brandId != null) {
             productPage = productService.getProductsByBrand(brandId, page, size, sortField, sortDir);
         } else if (categoryId != null) {
             productPage = productService.getProductsByCategory(categoryId, page, size, sortField, sortDir);
@@ -70,11 +74,61 @@ public class ProductController {
 
         model.addAttribute("brandId", brandId);
         model.addAttribute("categoryId", categoryId);
+        model.addAttribute("keyword", keyword); // NEW
 
         model.addAttribute("brands", brandRepository.findAll());
         model.addAttribute("categories", categoryRepository.findAll());
-
         return "product/product-list";
+    }
+
+    // ===== LIVE SEARCH: Trả về fragment <tbody> đã render để JS thay trực tiếp =====
+    // View cần khai báo: <tbody id="productTbody" th:fragment="tbodyRows">...</tbody>
+    @GetMapping("/search-fragment")
+    public String searchFragment(@RequestParam(required = false) String keyword,
+                                 @RequestParam(required = false) Integer brandId,
+                                 @RequestParam(required = false) Integer categoryId,
+                                 @RequestParam(defaultValue = "productId") String sortField,
+                                 @RequestParam(defaultValue = "asc") String sortDir,
+                                 @RequestParam(defaultValue = "1") int page,
+                                 @RequestParam(defaultValue = "8") int size,
+                                 Model model) {
+
+        Page<Product> productPage =
+                productService.search(keyword, brandId, categoryId, page, size, sortField, sortDir);
+
+        model.addAttribute("products", productPage.getContent());
+        // Nếu muốn update cả pagination theo kết quả search, có thể add currentPage/totalPages và trả fragment lớn hơn
+        return "product/product-list :: tbodyRows";
+    }
+    // Trả về cả bảng + pagination theo keyword/filter/sort/page hiện thời
+    @GetMapping("/search-block")
+    public String searchBlock(@RequestParam(required = false) String keyword,
+                              @RequestParam(required = false) Integer brandId,
+                              @RequestParam(required = false) Integer categoryId,
+                              @RequestParam(defaultValue = "productId") String sortField,
+                              @RequestParam(defaultValue = "asc") String sortDir,
+                              @RequestParam(defaultValue = "1") int page,
+                              @RequestParam(defaultValue = "8") int size,
+                              Model model) {
+
+        Page<Product> productPage = productService.search(keyword, brandId, categoryId, page, size, sortField, sortDir);
+
+        model.addAttribute("products",     productPage.getContent());
+        model.addAttribute("currentPage",  page);
+        model.addAttribute("totalPages",   productPage.getTotalPages());
+        model.addAttribute("totalItems",   productPage.getTotalElements());
+
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDir",   sortDir);
+        model.addAttribute("reverseSortDir", "asc".equalsIgnoreCase(sortDir) ? "desc" : "asc");
+
+        model.addAttribute("brandId",  brandId);
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("keyword",  keyword);
+
+
+
+        return "product/product-list :: listWrapper"; // fragment mới (xem bước 2)
     }
 
     // ===== FORM THÊM SẢN PHẨM =====
@@ -91,41 +145,24 @@ public class ProductController {
     public String saveProduct(@ModelAttribute("product") Product product,
                               @RequestParam("category.categoryId") int categoryId,
                               @RequestParam("brand.brandId") int brandId,
-                              @RequestParam("imageFiles") List<MultipartFile> imageFiles) throws IOException {
+                              @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles) throws IOException {
 
         Category category = categoryRepository.findById(categoryId).orElse(null);
         Brand brand = brandRepository.findById(brandId).orElse(null);
         product.setCategory(category);
         product.setBrand(brand);
 
-        // 1️⃣ Lưu sản phẩm trước để có productId
+        // 1) Lưu sản phẩm trước để có productId
         Product savedProduct = productService.addProduct(product);
 
-        // 2️⃣ Thư mục lưu ảnh: /static/image
-        Path uploadPath = Paths.get(new File("src/main/resources/static/image").getAbsolutePath());
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
+        // 2) Lưu ảnh (nếu có)
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            List<Image> images = saveImagesToStatic(imageFiles, savedProduct);
+            // 3) Lưu vào DB
+            imageRepository.saveAll(images);
+            savedProduct.setImages(images);
+            productService.updateProduct(savedProduct);
         }
-
-        // 3️⃣ Lưu từng ảnh
-        List<Image> images = new ArrayList<>();
-        for (MultipartFile file : imageFiles) {
-            if (!file.isEmpty()) {
-                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                Path filePath = uploadPath.resolve(fileName);
-                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-                Image image = new Image();
-                image.setImageUrl("/image/" + fileName);
-                image.setProduct(savedProduct);
-                images.add(image);
-            }
-        }
-
-        // 4️⃣ Lưu vào DB
-        imageRepository.saveAll(images);
-        savedProduct.setImages(images);
-        productService.updateProduct(savedProduct);
 
         return "redirect:/staff/products/list";
     }
@@ -143,7 +180,7 @@ public class ProductController {
         return "product/product-update";
     }
 
-    // ===== CẬP NHẬT SẢN PHẨM (CÓ ẢNH MỚI) =====
+    // ===== CẬP NHẬT SẢN PHẨM (CÓ THỂ THÊM ẢNH MỚI) =====
     @PostMapping("/edit")
     public String updateProduct(@ModelAttribute("product") Product product,
                                 @RequestParam("category.categoryId") int categoryId,
@@ -160,27 +197,34 @@ public class ProductController {
 
         // Nếu có ảnh mới thì thêm vào static/image
         if (imageFiles != null && !imageFiles.isEmpty()) {
-            Path uploadPath = Paths.get("src/main/resources/static/image");
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-            List<Image> newImages = new ArrayList<>();
-            for (MultipartFile file : imageFiles) {
-                if (!file.isEmpty()) {
-                    String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                    Path filePath = uploadPath.resolve(fileName);
-                    Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-                    Image image = new Image();
-                    image.setImageUrl("/image/" + fileName);
-                    image.setProduct(updatedProduct);
-                    newImages.add(image);
-                }
-            }
+            List<Image> newImages = saveImagesToStatic(imageFiles, updatedProduct);
             imageRepository.saveAll(newImages);
         }
 
         return "redirect:/staff/products/list";
+    }
+
+    // ===== Helper: Lưu file ảnh vào /static/image và tạo entity Image =====
+    private List<Image> saveImagesToStatic(List<MultipartFile> imageFiles, Product product) throws IOException {
+        // Thư mục lưu ảnh: /src/main/resources/static/image
+        Path uploadPath = Paths.get(new File("src/main/resources/static/image").getAbsolutePath());
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        List<Image> images = new ArrayList<>();
+        for (MultipartFile file : imageFiles) {
+            if (file != null && !file.isEmpty()) {
+                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                Path filePath = uploadPath.resolve(fileName);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                Image img = new Image();
+                img.setImageUrl("/image/" + fileName); // URL để Thymeleaf hiển thị
+                img.setProduct(product);
+                images.add(img);
+            }
+        }
+        return images;
     }
 }

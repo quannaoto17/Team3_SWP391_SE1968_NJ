@@ -1,199 +1,56 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Product</title>
+    <title>Chỉnh sửa sản phẩm</title>
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f6f7fb;
-        }
-
-        .layout {
-            display: grid;
-            grid-template-columns: 240px 1fr;
-            min-height: 100vh;
-        }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f6f7fb; }
+        .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
 
         /* ===== Sidebar ===== */
-        .sidebar {
-            background: #555;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .sidebar img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #ccc;
-            margin-bottom: 10px;
-        }
-
-        .sidebar h3 {
-            margin: 8px 0 16px;
-        }
-
-        .sidebar button {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            border: none;
-            border-radius: 4px;
-            background: #eee;
-            cursor: pointer;
-        }
-
-        .sidebar button:hover {
-            background: #ddd;
-        }
+        .sidebar { background: #555; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .sidebar img { width: 80px; height: 80px; border-radius: 50%; background: #ccc; margin-bottom: 10px; }
+        .sidebar h3 { margin: 8px 0 16px; }
+        .sidebar button { width: 100%; padding: 8px; margin: 5px 0; border: none; border-radius: 4px; background: #eee; cursor: pointer; }
+        .sidebar button:hover { background: #ddd; }
 
         /* ===== Header ===== */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #fff;
-            border-bottom: 1px solid #ddd;
-            padding: 10px 20px;
-        }
-
-        .search-bar {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .search-bar input {
-            width: 300px;
-            padding: 6px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .logout-btn {
-            border: 1px solid #aaa;
-            background: #fff;
-            padding: 6px 12px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .logout-btn:hover {
-            background: #eee;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; background: #fff; border-bottom: 1px solid #ddd; padding: 10px 20px; }
+        .search-bar { display: flex; align-items: center; gap: 8px; }
+        .search-bar input { width: 300px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+        .logout-btn { border: 1px solid #aaa; background: #fff; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
+        .logout-btn:hover { background: #eee; }
 
         /* ===== Content ===== */
-        .content {
-            padding: 30px 50px;
-            background: #fff;
-        }
-
-        h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        form {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            align-items: start;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 6px;
-            color: #333;
-        }
-
-        input, select, textarea {
-            width: 90%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        textarea {
-            grid-column: span 3;
-            width: 95%;
-            padding: 10px;
-            resize: vertical;
-        }
+        .content { padding: 30px 50px; background: #fff; }
+        h2 { margin-bottom: 20px; color: #333; }
+        form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; align-items: start; }
+        label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
+        input, select, textarea { width: 90%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        textarea { grid-column: span 3; width: 95%; padding: 10px; resize: vertical; }
 
         /* ===== Image Section ===== */
-        .image-section {
-            grid-column: span 3;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .image-box {
-            width: 200px;
-            height: 150px;
-            border: 2px dashed #bbb;
-            border-radius: 8px;
-            background: #f9f9f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        .image-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .choose-btn {
-            padding: 8px 12px;
-            border: 1px solid #aaa;
-            background: #f1f1f1;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .choose-btn:hover {
-            background: #ddd;
-        }
+        .image-section { grid-column: span 3; display: flex; align-items: center; gap: 20px; }
+        .image-box { width: 200px; height: 150px; border: 2px dashed #bbb; border-radius: 8px; background: #f9f9f9; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .image-box img { width: 100%; height: 100%; object-fit: cover; }
+        .choose-btn { padding: 8px 12px; border: 1px solid #aaa; background: #f1f1f1; border-radius: 4px; cursor: pointer; }
+        .choose-btn:hover { background: #ddd; }
 
         /* ===== Update Button ===== */
-        .update-btn {
-            grid-column: span 3;
-            justify-self: end;
-            padding: 12px 30px;
-            background: #333;
-            color: white;
-            font-weight: bold;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .update-btn:hover {
-            background: #111;
-        }
+        .update-btn { grid-column: span 3; justify-self: end; padding: 12px 30px; background: #333; color: white; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        .update-btn:hover { background: #111; }
     </style>
 </head>
 <body>
 <div class="layout">
     <!-- Sidebar -->
     <aside class="sidebar">
-        <img src="https://via.placeholder.com/80" alt="avatar">
-        <h3>Role</h3>
-        <button>Dashboard</button>
-        <button>Category Manage</button>
-        <button>Product Manage</button>
-        <button>...</button>
+        <img src="https://via.placeholder.com/80" alt="Ảnh đại diện">
+        <h3>Vai trò</h3>
+        <button>Bảng điều khiển</button>
+        <button>Quản lý danh mục</button>
+        <button>Quản lý sản phẩm</button>
+        <button>Khác</button>
     </aside>
 
     <!-- Main -->
@@ -201,15 +58,15 @@
         <!-- Header -->
         <div class="header">
             <div class="search-bar">
-                <input type="text" placeholder="Search bar">
-                <button>Search</button>
+                <input type="text" placeholder="Tìm kiếm...">
+                <button>Tìm kiếm</button>
             </div>
-            <button class="logout-btn">Logout</button>
+            <button class="logout-btn">Đăng xuất</button>
         </div>
 
         <!-- Content -->
         <div class="content">
-            <h2>Product Details</h2>
+            <h2>Chi tiết sản phẩm</h2>
 
             <form th:action="@{/staff/products/edit}" th:object="${product}" method="post" enctype="multipart/form-data">
                 <input type="hidden" th:field="*{productId}"/>
@@ -218,24 +75,24 @@
                 <div class="image-section">
                     <div class="image-box" id="imagePreview">
                         <img th:if="${product.images != null and !#lists.isEmpty(product.images)}"
-                             th:src="@{${product.images[0].imageUrl}}" alt="product image">
-                        <p th:if="${product.images == null or #lists.isEmpty(product.images)}">No image</p>
+                             th:src="@{${product.images[0].imageUrl}}" alt="Ảnh sản phẩm">
+                        <p th:if="${product.images == null or #lists.isEmpty(product.images)}">Chưa có ảnh</p>
                     </div>
                     <input type="file" name="imageFiles" multiple accept="image/*" id="imageInput" style="display:none;">
-                    <button type="button" class="choose-btn" onclick="document.getElementById('imageInput').click()">Choose Image</button>
+                    <button type="button" class="choose-btn" onclick="document.getElementById('imageInput').click()">Chọn ảnh</button>
                 </div>
 
                 <!-- Product Name -->
                 <div>
-                    <label>Product Name:</label>
-                    <input type="text" th:field="*{productName}" placeholder="Enter product name" required>
+                    <label>Tên sản phẩm:</label>
+                    <input type="text" th:field="*{productName}" placeholder="Nhập tên sản phẩm" required>
                 </div>
 
                 <!-- Category -->
                 <div>
-                    <label>Category:</label>
+                    <label>Danh mục:</label>
                     <select name="category.categoryId" required>
-                        <option value="">Select</option>
+                        <option value="">Chọn</option>
                         <option th:each="cat : ${categories}"
                                 th:value="${cat.categoryId}"
                                 th:text="${cat.categoryName}"
@@ -246,9 +103,9 @@
 
                 <!-- Brand -->
                 <div>
-                    <label>Brand:</label>
+                    <label>Thương hiệu:</label>
                     <select name="brand.brandId" required>
-                        <option value="">Select</option>
+                        <option value="">Chọn</option>
                         <option th:each="b : ${brands}"
                                 th:value="${b.brandId}"
                                 th:text="${b.name}"
@@ -259,40 +116,40 @@
 
                 <!-- Price -->
                 <div>
-                    <label>Price ($):</label>
-                    <input type="number" th:field="*{price}" min="0" step="0.01" placeholder="Enter product price" required>
+                    <label>Giá ($):</label>
+                    <input type="number" th:field="*{price}" min="0" step="0.01" placeholder="Nhập giá sản phẩm" required>
                 </div>
 
                 <!-- Status -->
                 <div>
-                    <label>Status:</label>
+                    <label>Trạng thái:</label>
                     <select th:field="*{status}">
-                        <option th:value="true" th:selected="${product.status == true}">Available</option>
-                        <option th:value="false" th:selected="${product.status == false}">Unavailable</option>
+                        <option th:value="true" th:selected="${product.status == true}">Còn hàng</option>
+                        <option th:value="false" th:selected="${product.status == false}">Hết hàng</option>
                     </select>
                 </div>
 
                 <!-- Description -->
                 <div style="grid-column: span 3;">
-                    <label>Description:</label>
-                    <textarea th:field="*{description}" rows="3" placeholder="Product description..."></textarea>
+                    <label>Mô tả:</label>
+                    <textarea th:field="*{description}" rows="3" placeholder="Mô tả sản phẩm..."></textarea>
                 </div>
 
                 <!-- Specification -->
                 <div style="grid-column: span 3;">
-                    <label>Specification:</label>
-                    <textarea th:field="*{specification}" rows="3" placeholder="Product specifications..."></textarea>
+                    <label>Thông số kỹ thuật:</label>
+                    <textarea th:field="*{specification}" rows="3" placeholder="Thông số kỹ thuật..."></textarea>
                 </div>
 
                 <!-- Update Button -->
-                <button type="submit" class="update-btn">UPDATE</button>
+                <button type="submit" class="update-btn">Cập nhật</button>
             </form>
         </div>
     </div>
 </div>
 
 <script>
-    // === Preview ảnh mới khi chọn ===
+    // Xem trước ảnh khi chọn
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
 
@@ -301,7 +158,7 @@
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                imagePreview.innerHTML = `<img src="${e.target.result}" alt="preview">`;
+                imagePreview.innerHTML = `<img src="${e.target.result}" alt="Xem trước">`;
             };
             reader.readAsDataURL(file);
         }
