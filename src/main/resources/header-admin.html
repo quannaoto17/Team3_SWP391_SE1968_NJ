@@ -196,7 +196,9 @@
         <button>Search</button>
     </div>
 
-    <button class="logout-btn">Logout</button>
+    <form th:action="@{/auth/logout}" method="post" style="display:inline;">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
 </header>
 
 <aside class="sidebar" id="sidebar">

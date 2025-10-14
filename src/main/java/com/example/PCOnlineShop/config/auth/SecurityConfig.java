@@ -36,10 +36,12 @@ public class SecurityConfig {
 
                 // filter
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/assets/**", "/home", "/auth/**").permitAll()
+                        .requestMatchers("/assets/**", "/", "/home", "/auth/**").permitAll()
 
-                        .requestMatchers("/staff/**").hasAnyRole( "ADMIN")
-                        .requestMatchers("/customer/**").hasAnyRole("ADMIN","STAFF")
+                        .requestMatchers("/staff/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/customer/orders/**").hasAnyRole("CUSTOMER", "ADMIN", "STAFF")
+                        .requestMatchers("/customer/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/build/**").authenticated()
                         .anyRequest().authenticated()
                 )
 
