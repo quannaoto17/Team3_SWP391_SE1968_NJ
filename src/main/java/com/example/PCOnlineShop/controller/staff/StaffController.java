@@ -56,7 +56,14 @@ public class StaffController {
         if (result.hasErrors()) {
             return "staff/add-staff";
         }
-        authService.saveStaff(account);
+
+        try {
+            authService.saveStaff(account);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "staff/add-staff";
+        }
+
         return "redirect:/staff/list?statusFilter=all";
     }
 
@@ -75,7 +82,14 @@ public class StaffController {
         if (result.hasErrors()) {
             return "staff/edit-staff";
         }
-        authService.saveStaff(account);
+
+        try {
+            authService.saveStaff(account);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "staff/edit-staff";
+        }
+
         return "redirect:/staff/list?statusFilter=all";
     }
 

@@ -6,77 +6,45 @@
     <link rel="stylesheet" href="/css/StaffStyle.css">
 </head>
 <body>
-<div>
-    <div class="header">
-        <h2>Edit Staff</h2>
+<div class="header"><h2>Edit Staff</h2></div>
+<div class="content">
+
+    <div th:if="${errorMessage}" class="error" style="margin-bottom:10px;">
+        <p th:text="${errorMessage}"></p>
     </div>
 
-    <div class="content">
-        <form th:action="@{/staff/edit}" th:object="${account}" method="post">
-            <input type="hidden" th:field="*{accountId}" />
+    <form th:action="@{/staff/edit}" th:object="${account}" method="post">
+        <input type="hidden" th:field="*{accountId}">
+        <table>
+            <tr><td>First Name:</td><td><input type="text" th:field="*{firstname}" required></td></tr>
+            <tr><td>Last Name:</td><td><input type="text" th:field="*{lastname}" required></td></tr>
+            <tr><td>Email:</td><td><input type="email" th:field="*{email}" required></td></tr>
+            <tr><td>Phone:</td><td><input type="text" th:field="*{phoneNumber}" pattern="[0-9]{9,15}" required></td></tr>
+            <tr><td>Address:</td><td><input type="text" th:field="*{address}" required></td></tr>
+            <tr>
+                <td>Password:</td>
+                <td>
+                    <input type="text" id="password" th:field="*{password}" minlength="6"
+                           placeholder="Enter new password or keep old" required onkeyup="checkStrength()">
+                    <div id="strengthMessage"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>Status:</td>
+                <td>
+                    <label><input type="radio" th:field="*{enabled}" value="true"> Active</label>
+                    <label><input type="radio" th:field="*{enabled}" value="false"> Inactive</label>
+                </td>
+            </tr>
+        </table>
+        <button type="submit">Update</button>
+    </form>
 
-            <table>
-                <tr>
-                    <td>First Name:</td>
-                    <td>
-                        <input type="text" th:field="*{firstname}" required />
-                        <div th:if="${#fields.hasErrors('firstname')}" th:errors="*{firstname}" class="error"></div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Last Name:</td>
-                    <td>
-                        <input type="text" th:field="*{lastname}" required />
-                        <div th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}" class="error"></div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Email:</td>
-                    <td>
-                        <input type="email" th:field="*{email}" required />
-                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Phone:</td>
-                    <td>
-                        <input type="text" th:field="*{phoneNumber}" required pattern="[0-9]{9,15}" />
-                        <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error"></div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Address:</td>
-                    <td>
-                        <input type="text" th:field="*{address}" required />
-                        <div th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="error"></div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Password:</td>
-                    <td>
-                        <input type="text" th:field="*{password}" minlength="6" required />
-                        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Status:</td>
-                    <td>
-                        <label><input type="radio" th:field="*{enabled}" value="true"/> Active</label>
-                        <label><input type="radio" th:field="*{enabled}" value="false"/> Inactive</label>
-                    </td>
-                </tr>
-            </table>
-
-            <button type="submit">Update</button>
-        </form>
+    <div style="margin-top:15px;">
         <a href="/staff/list">← Back</a>
     </div>
 </div>
+
+<script src="/js/Staff.js"></script>
 </body>
 </html>
