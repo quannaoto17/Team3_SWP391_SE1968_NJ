@@ -14,12 +14,54 @@
     <div class="content">
         <form th:action="@{/staff/add}" th:object="${account}" method="post">
             <table>
-                <tr><td>First Name:</td><td><input type="text" th:field="*{firstname}"/></td></tr>
-                <tr><td>Last Name:</td><td><input type="text" th:field="*{lastname}"/></td></tr>
-                <tr><td>Email:</td><td><input type="email" th:field="*{email}"/></td></tr>
-                <tr><td>Phone:</td><td><input type="text" th:field="*{phoneNumber}"/></td></tr>
-                <tr><td>Address:</td><td><input type="text" th:field="*{address}"/></td></tr>
-                <tr><td>Password:</td><td><input type="password" th:field="*{password}"/></td></tr>
+                <tr>
+                    <td>First Name:</td>
+                    <td>
+                        <input type="text" th:field="*{firstname}" required />
+                        <div th:if="${#fields.hasErrors('firstname')}" th:errors="*{firstname}" class="error"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Last Name:</td>
+                    <td>
+                        <input type="text" th:field="*{lastname}" required />
+                        <div th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}" class="error"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Email:</td>
+                    <td>
+                        <input type="email" th:field="*{email}" required />
+                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Phone:</td>
+                    <td>
+                        <input type="text" th:field="*{phoneNumber}" required pattern="[0-9]{9,15}" />
+                        <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Address:</td>
+                    <td>
+                        <input type="text" th:field="*{address}" required />
+                        <div th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="error"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Password:</td>
+                    <td>
+                        <input type="password" th:field="*{password}" minlength="6" required />
+                        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></div>
+                    </td>
+                </tr>
+
                 <tr>
                     <td>Status:</td>
                     <td>
