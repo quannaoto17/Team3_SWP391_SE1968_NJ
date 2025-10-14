@@ -3,10 +3,12 @@ package com.example.PCOnlineShop.controller.staff;
 import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.service.auth.AuthService;
 import com.example.PCOnlineShop.service.staff.StaffService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -17,60 +19,67 @@ public class StaffController {
     private final StaffService staffService;
     private final AuthService authService;
 
-
-    // 🔹 Danh sách nhân viên (lọc theo trạng thái Active / Inactive / All)
+    // 🔹 Danh sách nhân viên
     @GetMapping("/list")
     public String listStaff(@RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "10") int size,
                             @RequestParam(defaultValue = "") String searchQuery,
-                            @RequestParam(defaultValue = "all") String statusFilter, // ✅ lọc trạng thái
+                            @RequestParam(defaultValue = "all") String statusFilter,
                             Model model) {
 
         Page<Account> staffPage = staffService.getStaffPage(page, size, searchQuery, statusFilter);
-
         model.addAttribute("staffPage", staffPage);
         model.addAttribute("searchQuery", searchQuery);
         model.addAttribute("statusFilter", statusFilter);
         return "staff/staff-list";
     }
 
-    // 🔹 Xem chi tiết nhân viên
+    // 🔹 Xem chi tiết
     @GetMapping("/view/{id}")
     public String viewStaff(@PathVariable int id, Model model) {
-        Account account = staffService.getById(id);
-        model.addAttribute("account", account);
+        model.addAttribute("account", staffService.getById(id));
         return "staff/view-staff";
     }
 
-    // 🔹 Form thêm nhân viên
+    // 🔹 Form thêm
     @GetMapping("/add")
     public String addStaffForm(Model model) {
         model.addAttribute("account", new Account());
         return "staff/add-staff";
     }
 
-    // 🔹 Lưu nhân viên
+    // 🔹 Lưu nhân viên (Validate)
     @PostMapping("/add")
-    public String saveStaff(@ModelAttribute("account") Account account) {
-    authService.saveStaff(account);
+    public String saveStaff(@Valid @ModelAttribute("account") Account account,
+                            BindingResult result,
+                            Model model) {
+        if (result.hasErrors()) {
+            return "staff/add-staff";
+        }
+        authService.saveStaff(account);
         return "redirect:/staff/list?statusFilter=all";
     }
 
-    // 🔹 Form sửa nhân viên
+    // 🔹 Form sửa
     @GetMapping("/edit/{id}")
     public String editStaffForm(@PathVariable int id, Model model) {
         model.addAttribute("account", staffService.getById(id));
         return "staff/edit-staff";
     }
 
-    // 🔹 Cập nhật nhân viên
+    // 🔹 Cập nhật (Validate)
     @PostMapping("/edit")
-    public String updateStaff(@ModelAttribute("account") Account account) {
+    public String updateStaff(@Valid @ModelAttribute("account") Account account,
+                              BindingResult result,
+                              Model model) {
+        if (result.hasErrors()) {
+            return "staff/edit-staff";
+        }
         authService.saveStaff(account);
         return "redirect:/staff/list?statusFilter=all";
     }
 
-    // 🔹 Chuyển trạng thái (Active <-> Inactive)
+    // 🔹 Chuyển trạng thái
     @GetMapping("/delete/{id}")
     public String deactivateStaff(@PathVariable int id) {
         staffService.deactivateStaff(id);

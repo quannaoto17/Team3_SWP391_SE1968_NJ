@@ -215,7 +215,7 @@ table tr:hover {
     background: #f1f2f6;
 }
 
-/* 🔒 Chặn click khi disabled */
+/* 🔒 Disabled state */
 .pagination a.disabled {
     pointer-events: none;
     color: #aaa;
@@ -223,6 +223,79 @@ table tr:hover {
     background: #f1f2f6;
     cursor: default;
     opacity: 0.6;
+}
+
+/* ===== FORM (Add/Edit Staff) ===== */
+form {
+    width: 100%;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+form table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+form td {
+    padding: 6px;
+    vertical-align: middle;
+    font-size: 15px;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border 0.2s;
+}
+
+form input:focus {
+    outline: none;
+    border-color: #4b7bec;
+}
+
+/* ===== ERROR MESSAGE (for validation) ===== */
+.error {
+    color: #e74c3c;
+    font-size: 13px;
+    margin-top: 4px;
+    display: block;
+}
+
+/* ===== BUTTONS ===== */
+button[type="submit"] {
+    background: #4b7bec;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+button[type="submit"]:hover {
+    background: #3867d6;
+}
+
+/* Back link */
+a[href="/staff/list"] {
+    display: inline-block;
+    margin-top: 12px;
+    color: #4b7bec;
+    text-decoration: none;
+}
+
+a[href="/staff/list"]:hover {
+    text-decoration: underline;
 }
 
 /* ===== RESPONSIVE ===== */
@@ -246,5 +319,9 @@ table tr:hover {
     .add-staff a {
         width: 100%;
         text-align: center;
+    }
+
+    form {
+        width: 100%;
     }
 }
