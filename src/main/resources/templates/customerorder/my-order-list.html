@@ -2,19 +2,15 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Danh sách đơn hàng</title>
-    <link rel="stylesheet" th:href="@{/css/OrderStyle.css}">
+    <title>Đơn hàng của tôi</title> <link rel="stylesheet" th:href="@{/css/OrderStyle.css}">
 </head>
 <body>
 
-<h2>Danh sách đơn hàng</h2>
-
-<table>
+<h2>Đơn hàng của tôi</h2> <table>
     <thead>
     <tr>
         <th>#</th>
         <th>Mã đơn</th>
-        <th>Khách hàng</th>
         <th>Tổng tiền</th>
         <th>Trạng thái</th>
         <th>Ngày tạo</th>
@@ -25,11 +21,10 @@
     <tr th:each="order, stat : ${orders}">
         <td th:text="${stat.count}"></td>
         <td th:text="${order.orderId}"></td>
-        <td th:text="${order.account.fullName}"></td>
         <td th:text="${#numbers.formatDecimal(order.finalAmount, 0, 'COMMA', 2, 'POINT')} + ' ₫'"></td>
         <td th:text="${order.status}"></td>
         <td th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy')}"></td>
-        <td><a th:href="@{'/staff/orders/detail/' + ${order.orderId}}" class="view-btn">Xem</a></td>
+        <td><a th:href="@{'/customer/orders/detail/' + ${order.orderId}}" class="view-btn">Xem</a></td>
     </tr>
     </tbody>
 </table>
