@@ -1,4 +1,4 @@
-package com.example.PCOnlineShop.controller.staff;
+package com.example.PCOnlineShop.controller.order;
 
 import com.example.PCOnlineShop.model.order.Order;
 import com.example.PCOnlineShop.service.order.OrderService;
