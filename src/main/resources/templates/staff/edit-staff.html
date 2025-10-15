@@ -20,7 +20,28 @@
             <tr><td>Last Name:</td><td><input type="text" th:field="*{lastname}" required></td></tr>
             <tr><td>Email:</td><td><input type="email" th:field="*{email}" required></td></tr>
             <tr><td>Phone:</td><td><input type="text" th:field="*{phoneNumber}" pattern="[0-9]{9,15}" required></td></tr>
-            <tr><td>Address:</td><td><input type="text" th:field="*{address}" required></td></tr>
+            <tr>
+                <td>Address:</td>
+                <td>
+                    <!-- Ba dropdown chọn địa chỉ -->
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <select id="province" class="form-control" style="flex: 1;">
+                            <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                        </select>
+                        <select id="district" class="form-control" style="flex: 1;">
+                            <option value="">-- Chọn Quận/Huyện --</option>
+                        </select>
+                        <select id="ward" class="form-control" style="flex: 1;">
+                            <option value="">-- Chọn Phường/Xã --</option>
+                        </select>
+                    </div>
+
+                    <!-- ✅ Input ẩn, để gửi dữ liệu về backend -->
+                    <input type="hidden" id="address" th:field="*{address}">
+                </td>
+            </tr>
+
+
             <tr>
                 <td>Password:</td>
                 <td>
