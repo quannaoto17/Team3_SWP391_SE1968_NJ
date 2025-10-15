@@ -22,7 +22,7 @@ public class HomeController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/home")
     public String showHomePage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size,
