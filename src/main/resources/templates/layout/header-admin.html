@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Admin Header UI</title>
@@ -155,7 +156,7 @@
             background: #374151;
         }
 
-        /* Overlay khi sidebar mở */
+        /* Overlay */
         .overlay {
             position: fixed;
             top: 0;
@@ -174,7 +175,7 @@
             visibility: visible;
         }
 
-        /* Nội dung trang */
+        /* Main */
         main {
             margin-top: 70px;
             padding: 20px;
@@ -186,63 +187,68 @@
         }
     </style>
 </head>
+
 <body>
-<header>
-    <div class="menu-btn" id="menu-btn">☰</div>
-    <div class="title">Admin Dashboard</div>
 
-    <div class="search">
-        <input type="text" placeholder="Search...">
-        <button>Search</button>
-    </div>
+<div th:fragment="admin-header">
+    <header>
+        <div class="menu-btn" id="menu-btn">☰</div>
+        <div class="title">Admin Dashboard</div>
 
-    <form th:action="@{/auth/logout}" method="post" style="display:inline;">
-        <button type="submit" class="logout-btn">Logout</button>
-    </form>
-</header>
+        <div class="search">
+            <input type="text" placeholder="Search...">
+            <button>Search</button>
+        </div>
 
-<aside class="sidebar" id="sidebar">
-    <div class="profile">
-        <img src="https://via.placeholder.com/70" alt="Admin">
-        <h3>Admin</h3>
-    </div>
-    <nav>
-        <button>Dashboard</button>
-        <button>Product Management</button>
-        <button>Category Management</button>
-        <button>User Management</button>
-        <button>Order Management</button>
-        <button>Report</button>
-        <button>System Setting</button>
-    </nav>
-</aside>
+        <form th:action="@{/auth/logout}" method="post" style="display:inline;">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </header>
 
-<div class="overlay" id="overlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="profile">
+            <img src="https://via.placeholder.com/70" alt="Admin">
+            <h3>Admin</h3>
+        </div>
+        <nav>
+            <button>Dashboard</button>
+            <button>Product Management</button>
+            <button>Category Management</button>
+            <button>User Management</button>
+            <button>Order Management</button>
+            <button>Report</button>
+            <button>System Setting</button>
+        </nav>
+    </aside>
 
-<main id="main">
-    <h1>Welcome, Admin 👋</h1>
-    <p>Manage products, users, and system settings easily here.</p>
-</main>
+    <div class="overlay" id="overlay"></div>
 
-<script>
-    const menuBtn = document.getElementById('menu-btn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    const main = document.getElementById('main');
+    <main id="main">
+        <h1>Welcome, Admin 👋</h1>
+        <p>Manage products, users, and system settings easily here.</p>
+    </main>
 
-    menuBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-        overlay.classList.toggle('active');
-        main.classList.toggle('shifted');
-        menuBtn.classList.toggle('active');
-    });
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const main = document.getElementById('main');
 
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-        main.classList.remove('shifted');
-        menuBtn.classList.remove('active');
-    });
-</script>
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            main.classList.toggle('shifted');
+            menuBtn.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            main.classList.remove('shifted');
+            menuBtn.classList.remove('active');
+        });
+    </script>
+</div>
+
 </body>
 </html>
