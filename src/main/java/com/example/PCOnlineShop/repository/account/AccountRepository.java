@@ -42,4 +42,6 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
                                        @Param("enabled") Boolean enabled,
                                        @Param("searchQuery") String searchQuery,
                                        Pageable pageable);
+
+    boolean existsByPhoneNumberAndRole(String phoneNumber, RoleName role);
 }

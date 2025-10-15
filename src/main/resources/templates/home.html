@@ -65,9 +65,8 @@
             <!-- Hiển thị danh sách sản phẩm -->
             <div th:each="p : ${productPage.content}" class="product-card">
                 <div class="image-box">
-                    <img th:src="${p.images[0].imageUrl}"
-                         alt="Product Image"
-                         onerror="this.src='/images/no-image.png'">
+                    <img th:src="${!#lists.isEmpty(p.images) ? p.images[0].imageUrl : '/images/no-image.png'}"
+                         alt="Product Image">
                 </div>
                 <h4 th:text="${p.productName}">Product Name</h4>
                 <p th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</p>
