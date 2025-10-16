@@ -38,9 +38,9 @@ public class MainboardService {
 
     public List<Mainboard> filterMainboards(List<Mainboard> mainboards, Map<String,List<String>> filters, String sortBy) {
         // Filter by brands if selected
-        if (filters.get("brand") != null && !filters.get("brand").isEmpty()) {
+        if (filters.get("brands") != null && !filters.get("brands").isEmpty()) {
             mainboards = mainboards.stream()
-                    .filter(mb -> filters.get("brand").contains(mb.getProduct().getBrand().getName()))
+                    .filter(mb -> filters.get("brands").contains(mb.getProduct().getBrand().getName()))
                     .toList();
         }
 
