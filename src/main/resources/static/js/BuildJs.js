@@ -48,6 +48,16 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+    // Popup logic
+    const filterBtn = document.getElementById('openFilterPopup');
+    const filterPopup = document.getElementById('filterPopup');
+    const closeFilterBtn = document.getElementById('closeFilterPopup');
+
+    if (filterBtn && filterPopup && closeFilterBtn) {
+        filterBtn.onclick = () => filterPopup.style.display = 'block';
+        closeFilterBtn.onclick = () => filterPopup.style.display = 'none';
+    }
 });
 
 function filterProducts() {
@@ -57,6 +67,7 @@ function filterProducts() {
         card.style.display = name.includes(query) ? "block" : "none";
     });
 }
+
 function clearFilter() {
     document.getElementById("searchBox").value = "";
     document.querySelectorAll(".product-card").forEach(card => {

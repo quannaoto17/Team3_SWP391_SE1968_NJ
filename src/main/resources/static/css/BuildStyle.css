@@ -238,3 +238,195 @@ html, body {
 .start-btn:hover {
     background: #003399;
 }
+
+/* Popup CSS */
+.popup {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
+    height: auto;
+    background: transparent;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.popup[style*="display: block"],
+.popup[style*="display:block"] {
+    pointer-events: all;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.popup-content {
+    background: #fff;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    width: 600px;
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideDown 0.3s ease-out;
+    border: 2px solid #0044cc;
+    pointer-events: all;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.popup-content h4 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 22px;
+    color: #333;
+    border-bottom: 3px solid #0044cc;
+    padding-bottom: 12px;
+    font-weight: 600;
+}
+
+/* Filter section inside popup */
+.popup-content > div:not(:last-child) {
+    margin-bottom: 20px;
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: #fafafa;
+}
+
+.popup-content > div > div {
+    padding: 12px 10px;
+    display: flex;
+    align-items: center;
+    transition: background 0.2s;
+    border-radius: 4px;
+}
+
+.popup-content > div > div:hover {
+    background: #f0f0f0;
+}
+
+.popup-content input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-right: 15px;
+    accent-color: #0044cc;
+}
+
+.popup-content label {
+    cursor: pointer;
+    font-size: 16px;
+    color: #444;
+    flex: 1;
+    user-select: none;
+}
+
+/* Sort select styling */
+#sortSelect {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+#sortSelect:focus {
+    outline: none;
+    border-color: #0044cc;
+}
+
+/* Popup buttons */
+.popup-content button {
+    padding: 12px 30px;
+    margin: 8px 8px 0 0;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#applyFilter, #applySort {
+    background: #0044cc;
+    color: #fff;
+}
+
+#applyFilter:hover, #applySort:hover {
+    background: #003399;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 68, 204, 0.3);
+}
+
+#closeFilterPopup, #closeSortPopup {
+    background: #6c757d;
+    color: #fff;
+}
+
+#closeFilterPopup:hover, #closeSortPopup:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+}
+
+/* Scrollbar styling for popup content */
+.popup-content::-webkit-scrollbar,
+.popup-content > div::-webkit-scrollbar {
+    width: 8px;
+}
+
+.popup-content::-webkit-scrollbar-track,
+.popup-content > div::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.popup-content::-webkit-scrollbar-thumb,
+.popup-content > div::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.popup-content::-webkit-scrollbar-thumb:hover,
+.popup-content > div::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Hide popup by default */
+.popup[style*="display:none"],
+.popup[style*="display: none"] {
+    display: none !important;
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 768px) {
+    .popup-content {
+        width: 90vw;
+        padding: 20px 25px;
+    }
+}
