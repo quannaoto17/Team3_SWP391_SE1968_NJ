@@ -9,6 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @AllArgsConstructor
 @Controller
 @SessionAttributes({"buildItems"})
@@ -26,6 +30,26 @@ public class MainboardController {
     @GetMapping("/mainboard")
     public String showMainboardPage(@ModelAttribute("buildItems") BuildItemDto buildItem, Model model) {
         model.addAttribute("mainboards", buildService.getCompatibleMainboards(buildItem));
+        model.addAttribute("allBrands", mainboardService.getAllBrands());
+        return "build/mainboards";
+    }
+
+    // Filter motherboard by brands
+    @PostMapping("/mainboard/filter")
+    public String filterMainboards(@RequestParam(required = false) List<String> brands,
+                                   @RequestParam(required = false) String sortBy,
+                                   @ModelAttribute("buildItems") BuildItemDto buildItem,
+                                   Model model) {
+        List<Mainboard> mainboards = buildService.getCompatibleMainboards(buildItem);
+        Map<String,List<String>> filters = new HashMap<>();
+        filters.put("brands", brands);
+        mainboards = mainboardService.filterMainboards(mainboards, filters, sortBy);
+
+
+        model.addAttribute("mainboards", mainboards);
+        model.addAttribute("allBrands", mainboardService.getAllBrands());
+        model.addAttribute("selectedBrands", brands);
+        model.addAttribute("selectedSort", sortBy);
         return "build/mainboards";
     }
 
