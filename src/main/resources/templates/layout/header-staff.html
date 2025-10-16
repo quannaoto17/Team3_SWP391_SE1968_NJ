@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Staff/Admin Header</title>
+
+</head>
+<body>
+<div class="container" th:fragment="header-staff">
     <style>
         body {
             margin: 0;
@@ -137,9 +140,6 @@
             padding: 15px;
         }
     </style>
-</head>
-<body>
-<div class="container" th:fragment="staff-header">
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <img src="https://via.placeholder.com/60" alt="Profile">
@@ -161,7 +161,7 @@
                 <button>Search</button>
             </div>
 
-            <form th:action="@{/logout}" method="post">
+            <form th:action="@{/auth/logout}" method="post">
                 <button type="submit" class="logout-btn">Logout</button>
             </form>
         </div>
@@ -171,9 +171,7 @@
             <!-- Nội dung Staff/Admin -->
         </div>
     </div>
-</div>
-
-<script>
+    <script>
     // Toggle sidebar + shift content
     const menuBtn = document.getElementById("menu-btn");
     const sidebar = document.getElementById("sidebar");
@@ -184,5 +182,8 @@
         mainContent.classList.toggle("shifted");
     });
 </script>
+</div>
+
+
 </body>
 </html>

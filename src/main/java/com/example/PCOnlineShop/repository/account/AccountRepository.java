@@ -18,6 +18,9 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     // 🔹 Tìm theo số điện thoại (đăng nhập hoặc kiểm tra trùng)
     Optional<Account> findByPhoneNumber(String phoneNumber);
 
+    // 🔹 ✅ Tìm theo email (để kiểm tra trùng)
+    Optional<Account> findByEmail(String email);
+
     // 🔹 Tìm theo role + tìm kiếm phone/email
     @Query("""
         SELECT a FROM Account a 
@@ -39,4 +42,6 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
                                        @Param("enabled") Boolean enabled,
                                        @Param("searchQuery") String searchQuery,
                                        Pageable pageable);
+
+    boolean existsByPhoneNumberAndRole(String phoneNumber, RoleName role);
 }

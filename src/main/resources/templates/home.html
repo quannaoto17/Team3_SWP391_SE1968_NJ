@@ -1,11 +1,22 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+
 <head>
     <meta charset="UTF-8">
     <title>PCOnlineShop - Home</title>
     <link rel="stylesheet" th:href="@{/css/home.css}">
 </head>
 <body>
+<div sec:authorize="hasRole('ADMIN')"
+     th:replace="layout/header-admin :: header-admin"></div>
+
+<div sec:authorize="hasRole('STAFF')"
+     th:replace="layout/header-staff :: header-staff"></div>
+
+<div sec:authorize="hasRole('CUSTOMER')"
+     th:replace="layout/header-customer :: header-customer"></div>
 <div class="layout">
 
     <!-- Sidebar -->
@@ -54,9 +65,8 @@
             <!-- Hiển thị danh sách sản phẩm -->
             <div th:each="p : ${productPage.content}" class="product-card">
                 <div class="image-box">
-                    <img th:src="${p.images[0].imageUrl}"
-                         alt="Product Image"
-                         onerror="this.src='/images/no-image.png'">
+                    <img th:src="${!#lists.isEmpty(p.images) ? p.images[0].imageUrl : '/images/no-image.png'}"
+                         alt="Product Image">
                 </div>
                 <h4 th:text="${p.productName}">Product Name</h4>
                 <p th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</p>

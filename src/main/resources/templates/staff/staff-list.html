@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Staff List</title>
@@ -8,6 +8,14 @@
 <body>
 
 <div>
+    <div sec:authorize="hasRole('ADMIN')"
+         th:replace="fragments/header-admin :: header-admin"></div>
+
+    <div sec:authorize="hasRole('STAFF')"
+         th:replace="fragments/header-staff :: header-staff"></div>
+
+    <div sec:authorize="hasRole('CUSTOMER')"
+         th:replace="fragments/header-customer :: header-customer"></div>
     <!-- Header -->
     <div class="header">
         <h2>Staff Management</h2>
@@ -73,7 +81,9 @@
                 <td>
                     <a th:href="@{'/staff/view/' + ${s.accountId}}" class="btn-action btn-view">View</a>
                     <a th:href="@{'/staff/edit/' + ${s.accountId}}" class="btn-action btn-edit">Edit</a>
+                    <!-- ✅ Thêm class 'btn-action' vào đây -->
                     <a th:href="@{'/staff/delete/' + ${s.accountId}}"
+                       class="btn-action"
                        th:text="${s.enabled ? 'Deactivate' : 'Activate'}"
                        th:classappend="${s.enabled ? 'btn-deactivate' : 'btn-activate'}"
                        onclick="return confirm('Are you sure to change status?')"></a>

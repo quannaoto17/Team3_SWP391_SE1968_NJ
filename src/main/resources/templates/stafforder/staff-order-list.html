@@ -3,26 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản lý đơn hàng</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f6f7fb; padding: 30px; }
-        h2 { text-align: center; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
-        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #ddd; }
-        th { background: #e6e7eb; }
-        a.view-btn, button.save-btn { color: white; background: #007bff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; text-decoration: none; }
-        button.save-btn { background: #28a745; margin-left: 5px; }
-        select { padding: 5px; border-radius: 6px; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/OrderStyle.css}">
 </head>
 <body>
 
-<h2>Quản lý đơn hàng</h2>
+<h2>Quản lý đơn hàng Khách hàng</h2>
+
+<div th:if="${error}" class="alert">
+    <p th:text="${error}"></p>
+</div>
+
+<div class="controls-container">
+    <form th:action="@{/staff/orders/list}" method="get" class="search-form">
+        <input type="text" name="searchPhone" placeholder="Tìm theo Số điện thoại..." th:value="${searchPhone}" pattern="\d*" title="Vui lòng chỉ nhập số.">
+        <button type="submit">Tìm kiếm</button>
+        <a th:if="${searchPhone != null}" th:href="@{/staff/orders/list}">Xóa tìm kiếm</a>
+    </form>
+
+    <div class="sort-options">
+        <a th:href="@{/staff/orders/list(page=${currentPage}, sort='createdDate', dir=${reverseSortDir}, searchPhone=${searchPhone})}">
+            Sắp xếp theo ngày (Cũ nhất &lt;-&gt; Mới nhất)
+        </a>
+    </div>
+</div>
 
 <table>
     <thead>
     <tr>
         <th>#</th>
         <th>Mã đơn</th>
+        <th>Số điện thoại</th>
         <th>Khách hàng</th>
         <th>Ngày tạo</th>
         <th>Trạng thái</th>
@@ -30,31 +40,45 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="order, stat : ${orders}">
-        <td th:text="${stat.count}"></td>
+    <tr th:each="order, stat : ${orders.content}">
+        <td th:text="${(orders.number * orders.size) + stat.count}"></td>
         <td th:text="${order.orderId}"></td>
+        <td th:text="${order.account.phoneNumber}"></td>
         <td th:text="${order.account.firstname + ' ' + order.account.lastname}"></td>
         <td th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy')}"></td>
         <td th:text="${order.status}"></td>
-
         <td>
-            <form th:action="@{'/staff/orders/update-status/' + ${order.orderId}}" method="post" style="display:inline;">
-                <select name="status">
-                    <option>Pending</option>
-                    <option>Processing</option>
-                    <option>Ready for Pickup</option>
-                    <option>Picked Up</option>
-                    <option>Completed</option>
-                    <option>Cancelled</option>
-                    <option>Returned</option>
-                </select>
-                <button type="submit" class="save-btn">Lưu</button>
-            </form>
-            <a th:href="@{'/staff/orders/detail/' + ${order.orderId}}" class="view-btn">Xem</a>
+            <div class="action-form">
+                <form th:action="@{'/staff/orders/update-status/' + ${order.orderId}}" method="post" style="display:inline;">
+                    <select name="status">
+                        <option th:selected="${order.status == 'Pending'}">Pending</option>
+                        <option th:selected="${order.status == 'Processing'}">Processing</option>
+                        <option th:selected="${order.status == 'Delivering'}">Delivering</option>
+                        <option th:selected="${order.status == 'Completed'}">Completed</option>
+                        <option th:selected="${order.status == 'Cancelled'}">Cancelled</option>
+                    </select>
+                    <button type="submit" class="save-btn">Lưu</button>
+                </form>
+                <a th:href="@{'/staff/orders/detail/' + ${order.orderId}}" class="view-btn">Xem</a>
+            </div>
         </td>
     </tr>
     </tbody>
 </table>
+
+<div th:if="${orders.totalPages > 1}" class="pagination-container">
+    <a th:href="@{/staff/orders/list(page=${currentPage - 1}, sort=${sortField}, dir=${sortDir}, searchPhone=${searchPhone})}"
+       th:classappend="${orders.isFirst()} ? 'disabled' : ''">
+        &laquo;
+    </a>
+    <span class="page-info">
+        Trang <b th:text="${currentPage}"></b> / <b th:text="${totalPages}"></b>
+    </span>
+    <a th:href="@{/staff/orders/list(page=${currentPage + 1}, sort=${sortField}, dir=${sortDir}, searchPhone=${searchPhone})}"
+       th:classappend="${orders.isLast()} ? 'disabled' : ''">
+        &raquo;
+    </a>
+</div>
 
 </body>
 </html>

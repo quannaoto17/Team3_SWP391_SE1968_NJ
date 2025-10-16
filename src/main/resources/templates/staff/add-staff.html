@@ -6,32 +6,44 @@
     <link rel="stylesheet" href="/css/StaffStyle.css">
 </head>
 <body>
-<div>
-    <div class="header">
-        <h2>Add Staff</h2>
+<div class="header"><h2>Add Staff</h2></div>
+<div class="content">
+
+    <div th:if="${errorMessage}" class="error" style="margin-bottom:10px;">
+        <p th:text="${errorMessage}"></p>
     </div>
 
-    <div class="content">
-        <form th:action="@{/staff/add}" th:object="${account}" method="post">
-            <table>
-                <tr><td>First Name:</td><td><input type="text" th:field="*{firstname}"/></td></tr>
-                <tr><td>Last Name:</td><td><input type="text" th:field="*{lastname}"/></td></tr>
-                <tr><td>Email:</td><td><input type="email" th:field="*{email}"/></td></tr>
-                <tr><td>Phone:</td><td><input type="text" th:field="*{phoneNumber}"/></td></tr>
-                <tr><td>Address:</td><td><input type="text" th:field="*{address}"/></td></tr>
-                <tr><td>Password:</td><td><input type="password" th:field="*{password}"/></td></tr>
-                <tr>
-                    <td>Status:</td>
-                    <td>
-                        <label><input type="radio" th:field="*{enabled}" value="true"/> Active</label>
-                        <label><input type="radio" th:field="*{enabled}" value="false"/> Inactive</label>
-                    </td>
-                </tr>
-            </table>
-            <button type="submit">Save</button>
-        </form>
+    <form th:action="@{/staff/add}" th:object="${account}" method="post">
+        <table>
+            <tr><td>First Name:</td><td><input type="text" th:field="*{firstname}" required></td></tr>
+            <tr><td>Last Name:</td><td><input type="text" th:field="*{lastname}" required></td></tr>
+            <tr><td>Email:</td><td><input type="email" th:field="*{email}" required></td></tr>
+            <tr><td>Phone:</td><td><input type="text" th:field="*{phoneNumber}" pattern="[0-9]{9,15}" required></td></tr>
+            <tr><td>Address:</td><td><input type="text" th:field="*{address}" required></td></tr>
+            <tr>
+                <td>Password:</td>
+                <td>
+                    <input type="password" id="password" th:field="*{password}" minlength="6" required onkeyup="checkStrength()">
+                    <div id="strengthMessage"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>Status:</td>
+                <td>
+                    <input type="hidden" th:field="*{enabled}" value="true"/>
+                    <span class="status-active">Active</span>
+                </td>
+            </tr>
+
+        </table>
+        <button type="submit">Save</button>
+    </form>
+
+    <div style="margin-top:15px;">
         <a href="/staff/list">← Back</a>
     </div>
 </div>
+
+<script src="/js/Staff.js"></script>
 </body>
 </html>

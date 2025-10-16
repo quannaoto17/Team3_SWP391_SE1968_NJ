@@ -1,5 +1,5 @@
 /* ==========================================================
-   STAFF MANAGEMENT - CLEAN MODERN STYLE (FINAL VERSION)
+   STAFF MODULE STYLE - CLEAN FINAL VERSION (v2)
    ========================================================== */
 
 * {
@@ -54,7 +54,7 @@ body {
     margin-bottom: 25px;
 }
 
-/* Search area */
+/* Search */
 .search-left .search-form {
     display: flex;
     align-items: center;
@@ -84,11 +84,11 @@ body {
     background: #3867d6;
 }
 
-/* Right section: dropdown + add button */
+/* Right: dropdown + Add Staff */
 .search-right {
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 35px; /* tăng nhẹ để nút Add Staff không dính dropdown */
     margin-left: 60px;
 }
 
@@ -100,15 +100,19 @@ body {
     font-size: 14px;
 }
 
-/* Add Staff button */
+/* ✅ FIXED: Add Staff Button */
 .add-staff a {
     background: #20bf6b;
     color: #fff;
     text-decoration: none;
-    padding: 8px 18px;
+    padding: 10px 20px;
     border-radius: 6px;
     font-weight: 500;
     transition: 0.25s;
+    white-space: nowrap;   /* Không xuống dòng */
+    display: inline-block; /* Giữ kích thước ổn định trong flex */
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .add-staff a:hover {
@@ -156,14 +160,17 @@ table tr:hover {
 
 /* ===== ACTION BUTTONS ===== */
 .btn-action {
+    display: inline-block;
     text-decoration: none;
-    padding: 6px 10px;
-    border-radius: 5px;
+    padding: 6px 12px;
+    border-radius: 6px;
     font-size: 13px;
-    margin: 0 2px;
+    margin: 0 3px;
     color: #fff;
     font-weight: 500;
-    transition: 0.2s;
+    transition: all 0.2s ease;
+    text-align: center;
+    min-width: 70px;
 }
 
 /* View */
@@ -182,14 +189,20 @@ table tr:hover {
     background: #fed330;
 }
 
-/* Deactivate / Activate */
-.btn-activate,
+/* Deactivate */
 .btn-deactivate {
-    background: #a5b1c2;
+    background: #eb3b5a;
 }
-.btn-activate:hover,
 .btn-deactivate:hover {
-    background: #808e9b;
+    background: #fc5c65;
+}
+
+/* Activate */
+.btn-activate {
+    background: #20bf6b;
+}
+.btn-activate:hover {
+    background: #26de81;
 }
 
 /* ===== PAGINATION ===== */
@@ -215,14 +228,93 @@ table tr:hover {
     background: #f1f2f6;
 }
 
-/* 🔒 Chặn click khi disabled */
 .pagination a.disabled {
     pointer-events: none;
     color: #aaa;
     border-color: #ddd;
     background: #f1f2f6;
-    cursor: default;
     opacity: 0.6;
+}
+
+/* ===== FORM ===== */
+form {
+    width: 100%;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+form table {
+    width: 100%;
+    border-spacing: 0 10px;
+}
+
+form td {
+    padding: 6px;
+    vertical-align: middle;
+    font-size: 15px;
+}
+
+form input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border 0.2s;
+}
+
+form input:focus {
+    outline: none;
+    border-color: #4b7bec;
+}
+
+button[type="submit"] {
+    background: #4b7bec;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+    background: #3867d6;
+}
+
+/* ===== ERROR & PASSWORD STRENGTH ===== */
+.error {
+    color: #e74c3c;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+#strengthMessage {
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* ===== FIX: Align Active / Inactive horizontally ===== */
+td label {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 20px;
+    gap: 5px;
+}
+
+input[type="radio"] {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+/* Optional: center the radio buttons inside the td */
+td:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 /* ===== RESPONSIVE ===== */
@@ -232,19 +324,24 @@ table tr:hover {
         gap: 15px;
     }
 
-    .search-right {
-        justify-content: center;
-        margin-left: 0;
-    }
-
-    table th,
-    table td {
+    table th, table td {
         font-size: 12px;
         padding: 8px;
+    }
+
+    .search-right {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        margin-left: 0;
     }
 
     .add-staff a {
         width: 100%;
         text-align: center;
+    }
+
+    form {
+        width: 100%;
     }
 }
