@@ -417,10 +417,12 @@ html, body {
     background: #555;
 }
 
-/* Hide popup by default */
-.popup[style*="display:none"],
-.popup[style*="display: none"] {
-    display: none !important;
+/* Hide popup by default using semantic class */
+.popup {
+    display: none;
+}
+.popup.is-open {
+    display: flex; /* or whatever display is appropriate for your popup */
 }
 
 /* Responsive for smaller screens */
