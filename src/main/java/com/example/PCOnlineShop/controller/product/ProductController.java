@@ -7,6 +7,7 @@ import com.example.PCOnlineShop.repository.build.*;
 import com.example.PCOnlineShop.service.product.ProductService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,95 @@ public class ProductController {
     private final PowerSupplyRepository powerSupplyRepository;
     private final CoolingRepository coolingRepository;
 
+    // ===== DANH SÁCH SẢN PHẨM (có keyword để search, giữ phân trang + sort) =====
+    @GetMapping("/list")
+    public String listProducts(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "productId") String sortField,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) Integer brandId,
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) String keyword,   // NEW
+            Model model) {
+
+        Page<Product> productPage;
+
+        boolean hasKeyword = (keyword != null && !keyword.isBlank());
+        if (hasKeyword) {
+            productPage = productService.search(keyword, brandId, categoryId, page, size, sortField, sortDir);
+        } else if (brandId != null) {
+            productPage = productService.getProductsByBrand(brandId, page, size, sortField, sortDir);
+        } else if (categoryId != null) {
+            productPage = productService.getProductsByCategory(categoryId, page, size, sortField, sortDir);
+        } else {
+            productPage = productService.getProducts(page, size, sortField, sortDir);
+        }
+
+        model.addAttribute("products", productPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("totalItems", productPage.getTotalElements());
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
+
+        model.addAttribute("brandId", brandId);
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("keyword", keyword); // NEW
+
+        model.addAttribute("brands", brandRepository.findAll());
+        model.addAttribute("categories", categoryRepository.findAll());
+        return "product/product-list";
+    }
+    // ===== LIVE SEARCH: Trả về fragment <tbody> đã render để JS thay trực tiếp =====
+    @GetMapping("/search-fragment")
+    public String searchFragment(@RequestParam(required = false) String keyword,
+                                 @RequestParam(required = false) Integer brandId,
+                                 @RequestParam(required = false) Integer categoryId,
+                                 @RequestParam(defaultValue = "productId") String sortField,
+                                 @RequestParam(defaultValue = "asc") String sortDir,
+                                 @RequestParam(defaultValue = "1") int page,
+                                 @RequestParam(defaultValue = "8") int size,
+                                 Model model) {
+
+        Page<Product> productPage =
+                productService.search(keyword, brandId, categoryId, page, size, sortField, sortDir);
+
+        model.addAttribute("products", productPage.getContent());
+        // Nếu muốn update cả pagination theo kết quả search, có thể add currentPage/totalPages và trả fragment lớn hơn
+        return "product/product-list :: tbodyRows";
+    }
+    // Trả về cả bảng + pagination theo keyword/filter/sort/page hiện thời
+    @GetMapping("/search-block")
+    public String searchBlock(@RequestParam(required = false) String keyword,
+                              @RequestParam(required = false) Integer brandId,
+                              @RequestParam(required = false) Integer categoryId,
+                              @RequestParam(defaultValue = "productId") String sortField,
+                              @RequestParam(defaultValue = "asc") String sortDir,
+                              @RequestParam(defaultValue = "1") int page,
+                              @RequestParam(defaultValue = "8") int size,
+                              Model model) {
+
+        Page<Product> productPage = productService.search(keyword, brandId, categoryId, page, size, sortField, sortDir);
+
+        model.addAttribute("products",     productPage.getContent());
+        model.addAttribute("currentPage",  page);
+        model.addAttribute("totalPages",   productPage.getTotalPages());
+        model.addAttribute("totalItems",   productPage.getTotalElements());
+
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDir",   sortDir);
+        model.addAttribute("reverseSortDir", "asc".equalsIgnoreCase(sortDir) ? "desc" : "asc");
+
+        model.addAttribute("brandId",  brandId);
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("keyword",  keyword);
+
+
+
+        return "product/product-list :: listWrapper"; // fragment mới (xem bước 2)
+    }
     // ============ FORM THÊM SẢN PHẨM =============
     @GetMapping("/add")
     public String showAddForm(Model model) {
