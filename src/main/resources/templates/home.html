@@ -9,6 +9,8 @@
     <link rel="stylesheet" th:href="@{/css/home.css}">
 </head>
 <body>
+<div sec:authorize="!isAuthenticated()"
+     th:replace="layout/header-default :: header-default"></div>
 <div sec:authorize="hasRole('ADMIN')"
      th:replace="layout/header-admin :: header-admin"></div>
 

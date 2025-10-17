@@ -1,19 +1,8 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Header</title>
-
-
-</head>
-
 <body>
-<header th:fragment="header-customer">
+<header th:fragment="header-default">
     <style>
         /* Reset cơ bản */
         * {
@@ -153,13 +142,11 @@
             }
         }
     </style>
-    <!-- Logo -->
     <div class="logo">
         <img src="https://via.placeholder.com/50" alt="Logo">
         <h1>PCOnlineShop</h1>
     </div>
 
-    <!-- Menu -->
     <div class="menu">
         <select onchange="location = this.value;">
             <option>Menu</option>
@@ -168,24 +155,16 @@
         </select>
     </div>
 
-    <!-- Thanh tìm kiếm -->
     <div class="search-bar">
         <input type="text" placeholder="Search products...">
         <button>Search</button>
     </div>
 
-    <!-- Nút bên phải -->
     <div class="header-right">
         <button th:onclick="|window.location.href='@{/build/startover}'|">🧩 Build PC</button>
         <a th:href="@{/cart}" class="cart">🛒</a>
-
-        <!-- Nếu chưa đăng nhập -->
-        <form th:action="@{/auth/login}" method="post">
-            <button type="submit">Logout</button>
-        </form>
-
+        <button th:onclick="|window.location.href='@{/auth/login}'|">Login</button>
     </div>
-
 </header>
 </body>
 </html>
