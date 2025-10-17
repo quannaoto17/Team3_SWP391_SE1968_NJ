@@ -584,3 +584,101 @@ INSERT INTO product (category_id, brand_id, product_name, price, status, descrip
 VALUES (3, 3, 'GIGABYTE B550I AORUS PRO AX', 220.00, 1, 'Mini ITX AM4 board with Wi-Fi', 'Chipset B550I');
 INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
 VALUES (LAST_INSERT_ID(), 'AM4', 'B550I', 'Mini-ITX', 'DDR4', 2, 4733, '4.0', 2, 4);
+
+-- ==============================================
+-- BỔ SUNG SẢN PHẨM 91-98 (PLACEHOLDERS)
+-- ==============================================
+-- (Chèn 8 sản phẩm RAM giả để lấp đầy ID từ 91 đến 98)
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (4, 8, 'Placeholder RAM 1', 100.00);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3200, 5);
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (4, 8, 'Placeholder RAM 2', 100.00);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3200, 5);
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (4, 8, 'Placeholder RAM 3', 100.00);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3200, 5);
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (4, 8, 'Placeholder RAM 4', 100.00);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3200, 5);
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (4, 8, 'Placeholder RAM 5', 100.00);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3200, 5);
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (4, 8, 'Placeholder RAM 6', 100.00);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3200, 5);
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (4, 8, 'Placeholder RAM 7', 100.00);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3200, 5);
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (4, 8, 'Placeholder RAM 8', 100.00);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3200, 5);
+
+-- ==============================================
+-- SẢN PHẨM 99 (KHỚP VỚI order_detail)
+-- ==============================================
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification)
+VALUES (4, 7, 'Corsair Vengeance LPX 64GB (2x32GB)', 300.00, 1, '64GB DDR4 3600MHz RAM', 'C18');
+INSERT INTO memory (product_id, type, capacity, speed, tdp)
+VALUES (LAST_INSERT_ID(), 'DDR4', 64, 3600, 8); -- Đây sẽ là ID 99
+
+-- ==============================================
+-- SẢN PHẨM 100 (KHỚP VỚI order_detail)
+-- ==============================================
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification)
+VALUES (4, 9, 'Kingston Fury Beast 16GB (1x16GB)', 160.00, 1, '16GB DDR5 5200MHz RAM', 'C40');
+INSERT INTO memory (product_id, type, capacity, speed, tdp)
+VALUES (LAST_INSERT_ID(), 'DDR5', 16, 5200, 7); -- Đây sẽ là ID 100
+
+-- ==============================================
+-- BỔ SUNG SẢN PHẨM 101-124 (PLACEHOLDERS)
+-- ==============================================
+-- (Chèn 24 sản phẩm Ổ cứng giả để lấp đầy ID từ 101 đến 124)
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 1', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 2', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 3', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 4', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 5', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 6', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 7', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 8', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 9', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 10', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 11', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 12', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 13', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 14', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 15', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 16', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 17', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 18', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 19', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 20', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 21', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 22', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 23', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+INSERT INTO product (category_id, brand_id, product_name, price) VALUES (5, 11, 'Placeholder SSD 24', 100.00);
+INSERT INTO storage (product_id, type, capacity, interface) VALUES (LAST_INSERT_ID(), 'SSD', 500, 'SATA');
+
+-- ==============================================
+-- SẢN PHẨM 125 (KHỚP VỚI order_detail)
+-- ==============================================
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification)
+VALUES (5, 11, 'Seagate Barracuda 1TB HDD', 120.00, 1, '1TB 7200 RPM Hard Drive', 'SATA 6Gb/s');
+INSERT INTO storage (product_id, type, capacity, interface, read_speed, write_speed)
+VALUES (LAST_INSERT_ID(), 'HDD', 1000, 'SATA', 150, 150); -- Đây sẽ là ID 125

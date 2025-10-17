@@ -1,82 +1,85 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý đơn hàng</title>
+    <title>Order Management</title>
     <link rel="stylesheet" th:href="@{/css/OrderStyle.css}">
 </head>
 <body>
 
-<h2>Quản lý đơn hàng Khách hàng</h2>
+<h2>Customer Order Management</h2>
 
-<div th:if="${error}" class="alert">
+<div th:if="${error}" class="alert alert-danger">
     <p th:text="${error}"></p>
+</div>
+<div th:if="${success}" class="alert alert-success">
+    <p th:text="${success}"></p>
 </div>
 
 <div class="controls-container">
     <form th:action="@{/staff/orders/list}" method="get" class="search-form">
-        <input type="text" name="searchPhone" placeholder="Tìm theo Số điện thoại..." th:value="${searchPhone}" pattern="\d*" title="Vui lòng chỉ nhập số.">
-        <button type="submit">Tìm kiếm</button>
-        <a th:if="${searchPhone != null}" th:href="@{/staff/orders/list}">Xóa tìm kiếm</a>
+        <input type="text" name="searchPhone" placeholder="Search By Phone Number..." th:value="${searchPhone}" pattern="\d*" title="Please enter digits only.">
+        <button type="submit">Search</button>
+        <a th:if="${searchPhone != null and searchPhone != ''}" th:href="@{/staff/orders/list}">Clear Search</a>
     </form>
-
     <div class="sort-options">
         <a th:href="@{/staff/orders/list(page=${currentPage}, sort='createdDate', dir=${reverseSortDir}, searchPhone=${searchPhone})}">
-            Sắp xếp theo ngày (Cũ nhất &lt;-&gt; Mới nhất)
+            Sort by Date (Oldest &lt;-&gt; Newest)
         </a>
     </div>
 </div>
 
-<table>
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Mã đơn</th>
-        <th>Số điện thoại</th>
-        <th>Khách hàng</th>
-        <th>Ngày tạo</th>
-        <th>Trạng thái</th>
-        <th>Hành động</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="order, stat : ${orders.content}">
-        <td th:text="${(orders.number * orders.size) + stat.count}"></td>
-        <td th:text="${order.orderId}"></td>
-        <td th:text="${order.account.phoneNumber}"></td>
-        <td th:text="${order.account.firstname + ' ' + order.account.lastname}"></td>
-        <td th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy')}"></td>
-        <td th:text="${order.status}"></td>
-        <td>
-            <div class="action-form">
-                <form th:action="@{'/staff/orders/update-status/' + ${order.orderId}}" method="post" style="display:inline;">
-                    <select name="status">
-                        <option th:selected="${order.status == 'Pending'}">Pending</option>
-                        <option th:selected="${order.status == 'Processing'}">Processing</option>
-                        <option th:selected="${order.status == 'Delivering'}">Delivering</option>
-                        <option th:selected="${order.status == 'Completed'}">Completed</option>
-                        <option th:selected="${order.status == 'Cancelled'}">Cancelled</option>
-                    </select>
-                    <button type="submit" class="save-btn">Lưu</button>
-                </form>
-                <a th:href="@{'/staff/orders/detail/' + ${order.orderId}}" class="view-btn">Xem</a>
-            </div>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<form th:action="@{/staff/orders/update-all-status}" method="post">
+    <table>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Order ID</th>
+            <th>Phone Number</th>
+            <th>Customer Name</th>
+            <th>Created Date</th>
+            <th>Status</th>
+            <th>Action</th> </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order, stat : ${orders.content}">
+            <td th:text="${(orders.number * orders.size) + stat.count}"></td>
+            <td th:text="${order.orderId}"></td>
+            <td th:text="${order.account.phoneNumber}"></td>
+            <td th:text="${order.account.fullName}"></td>
+            <td th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy')}"></td>
+            <td>
+                <select th:name="'statusUpdates[' + ${order.orderId} + ']'">
+                    <option value="Pending Payment" th:selected="${order.status == 'Pending Payment'}">Pending Payment</option>
+                    <option value="Processing" th:selected="${order.status == 'Processing'}">Processing</option>
+                    <option value="Ready to Ship" th:selected="${order.status == 'Ready to Ship'}">Ready to Ship</option>
+                    <option value="Delivering" th:selected="${order.status == 'Delivering'}">Delivering</option>
+                    <option value="Completed" th:selected="${order.status == 'Completed'}">Completed</option>
+                    <option value="Cancelled" th:selected="${order.status == 'Cancelled'}">Cancelled</option>
+                </select>
+            </td>
+            <td>
+                <a th:href="@{'/staff/orders/detail/' + ${order.orderId}}" class="view-btn">View</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
-<div th:if="${orders.totalPages > 1}" class="pagination-container">
+    <div style="text-align: right; margin-top: 20px;">
+        <button type="submit" class="save-btn">Save All Status Changes</button>
+    </div>
+
+</form> <div th:if="${orders.totalPages > 1}" class="pagination-container">
     <a th:href="@{/staff/orders/list(page=${currentPage - 1}, sort=${sortField}, dir=${sortDir}, searchPhone=${searchPhone})}"
        th:classappend="${orders.isFirst()} ? 'disabled' : ''">
-        &laquo;
+        &laquo; Prev
     </a>
     <span class="page-info">
-        Trang <b th:text="${currentPage}"></b> / <b th:text="${totalPages}"></b>
+        Page <b th:text="${currentPage}"></b> of <b th:text="${totalPages}"></b>
     </span>
     <a th:href="@{/staff/orders/list(page=${currentPage + 1}, sort=${sortField}, dir=${sortDir}, searchPhone=${searchPhone})}"
        th:classappend="${orders.isLast()} ? 'disabled' : ''">
-        &raquo;
+        Next &raquo;
     </a>
 </div>
 

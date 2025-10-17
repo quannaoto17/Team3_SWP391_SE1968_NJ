@@ -1,75 +1,106 @@
 use pconlineshop;
 
-USE pconlineshop;
+INSERT INTO orders (
+    account_id, 
+    final_amount, 
+    status, 
+    created_date, 
+    shipping_method, 
+    note, 
+    shipping_full_name, 
+    shipping_phone, 
+    shipping_address, 
+    shipper_account_id, 
+    tracking_number
+) VALUES
+-- CUSTOMER 1 (account_id=1) - 4 orders
+(1, 1460000, 'Completed', '2023-01-15', 'Giao hàng tận nơi', NULL, 'Khách hàng 1', '0900000001', '123 Đường ABC, Q1, TP.HCM', NULL, NULL),
+(1, 4220000, 'Shipped', '2023-02-20', 'Giao hàng tận nơi', NULL, 'Khách hàng 1', '0900000001', '123 Đường ABC, Q1, TP.HCM', NULL, NULL),
+(1, 910000, 'Processing', '2023-03-10', 'Giao hàng tận nơi', NULL, 'Khách hàng 1', '0900000001', '123 Đường ABC, Q1, TP.HCM', NULL, NULL),
+(1, 5440000, 'Pending', CURDATE(), 'Giao hàng tận nơi', NULL, 'Khách hàng 1', '0900000001', '123 Đường ABC, Q1, TP.HCM', NULL, NULL),
 
--- ==============================================
--- CHÈN DỮ LIỆU CHO BẢNG ORDERS
--- ==============================================
+-- CUSTOMER 3 (account_id=3) - 4 orders
+(3, 680000, 'Completed', '2023-01-25', 'Giao hàng tận nơi', NULL, 'Khách hàng 3', '0900000003', '456 Đường XYZ, Q3, TP.HCM', NULL, NULL),
+(3, 2080000, 'Shipped', '2023-02-28', 'Giao hàng tận nơi', NULL, 'Khách hàng 3', '0900000003', '456 Đường XYZ, Q3, TP.HCM', NULL, NULL),
+(3, 230000, 'Completed', '2023-03-15', 'Giao hàng tận nơi', NULL, 'Khách hàng 3', '0900000003', '456 Đường XYZ, Q3, TP.HCM', NULL, NULL),
+(3, 970000, 'Processing', '2023-04-05', 'Giao hàng tận nơi', NULL, 'Khách hàng 3', '0900000003', '456 Đường XYZ, Q3, TP.HCM', NULL, NULL),
 
--- Đơn hàng cho account_id = 1 (5 đơn hàng)
-INSERT INTO orders (account_id, total_amount, discount_amount, final_amount, voucher_code, status, created_date) VALUES
-(1, 470.00, 0, 470.00, NULL, 'Completed', '2023-01-15'),
-(1, 330.00, 0, 330.00, NULL, 'Completed', '2023-03-22'),
-(1, 1200.00, 0, 1200.00, NULL, 'Shipped', '2023-05-10'),
-(1, 550.00, 0, 550.00, NULL, 'Processing', '2023-06-01'),
-(1, 790.00, 0, 790.00, NULL, 'Pending', CURDATE());
+-- CUSTOMER 5 (account_id=5) - 4 orders
+(5, 1830000, 'Completed', '2023-02-05', 'Giao hàng tận nơi', NULL, 'Khách hàng 5', '0900000005', '789 Đường DEF, Q5, TP.HCM', NULL, NULL),
+(5, 2610000, 'Shipped', '2023-03-12', 'Giao hàng tận nơi', NULL, 'Khách hàng 5', '0900000005', '789 Đường DEF, Q5, TP.HCM', NULL, NULL),
+(5, 540000, 'Processing', '2023-04-01', 'Giao hàng tận nơi', NULL, 'Khách hàng 5', '0900000005', '789 Đường DEF, Q5, TP.HCM', NULL, NULL),
+(5, 1770000, 'Pending', CURDATE(), 'Giao hàng tận nơi', NULL, 'Khách hàng 5', '0900000005', '789 Đường DEF, Q5, TP.HCM', NULL, NULL),
 
--- Đơn hàng cho account_id = 2 (5 đơn hàng)
-INSERT INTO orders (account_id, total_amount, discount_amount, final_amount, voucher_code, status, created_date) VALUES
-(2, 180.00, 0, 180.00, NULL, 'Completed', '2023-02-05'),
-(2, 420.00, 0, 420.00, NULL, 'Completed', '2023-04-11'),
-(2, 1600.00, 0, 1600.00, NULL, 'Shipped', '2023-06-22'),
-(2, 240.00, 0, 240.00, NULL, 'Processing', '2023-07-30'),
-(2, 340.00, 0, 340.00, NULL, 'Pending', CURDATE());
+-- CUSTOMER 7 (account_id=7) - 4 orders
+(7, 1300000, 'Completed', '2023-02-15', 'Giao hàng tận nơi', NULL, 'Khách hàng 7', '0900000007', '101 Đường GHI, Q7, TP.HCM', NULL, NULL),
+(7, 690000, 'Completed', '2023-03-20', 'Giao hàng tận nơi', NULL, 'Khách hàng 7', '0900000007', '101 Đường GHI, Q7, TP.HCM', NULL, NULL),
+(7, 370000, 'Shipped', '2023-04-18', 'Giao hàng tận nơi', NULL, 'Khách hàng 7', '0900000007', '101 Đường GHI, Q7, TP.HCM', NULL, NULL),
+(7, 4110000, 'Processing', '2023-05-10', 'Giao hàng tận nơi', NULL, 'Khách hàng 7', '0900000007', '101 Đường GHI, Q7, TP.HCM', NULL, NULL),
 
--- Đơn hàng cho account_id = 3 (5 đơn hàng)
-INSERT INTO orders (account_id, total_amount, discount_amount, final_amount, voucher_code, status, created_date) VALUES
-(3, 370.00, 0, 370.00, NULL, 'Completed', '2023-01-25'),
-(3, 220.00, 0, 220.00, NULL, 'Completed', '2023-03-01'),
-(3, 880.00, 0, 880.00, NULL, 'Shipped', '2023-05-18'),
-(3, 580.00, 0, 580.00, NULL, 'Processing', '2023-08-20'),
-(3, 250.00, 0, 250.00, NULL, 'Pending', CURDATE());
+-- CUSTOMER 9 (account_id=9) - 4 orders
+(9, 400000, 'Completed', '2023-02-25', 'Giao hàng tận nơi', NULL, 'Khách hàng 9', '0900000009', '202 Đường JKL, Q9, TP.HCM', NULL, NULL),
+(9, 1940000, 'Pending', CURDATE(), 'Giao hàng tận nơi', NULL, 'Khách hàng 9', '0900000009', '202 Đường JKL, Q9, TP.HCM', NULL, NULL),
+(9, 260000, 'Shipped', '2023-03-30', 'Giao hàng tận nơi', NULL, 'Khách hàng 9', '0900000009', '202 Đường JKL, Q9, TP.HCM', NULL, NULL),
+(9, 550000, 'Processing', '2023-04-20', 'Giao hàng tận nơi', NULL, 'Khách hàng 9', '0900000009', '202 Đường JKL, Q9, TP.HCM', NULL, NULL),
 
--- ==============================================
--- CHÈN DỮ LIỆU CHO BẢNG ORDER_DETAIL
--- ==============================================
+-- CÁC ĐƠN HÀNG CÒN LẠI (21-60) KHÔNG CÓ DỮ LIỆU ORDER_DETAIL
+-- CUSTOMER 11 (account_id=11)
+(11, 0, 'Completed', '2023-03-05', 'Giao hàng tận nơi', NULL, 'Khách hàng 11', '0900000011', '303 Đường MNO, Q11, TP.HCM', NULL, NULL),
+(11, 0, 'Completed', '2023-04-12', 'Giao hàng tận nơi', NULL, 'Khách hàng 11', '0900000011', '303 Đường MNO, Q11, TP.HCM', NULL, NULL),
+(11, 0, 'Shipped', '2023-05-08', 'Giao hàng tận nơi', NULL, 'Khách hàng 11', '0900000011', '303 Đường MNO, Q11, TP.HCM', NULL, NULL),
+(11, 0, 'Processing', '2023-05-25', 'Giao hàng tận nơi', NULL, 'Khách hàng 11', '0900000011', '303 Đường MNO, Q11, TP.HCM', NULL, NULL),
 
--- Chi tiết cho các đơn hàng của account_id = 1 (order_id từ 1 đến 5)
-INSERT INTO order_detail (order_id, product_id, quantity, price) VALUES
--- Đơn hàng 1
-(1, 16, 1, 470.00), -- AMD Ryzen 9 7900X
--- Đơn hàng 2
-(2, 26, 1, 330.00), -- Intel Core i7-11700K
--- Đơn hàng 3
-(3, 5, 1, 590.00), -- AMD Ryzen 9 7950X
-(3, 6, 1, 600.00), -- Intel Core i9-13900K
--- Đơn hàng 4
-(4, 11, 1, 550.00), -- AMD Ryzen 9 5950X
--- Đơn hàng 5
-(5, 9, 1, 790.00); -- NVIDIA GeForce RTX 4070 Ti
+-- CUSTOMER 13 (account_id=13)
+(13, 0, 'Completed', '2023-03-15', 'Giao hàng tận nơi', NULL, 'Khách hàng 13', '0900000013', '404 Đường PQR, Q12, TP.HCM', NULL, NULL),
+(13, 0, 'Shipped', '2023-04-22', 'Giao hàng tận nơi', NULL, 'Khách hàng 13', '0900000013', '404 Đường PQR, Q12, TP.HCM', NULL, NULL),
+(13, 0, 'Processing', '2023-05-15', 'Giao hàng tận nơi', NULL, 'Khách hàng 13', '0900000013', '404 Đường PQR, Q12, TP.HCM', NULL, NULL),
+(13, 0, 'Pending', CURDATE(), 'Giao hàng tận nơi', NULL, 'Khách hàng 13', '0900000013', '404 Đường PQR, Q12, TP.HCM', NULL, NULL),
 
--- Chi tiết cho các đơn hàng của account_id = 2 (order_id từ 6 đến 10)
-INSERT INTO order_detail (order_id, product_id, quantity, price) VALUES
--- Đơn hàng 6
-(6, 2, 1, 180.00), -- Intel Core i5-12400F
--- Đơn hàng 7
-(7, 3, 1, 420.00), -- Intel Core i7-13700K
--- Đơn hàng 8
-(8, 16, 1, 1600.00), -- NVIDIA GeForce RTX 4090
--- Đơn hàng 9
-(9, 7, 1, 240.00), -- AMD Ryzen 5 7600
--- Đơn hàng 10
-(10, 9, 1, 340.00); -- AMD Ryzen 7 7700
+-- CUSTOMER 15 (account_id=15)
+(15, 0, 'Completed', '2023-03-25', 'Giao hàng tận nơi', NULL, 'Khách hàng 15', '0900000015', '505 Đường STU, Q.Tân Bình, TP.HCM', NULL, NULL),
+(15, 0, 'Shipped', '2023-05-01', 'Giao hàng tận nơi', NULL, 'Khách hàng 15', '0900000015', '505 Đường STU, Q.Tân Bình, TP.HCM', NULL, NULL),
+(15, 0, 'Completed', '2023-05-18', 'Giao hàng tận nơi', NULL, 'Khách hàng 15', '0900000015', '505 Đường STU, Q.Tân Bình, TP.HCM', NULL, NULL),
+(15, 0, 'Processing', '2023-06-05', 'Giao hàng tận nơi', NULL, 'Khách hàng 15', '0900000015', '505 Đường STU, Q.Tân Bình, TP.HCM', NULL, NULL),
 
--- Chi tiết cho các đơn hàng của account_id = 3 (order_id từ 11 đến 15)
-INSERT INTO order_detail (order_id, product_id, quantity, price) VALUES
--- Đơn hàng 11
-(11, 5, 1, 370.00), -- AMD Ryzen 7 5800X3D
--- Đơn hàng 12
-(12, 1, 1, 220.00), -- AMD Ryzen 5 5600X
--- Đơn hàng 13
-(13, 4, 1, 880.00), -- AMD Radeon RX 7900 XT
--- Đơn hàng 14
-(14, 6, 1, 580.00), -- AMD Radeon RX 6800
--- Đơn hàng 15
-(15, 7, 1, 250.00); -- NVIDIA GeForce RTX 3050
+-- CUSTOMER 17 (account_id=17)
+(17, 0, 'Completed', '2023-04-10', 'Giao hàng tận nơi', NULL, 'Khách hàng 17', '0900000017', '606 Đường VWX, Q.Bình Thạnh, TP.HCM', NULL, NULL),
+(17, 0, 'Shipped', '2023-05-20', 'Giao hàng tận nơi', NULL, 'Khách hàng 17', '0900000017', '606 Đường VWX, Q.Bình Thạnh, TP.HCM', NULL, NULL),
+(17, 0, 'Processing', '2023-06-12', 'Giao hàng tận nơi', NULL, 'Khách hàng 17', '0900000017', '606 Đường VWX, Q.Bình Thạnh, TP.HCM', NULL, NULL),
+(17, 0, 'Pending', CURDATE(), 'Giao hàng tận nơi', NULL, 'Khách hàng 17', '0900000017', '606 Đường VWX, Q.Bình Thạnh, TP.HCM', NULL, NULL),
+
+-- CUSTOMER 19 (account_id=19)
+(19, 0, 'Completed', '2023-04-20', 'Giao hàng tận nơi', NULL, 'Khách hàng 19', '0900000019', '707 Đường YZ, Q.Gò Vấp, TP.HCM', NULL, NULL),
+(19, 0, 'Shipped', '2023-06-01', 'Giao hàng tận nơi', NULL, 'Khách hàng 19', '0900000019', '707 Đường YZ, Q.Gò Vấp, TP.HCM', NULL, NULL),
+(19, 0, 'Processing', '2023-06-20', 'Giao hàng tận nơi', NULL, 'Khách hàng 19', '0900000019', '707 Đường YZ, Q.Gò Vấp, TP.HCM', NULL, NULL),
+(19, 0, 'Completed', '2023-07-10', 'Giao hàng tận nơi', NULL, 'Khách hàng 19', '0900000019', '707 Đường YZ, Q.Gò Vấp, TP.HCM', NULL, NULL),
+
+-- CUSTOMER 21 (account_id=21)
+(21, 0, 'Completed', '2023-05-05', 'Giao hàng tận nơi', NULL, 'Khách hàng 21', '0900000021', '808 Đường 123, Q.Phú Nhuận, TP.HCM', NULL, NULL),
+(21, 0, 'Shipped', '2023-06-15', 'Giao hàng tận nơi', NULL, 'Khách hàng 21', '0900000021', '808 Đường 123, Q.Phú Nhuận, TP.HCM', NULL, NULL),
+(21, 0, 'Processing', '2023-07-08', 'Giao hàng tận nơi', NULL, 'Khách hàng 21', '0900000021', '808 Đường 123, Q.Phú Nhuận, TP.HCM', NULL, NULL),
+(21, 0, 'Pending', CURDATE(), 'Giao hàng tận nơi', NULL, 'Khách hàng 21', '0900000021', '808 Đường 123, Q.Phú Nhuận, TP.HCM', NULL, NULL),
+
+-- CUSTOMER 23 (account_id=23)
+(23, 0, 'Completed', '2023-05-15', 'Giao hàng tận nơi', NULL, 'Khách hàng 23', '0900000023', '909 Đường 456, Q.Bình Tân, TP.HCM', NULL, NULL),
+(23, 0, 'Shipped', '2023-07-01', 'Giao hàng tận nơi', NULL, 'Khách hàng 23', '0900000023', '909 Đường 456, Q.Bình Tân, TP.HCM', NULL, NULL),
+(23, 0, 'Completed', '2023-07-18', 'Giao hàng tận nơi', NULL, 'Khách hàng 23', '0900000023', '909 Đường 456, Q.Bình Tân, TP.HCM', NULL, NULL),
+(23, 0, 'Processing', '2023-08-05', 'Giao hàng tận nơi', NULL, 'Khách hàng 23', '0900000023', '909 Đường 456, Q.Bình Tân, TP.HCM', NULL, NULL),
+
+-- CUSTOMER 25 (account_id=25)
+(25, 0, 'Completed', '2023-05-25', 'Giao hàng tận nơi', NULL, 'Khách hàng 25', '0900000025', '111 Đường 789, TP.Thủ Đức, TP.HCM', NULL, NULL),
+(25, 0, 'Processing', '2023-06-30', 'Giao hàng tận nơi', NULL, 'Khách hàng 25', '0900000025', '111 Đường 789, TP.Thủ Đức, TP.HCM', NULL, NULL),
+(25, 0, 'Shipped', '2023-08-10', 'Giao hàng tận nơi', NULL, 'Khách hàng 25', '0900000025', '111 Đường 789, TP.Thủ Đức, TP.HCM', NULL, NULL),
+(25, 0, 'Pending', CURDATE(), 'Giao hàng tận nơi', NULL, 'Khách hàng 25', '0900000025', '111 Đường 789, TP.Thủ Đức, TP.HCM', NULL, NULL),
+
+-- CUSTOMER 27 (account_id=27)
+(27, 0, 'Completed', '2023-06-10', 'Giao hàng tận nơi', NULL, 'Khách hàng 27', '0900000027', '222 Đường ABC, Q1, TP.HCM', NULL, NULL),
+(27, 0, 'Shipped', '2023-07-20', 'Giao hàng tận nơi', NULL, 'Khách hàng 27', '0900000027', '222 Đường ABC, Q1, TP.HCM', NULL, NULL),
+(27, 0, 'Processing', '2023-08-15', 'Giao hàng tận nơi', NULL, 'Khách hàng 27', '0900000027', '222 Đường ABC, Q1, TP.HCM', NULL, NULL),
+(27, 0, 'Completed', '2023-09-05', 'Giao hàng tận nơi', NULL, 'Khách hàng 27', '0900000027', '222 Đường ABC, Q1, TP.HCM', NULL, NULL),
+
+-- CUSTOMER 29 (account_id=29)
+(29, 0, 'Completed', '2023-06-20', 'Giao hàng tận nơi', NULL, 'Khách hàng 29', '0900000029', '333 Đường XYZ, Q3, TP.HCM', NULL, NULL),
+(29, 0, 'Shipped', '2023-08-01', 'Giao hàng tận nơi', NULL, 'Khách hàng 29', '0900000029', '333 Đường XYZ, Q3, TP.HCM', NULL, NULL),
+(29, 0, 'Pending', CURDATE(), 'Giao hàng tận nơi', NULL, 'Khách hàng 29', '0900000029', '333 Đường XYZ, Q3, TP.HCM', NULL, NULL),
+(29, 0, 'Processing', '2023-09-10', 'Giao hàng tận nơi', NULL, 'Khách hàng 29', '0900000029', '333 Đường XYZ, Q3, TP.HCM', NULL, NULL);
+

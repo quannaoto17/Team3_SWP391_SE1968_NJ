@@ -54,4 +54,11 @@ public class Account {
 
     @Column(name = "enabled")
     private Boolean enabled = true;
+
+    public String getFullName() {
+        String first = (this.firstname != null) ? this.firstname : "";
+        String last = (this.lastname != null) ? this.lastname : "";
+        // Dùng trim() để loại bỏ khoảng trắng thừa nếu một trong hai tên là rỗng
+        return (first + " " + last).trim();
+    }
 }
