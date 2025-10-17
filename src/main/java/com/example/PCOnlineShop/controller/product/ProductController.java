@@ -123,8 +123,6 @@ public class ProductController {
         model.addAttribute("categoryId", categoryId);
         model.addAttribute("keyword",  keyword);
 
-
-
         return "product/product-list :: listWrapper"; // fragment mới (xem bước 2)
     }
     // ============ FORM THÊM SẢN PHẨM =============
