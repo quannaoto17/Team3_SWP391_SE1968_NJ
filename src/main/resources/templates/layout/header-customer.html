@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Header</title>
+
+
+</head>
+
+<body>
+<header th:fragment="header-customer">
+    <style>
+        /* Reset cơ bản */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        /* Header chính */
+        header {
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* Logo */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+        }
+
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Menu dropdown */
+        .menu select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+
+        .menu select:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Thanh tìm kiếm */
+        .search-bar {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            max-width: 400px;
+            margin: 0 40px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-right: none;
+            border-radius: 6px 0 0 6px;
+        }
+
+        .search-bar button {
+            padding: 8px 14px;
+            border: 1px solid #ccc;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-bar button:hover {
+            background-color: #45a049;
+        }
+
+        /* Các nút bên phải */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-right button,
+        .header-right a {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            background-color: #f2f2f2;
+            color: #333;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .header-right a.cart {
+            font-size: 20px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-right button:hover,
+        .header-right a:hover {
+            background-color: #ddd;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px 20px;
+            }
+
+            .search-bar {
+                width: 100%;
+                margin: 10px 0;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+    <!-- Logo -->
+    <div class="logo">
+        <img src="https://via.placeholder.com/50" alt="Logo">
+        <h1>PCOnlineShop</h1>
+    </div>
+
+    <!-- Menu -->
+    <div class="menu">
+        <select onchange="location = this.value;">
+            <option>Menu</option>
+            <option th:value="@{/category/1}">Category 1</option>
+            <option th:value="@{/category/2}">Category 2</option>
+        </select>
+    </div>
+
+    <!-- Thanh tìm kiếm -->
+    <div class="search-bar">
+        <input type="text" placeholder="Search products...">
+        <button>Search</button>
+    </div>
+
+    <!-- Nút bên phải -->
+    <div class="header-right">
+        <button th:onclick="|window.location.href='@{/build/startover}'|">🧩 Build PC</button>
+        <a th:href="@{/cart}" class="cart">🛒</a>
+
+        <!-- Nếu chưa đăng nhập -->
+        <form th:action="@{/auth/login}" method="post">
+            <button type="submit">Logout</button>
+        </form>
+
+    </div>
+
+</header>
+</body>
+</html>
