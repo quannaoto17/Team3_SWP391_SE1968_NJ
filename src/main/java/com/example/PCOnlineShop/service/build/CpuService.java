@@ -4,7 +4,6 @@ import com.example.PCOnlineShop.model.product.Brand;
 import com.example.PCOnlineShop.repository.build.CpuRepository;
 import com.example.PCOnlineShop.repository.product.BrandRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
