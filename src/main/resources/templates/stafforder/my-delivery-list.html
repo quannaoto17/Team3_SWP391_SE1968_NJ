@@ -15,7 +15,16 @@
 </head>
 <body>
 
-<div sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+<div sec:authorize="!isAuthenticated()"
+     th:replace="layout/header-default :: header-default"></div>
+<div sec:authorize="hasRole('ADMIN')"
+     th:replace="layout/header-admin :: header-admin"></div>
+
+<div sec:authorize="hasRole('STAFF')"
+     th:replace="layout/header-staff :: header-staff"></div>
+
+<div sec:authorize="hasRole('CUSTOMER')"
+     th:replace="layout/header-customer :: header-customer"></div>
 </div>
 
 <div class="container">
