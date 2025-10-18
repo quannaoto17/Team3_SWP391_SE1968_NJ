@@ -1,11 +1,23 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Select Cooling</title>
     <link rel="stylesheet" th:href="@{/css/BuildStyle.css}">
 </head>
 <body>
+
+<div sec:authorize="!isAuthenticated()"
+     th:replace="layout/header-default :: header-default"></div>
+<div sec:authorize="hasRole('ADMIN')"
+     th:replace="layout/header-admin :: header-admin"></div>
+<div sec:authorize="hasRole('STAFF')"
+     th:replace="layout/header-staff :: header-staff"></div>
+<div sec:authorize="hasRole('CUSTOMER')"
+     th:replace="layout/header-customer :: header-customer"></div>
+
+<div class="layout">
 <div class="container">
     <!-- Sidebar -->
     <div class="sidebar">
@@ -31,13 +43,37 @@
         <div class="filter-bar">
             <input type="text" placeholder="Search..." id="searchBox"/>
             <button type="button" onclick="filterProducts()">Go!</button>
-            <select id="manufacturerFilter">
-                <option value="">Manufacturer</option>
-                <option>Cooler Master</option>
-                <option>Noctua</option>
-                <option>Corsair</option>
-            </select>
-            <a href="#" class="clear-filter" onclick="clearFilter()">Clear filter</a>
+            <button type="button" id="openFilterPopup">Filter</button>
+            <a href="#" class="clear-filter" th:href="@{/build/cooling}">Clear filter</a>
+        </div>
+
+        <!-- Filter & Sort Form Popup -->
+        <div id="filterPopup" class="popup" style="display:none;">
+            <div class="popup-content">
+                <form th:action="@{/build/cooling/filter}" method="post" id="filterForm">
+                    <h4>Filter By:</h4>
+                    <div>
+                        <div th:each="brandObj : ${allBrands}">
+                            <input type="checkbox" name="brands" th:value="${brandObj.name}"
+                                   th:id="${'brand-' + brandObj.brandId}"
+                                   th:checked="${selectedBrands != null && selectedBrands.contains(brandObj.name)}" />
+                            <label th:for="${'brand-' + brandObj.brandId}" th:text="${brandObj.name}"></label>
+                        </div>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">Sort By:</h4>
+                    <select name="sortBy" id="sortSelect">
+                        <option value="">-- No Sort --</option>
+                        <option value="priceAsc" th:selected="${selectedSort == 'priceAsc'}">Price: Low to High</option>
+                        <option value="priceDesc" th:selected="${selectedSort == 'priceDesc'}">Price: High to Low</option>
+                        <option value="nameAsc" th:selected="${selectedSort == 'nameAsc'}">Name: A-Z</option>
+                        <option value="nameDesc" th:selected="${selectedSort == 'nameDesc'}">Name: Z-A</option>
+                    </select>
+
+                    <button type="submit" id="applyFilter">Apply</button>
+                    <button type="button" id="closeFilterPopup">Close</button>
+                </form>
+            </div>
         </div>
 
         <!-- Product Grid -->
@@ -80,6 +116,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <script th:src="@{/js/BuildJs.js}"></script>

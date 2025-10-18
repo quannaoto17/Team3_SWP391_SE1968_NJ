@@ -2,12 +2,14 @@ package com.example.PCOnlineShop.service.build;
 
 import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import com.example.PCOnlineShop.model.build.Case;
+import com.example.PCOnlineShop.model.product.Brand;
 import com.example.PCOnlineShop.repository.build.CaseRepository;
+import com.example.PCOnlineShop.repository.product.BrandRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 public class CaseService {
@@ -16,23 +18,65 @@ public class CaseService {
     private CaseRepository caseRepository;
 
     @Autowired
-    private BuildService buildService;
+    private BrandRepository brandRepository;
 
-    public List<Case> getAllCompatibleCases(BuildItemDto buildItem) {
-        return buildService.getCompatibleCases(buildItem);
+    public List<Case> getAllCases() {
+        return caseRepository.findAll();
     }
 
-    public List<Case> filterCasesByFormFactor(List<Case> cases, String formFactor) {
-        if (formFactor == null || formFactor.isEmpty()) {
-            return cases;
+    public Case addCase(Case pcCase) {
+        return caseRepository.save(pcCase);
+    }
+
+    public Case updateCase(Case pcCase) {
+        return caseRepository.save(pcCase);
+    }
+
+    public Case getCaseById(int id) {
+        return caseRepository.findById(id).orElse(null);
+    }
+
+    public void deleteCase(int id) {
+        caseRepository.deleteById(id);
+    }
+
+    public List<Case> filterCases(List<Case> cases, Map<String,List<String>> filters, String sortBy) {
+        // Filter by brands if selected
+        if (filters.get("brands") != null && !filters.get("brands").isEmpty()) {
+            cases = cases.stream()
+                    .filter(c -> filters.get("brands").contains(c.getProduct().getBrand().getName()))
+                    .toList();
         }
-        return cases.stream()
-                .filter(c -> c.getFormFactor().equalsIgnoreCase(formFactor))
-                .collect(Collectors.toList());
+
+        // Sort if specified
+        if (sortBy != null) {
+            switch (sortBy) {
+                case "priceAsc":
+                    cases = cases.stream()
+                            .sorted((a, b) -> Double.compare(a.getProduct().getPrice(), b.getProduct().getPrice()))
+                            .toList();
+                    break;
+                case "priceDesc":
+                    cases = cases.stream()
+                            .sorted((a, b) -> Double.compare(b.getProduct().getPrice(), a.getProduct().getPrice()))
+                            .toList();
+                    break;
+                case "nameAsc":
+                    cases = cases.stream()
+                            .sorted((a, b) -> a.getProduct().getProductName().compareTo(b.getProduct().getProductName()))
+                            .toList();
+                    break;
+                case "nameDesc":
+                    cases = cases.stream()
+                            .sorted((a, b) -> b.getProduct().getProductName().compareTo(a.getProduct().getProductName()))
+                            .toList();
+                    break;
+            }
+        }
+        return cases;
     }
 
-    public Case selectCase(int caseId) {
-        return caseRepository.findById(caseId)
-                .orElseThrow(() -> new RuntimeException("Case not found"));
+    public List<Brand> getAllBrands() {
+        return brandRepository.findAll();
     }
 }

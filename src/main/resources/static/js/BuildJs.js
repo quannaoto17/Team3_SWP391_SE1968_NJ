@@ -55,8 +55,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeFilterBtn = document.getElementById('closeFilterPopup');
 
     if (filterBtn && filterPopup && closeFilterBtn) {
-        filterBtn.onclick = () => filterPopup.classList.add('is-open');
-        closeFilterBtn.onclick = () => filterPopup.classList.remove('is-open');
+        filterBtn.onclick = () => {
+            filterPopup.style.display = 'block';
+        };
+        closeFilterBtn.onclick = () => {
+            filterPopup.style.display = 'none';
+        };
     }
 });
 

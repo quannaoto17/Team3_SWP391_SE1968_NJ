@@ -252,11 +252,6 @@ html, body {
     pointer-events: none;
 }
 
-.popup[style*="display: block"],
-.popup[style*="display:block"] {
-    pointer-events: all;
-}
-
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -421,8 +416,10 @@ html, body {
 .popup {
     display: none;
 }
+
+/* Legacy support for class-based toggle */
 .popup.is-open {
-    display: flex; /* or whatever display is appropriate for your popup */
+    display: block !important;
 }
 
 /* Responsive for smaller screens */
