@@ -44,7 +44,7 @@ public class GpuController {
                              Model model) {
         List<GPU> gpus = buildService.getCompatibleGPUs(buildItem);
         Map<String,List<String>> filters = new HashMap<>();
-        filters.put("brand", brands);
+        filters.put("brands", brands);
         gpus = gpuService.filterGpus(gpus, filters, sortBy);
 
         model.addAttribute("gpus", gpus);
