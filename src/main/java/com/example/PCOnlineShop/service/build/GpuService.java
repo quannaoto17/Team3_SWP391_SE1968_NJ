@@ -38,9 +38,9 @@ public class GpuService {
 
     public List<GPU> filterGpus(List<GPU> gpus, Map<String,List<String>> filters, String sortBy) {
         // Filter by brands if selected
-        if (filters.get("brand") != null && !filters.get("brand").isEmpty()) {
+        if (filters.get("brands") != null && !filters.get("brands").isEmpty()) {
             gpus = gpus.stream()
-                    .filter(mb -> filters.get("brand").contains(mb.getProduct().getBrand().getName()))
+                    .filter(mb -> filters.get("brands").contains(mb.getProduct().getBrand().getName()))
                     .toList();
         }
 
