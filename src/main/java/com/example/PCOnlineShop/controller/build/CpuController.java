@@ -42,7 +42,7 @@ public class CpuController {
                              Model model) {
         List<CPU> cpus = buildService.getCompatibleCpus(buildItem);
         Map<String,List<String>> filters = new HashMap<>();
-        filters.put("brand", brands);
+        filters.put("brands", brands);
         cpus = cpuService.filterCpus(cpus, filters, sortBy);
 
         model.addAttribute("cpus", cpus);
