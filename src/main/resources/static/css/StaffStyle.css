@@ -120,6 +120,27 @@ body {
     transform: translateY(-2px);
 }
 
+/* ✅ Đồng bộ style Add Customer với Add Staff */
+.add-customer a {
+    background: #20bf6b;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: 0.25s;
+    white-space: nowrap;
+    display: inline-block;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.add-customer a:hover {
+    background: #26de81;
+    transform: translateY(-2px);
+}
+
+
 /* ===== TABLE ===== */
 table {
     width: 100%;

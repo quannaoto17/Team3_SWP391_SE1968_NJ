@@ -9,18 +9,13 @@
 
 <div>
     <div sec:authorize="hasRole('ADMIN')"
-         th:replace="fragments/header-admin :: header-admin"></div>
+         th:replace="layout/header-admin :: header-admin"></div>
 
     <div sec:authorize="hasRole('STAFF')"
-         th:replace="fragments/header-staff :: header-staff"></div>
+         th:replace="layout/header-staff :: header-staff"></div>
 
     <div sec:authorize="hasRole('CUSTOMER')"
-         th:replace="fragments/header-customer :: header-customer"></div>
-    <!-- Header -->
-    <div class="header">
-        <h2>Staff Management</h2>
-    </div>
-
+         th:replace="layout/header-customer :: header-customer"></div>
     <!-- Content -->
     <div class="content">
         <h2>Staff List</h2>

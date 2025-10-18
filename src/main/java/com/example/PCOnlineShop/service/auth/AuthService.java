@@ -16,29 +16,49 @@ public class AuthService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // =========================================================
     // 🔹 Đăng ký khách hàng (Customer)
+    // ➜ Giữ lại để không lỗi AuthController
+    // =========================================================
     public void register(Account account) {
-        account.setPassword(passwordEncoder.encode(account.getPassword()));
-        account.setRole(RoleName.Customer);
-        account.setEnabled(true);
-        accountRepository.save(account);
-    }
-
-    // ✅ Thêm / Cập nhật Staff có kiểm tra trùng email & phone
-    public void saveStaff(Account account) {
-        // 🔹 Kiểm tra email trùng
-        Optional<Account> emailExists = accountRepository.findByEmail(account.getEmail());
-        if (emailExists.isPresent() && emailExists.get().getAccountId() != account.getAccountId()) {
+        // ✅ Kiểm tra email trùng
+        if (accountRepository.existsByEmail(account.getEmail())) {
             throw new IllegalArgumentException("Email đã tồn tại!");
         }
 
-        // 🔹 Kiểm tra số điện thoại trùng
-        Optional<Account> phoneExists = accountRepository.findByPhoneNumber(account.getPhoneNumber());
-        if (phoneExists.isPresent() && phoneExists.get().getAccountId() != account.getAccountId()) {
+        // ✅ Kiểm tra số điện thoại trùng
+        if (accountRepository.existsByPhoneNumber(account.getPhoneNumber())) {
             throw new IllegalArgumentException("Số điện thoại đã tồn tại!");
         }
 
-        // 🔹 Tìm xem đang update hay thêm mới
+        // Mã hóa và gán role Customer
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+        account.setRole(RoleName.Customer);
+        account.setEnabled(true);
+
+        accountRepository.save(account);
+    }
+
+    // =========================================================
+    // ✅ Thêm / Cập nhật Staff có kiểm tra trùng email & phone
+    // =========================================================
+    public void saveStaff(Account account) {
+
+        // 🔹 Kiểm tra email trùng (với tài khoản khác)
+        accountRepository.findByEmail(account.getEmail()).ifPresent(existing -> {
+            if (account.getAccountId() == 0 || existing.getAccountId() != account.getAccountId()) {
+                throw new IllegalArgumentException("Email đã tồn tại!");
+            }
+        });
+
+        // 🔹 Kiểm tra số điện thoại trùng
+        accountRepository.findByPhoneNumber(account.getPhoneNumber()).ifPresent(existing -> {
+            if (account.getAccountId() == 0 || existing.getAccountId() != account.getAccountId()) {
+                throw new IllegalArgumentException("Số điện thoại đã tồn tại!");
+            }
+        });
+
+        // 🔹 Xác định là update hay thêm mới
         Account existing = accountRepository.findById(account.getAccountId()).orElse(null);
 
         if (existing != null) {
@@ -48,8 +68,7 @@ public class AuthService {
             } else {
                 account.setPassword(existing.getPassword());
             }
-
-            // Giữ nguyên trạng thái enabled
+            // Giữ trạng thái enabled cũ
             account.setEnabled(existing.getEnabled());
         } else {
             // Nếu là thêm mới
@@ -57,13 +76,30 @@ public class AuthService {
             account.setEnabled(true);
         }
 
-        // ✅ Set role staff rồi lưu
         account.setRole(RoleName.Staff);
         accountRepository.save(account);
     }
 
-    // 🔹 Cập nhật / thêm Customer (nếu cần)
+    // =========================================================
+    // ✅ Thêm / Cập nhật Customer có kiểm tra trùng email & phone
+    // =========================================================
     public void saveCustomer(Account account) {
+
+        // 🔹 Kiểm tra email trùng (với tài khoản khác)
+        accountRepository.findByEmail(account.getEmail()).ifPresent(existing -> {
+            if (account.getAccountId() == 0 || existing.getAccountId() != account.getAccountId()) {
+                throw new IllegalArgumentException("Email đã tồn tại!");
+            }
+        });
+
+        // 🔹 Kiểm tra số điện thoại trùng
+        accountRepository.findByPhoneNumber(account.getPhoneNumber()).ifPresent(existing -> {
+            if (account.getAccountId() == 0 || existing.getAccountId() != account.getAccountId()) {
+                throw new IllegalArgumentException("Số điện thoại đã tồn tại!");
+            }
+        });
+
+        // 🔹 Xác định là update hay thêm mới
         Account existing = accountRepository.findById(account.getAccountId()).orElse(null);
 
         if (existing != null) {
