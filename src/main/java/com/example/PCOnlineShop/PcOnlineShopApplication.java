@@ -55,6 +55,7 @@ public class PcOnlineShopApplication {
                 System.out.println("✅ Staff account created: staff@shop.com / staff123");
             }
 
+
             // ================= CUSTOMER =================
             String customerPhone = "0777777777";
             if (accountRepository.findByPhoneNumber(customerPhone).isEmpty()) {

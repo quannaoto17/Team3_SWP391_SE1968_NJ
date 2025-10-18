@@ -2,80 +2,37 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Check Warranty Date</title>
+    <title>Check Warranty</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f6f7fb;
-            margin: 0;
-        }
-        .container {
-            width: 80%;
-            margin: 40px auto;
-            background: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        h1 {
-            text-align: center;
-            color: #222;
-        }
-        form {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        input[type=text] {
-            padding: 8px;
-            width: 250px;
-        }
-        button {
-            padding: 8px 16px;
-            margin-left: 8px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            text-align: center;
-            padding: 10px;
-        }
-        th {
-            background-color: #f1f1f1;
-        }
-        a {
-            text-decoration: none;
-            color: blue;
-        }
-        .not-found {
-            color: red;
-            text-align: center;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-        .section-title {
-            color: red;
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 30px;
-        }
+        body { font-family: Arial, sans-serif; background: #f6f7fb; margin: 0; }
+        .container { width: 80%; margin: 40px auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        h1 { text-align: center; color: #222; }
+        form { text-align: center; margin-bottom: 20px; }
+        input[type=text] { padding: 8px; width: 250px; border: 1px solid #ccc; border-radius: 4px; margin-right: 5px;}
+        button { padding: 9px 16px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; background-color: #eee; }
+        button[type=submit] { background-color: #007bff; color: white; border-color: #007bff; }
+        a.clear-btn { padding: 9px 16px; border-radius: 4px; border: 1px solid #ccc; background-color: #eee; text-decoration: none; color: #333; display: inline-block; vertical-align: top;}
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; text-align: center; padding: 10px; }
+        th { background-color: #f1f1f1; }
+        .not-found { color: red; text-align: center; font-weight: bold; margin-top: 20px; }
+        .section-title { color: #dc3545; font-size: 20px; font-weight: bold; margin-top: 30px; margin-bottom: 10px; text-align: center;}
+        .view-products-btn { background:none; border:none; color:#007bff; cursor:pointer; padding: 0; font-size: inherit; text-decoration: underline;}
+        .status-active { color: green; font-weight: bold; }
+        .status-expiring { color: orange; font-weight: bold; }
+        .status-expired { color: red; font-weight: bold; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Check Warranty Date</h1>
+    <h1>Check Warranty Status</h1>
 
-    <!-- Form tìm kiếm -->
     <form th:action="@{/staff/warranty/search}" method="post">
-        <input type="text" name="phone" placeholder="Enter phone number" th:value="${phone}" required>
-        <button type="submit">Search</button>
-        <a th:href="@{/staff/warranty/check}">Clear</a>
+        <input type="text" name="phone" placeholder="Enter customer phone number" th:value="${phone}" required pattern="\d*" title="Please enter digits only.">
+        <button type="submit">Search Orders</button>
+        <a th:href="@{/staff/warranty/check}" class="clear-btn">Clear</a>
     </form>
 
-    <!-- Bảng Order -->
     <div th:if="${orders != null}">
         <div th:if="${#lists.isEmpty(orders)}" class="not-found">
             No orders found for this phone number.
@@ -87,23 +44,21 @@
                 <thead>
                 <tr>
                     <th>Order ID</th>
-                    <th>Date Create</th>
-                    <th>Total Value (USD)</th>
-                    <th>Status</th>
+                    <th>Order Date</th>
+                    <th>Final Amount (₫)</th>
                     <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="order : ${orders}">
                     <td th:text="${order.orderId}"></td>
-                    <td th:text="${#dates.format(order.createdDate, 'yyyy-MM-dd')}"></td>
-                    <td th:text="${order.finalAmount}"></td>
-                    <td th:text="${order.status}"></td>
+                    <td th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${#numbers.formatInteger(order.finalAmount, 1, 'COMMA')}"></td>
                     <td>
                         <form th:action="@{/staff/warranty/search}" method="post" style="display:inline;">
                             <input type="hidden" name="phone" th:value="${phone}">
                             <input type="hidden" name="orderId" th:value="${order.orderId}">
-                            <button type="submit" style="background:none;border:none;color:blue;cursor:pointer;">View Products</button>
+                            <button type="submit" class="view-products-btn">View Warranty Details</button>
                         </form>
                     </td>
                 </tr>
@@ -112,24 +67,28 @@
         </div>
     </div>
 
-    <!-- Bảng Product -->
-    <div th:if="${products != null}">
-        <div class="section-title" th:text="'View Products in Order ID ' + ${selectedOrderId}"></div>
+    <div th:if="${warrantyDetails != null}">
+        <div class="section-title" th:text="'Warranty Details for Order ID #' + ${selectedOrderId}"></div>
         <table>
             <thead>
             <tr>
                 <th>Product</th>
-                <th>Quantity</th>
-                <th>Warranty</th>
+                <th>Warranty Period</th>
                 <th>Expiry Date</th>
+                <th>Status</th> </tr>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="p : ${products}">
-                <td th:text="${p.productName}"></td>
-                <td th:text="${p.quantity}"></td>
-                <td th:text="${p.warrantyMonths + ' months'}"></td>
-                <td th:text="${p.expiryDate}"></td>
+            <tr th:each="wd : ${warrantyDetails}">
+                <td th:text="${wd.productName}"></td>
+                <td th:text="${wd.warrantyMonths + ' months'}"></td>
+                <td th:text="${#temporals.format(wd.expiryDate, 'dd/MM/yyyy')}"></td>
+                <td th:text="${wd.status}"
+                    th:classappend="${wd.status == 'Active' ? 'status-active' : (wd.status == 'Expiring Soon' ? 'status-expiring' : 'status-expired')}">
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(warrantyDetails)}">
+                <td colspan="3">No warranty details found for this order's products.</td>
             </tr>
             </tbody>
         </table>

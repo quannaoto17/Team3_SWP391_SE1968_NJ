@@ -21,20 +21,6 @@
         <p><b>Final Amount:</b> <span th:text="${#numbers.formatInteger(order.finalAmount, 1, 'COMMA')} + ' ₫'"></span></p>
     </div>
 
-    <div class="card">
-        <h3>Shipping Information</h3>
-        <p><b>Method:</b> <span th:text="${order.shippingMethod}"></span></p>
-        <p><b>Recipient:</b> <span th:text="${order.shippingFullName}"></span></p>
-        <p><b>Phone:</b> <span th:text="${order.shippingPhone}"></span></p>
-        <p><b>Address:</b> <span th:text="${order.shippingAddress}"></span></p>
-        <p th:if="${order.note}"><b>Note:</b> <span th:text="${order.note}"></span></p>
-    </div>
-
-    <div class="card" th:if="${order.trackingNumber != null}">
-        <h3>Shipment Details</h3>
-        <p><b>Tracking Number:</b> <span th:text="${order.trackingNumber}"></span></p>
-    </div>
-
 
     <div class="card">
         <h3>Ordered Products</h3>

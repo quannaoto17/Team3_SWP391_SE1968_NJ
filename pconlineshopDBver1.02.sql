@@ -222,12 +222,12 @@ CREATE TABLE orders (
     -- Dữ liệu từ trang checkout (Phương thức, Ghi chú, Email)
     shipping_method VARCHAR(50) NOT NULL, -- "Giao hàng tận nơi" hoặc "Nhận tại cửa hàng"
     note TEXT NULL,
-
+	
     -- Dữ liệu "Ảnh chụp" địa chỉ giao hàng tại thời điểm đặt
     shipping_full_name VARCHAR(100) NOT NULL,
     shipping_phone VARCHAR(20) NOT NULL,
     shipping_address VARCHAR(255) NOT NULL,
-    
+    shipment_received_date DATETIME NULL,
     -- Quản lý vận đơn (Theo "Cách 2" - Shipper là người dùng)
     shipper_account_id INT NULL, -- ID của tài khoản shipper
     tracking_number VARCHAR(100) NULL,

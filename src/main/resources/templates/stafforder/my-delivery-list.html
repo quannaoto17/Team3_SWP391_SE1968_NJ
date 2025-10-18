@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>My Deliveries</title>
+    <link rel="stylesheet" th:href="@{/css/OrderStyle.css}">
+    <style>
+        .status-form select, .status-form button { margin-left: 5px; vertical-align: middle;}
+        .container { width: 95%; margin: 20px auto; }
+        .alert { padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; }
+        .alert-danger { color: #a94442; background-color: #f2dede; border-color: #ebccd1; }
+        .alert-success { color: #3c763d; background-color: #dff0d8; border-color: #d6e9c6; }
+    </style>
+</head>
+<body>
+
+<div sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+</div>
+
+<div class="container">
+    <h2 th:text="'Orders Assigned to ' + (${staffName} ?: 'You')">My Assigned Orders</h2>
+
+    <div th:if="${error}" class="alert alert-danger"> <p th:text="${error}"></p> </div>
+    <div th:if="${success}" class="alert alert-success"> <p th:text="${success}"></p> </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Recipient Name</th>
+            <th>Recipient Phone</th>
+            <th>Shipping Address</th>
+            <th>Shipment Received Date</th> <th>Current Status</th>
+            <th>Update Status</th> </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${assignedOrders}">
+            <td th:text="${order.orderId}"></td>
+            <td th:text="${order.shippingFullName}"></td>
+            <td th:text="${order.shippingPhone}"></td>
+            <td th:text="${order.shippingAddress}"></td>
+            <td th:text="${order.shipmentReceivedDate != null ? #dates.format(order.shipmentReceivedDate, 'dd/MM/yyyy HH:mm') : '-'}"></td>
+            <td th:text="${order.status}"></td>
+            <td>
+                <form th:action="@{'/staff/orders/update-delivery-status/' + ${order.orderId}}" method="post" class="status-form" style="display:inline-flex; align-items: center;">
+                    <select name="newStatus" th:disabled="${order.status == 'Completed' or order.status == 'Delivery Failed'}">
+                        <option th:if="${order.status == 'Ready to Ship'}" value="Delivering">Mark as Delivering</option>
+                        <option th:if="${order.status == 'Delivering'}" value="Completed">Mark as Completed</option>
+                        <option th:if="${order.status == 'Delivering'}" value="Delivery Failed">Mark as Delivery Failed</option>
+                        <option th:if="${order.status != 'Ready to Ship' and order.status != 'Delivering'}" th:value="${order.status}" th:text="${order.status}" selected disabled></option>
+                    </select>
+                    <button type="submit" class="save-btn"
+                            th:disabled="${order.status == 'Completed' or order.status == 'Delivery Failed'}">Update</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(assignedOrders)}">
+            <td colspan="7" style="text-align: center;">You have no assigned orders currently.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div style="margin-top: 20px;">
+        <a th:href="@{/staff/orders/list}" class="back-btn">← Back to All Orders</a>
+    </div>
+
+</div> </body>
+</html>
