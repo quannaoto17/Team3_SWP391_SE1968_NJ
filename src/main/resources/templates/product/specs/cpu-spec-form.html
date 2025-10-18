@@ -1,0 +1,24 @@
+<div>
+    <h4>CPU - Thông số kỹ thuật</h4>
+
+    <label>Socket:</label>
+    <input type="text" name="cpu.socket" placeholder="VD: LGA1700" required>
+
+    <label>TDP (W):</label>
+    <input type="number" name="cpu.tdp" min="1" required>
+
+    <label>Tốc độ RAM tối đa (MHz):</label>
+    <input type="number" name="cpu.maxMemorySpeed" min="800">
+
+    <label>Số kênh RAM:</label>
+    <input type="number" name="cpu.memoryChannels" min="1">
+
+    <label>Có iGPU:</label>
+    <select name="cpu.hasIGPU">
+        <option value="true">Có</option>
+        <option value="false">Không</option>
+    </select>
+
+    <label>PCIe Version:</label>
+    <input type="text" name="cpu.pcieVersion" placeholder="VD: PCIe 5.0">
+</div>

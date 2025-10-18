@@ -28,17 +28,26 @@
         .choose-btn { width: fit-content; padding: 8px 12px; border: 1px solid #aaa; border-radius: 4px; background: #f1f1f1; cursor: pointer; }
         .choose-btn:hover { background: #e2e2e2; }
 
-        label { font-weight: bold; margin-top: 8px; }
+        label { font-weight: bold; margin-top: 8px; display: block; }
         input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
 
         /* Category message */
-        .category-message { border: 1px solid #ccc; padding: 12px; width: 350px; background: #fafafa; border-radius: 4px; font-size: 14px; }
+        .category-message { border: 1px solid #ccc; padding: 12px; width: 400px; background: #fafafa; border-radius: 4px; font-size: 14px; }
 
         /* Product form */
-        .product-form { display: none; flex-direction: column; gap: 12px; width: 60%; }
+        .product-form { display: none; flex-direction: column; gap: 12px; width: 70%; }
 
-        .create-btn { align-self: flex-end; padding: 10px 20px; font-weight: bold; border: 1px solid #888; background: #f1f1f1; border-radius: 4px; cursor: pointer; }
-        .create-btn:hover { background: #ddd; }
+        .create-btn { align-self: flex-end; padding: 10px 20px; font-weight: bold; border: none; background: #4b7bec; color: #fff; border-radius: 4px; cursor: pointer; }
+        .create-btn:hover { background: #3867d6; }
+
+        /* Dynamic spec form */
+        #specFormContainer {
+            background: #f9fafc;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px dashed #ccc;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -75,7 +84,6 @@
 
                 <!-- Message nếu chưa chọn Category -->
                 <div class="category-message" id="categoryMessage">
-                    <input type="checkbox" disabled checked> Chưa chọn danh mục
                     <p>Vui lòng chọn danh mục để thêm sản phẩm.</p>
                 </div>
 
@@ -103,9 +111,11 @@
                     <label>Mô tả:</label>
                     <textarea th:field="*{description}" rows="3" placeholder="Mô tả sản phẩm..."></textarea>
 
-                    <!-- Specification -->
-                    <label>Thông số kỹ thuật:</label>
-                    <textarea th:field="*{specification}" rows="3" placeholder="Thông số kỹ thuật..."></textarea>
+
+                    <!-- Dynamic spec form -->
+                    <div id="specFormContainer">
+                        <p style="color:#777;">Chọn danh mục để nhập thông số chi tiết (CPU, GPU,...)</p>
+                    </div>
 
                     <!-- Status -->
                     <label>Trạng thái:</label>
@@ -132,18 +142,27 @@
 </div>
 
 <script>
-    // Hiển thị / ẩn form thêm sản phẩm theo danh mục
     const categorySelect = document.getElementById('categorySelect');
     const categoryMessage = document.getElementById('categoryMessage');
     const productForm = document.getElementById('productForm');
+    const specContainer = document.getElementById('specFormContainer');
 
+    // Khi chọn category
     categorySelect.addEventListener('change', () => {
-        if (categorySelect.value) {
+        const categoryId = categorySelect.value;
+        if (categoryId) {
             categoryMessage.style.display = 'none';
             productForm.style.display = 'flex';
+
+            // Load form thông số kỹ thuật tương ứng
+            fetch(`/staff/products/spec-form?categoryId=${categoryId}`)
+                .then(res => res.text())
+                .then(html => specContainer.innerHTML = html)
+                .catch(() => specContainer.innerHTML = "<p style='color:red;'>Lỗi tải form thông số!</p>");
         } else {
             categoryMessage.style.display = 'block';
             productForm.style.display = 'none';
+            specContainer.innerHTML = "<p style='color:#777;'>Chọn danh mục để nhập thông số chi tiết (CPU, GPU,...)</p>";
         }
     });
 
