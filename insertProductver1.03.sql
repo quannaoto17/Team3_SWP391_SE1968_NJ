@@ -607,7 +607,7 @@ INSERT INTO gpu (product_id, vram, memory_type, tdp, gpu_interface, pcie_version
 VALUES (LAST_INSERT_ID(), 4, 'GDDR6', 53, 'PCIe x4', '4.0', 170);
 
 -- =================================================================
--- SCRIPT INSERT 30 SẢN PHẨM BỘ NHỚ RAM (MEMORY)
+-- SCRIPT INSERT 30 SẢN PHẨM BỘ NHỚ RAM (ĐÃ SỬA LỖI, BỔ SUNG TDP)
 -- =================================================================
 
 -- -----------------------------------------------------------------
@@ -616,63 +616,63 @@ VALUES (LAST_INSERT_ID(), 4, 'GDDR6', 53, 'PCIe x4', '4.0', 170);
 
 -- 1. Corsair Vengeance LPX 16GB (2x8GB) DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 2, 'Corsair Vengeance LPX 16GB (2x8GB) DDR4 3200MHz C16', 1290000, 'Kit RAM DDR4 phổ biến, hiệu năng ổn định, tản nhiệt thấp.', 'Kit 16GB, DDR4, 3200MHz, CL16');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 5);
 
 -- 2. G.Skill Ripjaws V 16GB (2x8GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 14, 'G.Skill Ripjaws V 16GB (2x8GB) DDR4 3600MHz C18', 1450000, 'Hiệu năng cao cho các hệ thống AMD Ryzen.', 'Kit 16GB, DDR4, 3600MHz, CL18');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3600);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3600, 6);
 
 -- 3. Kingston Fury Beast 8GB DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 15, 'Kingston Fury Beast 8GB DDR4 3200MHz', 690000, 'Thanh RAM lẻ 8GB cho các cấu hình cơ bản.', '8GB, DDR4, 3200MHz, CL16');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3200);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3200, 5);
 
 -- 4. Crucial Ballistix 32GB (2x16GB) DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 16, 'Crucial Ballistix 32GB (2x16GB) DDR4 3200MHz C16', 2500000, 'Kit 32GB hiệu năng tốt cho gaming và làm việc đa nhiệm.', 'Kit 32GB, DDR4, 3200MHz, CL16');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3200);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3200, 7);
 
 -- 5. Teamgroup T-Force Vulcan Z 16GB (2x8GB) DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 17, 'Teamgroup T-Force Vulcan Z 16GB (2x8GB) DDR4 3200MHz', 1150000, 'RAM giá rẻ với tản nhiệt cách điệu.', 'Kit 16GB, DDR4, 3200MHz, CL16');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 5);
 
 -- 6. G.Skill Trident Z RGB 16GB (2x8GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 14, 'G.Skill Trident Z RGB 16GB (2x8GB) DDR4 3600MHz C18', 1990000, 'Thiết kế RGB đẹp mắt, hiệu năng cao.', 'Kit 16GB, DDR4, 3600MHz, CL18');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3600);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3600, 8);
 
 -- 7. Corsair Dominator Platinum RGB 32GB (2x16GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 2, 'Corsair Dominator Platinum RGB 32GB (2x16GB) DDR4 3600MHz', 4200000, 'Dòng RAM cao cấp nhất của Corsair, LED Capellix.', 'Kit 32GB, DDR4, 3600MHz, CL18');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600, 10);
 
 -- 8. Kingston Fury Beast 32GB (2x16GB) DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 15, 'Kingston Fury Beast 32GB (2x16GB) DDR4 3200MHz', 2400000, 'Kit 32GB cho người dùng cần nhiều dung lượng.', 'Kit 32GB, DDR4, 3200MHz, CL16');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3200);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3200, 7);
 
 -- 9. Crucial Pro 16GB (2x8GB) DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 16, 'Crucial Pro 16GB (2x8GB) DDR4 3200MHz', 1250000, 'RAM ổn định, không RGB, tập trung vào hiệu năng.', 'Kit 16GB, DDR4, 3200MHz, CL22');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 5);
 
 -- 10. G.Skill Ripjaws V 32GB (2x16GB) DDR4 4000MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 14, 'G.Skill Ripjaws V 32GB (2x16GB) DDR4 4000MHz C18', 3500000, 'Tốc độ bus cực cao cho các hệ thống Intel cao cấp.', 'Kit 32GB, DDR4, 4000MHz, CL18');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 4000);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 4000, 8);
 
 -- 11. Corsair Vengeance RGB Pro 16GB (2x8GB) DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 2, 'Corsair Vengeance RGB Pro 16GB (2x8GB) DDR4 3200MHz', 1650000, 'Dòng RAM RGB tầm trung phổ biến.', 'Kit 16GB, DDR4, 3200MHz, CL16');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 7);
 
 -- 12. Teamgroup T-Create Expert 32GB (2x16GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 17, 'Teamgroup T-Create Expert 32GB (2x16GB) DDR4 3600MHz', 2300000, 'Dòng RAM chuyên cho người làm sáng tạo nội dung.', 'Kit 32GB, DDR4, 3600MHz, CL18');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600, 7);
 
 -- 13. Kingston Fury Renegade 16GB (2x8GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 15, 'Kingston Fury Renegade 16GB (2x8GB) DDR4 3600MHz', 1800000, 'Dòng RAM hiệu năng cao của Kingston.', 'Kit 16GB, DDR4, 3600MHz, CL16');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3600);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3600, 7);
 
 -- 14. G.Skill Trident Z Royal Silver 32GB (2x16GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 14, 'G.Skill Trident Z Royal Silver 32GB (2x16GB) DDR4 3600MHz', 4500000, 'Thiết kế kim cương sang trọng, hiệu năng đỉnh cao.', 'Kit 32GB, DDR4, 3600MHz, CL18');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600, 10);
 
 -- 15. Corsair Vengeance LPX 32GB (2x16GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 2, 'Corsair Vengeance LPX 32GB (2x16GB) DDR4 3600MHz C18', 2600000, 'Kit 32GB tốc độ cao, tản nhiệt thấp không cấn tản khí.', 'Kit 32GB, DDR4, 3600MHz, CL18');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600, 7);
 
 -- -----------------------------------------------------------------
 -- RAM DDR5
@@ -680,63 +680,63 @@ INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(),
 
 -- 16. Corsair Vengeance 32GB (2x16GB) DDR5 5600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 2, 'Corsair Vengeance 32GB (2x16GB) DDR5 5600MHz C36', 3200000, 'Kit RAM DDR5 tiêu chuẩn cho các hệ thống mới.', 'Kit 32GB, DDR5, 5600MHz, CL36');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 5600);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 5600, 8);
 
 -- 17. G.Skill Trident Z5 RGB 32GB (2x16GB) DDR5 6000MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 14, 'G.Skill Trident Z5 RGB 32GB (2x16GB) DDR5 6000MHz C36', 3800000, 'Tốc độ tối ưu cho AMD EXPO, thiết kế đẹp.', 'Kit 32GB, DDR5, 6000MHz, CL36');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000, 10);
 
 -- 18. Kingston Fury Beast 16GB (2x8GB) DDR5 5200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 15, 'Kingston Fury Beast 16GB (2x8GB) DDR5 5200MHz', 2200000, 'Kit 16GB DDR5 cho các cấu hình tầm trung.', 'Kit 16GB, DDR5, 5200MHz, CL40');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 16, 5200);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 16, 5200, 7);
 
 -- 19. Crucial Pro 32GB (2x16GB) DDR5 5600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 16, 'Crucial Pro 32GB (2x16GB) DDR5 5600MHz', 3100000, 'RAM DDR5 ổn định, hỗ trợ cả Intel XMP và AMD EXPO.', 'Kit 32GB, DDR5, 5600MHz, CL46');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 5600);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 5600, 8);
 
 -- 20. Teamgroup T-Force Delta RGB 32GB (2x16GB) DDR5 6000MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 17, 'Teamgroup T-Force Delta RGB 32GB (2x16GB) DDR5 6000MHz', 3500000, 'Thiết kế RGB góc cạnh, hiệu năng tốt.', 'Kit 32GB, DDR5, 6000MHz, CL38');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000, 10);
 
 -- 21. Corsair Dominator Platinum RGB 32GB (2x16GB) DDR5 6200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 2, 'Corsair Dominator Platinum RGB 32GB (2x16GB) DDR5 6200MHz', 5500000, 'Dòng RAM DDR5 cao cấp nhất của Corsair.', 'Kit 32GB, DDR5, 6200MHz, CL36');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6200);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6200, 12);
 
 -- 22. G.Skill Ripjaws S5 32GB (2x16GB) DDR5 5200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 14, 'G.Skill Ripjaws S5 32GB (2x16GB) DDR5 5200MHz Black', 3000000, 'Thiết kế tản nhiệt thấp, phù hợp nhiều loại tản khí.', 'Kit 32GB, DDR5, 5200MHz, CL40');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 5200);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 5200, 8);
 
 -- 23. Kingston Fury Renegade 32GB (2x16GB) DDR5 6400MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 15, 'Kingston Fury Renegade 32GB (2x16GB) DDR5 6400MHz', 4200000, 'Hiệu năng cao, tản nhiệt bạc-đen.', 'Kit 32GB, DDR5, 6400MHz, CL32');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6400);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6400, 10);
 
 -- 24. G.Skill Trident Z5 RGB 64GB (2x32GB) DDR5 6400MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 14, 'G.Skill Trident Z5 RGB 64GB (2x32GB) DDR5 6400MHz', 7500000, 'Dung lượng cực lớn cho workstation và các tác vụ nặng.', 'Kit 64GB, DDR5, 6400MHz, CL32');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 64, 6400);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 64, 6400, 12);
 
 -- 25. Corsair Vengeance RGB 32GB (2x16GB) DDR5 6000MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 2, 'Corsair Vengeance RGB 32GB (2x16GB) DDR5 6000MHz C36', 3900000, 'Dòng Vengeance với dải LED RGB toàn cảnh.', 'Kit 32GB, DDR5, 6000MHz, CL36');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000, 10);
 
 -- 26. Crucial 16GB (1x16GB) DDR5 4800MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 16, 'Crucial 16GB DDR5 4800MHz', 1400000, 'Thanh RAM lẻ DDR5 tiêu chuẩn JEDEC, không tản nhiệt.', '16GB, DDR5, 4800MHz, CL40');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 16, 4800);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 16, 4800, 6);
 
 -- 27. Teamgroup T-Force Xtreem 32GB (2x16GB) DDR5 7600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 17, 'Teamgroup T-Force Xtreem 32GB (2x16GB) DDR5 7600MHz', 5800000, 'Tốc độ bus cực cao cho những người đam mê ép xung.', 'Kit 32GB, DDR5, 7600MHz, CL36');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 7600);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 7600, 12);
 
 -- 28. Kingston Fury Beast 64GB (2x32GB) DDR5 5600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 15, 'Kingston Fury Beast 64GB (2x32GB) DDR5 5600MHz', 6500000, 'Kit 64GB dung lượng lớn, ổn định.', 'Kit 64GB, DDR5, 5600MHz, CL40');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 64, 5600);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 64, 5600, 10);
 
 -- 29. G.Skill Flare X5 32GB (2x16GB) DDR5 6000MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 14, 'G.Skill Flare X5 32GB (2x16GB) DDR5 6000MHz CL30', 4000000, 'Tối ưu cho AMD EXPO với độ trễ C30 cực thấp.', 'Kit 32GB, DDR5, 6000MHz, CL30');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000, 9);
 
 -- 30. Corsair Vengeance 64GB (2x32GB) DDR5 5200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification) VALUES (4, 2, 'Corsair Vengeance 64GB (2x32GB) DDR5 5200MHz', 6300000, 'Kit 64GB không RGB, tập trung vào dung lượng và sự ổn định.', 'Kit 64GB, DDR5, 5200MHz, CL40');
-INSERT INTO memory (product_id, type, capacity, speed) VALUES (LAST_INSERT_ID(), 'DDR5', 64, 5200);
+INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 64, 5200, 9);
 
 -- =================================================================
 -- SCRIPT INSERT 30 SẢN PHẨM LƯU TRỮ (STORAGE)

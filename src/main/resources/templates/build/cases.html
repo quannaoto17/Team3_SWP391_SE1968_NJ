@@ -90,7 +90,7 @@
                      th:data-gpumaxlength="${case.gpuMaxLength}"
                      th:data-cpumaxheight="${case.cpuMaxCoolerHeight}"
                      th:data-psumaxlength="${case.psuMaxLength}">
-                    <img th:if="${case.product.image != null}" th:src="${case.product.image}" alt="Case Image"/>
+<!--                    <img th:if="${case.product.image != null}" th:src="${case.product.image}" alt="Case Image"/>-->
                     <h4 th:text="${case.product.productName}"></h4>
                     <p th:text="'Form Factor: ' + ${case.formFactor}"></p>
                     <p th:text="'GPU Max Length: ' + ${case.gpuMaxLength} + 'mm'"></p>
