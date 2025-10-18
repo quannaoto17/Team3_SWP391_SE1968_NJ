@@ -21,7 +21,7 @@ public class Cooling {
     @Column(name = "radiator_size")
     private String radiatorSize; // e.g., 120mm, 240mm
     @Column(name = "max_tdp")
-    private int maxTdp; // in Watts
+    private int tdp; // in Watts
 
     @OneToOne
     @MapsId
