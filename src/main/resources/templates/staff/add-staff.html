@@ -8,6 +8,16 @@
     <link rel="stylesheet" href="/css/StaffStyle.css">
 </head>
 <body>
+<div sec:authorize="!isAuthenticated()"
+     th:replace="layout/header-default :: header-default"></div>
+<div sec:authorize="hasRole('ADMIN')"
+     th:replace="layout/header-admin :: header-admin"></div>
+
+<div sec:authorize="hasRole('STAFF')"
+     th:replace="layout/header-staff :: header-staff"></div>
+
+<div sec:authorize="hasRole('CUSTOMER')"
+     th:replace="layout/header-customer :: header-customer"></div>
 <div class="header"><h2>Add Staff</h2></div>
 <div class="content">
 
