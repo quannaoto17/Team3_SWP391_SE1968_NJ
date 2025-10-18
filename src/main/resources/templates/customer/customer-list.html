@@ -1,61 +1,48 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Customer List</title>
-    <link rel="stylesheet" href="/css/CustomerStyle.css">
+    <link rel="stylesheet" th:href="@{/css/StaffStyle.css}">
 </head>
 <body>
 
 <div>
-    <div class="header">
-        <h2>Customer Management</h2>
-    </div>
+    <!-- Header -->
+    <div sec:authorize="hasRole('ADMIN')"
+         th:replace="layout/header-admin :: header-admin"></div>
 
+    <div sec:authorize="hasRole('STAFF')"
+         th:replace="layout/header-staff :: header-staff"></div>
+
+    <div sec:authorize="hasRole('CUSTOMER')"
+         th:replace="layout/header-customer :: header-customer"></div>
+
+    <!-- Content -->
     <div class="content">
         <h2>Customer List</h2>
 
+        <!-- Search + Filter + Add -->
         <div class="search-sort-container">
 
-            <!-- Ô tìm kiếm -->
-            <div class="search-container">
-                <form th:action="@{/customer/list}" method="get">
+            <!-- Bên trái: Search -->
+            <div class="search-left">
+                <form th:action="@{/customer/list}" method="get" class="search-form">
                     <input type="text" name="searchQuery" placeholder="Search by phone or email"
-                           th:value="${param.searchQuery}"/>
-                    <button type="submit">Search</button>
-
-                    <span class="back-button"
-                          th:if="${param.searchQuery != null and param.searchQuery != ''}">
-                        <a th:href="@{/customer/list(page=${customerPage.number}, size=${customerPage.size}, statusFilter=${param.statusFilter})}">
-                            Back
-                        </a>
-                    </span>
-
-                    <input type="hidden" name="statusFilter" th:value="${param.statusFilter}"/>
+                           th:value="${searchQuery}"/>
+                    <button type="submit" class="btn-filter">Filter</button>
                 </form>
             </div>
 
-            <!-- Bộ lọc trạng thái + nút thêm -->
-            <div class="sort-add-container">
-                <div class="sort-container">
-                    <form th:action="@{/customer/list}" method="get">
-                        <select name="statusFilter" onchange="this.form.submit()">
-                            <option value="all"
-                                    th:selected="${param.statusFilter == null or #strings.equalsIgnoreCase(param.statusFilter, 'all')}">
-                                All
-                            </option>
-                            <option value="active"
-                                    th:selected="${#strings.equalsIgnoreCase(param.statusFilter, 'active')}">
-                                Active
-                            </option>
-                            <option value="inactive"
-                                    th:selected="${#strings.equalsIgnoreCase(param.statusFilter, 'inactive')}">
-                                Inactive
-                            </option>
-                        </select>
-                        <input type="hidden" name="searchQuery" th:value="${param.searchQuery}"/>
-                    </form>
-                </div>
+            <!-- Bên phải: Dropdown + Add Customer -->
+            <div class="search-right">
+                <form th:action="@{/customer/list}" method="get" class="status-form">
+                    <select name="statusFilter" onchange="this.form.submit()">
+                        <option value="all" th:selected="${statusFilter == 'all'}">All</option>
+                        <option value="active" th:selected="${statusFilter == 'active'}">Active</option>
+                        <option value="inactive" th:selected="${statusFilter == 'inactive'}">Inactive</option>
+                    </select>
+                </form>
 
                 <div class="add-customer">
                     <a href="/customer/add">Add Customer</a>
@@ -65,6 +52,7 @@
 
         <!-- Bảng danh sách khách hàng -->
         <table>
+            <thead>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
@@ -74,7 +62,9 @@
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
+            </thead>
 
+            <tbody>
             <tr th:each="c : ${customerPage.content}">
                 <td th:text="${c.accountId}"></td>
                 <td th:text="${c.firstname + ' ' + c.lastname}"></td>
@@ -86,27 +76,30 @@
                           th:classappend="${c.enabled ? 'status-active' : 'status-inactive'}"></span>
                 </td>
                 <td>
-                    <a th:href="@{'/customer/view/' + ${c.accountId}}" class="btn-action btn-view">View</a> |
-                    <a th:href="@{'/customer/edit/' + ${c.accountId}}" class="btn-action btn-edit">Edit</a> |
+                    <a th:href="@{'/customer/view/' + ${c.accountId}}" class="btn-action btn-view">View</a>
+                    <a th:href="@{'/customer/edit/' + ${c.accountId}}" class="btn-action btn-edit">Edit</a>
                     <a th:href="@{'/customer/delete/' + ${c.accountId}}"
+                       class="btn-action"
                        th:text="${c.enabled ? 'Deactivate' : 'Activate'}"
-                       th:classappend="${c.enabled ? 'btn-toggle' : 'btn-toggle inactive'}"
+                       th:classappend="${c.enabled ? 'btn-deactivate' : 'btn-activate'}"
                        onclick="return confirm('Are you sure to change status?')"></a>
                 </td>
             </tr>
+            </tbody>
         </table>
 
         <!-- Phân trang -->
         <div class="pagination">
-            <a th:href="@{/customer/list(page=${customerPage.number - 1}, size=${customerPage.size}, searchQuery=${param.searchQuery}, statusFilter=${param.statusFilter})}"
+            <a th:href="@{/customer/list(page=${customerPage.number - 1}, size=${customerPage.size}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}"
                th:classappend="${!customerPage.hasPrevious()} ? 'disabled' : ''">← Prev</a>
 
             <span th:text="${customerPage.number + 1}"></span> /
             <span th:text="${customerPage.totalPages}"></span>
 
-            <a th:href="@{/customer/list(page=${customerPage.number + 1}, size=${customerPage.size}, searchQuery=${param.searchQuery}, statusFilter=${param.statusFilter})}"
+            <a th:href="@{/customer/list(page=${customerPage.number + 1}, size=${customerPage.size}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}"
                th:classappend="${!customerPage.hasNext()} ? 'disabled' : ''">Next →</a>
         </div>
+
     </div>
 </div>
 
