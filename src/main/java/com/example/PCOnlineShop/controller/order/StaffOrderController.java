@@ -1,6 +1,7 @@
 package com.example.PCOnlineShop.controller.order; // Đảm bảo đúng package
 
 import com.example.PCOnlineShop.dto.order.OrderSearchRequest;
+import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.model.order.Order;
 import com.example.PCOnlineShop.service.order.OrderService;
 import jakarta.validation.Valid;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -140,24 +142,44 @@ public class StaffOrderController {
         return "redirect:/staff/orders/list";
     }
 
-    // ===========================================
-    // 🔹 Cập nhật đơn lẻ (status, shipper, tracking) - Vẫn giữ lại nếu cần 🔹
-    // ===========================================
-    @PostMapping("/update-status/{id}")
-    public String updateOrderShippingStatus(@PathVariable int id,
-                                            @RequestParam String status,
-                                            @RequestParam(required = false) Integer shipperAccountId,
-                                            @RequestParam(required = false) String trackingNumber,
-                                            RedirectAttributes redirectAttributes) {
-        try {
-            // Gọi service để cập nhật cả status, shipper và tracking
-            orderService.updateOrderShipping(id, status, shipperAccountId, trackingNumber);
-            redirectAttributes.addFlashAttribute("success", "Order #" + id + " updated successfully.");
-        } catch(Exception e) {
-            System.err.println("Error updating order: " + e.getMessage());
-            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+    /**
+     * GET /staff/orders/my-deliveries
+     */
+    @GetMapping("/my-deliveries")
+    public String viewMyDeliveries(@AuthenticationPrincipal Account currentStaff, Model model, RedirectAttributes redirectAttributes) {
+        if (currentStaff == null) {
+            redirectAttributes.addFlashAttribute("error", "User not logged in.");
+            return "redirect:/auth/login";
         }
-        // Quay lại trang danh sách hoặc trang chi tiết tùy bạn
-        return "redirect:/staff/orders/list";
+        // Kiểm tra có phải Staff không (nếu Security chưa chặn)
+        /* if(currentStaff.getRole() != RoleName.Staff) {
+             redirectAttributes.addFlashAttribute("error", "Access Denied.");
+             return "redirect:/home"; // Hoặc trang lỗi
+        } */
+        model.addAttribute("assignedOrders", orderService.getAssignedOrdersForStaffMember(currentStaff));
+        model.addAttribute("staffName", currentStaff.getFullName());
+        return "stafforder/my-delivery-list"; // Trả về file HTML mới
+    }
+
+    /**
+     * POST /staff/orders/update-delivery-status/{orderId}
+     */
+    @PostMapping("/update-delivery-status/{orderId}")
+    public String updateDeliveryStatus(@PathVariable int orderId,
+                                       @RequestParam String newStatus,
+                                       @AuthenticationPrincipal Account currentStaff,
+                                       RedirectAttributes redirectAttributes) {
+        if (currentStaff == null) {
+            redirectAttributes.addFlashAttribute("error", "User not logged in.");
+            return "redirect:/auth/login";
+        }
+        try {
+            orderService.updateOrderStatusByStaffShipper(orderId, newStatus, currentStaff);
+            redirectAttributes.addFlashAttribute("success", "Order #" + orderId + " status updated to " + newStatus);
+        } catch (Exception e) {
+            System.err.println("Lỗi staff cập nhật delivery status: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Error updating status: " + e.getMessage());
+        }
+        return "redirect:/staff/orders/my-deliveries"; // Quay lại danh sách giao hàng
     }
 }

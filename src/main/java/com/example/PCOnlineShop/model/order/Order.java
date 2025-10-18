@@ -62,4 +62,8 @@ public class Order {
     // Quan hệ với OrderDetail (Giữ nguyên)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderDetail> orderDetails;
+
+    @Temporal(TemporalType.TIMESTAMP) // Hoặc TemporalType.DATETIME
+    @Column(name = "shipment_received_date")
+    private Date shipmentReceivedDate;
 }
