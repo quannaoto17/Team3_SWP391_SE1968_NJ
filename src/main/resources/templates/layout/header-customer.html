@@ -3,19 +3,15 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Header</title>
-
-
 </head>
 
 <body>
 <header th:fragment="header-customer">
     <style>
-        /* Reset cơ bản */
         * {
             margin: 0;
             padding: 0;
@@ -23,7 +19,6 @@
             font-family: "Segoe UI", Arial, sans-serif;
         }
 
-        /* Header chính */
         header {
             width: 100%;
             background-color: #ffffff;
@@ -32,13 +27,11 @@
             align-items: center;
             justify-content: space-between;
             padding: 10px 40px;
-
+            position: sticky;
             top: 0;
             z-index: 100;
-            position: fixed;
         }
 
-        /* Logo */
         .logo {
             display: flex;
             align-items: center;
@@ -57,7 +50,6 @@
             color: #333;
         }
 
-        /* Menu dropdown */
         .menu select {
             padding: 6px 10px;
             border-radius: 6px;
@@ -71,7 +63,6 @@
             background-color: #f0f0f0;
         }
 
-        /* Thanh tìm kiếm */
         .search-bar {
             flex: 1;
             display: flex;
@@ -102,7 +93,6 @@
             background-color: #45a049;
         }
 
-        /* Các nút bên phải */
         .header-right {
             display: flex;
             align-items: center;
@@ -135,7 +125,6 @@
             background-color: #ddd;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -154,6 +143,7 @@
             }
         }
     </style>
+
     <!-- Logo -->
     <div class="logo">
         <a th:href="@{/home}" class="logo-link" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
@@ -180,13 +170,11 @@
     <!-- Nút bên phải -->
     <div class="header-right">
         <button th:onclick="|window.location.href='@{/build/start}'|">🧩 Build PC</button>
+        <button th:onclick="|window.location.href='@{/customers/orders/list}'|">📦 My Orders</button>
         <a th:href="@{/cart}" class="cart">🛒</a>
 
-        <!-- Nếu chưa đăng nhập -->
-        <form th:action="@{/auth/login}" method="post">
-            <button type="submit">Logout</button>
-        </form>
-
+        <!-- Nút Login (đã check role ở layout chính) -->
+        <button th:onclick="|window.location.href='@{/auth/login}'|">Logout</button>
     </div>
 
 </header>
