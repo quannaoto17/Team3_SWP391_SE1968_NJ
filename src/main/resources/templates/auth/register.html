@@ -1,150 +1,133 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Đăng ký tài khoản</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #eef2f3, #ffffff);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
-
-        .container {
+        .register-container {
             background: #fff;
-            border: 1px solid #333;
-            padding: 30px 40px;
-            width: 700px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            padding: 40px 45px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+            width: 430px;
         }
-
-        .form-section {
-            flex: 1;
-            margin-right: 30px;
-        }
-
         h2 {
             text-align: center;
-            margin-bottom: 20px;
+            color: #333;
+            margin-bottom: 25px;
         }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
+        label {
             display: block;
-            background: #ccc;
-            padding: 5px;
-            font-size: 14px;
-            margin-bottom: 3px;
+            margin-top: 12px;
+            color: #333;
+            font-weight: 500;
         }
-
-        .form-group input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            font-size: 14px;
-        }
-
-        .btn {
-            display: block;
+        input, select {
             width: 100%;
             padding: 10px;
-            margin-top: 10px;
-            border: 1px solid #555;
-            background: #f2f2f2;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn:hover {
-            background: #ddd;
-        }
-
-        .side-section {
-            flex: 1;
-            text-align: center;
-        }
-
-        .google-signup {
-            margin: 20px 0;
-        }
-
-        .google-signup img {
-            width: 80px;
-            height: 80px;
-            background: #eee;
-            display: inline-block;
+            margin-top: 6px;
             border: 1px solid #ccc;
-        }
-
-        .signin-link {
-            margin-top: 20px;
+            border-radius: 6px;
             font-size: 14px;
         }
-
-        .signin-link a {
-            color: blue;
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            margin-top: 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #357ab8;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .login-link a {
+            color: #007bff;
             text-decoration: none;
         }
-
-        .signin-link a:hover {
+        .login-link a:hover {
             text-decoration: underline;
+        }
+        .error-message {
+            color: red;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="form-section">
-        <h2>Register</h2>
+<div class="register-container">
+    <h2>Đăng ký tài khoản</h2>
+    <form th:action="@{/auth/register}" th:object="${account}" method="post" onsubmit="return validatePassword()">
 
-        <!-- Form đăng ký -->
-        <form th:action="@{/auth/register}" th:object="${account}" method="post">
-<!--            <div class="form-group">-->
-<!--                <label for="fullname">Full Name</label>-->
-<!--                <input type="text" id="fullname" th:field="*{fullName}" placeholder="Enter your full name" required>-->
-<!--            </div>-->
+        <label for="firstname">Họ</label>
+        <input type="text" id="firstname" th:field="*{firstname}" placeholder="Nhập họ" required>
 
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" th:field="*{email}" placeholder="Enter your email" required>
-            </div>
+        <label for="lastname">Tên</label>
+        <input type="text" id="lastname" th:field="*{lastname}" placeholder="Nhập tên" required>
 
-            <div class="form-group">
-                <label for="phoneNumber">Phone number</label>
-                <input type="text" id="phoneNumber" th:field="*{phoneNumber}" placeholder="Enter your phone number" required>
-            </div>
+        <label for="gender">Giới tính</label>
+        <select id="gender" th:field="*{gender}">
+            <option value="">-- Chọn giới tính --</option>
+            <option value="true">Nam</option>
+            <option value="false">Nữ</option>
+        </select>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" th:field="*{password}" placeholder="Enter your password" required>
-            </div>
+        <label for="address">Địa chỉ</label>
+        <input type="text" id="address" th:field="*{address}" placeholder="Nhập địa chỉ" required>
 
-            <div class="form-group">
-                <label for="confirm">Confirm Password</label>
-                <input type="password" id="confirm" name="confirm" placeholder="Re-enter password" required>
-            </div>
+        <label for="email">Email</label>
+        <input type="email" id="email" th:field="*{email}" placeholder="example@gmail.com" required>
 
-            <button type="submit" class="btn">Register</button>
-        </form>
-    </div>
+        <label for="phoneNumber">Số điện thoại</label>
+        <input type="text" id="phoneNumber" th:field="*{phoneNumber}" placeholder="VD: 0912345678" required>
 
-    <div class="side-section">
-        <p>Or sign up with Google</p>
-        <div class="google-signup">
-            <img src="https://via.placeholder.com/80" alt="Google Signup">
+        <label for="password">Mật khẩu</label>
+        <input type="password" id="password" th:field="*{password}" placeholder="Nhập mật khẩu" required>
+
+        <label for="confirmPassword">Xác nhận mật khẩu</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Nhập lại mật khẩu" required>
+
+        <p id="errorText" class="error-message" th:text="${error}"></p>
+
+        <button type="submit">Đăng ký</button>
+
+        <div class="login-link">
+            <p>Đã có tài khoản? <a th:href="@{/auth/login}">Đăng nhập</a></p>
         </div>
-        <p class="signin-link">
-            Already have an account? <a th:href="@{/auth/login}">Sign in</a>
-        </p>
-    </div>
+    </form>
 </div>
+
+<script>
+    // ✅ Kiểm tra xác nhận mật khẩu trước khi submit
+    function validatePassword() {
+        const password = document.getElementById("password").value;
+        const confirm = document.getElementById("confirmPassword").value;
+        const errorText = document.getElementById("errorText");
+
+        if (password !== confirm) {
+            errorText.textContent = "⚠️ Mật khẩu xác nhận không khớp!";
+            return false;
+        }
+        return true;
+    }
+</script>
 </body>
 </html>
