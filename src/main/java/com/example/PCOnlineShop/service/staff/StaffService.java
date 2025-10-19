@@ -15,14 +15,14 @@ public class StaffService {
         this.accountRepository = accountRepository;
     }
 
-    // 🔹 Lấy danh sách staff có thể tìm kiếm & lọc trạng thái
+    // Lấy danh sách staff có thể tìm kiếm & lọc trạng thái
     public Page<Account> getStaffPage(int page, int size, String searchQuery, String statusFilter) {
         Pageable pageable = PageRequest.of(page, size);
 
         boolean filterActive = "active".equalsIgnoreCase(statusFilter);
         boolean filterInactive = "inactive".equalsIgnoreCase(statusFilter);
 
-        // ✅ Lọc theo trạng thái
+        //  Lọc theo trạng thái
         if (filterActive) {
             return accountRepository.findByRoleAndEnabled(RoleName.Staff, true, searchQuery, pageable);
         } else if (filterInactive) {
@@ -37,18 +37,18 @@ public class StaffService {
         }
     }
 
-    // 🔹 Lưu nhân viên
+    //  Lưu nhân viên
     public Account saveStaff(Account account) {
         account.setRole(RoleName.Staff);
         return accountRepository.save(account);
     }
 
-    // 🔹 Lấy theo ID
+    //  Lấy theo ID
     public Account getById(int id) {
         return accountRepository.findById(id).orElse(null);
     }
 
-    // 🔹 Đổi trạng thái Active/Inactive
+    // Đổi trạng thái Active/Inactive
     public void deactivateStaff(int id) {
         Account account = accountRepository.findById(id).orElse(null);
         if (account != null) {
