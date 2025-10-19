@@ -1,6 +1,7 @@
 package com.example.PCOnlineShop.controller.build;
 
 import com.example.PCOnlineShop.dto.build.BuildItemDto;
+import com.example.PCOnlineShop.model.build.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -44,17 +45,17 @@ public class BuildController {
         List<BuildItemDto> cartBuilds = (List<BuildItemDto>) session.getAttribute("cartBuilds");
         if (cartBuilds == null) cartBuilds = new ArrayList<>();
 
-        // deep copy to avoid later mutation of component objects in the cart
+        // copy to avoid later mutation of component objects in the cart
         BuildItemDto toAdd = new BuildItemDto(
-                buildItems.getMainboard() != null ? buildItems.getMainboard().clone() : null,
-                buildItems.getCpu() != null ? buildItems.getCpu().clone() : null,
-                buildItems.getMemory() != null ? buildItems.getMemory().clone() : null,
-                buildItems.getGpu() != null ? buildItems.getGpu().clone() : null,
-                buildItems.getStorage() != null ? buildItems.getStorage().clone() : null,
-                buildItems.getPowerSupply() != null ? buildItems.getPowerSupply().clone() : null,
-                buildItems.getPcCase() != null ? buildItems.getPcCase().clone() : null,
-                buildItems.getCooling() != null ? buildItems.getCooling().clone() : null,
-                buildItems.getOther() != null ? buildItems.getOther().clone() : null
+                buildItems.getMainboard(),
+                buildItems.getCpu(),
+                buildItems.getMemory(),
+                buildItems.getGpu(),
+                buildItems.getStorage(),
+                buildItems.getPowerSupply(),
+                buildItems.getPcCase(),
+                buildItems.getCooling(),
+                buildItems.getOther()
         );
 
         cartBuilds.add(toAdd);
