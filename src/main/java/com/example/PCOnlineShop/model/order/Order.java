@@ -51,19 +51,16 @@ public class Order {
     @Column(name = "shipping_address", nullable = false)
     private String shippingAddress;
 
-    // Thông tin vận đơn (Shipper là người dùng)
-    @ManyToOne(fetch = FetchType.LAZY) // LAZY vì không phải lúc nào cũng cần
-    @JoinColumn(name = "shipper_account_id") // Khóa ngoại tới bảng account
-    private Account shipper; // Tài khoản của shipper
+    @Temporal(TemporalType.TIMESTAMP) // Store date and time
+    @Column(name = "ready_to_ship_date")
+    private Date readyToShipDate; // Timestamp when status became Ready to Ship
 
-    @Column(name = "tracking_number")
-    private String trackingNumber;
+    @Temporal(TemporalType.TIMESTAMP) // Lưu cả giờ phút
+    @Column(name = "shipment_received_date") // Đảm bảo cột này tồn tại trong DB
+    private Date shipmentReceivedDate; // Thời điểm Staff chuyển sang Delivering
 
     // Quan hệ với OrderDetail (Giữ nguyên)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderDetail> orderDetails;
 
-    @Temporal(TemporalType.TIMESTAMP) // Hoặc TemporalType.DATETIME
-    @Column(name = "shipment_received_date")
-    private Date shipmentReceivedDate;
 }

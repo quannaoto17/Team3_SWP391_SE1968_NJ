@@ -142,44 +142,5 @@ public class StaffOrderController {
         return "redirect:/staff/orders/list";
     }
 
-    /**
-     * GET /staff/orders/my-deliveries
-     */
-    @GetMapping("/my-deliveries")
-    public String viewMyDeliveries(@AuthenticationPrincipal Account currentStaff, Model model, RedirectAttributes redirectAttributes) {
-        if (currentStaff == null) {
-            redirectAttributes.addFlashAttribute("error", "User not logged in.");
-            return "redirect:/auth/login";
-        }
-        // Kiểm tra có phải Staff không (nếu Security chưa chặn)
-        /* if(currentStaff.getRole() != RoleName.Staff) {
-             redirectAttributes.addFlashAttribute("error", "Access Denied.");
-             return "redirect:/home"; // Hoặc trang lỗi
-        } */
-        model.addAttribute("assignedOrders", orderService.getAssignedOrdersForStaffMember(currentStaff));
-        model.addAttribute("staffName", currentStaff.getFullName());
-        return "stafforder/my-delivery-list"; // Trả về file HTML mới
-    }
 
-    /**
-     * POST /staff/orders/update-delivery-status/{orderId}
-     */
-    @PostMapping("/update-delivery-status/{orderId}")
-    public String updateDeliveryStatus(@PathVariable int orderId,
-                                       @RequestParam String newStatus,
-                                       @AuthenticationPrincipal Account currentStaff,
-                                       RedirectAttributes redirectAttributes) {
-        if (currentStaff == null) {
-            redirectAttributes.addFlashAttribute("error", "User not logged in.");
-            return "redirect:/auth/login";
-        }
-        try {
-            orderService.updateOrderStatusByStaffShipper(orderId, newStatus, currentStaff);
-            redirectAttributes.addFlashAttribute("success", "Order #" + orderId + " status updated to " + newStatus);
-        } catch (Exception e) {
-            System.err.println("Lỗi staff cập nhật delivery status: " + e.getMessage());
-            redirectAttributes.addFlashAttribute("error", "Error updating status: " + e.getMessage());
-        }
-        return "redirect:/staff/orders/my-deliveries"; // Quay lại danh sách giao hàng
-    }
 }
