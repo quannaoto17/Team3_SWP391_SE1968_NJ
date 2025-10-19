@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${product.productName} + ' | PCOnlineShop'">Product Details</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/font-awesome.min.css}" rel="stylesheet">
+    <style>
+        body { background: #f9f9f9; font-family: Arial, sans-serif; }
+        .product-detail { background: #fff; border-radius: 8px; padding: 25px; margin-top: 40px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .product-image img { width: 100%; border-radius: 6px; }
+        .price { font-size: 24px; color: #e74c3c; margin: 15px 0; }
+        .related-title { margin-top: 40px; font-weight: 600; text-transform: uppercase; }
+        .related-item img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; }
+        .related-item h6 { margin-top: 10px; font-size: 15px; }
+    </style>
+</head>
+<body>
+
+<header th:replace="layout/header-default :: header-default"></header>
+
+<div class="container">
+    <div class="product-detail">
+        <div class="row">
+            <!-- Product Image -->
+            <div class="col-md-5 product-image">
+                <img th:src="${!#lists.isEmpty(product.images) ? product.images[0].imageUrl : '/images/no-image.png'}"
+                     alt="Product Image">
+            </div>
+
+            <!-- Product Info -->
+            <div class="col-md-7">
+                <h2 th:text="${product.productName}">Product Name</h2>
+                <p th:text="${product.category != null ? 'Category: ' + product.category.categoryName : ''}"></p>
+                <p class="price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</p>
+
+                <p><b>Description:</b></p>
+                <p th:text="${product.description != null ? product.description : 'No description available.'}"></p>
+
+                <a href="/home" class="btn btn-secondary mt-3">
+                    <i class="fa fa-arrow-left"></i> Back to Home
+                </a>
+                <a href="#" class="btn btn-success mt-3">
+                    <i class="fa fa-shopping-cart"></i> Add to Cart
+                </a>
+            </div>
+        </div>
+
+        <!-- Related Products -->
+        <div class="related mt-5" th:if="${!#lists.isEmpty(relatedProducts)}">
+            <h4 class="related-title">Related Products</h4>
+            <div class="row">
+                <div class="col-md-3" th:each="r : ${relatedProducts}">
+                    <div class="related-item text-center">
+                        <a th:href="@{/product/detail/{id}(id=${r.productId})}">
+                            <img th:src="${!#lists.isEmpty(r.images) ? r.images[0].imageUrl : '/images/no-image.png'}"
+                                 alt="Related Product">
+                            <h6 th:text="${r.productName}"></h6>
+                            <p th:text="${#numbers.formatDecimal(r.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="layout/footer :: footer"></footer>
+
+<script th:src="@{/js/jquery.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!-- product/spec-edit/case-spec-edit.html -->
+<div class="spec-card">
+    <h3>Case - Thông số kỹ thuật</h3>
+
+    <label>Form Factor:</label>
+    <input type="text" name="pcase.formFactor"
+           th:value="${pcase != null} ? ${pcase.formFactor} : ''"
+           placeholder="VD: ATX, mATX, ITX"/>
+
+    <label>Độ dài GPU tối đa (mm):</label>
+    <input type="number" name="pcase.gpu.maxLength"
+           th:value="${pcase != null} ? ${pcase.gpuMaxLength} : ''" min="0"/>
+
+    <label>Độ dài PSU tối đa (mm):</label>
+    <input type="number" name="pcase.psu.maxLength"
+           th:value="${pcase != null} ? ${pcase.psuMaxLength} : ''" min="0"/>
+</div>

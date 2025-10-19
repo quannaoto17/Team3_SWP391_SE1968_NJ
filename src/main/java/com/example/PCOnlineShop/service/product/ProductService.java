@@ -99,4 +99,17 @@ public class ProductService {
         return productRepository.search(kw, brandId, categoryId, pageable);
     }
 
+    public Page<Product> searchProducts(String keyword, int page, int size) {
+        // Nếu người dùng nhập khoảng trắng hoặc để trống thì trả về tất cả sản phẩm
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return productRepository.findAll(PageRequest.of(page, size));
+        }
+
+        // Tìm kiếm sản phẩm theo tên (không phân biệt hoa thường)
+        return productRepository.findByProductNameContainingIgnoreCase(keyword.trim(), PageRequest.of(page, size));
+    }
+    // Lấy sản phẩm liên quan cùng category (trừ chính nó)
+    public List<Product> getTopRelatedProducts(Integer categoryId, Integer currentProductId) {
+        return productRepository.findTop4ByCategory_CategoryIdAndProductIdNot(categoryId, currentProductId);
+    }
 }
