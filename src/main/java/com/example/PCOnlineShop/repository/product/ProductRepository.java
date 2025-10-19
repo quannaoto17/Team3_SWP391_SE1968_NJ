@@ -19,6 +19,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Page<Product> findByCategory_CategoryId(int categoryId, Pageable pageable);
 
+    List<Product> findTop4ByCategory_CategoryIdAndProductIdNot(Integer categoryId, Integer currentProductId);
+
     @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.images")
     List<Product> findAllWithImages();
 
@@ -34,4 +36,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
                          @Param("brandId") Integer brandId,
                          @Param("categoryId") Integer categoryId,
                          Pageable pageable);
+    Page<Product> findByProductNameContainingIgnoreCase(String keyword, Pageable pageable);
 }

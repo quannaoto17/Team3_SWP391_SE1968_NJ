@@ -1,110 +1,220 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
-
-
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>PCOnlineShop - Home</title>
-    <link rel="stylesheet" th:href="@{/css/home.css}">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/font-awesome.min.css}" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <style>
+        /* ===== Overlay hiệu ứng ===== */
+        .single-products {
+            position: relative;
+            overflow: hidden;
+        }
+        .product-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            opacity: 0;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .single-products:hover .product-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .product-overlay .overlay-content {
+            text-align: center;
+        }
+
+        /* ===== View Detail button ===== */
+        .btn-info {
+            background-color: #5bc0de;
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-info:hover {
+            background-color: #31b0d5;
+            transform: translateY(-2px);
+        }
+        .productinfo img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-<div sec:authorize="!isAuthenticated()"
-     th:replace="layout/header-default :: header-default"></div>
-<div sec:authorize="hasRole('ADMIN')"
-     th:replace="layout/header-admin :: header-admin"></div>
 
-<div sec:authorize="hasRole('STAFF')"
-     th:replace="layout/header-staff :: header-staff"></div>
+<!-- Header -->
+<header th:replace="layout/header-default :: header-default"></header>
 
-<div sec:authorize="hasRole('CUSTOMER')"
-     th:replace="layout/header-customer :: header-customer"></div>
-<div class="layout">
-
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <h2 class="logo">PcOnlineShop</h2>
-        <ul>
-            <!-- Tất cả sản phẩm -->
-            <li>
-                <a th:href="@{/}"
-                   th:classappend="${currentCategory == null} ? 'active' : ''">
-                    All Products
-                </a>
-            </li>
-
-            <!-- Danh mục lấy từ database -->
-            <li th:each="c : ${categories}">
-                <a th:href="@{/(categoryId=${c.categoryId})}"
-                   th:text="${c.categoryName}"
-                   th:classappend="${currentCategory == c.categoryId} ? 'active' : ''">
-                </a>
-            </li>
-        </ul>
-    </aside>
-
-    <!-- Main content -->
-    <main class="main">
-
-        <!-- Header -->
-        <header class="header">
-            <div class="header-center">
-                <h3>Header</h3>
-            </div>
-            <div class="search-box">
-                <input type="text" placeholder="Search product...">
-            </div>
-        </header>
-
-        <!-- Product Grid -->
-        <section class="product-grid">
-
-            <!-- Nếu không có sản phẩm -->
-            <div th:if="${#lists.isEmpty(productPage.content)}" class="empty-msg">
-                <p>No products found.</p>
-            </div>
-
-            <!-- Hiển thị danh sách sản phẩm -->
-            <div th:each="p : ${productPage.content}" class="product-card">
-                <div class="image-box">
-                    <img th:src="${!#lists.isEmpty(p.images) ? p.images[0].imageUrl : '/images/no-image.png'}"
-                         alt="Product Image">
+<!-- ===== SLIDER ===== -->
+<section id="slider">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div id="slider-carousel" class="carousel slide" data-ride="carousel">
+                    <ol class="carousel-indicators">
+                        <li data-target="#slider-carousel" data-slide-to="0" class="active"></li>
+                        <li data-target="#slider-carousel" data-slide-to="1"></li>
+                        <li data-target="#slider-carousel" data-slide-to="2"></li>
+                    </ol>
+                    <div class="carousel-inner">
+                        <div class="item active">
+                            <div class="col-sm-6">
+                                <h1><span>PC</span>-OnlineShop</h1>
+                                <h2>Build your dream PC today</h2>
+                                <p>Best components with best prices.</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <img th:src="@{/images/home/girl1.jpg}" class="girl img-responsive" alt="">
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="col-sm-6">
+                                <h1><span>PC</span>-OnlineShop</h1>
+                                <h2>Latest Hardware 2025</h2>
+                                <p>Explore the newest CPUs, GPUs, and more.</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <img th:src="@{/images/home/girl2.jpg}" class="girl img-responsive" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#slider-carousel" class="left control-carousel hidden-xs" data-slide="prev">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a href="#slider-carousel" class="right control-carousel hidden-xs" data-slide="next">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
                 </div>
-                <h4 th:text="${p.productName}">Product Name</h4>
-                <p th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</p>
-            </div>
-        </section>
-
-        <!-- Pagination -->
-        <div class="pagination" th:if="${productPage.totalElements > 0}">
-            <div class="pagination-left">
-                <span>Rows per page:</span>
-                <select>
-                    <option>8</option>
-                    <option>12</option>
-                    <option>16</option>
-                </select>
-            </div>
-
-            <div class="pagination-center">
-                <span th:text="${productPage.number * productPage.size + 1} + ' - ' + ${productPage.number * productPage.size + productPage.numberOfElements} + ' of ' + ${productPage.totalElements}">
-                    1 - 8 of 100
-                </span>
-            </div>
-
-            <div class="pagination-right">
-                <a th:if="${!productPage.first}"
-                   th:href="@{/(page=${productPage.number - 1}, size=${productPage.size}, categoryId=${currentCategory})}">⟨</a>
-                <a th:if="${!productPage.last}"
-                   th:href="@{/(page=${productPage.number + 1}, size=${productPage.size}, categoryId=${currentCategory})}">⟩</a>
             </div>
         </div>
+    </div>
+</section>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <h4>Footer</h4>
-        </footer>
-    </main>
-</div>
+<!-- ===== MAIN CONTENT ===== -->
+<section>
+    <div class="container">
+        <div class="row">
+
+            <!-- Sidebar: Categories -->
+            <div class="col-sm-3">
+                <div class="left-sidebar">
+                    <h2>Categories</h2>
+                    <div class="panel-group category-products" id="accordian">
+                        <div class="panel panel-default" th:each="c : ${categories}">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a th:href="@{/(categoryId=${c.categoryId})}"
+                                       th:text="${c.categoryName}"
+                                       th:classappend="${currentCategory == c.categoryId} ? 'active' : ''"></a>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product List -->
+            <div class="col-sm-9 padding-right">
+                <div class="features_items">
+                    <h2 class="title text-center">Featured Products</h2>
+
+                    <div th:if="${#lists.isEmpty(productPage.content)}" class="text-center">
+                        <p>No products found.</p>
+                    </div>
+
+                    <!-- Product Card -->
+                    <div class="col-sm-4" th:each="p : ${productPage.content}">
+                        <div class="product-image-wrapper">
+                            <div class="single-products">
+                                <div class="productinfo text-center">
+
+                                    <!-- Ảnh sản phẩm -->
+                                    <a th:href="@{/product/detail/{id}(id=${p.productId})}">
+                                        <img th:src="${!#lists.isEmpty(p.images) ? p.images[0].imageUrl : '/images/no-image.png'}"
+                                             alt="Product Image">
+                                    </a>
+
+                                    <!-- Giá & Tên -->
+                                    <h2 th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</h2>
+                                    <p>
+                                        <a th:href="@{/product/detail/{id}(id=${p.productId})}"
+                                           th:text="${p.productName}"
+                                           style="text-decoration:none; color:#333; font-weight:500;"></a>
+                                    </p>
+
+                                    <!-- Add to Cart -->
+                                    <a href="#" class="btn btn-default add-to-cart">
+                                        <i class="fa fa-shopping-cart"></i> Add to cart
+                                    </a>
+
+                                    <!-- View Detail -->
+                                    <a th:href="@{/product/detail/{id}(id=${p.productId})}"
+                                       class="btn btn-info" style="margin-top:8px;">
+                                        <i class="fa fa-eye"></i> View Detail
+                                    </a>
+                                </div>
+
+                                <!-- Hover overlay -->
+                                <div class="product-overlay">
+                                    <div class="overlay-content">
+                                        <h2 th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></h2>
+                                        <p th:text="${p.productName}"></p>
+                                        <a href="#" class="btn btn-default add-to-cart">
+                                            <i class="fa fa-shopping-cart"></i> Add to cart
+                                        </a>
+                                        <a th:href="@{/product/detail/{id}(id=${p.productId})}"
+                                           class="btn btn-info" style="margin-top:8px;">
+                                            <i class="fa fa-eye"></i> View Detail
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Product Card -->
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination text-center" th:if="${productPage.totalElements > 0}">
+                    <ul class="pagination justify-content-center">
+                        <li th:if="${!productPage.first}">
+                            <a th:href="@{/(page=${productPage.number - 1}, size=${productPage.size}, categoryId=${currentCategory})}"
+                               aria-label="Previous">&laquo;</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(0, productPage.totalPages - 1)}"
+                            th:classappend="${i == productPage.number} ? 'active' : ''">
+                            <a th:href="@{/(page=${i}, size=${productPage.size}, categoryId=${currentCategory})}"
+                               th:text="${i + 1}">1</a>
+                        </li>
+                        <li th:if="${!productPage.last}">
+                            <a th:href="@{/(page=${productPage.number + 1}, size=${productPage.size}, categoryId=${currentCategory})}"
+                               aria-label="Next">&raquo;</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="layout/footer :: footer"></footer>
+
+<script th:src="@{/js/jquery.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
 </body>
 </html>

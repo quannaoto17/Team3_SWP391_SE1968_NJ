@@ -1,0 +1,22 @@
+<!-- product/spec-edit/cooling-spec-edit.html -->
+<div class="spec-card">
+    <h3>Tản nhiệt - Thông số kỹ thuật</h3>
+
+    <label>Loại:</label>
+    <input type="text" name="cl.type"
+           th:value="${cl != null} ? ${cl.type} : ''"
+           placeholder="VD: Air, AIO"/>
+
+    <label>Kích thước quạt (mm):</label>
+    <input type="number" name="cl.fanSize"
+           th:value="${cl != null} ? ${cl.fanSize} : ''" min="0"/>
+
+    <label>Kích thước radiator:</label>
+    <input type="text" name="cl.radiatorSize"
+           th:value="${cl != null} ? ${cl.radiatorSize} : ''"
+           placeholder="VD: 240, 360"/>
+
+    <label>TDP tối đa (W):</label>
+    <input type="number" name="cl.maxTdp"
+           th:value="${cl != null} ? ${cl.tdp} : ''" min="0"/>
+</div>
