@@ -84,7 +84,7 @@
                 <td>
                     <a th:href="@{'/staff/view/' + ${s.accountId}}" class="btn-action btn-view">View</a>
                     <a th:href="@{'/staff/edit/' + ${s.accountId}}" class="btn-action btn-edit">Edit</a>
-                    <!-- ✅ Thêm class 'btn-action' vào đây -->
+                    <!--  Thêm class 'btn-action' vào đây -->
                     <a th:href="@{'/staff/delete/' + ${s.accountId}}"
                        class="btn-action"
                        th:text="${s.enabled ? 'Deactivate' : 'Activate'}"

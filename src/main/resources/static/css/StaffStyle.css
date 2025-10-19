@@ -100,7 +100,7 @@ body {
     font-size: 14px;
 }
 
-/* ✅ FIXED: Add Staff Button */
+/*  FIXED: Add Staff Button */
 .add-staff a {
     background: #20bf6b;
     color: #fff;
@@ -120,7 +120,7 @@ body {
     transform: translateY(-2px);
 }
 
-/* ✅ Đồng bộ style Add Customer với Add Staff */
+/*  Đồng bộ style Add Customer với Add Staff */
 .add-customer a {
     background: #20bf6b;
     color: #fff;

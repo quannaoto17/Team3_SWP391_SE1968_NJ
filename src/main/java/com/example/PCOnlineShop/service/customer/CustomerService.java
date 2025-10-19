@@ -15,14 +15,14 @@ public class CustomerService {
         this.accountRepository = accountRepository;
     }
 
-    // 🔹 Lấy danh sách customer có thể tìm kiếm & lọc trạng thái
+    //  Lấy danh sách customer có thể tìm kiếm & lọc trạng thái
     public Page<Account> getCustomerPage(int page, int size, String searchQuery, String statusFilter) {
         Pageable pageable = PageRequest.of(page, size);
 
         boolean filterActive = "active".equalsIgnoreCase(statusFilter);
         boolean filterInactive = "inactive".equalsIgnoreCase(statusFilter);
 
-        // ✅ Lọc theo trạng thái
+        //  Lọc theo trạng thái
         if (filterActive) {
             return accountRepository.findByRoleAndEnabled(RoleName.Customer, true, searchQuery, pageable);
         } else if (filterInactive) {
@@ -37,18 +37,18 @@ public class CustomerService {
         }
     }
 
-    // 🔹 Lưu khách hàng
+    //  Lưu khách hàng
     public Account saveCustomer(Account account) {
         account.setRole(RoleName.Customer);
         return accountRepository.save(account);
     }
 
-    // 🔹 Lấy theo ID
+    //  Lấy theo ID
     public Account getById(int id) {
         return accountRepository.findById(id).orElse(null);
     }
 
-    // 🔹 Đổi trạng thái Active/Inactive
+    //  Đổi trạng thái Active/Inactive
     public void deactivateCustomer(int id) {
         Account account = accountRepository.findById(id).orElse(null);
         if (account != null) {

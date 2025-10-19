@@ -20,26 +20,26 @@ function checkStrength() {
 
     switch (strength) {
         case 1:
-            message.textContent = "Weak 😢";
+            message.textContent = "Weak ";
             message.style.color = "red";
             break;
         case 2:
-            message.textContent = "Medium 😐";
+            message.textContent = "Medium ";
             message.style.color = "orange";
             break;
         case 3:
-            message.textContent = "Strong 😊";
+            message.textContent = "Strong ";
             message.style.color = "#4b7bec";
             break;
         case 4:
-            message.textContent = "Very Strong 💪";
+            message.textContent = "Very Strong ";
             message.style.color = "green";
             break;
     }
 }
 
 /* ==========================================================
-   📍 ADDRESS API (Tỉnh / Huyện / Xã)
+    ADDRESS API (Tỉnh / Huyện / Xã)
    ========================================================== */
 document.addEventListener("DOMContentLoaded", function () {
     const provinceSelect = document.getElementById("province");
