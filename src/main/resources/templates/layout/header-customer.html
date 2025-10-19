@@ -156,10 +156,13 @@
     <div class="menu">
         <select onchange="location = this.value;">
             <option>Menu</option>
-            <option th:value="@{/category/1}">Category 1</option>
-            <option th:value="@{/category/2}">Category 2</option>
+            <option th:each="c : ${categories}"
+                    th:value="@{/category/{id}(id=${c.categoryId})}"
+                    th:text="${c.categoryName}">
+            </option>
         </select>
     </div>
+
 
     <!-- Thanh tìm kiếm -->
     <div class="search-bar">
