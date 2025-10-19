@@ -101,22 +101,37 @@ public class OrderService {
 
     @Transactional
     public void updateMultipleOrderStatuses(Map<Integer, String> updates) {
-        // ... (Code cập nhật hàng loạt giữ nguyên như file bạn cung cấp) ...
         if (updates == null || updates.isEmpty()) return;
+
         List<Integer> orderIds = new ArrayList<>(updates.keySet());
         List<Order> ordersToUpdate = orderRepository.findAllById(orderIds);
         Map<Integer, Order> orderMap = ordersToUpdate.stream().collect(Collectors.toMap(Order::getOrderId, o -> o));
         boolean changed = false;
+        Date now = new Date(); // Get current time once
+
         for (Map.Entry<Integer, String> entry : updates.entrySet()) {
             Order order = orderMap.get(entry.getKey());
-            if (order != null && !order.getStatus().equals(entry.getValue())) {
-                order.setStatus(entry.getValue());
+            String newStatus = entry.getValue();
+
+            if (order != null && !order.getStatus().equals(newStatus)) {
+                String oldStatus = order.getStatus(); // Store old status
+                order.setStatus(newStatus);
                 changed = true;
+
+                // --- 👇 SET readyToShipDate WHEN STATUS CHANGES TO "Ready to Ship" 👇 ---
+                if (!"Ready to Ship".equals(oldStatus) && "Ready to Ship".equals(newStatus)) {
+                    order.setReadyToShipDate(now);
+                }
+                // --- Keep other status change logic if needed ---
+
             } else if (order == null) {
                 System.err.println("Order not found for update: " + entry.getKey());
             }
         }
-        if (changed) orderRepository.saveAll(ordersToUpdate);
+
+        if (changed) {
+            orderRepository.saveAll(ordersToUpdate);
+        }
     }
 
     public Page<Order> findPaginated(Pageable pageable, String phoneNumber) {
@@ -216,55 +231,59 @@ public class OrderService {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    // =======================================================
-    // == LOGIC CHO STAFF TỰ GIAO HÀNG (ĐÃ THÊM) ==
-    // =======================================================
+    // ==================================================
+    // == METHODS FOR SHIPPING MANAGEMENT SCREEN ==
+    // ==================================================
 
     /**
-     * Lấy danh sách các đơn hàng được gán cho một nhân viên Staff cụ thể để giao.
+     * Get list of orders currently in the shipping queue (Ready to Ship OR Delivering).
      */
     @Transactional(readOnly = true)
-    public List<Order> getAssignedOrdersForStaffMember(Account staffAccount) {
-        if (staffAccount == null || staffAccount.getRole() != RoleName.Staff /*&& staffAccount.getRole() != RoleName.Admin*/) {
-            return Collections.emptyList();
-        }
-        List<String> relevantStatuses = List.of("Ready to Ship", "Delivering");
-        // Gọi phương thức mới trong OrderRepository
-        return orderRepository.findByShipperAndStatusIn(staffAccount, relevantStatuses);
+    public List<Order> getShippingQueueOrders() { // Renamed method
+        // Fetch orders with either status
+        List<String> shippingStatuses = List.of("Ready to Ship", "Delivering");
+        // Use the existing repository method, just change the statuses passed in
+        // Assuming findByStatusWithAccount fetches the necessary associations (like Account)
+        return orderRepository.findByStatusIn(shippingStatuses); // Pass both statuses
     }
 
     /**
-     * Xử lý việc Staff (người được gán giao hàng) cập nhật trạng thái đơn hàng.
+     * Method for Staff on the Shipping screen to update status.
+     * Handles transitions from Ready to Ship and Delivering.
      */
     @Transactional
-    public void updateOrderStatusByStaffShipper(int orderId, String newStatus, Account staffShipper) {
+    public void updateShippingStatus(int orderId, String newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found: " + orderId));
 
-        // 1. Kiểm tra quyền
-        if (order.getShipper() == null || order.getShipper().getAccountId() != staffShipper.getAccountId()) {
-            throw new SecurityException("Nhân viên không được phép cập nhật đơn hàng này.");
-        }
-
-        // 2. Kiểm tra logic chuyển đổi trạng thái
         String currentStatus = order.getStatus();
         boolean isValidTransition = false;
         Date now = new Date();
 
-        if ("Ready to Ship".equals(currentStatus) && "Delivering".equals(newStatus)) {
+        // Allow updates if current status is Ready to Ship or Delivering
+        if ("Ready to Ship".equals(currentStatus) && List.of("Delivering", "Completed", "Cancelled").contains(newStatus)) {
             isValidTransition = true;
-            order.setShipmentReceivedDate(now); // Ghi lại thời điểm nhận hàng
-        } else if ("Delivering".equals(currentStatus) && ("Completed".equals(newStatus) || "Delivery Failed".equals(newStatus))) {
+            if ("Delivering".equals(newStatus)) {
+                order.setReadyToShipDate(now); // Set the date when marked as Delivering
+            }
+        } else if ("Delivering".equals(currentStatus) && List.of("Completed", "Cancelled", "Delivery Failed").contains(newStatus)) { // Added Delivery Failed
             isValidTransition = true;
         }
+        // Optional: Allow changing back from Delivering to Ready to Ship?
+         /* else if ("Delivering".equals(currentStatus) && "Ready to Ship".equals(newStatus)) {
+              isValidTransition = true;
+              order.setReadyToShipDate(null); // Clear the date if moved back
+         } */
+
 
         if (!isValidTransition) {
-            throw new IllegalArgumentException("Không thể chuyển từ trạng thái '" + currentStatus + "' sang '" + newStatus + "'.");
+            // Or handle silently and just don't update if transition is invalid from this screen
+            System.err.println("Attempted invalid status transition from '" + currentStatus + "' to '" + newStatus + "' on shipping screen.");
+            // Optional: throw new IllegalStateException("Cannot change status from " + currentStatus + " to "+ newStatus + " on this screen.");
+            return; // Don't update if invalid
         }
 
-        // 3. Cập nhật và lưu
         order.setStatus(newStatus);
         orderRepository.save(order);
     }
-
 }

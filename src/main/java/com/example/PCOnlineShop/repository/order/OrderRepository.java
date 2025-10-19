@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Integer> {
@@ -29,7 +30,9 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query("SELECT o FROM Order o JOIN FETCH o.account a WHERE a.phoneNumber = :phoneNumber ORDER BY o.createdDate DESC")
     List<Order> findByAccount_PhoneNumber(String phoneNumber);
 
-    // Tìm các đơn hàng được gán cho shipper VÀ có trạng thái nằm trong danh sách
-    @Query("SELECT o FROM Order o JOIN FETCH o.account cust WHERE o.shipper = :staffAccount AND o.status IN :statuses ORDER BY o.createdDate ASC")
-    List<Order> findByShipperAndStatusIn(@Param("staffAccount") Account staffAccount, @Param("statuses") List<String> statuses); // Thêm @Param
+
+    // --- Method used by getShippingQueueOrders ---
+    // Fetches Orders by a list of statuses, joins Account info
+    @Query("SELECT o FROM Order o JOIN FETCH o.account cust WHERE o.status IN :statuses ORDER BY o.createdDate ASC")
+    List<Order> findByStatusIn(@Param("statuses") List<String> statuses);
 }

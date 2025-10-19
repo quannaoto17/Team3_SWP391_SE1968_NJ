@@ -36,7 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/home", "/auth/**").permitAll()
                         .requestMatchers("/assets/**", "/css/**", "/js/**", "/image/**", "/static/**").permitAll()
                         .requestMatchers("/staff/list/**", "/staff/add/**", "/staff/edit/**", "/staff/view/**", "/staff/delete/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/staff/products/**", "/staff/warranty/**", "/staff/orders/**").hasAnyRole("STAFF")
+                        .requestMatchers("/staff/products/**", "/staff/warranty/**", "/staff/orders/**", "/staff/shipping/**").hasAnyRole("STAFF")
                         .requestMatchers("/customer/orders/**").hasRole("CUSTOMER")
                         .requestMatchers("/customer/list/**", "/customer/add/**", "/customer/edit/**", "/customer/view/**", "/customer/delete/**").hasAnyRole("ADMIN", "STAFF")
                         .requestMatchers("/build/**").authenticated()

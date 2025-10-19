@@ -227,14 +227,8 @@ CREATE TABLE orders (
     shipping_full_name VARCHAR(100) NOT NULL,
     shipping_phone VARCHAR(20) NOT NULL,
     shipping_address VARCHAR(255) NOT NULL,
-    shipment_received_date DATETIME NULL,
-    -- Quản lý vận đơn (Theo "Cách 2" - Shipper là người dùng)
-    shipper_account_id INT NULL, -- ID của tài khoản shipper
-    tracking_number VARCHAR(100) NULL,
     
-    FOREIGN KEY (account_id) REFERENCES account(account_id),
-    -- Khóa ngoại trỏ đến tài khoản của shipper
-    FOREIGN KEY (shipper_account_id) REFERENCES account(account_id)
+    FOREIGN KEY (account_id) REFERENCES account(account_id)
 );
 
 -- ==============================================
@@ -263,3 +257,11 @@ CREATE TABLE feedback (
     FOREIGN KEY (account_id) REFERENCES account(account_id),
     FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
+
+ALTER TABLE orders
+ADD COLUMN ready_to_ship_date DATETIME NULL
+COMMENT 'Timestamp when status became Ready to Ship';
+
+ALTER TABLE orders
+ADD COLUMN shipment_received_date DATETIME NULL
+COMMENT 'Thời điểm shipper chuyển trạng thái sang Delivering';
