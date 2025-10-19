@@ -51,9 +51,11 @@ public class MemoryController {
     }
 
     @PostMapping("/selectMemory")
-    public String selectMemory(@RequestParam int memoryId,
+    public String selectMemory(@RequestParam(value = "memoryId", required = false) Integer memoryId,
                                @ModelAttribute("buildItems") BuildItemDto buildItem) {
-        buildItem.setMemory(memoryService.getMemoryById(memoryId));
+        if (memoryId != null) {
+            buildItem.setMemory(memoryService.getMemoryById(memoryId));
+        }
         return "redirect:/build/storage";
     }
 }

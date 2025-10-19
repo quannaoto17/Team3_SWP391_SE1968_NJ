@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -80,7 +80,7 @@
         </div>
 
         <!-- Product Grid -->
-        <form th:action="@{/build/selectMainboard}" method="post" id="mainboardForm">
+        <form th:action="@{/build/selectMainboard}" method="post" id="mainboardForm" data-require-selection="true">
             <input type="hidden" name="mainboardId" id="selectedMainboardId"/>
             <div class="product-grid">
                 <div th:each="mb : ${mainboards}"
@@ -122,7 +122,7 @@
         </div>
     </div>
 </div>
-
+</div>
 <script th:src="@{/js/BuildJs.js}"></script>
 </body>
 </html>

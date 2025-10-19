@@ -79,7 +79,7 @@
         </div>
 
         <!-- Product Grid -->
-        <form th:action="@{/build/selectGpu}" method="post" id="gpuForm">
+        <form th:action="@{/build/selectGpu}" method="post" id="gpuForm" data-require-selection="true">
             <input type="hidden" name="gpuId" id="selectedGpuId"/>
             <div class="product-grid">
                 <div th:each="gpu : ${gpus}"
