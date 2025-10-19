@@ -1,0 +1,31 @@
+<!-- product/spec-edit/gpu-spec-edit.html -->
+<div class="spec-card">
+    <h3>GPU - Thông số kỹ thuật</h3>
+
+    <label>VRAM (GB):</label>
+    <input type="number" name="gpu.vram"
+           th:value="${gpu != null} ? ${gpu.vram} : ''" min="0"/>
+
+    <label>Loại bộ nhớ:</label>
+    <input type="text" name="gpu.memoryType"
+           th:value="${gpu != null} ? ${gpu.memoryType} : ''"
+           placeholder="VD: GDDR6, GDDR6X"/>
+
+    <label>TDP (W):</label>
+    <input type="number" name="gpu.tdp"
+           th:value="${gpu != null} ? ${gpu.tdp} : ''" min="0"/>
+
+    <label>Chiều dài (mm):</label>
+    <input type="number" name="gpu.length"
+           th:value="${gpu != null} ? ${gpu.length} : ''" min="0"/>
+
+    <label>Giao tiếp GPU:</label>
+    <input type="text" name="gpu.gpuInterface"
+           th:value="${gpu != null} ? ${gpu.gpuInterface} : ''"
+           placeholder="VD: PCIe x16"/>
+
+    <label>PCIe Version:</label>
+    <input type="text" name="gpu.pcieVersion"
+           th:value="${gpu != null} ? ${gpu.pcieVersion} : ''"
+           placeholder="VD: 4.0, 5.0"/>
+</div>

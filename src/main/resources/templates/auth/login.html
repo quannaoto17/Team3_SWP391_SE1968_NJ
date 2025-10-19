@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Đăng nhập</title>
     <style>
+        /* 🌈 Reset & Layout */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            background: linear-gradient(135deg, #ece9e6, #ffffff);
+            font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #f8faff);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,56 +22,66 @@
 
         .container {
             background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 40px 50px;
-            width: 400px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px 45px;
+            width: 380px;
             text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
         }
 
         h2 {
+            color: #2c3e50;
+            font-size: 26px;
             margin-bottom: 25px;
-            color: #333;
-            font-size: 24px;
+            letter-spacing: 0.5px;
         }
 
+        /* 📋 Form Input */
         .form-group {
-            margin-bottom: 20px;
             text-align: left;
+            margin-bottom: 18px;
         }
 
         .form-group label {
+            font-weight: 600;
+            color: #34495e;
             display: block;
-            font-weight: bold;
+            margin-bottom: 6px;
             font-size: 14px;
-            color: #555;
-            margin-bottom: 5px;
         }
 
         .form-group input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+            padding: 12px 14px;
+            border: 1px solid #dcdcdc;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.25s ease;
         }
 
         .form-group input:focus {
-            border-color: #4a90e2;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
             outline: none;
         }
 
+        /* 🔑 Options */
         .options {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-top: 10px;
             font-size: 13px;
-            margin-bottom: 15px;
         }
 
         .options a {
-            color: #4a90e2;
+            color: #3498db;
             text-decoration: none;
         }
 
@@ -74,78 +89,98 @@
             text-decoration: underline;
         }
 
+        /* 🔘 Button */
         .btn {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
+            background: #3498db;
             border: none;
-            background: #4a90e2;
+            border-radius: 10px;
             color: white;
-            font-size: 15px;
-            font-weight: bold;
-            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            margin-top: 10px;
             transition: background 0.3s;
         }
 
         .btn:hover {
-            background: #357ab8;
+            background: #2c82c9;
         }
 
+        /* ⚠️ Error Message */
         .error-message {
-            color: red;
-            margin-bottom: 15px;
+            color: #e74c3c;
+            background: #fdecea;
+            border-radius: 8px;
+            padding: 8px;
             font-size: 13px;
+            margin-bottom: 15px;
         }
 
+        /* 🌀 Google Sign-in */
         .google-signin {
+            display: flex;
+            justify-content: center;
             margin: 20px 0;
         }
 
         .google-signin img {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.25s;
         }
 
         .google-signin img:hover {
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
 
+        /* 🧾 Register link */
         .register-link {
-            margin-top: 20px;
             font-size: 14px;
+            margin-top: 10px;
         }
 
         .register-link a {
-            color: #4a90e2;
+            color: #3498db;
             text-decoration: none;
+            font-weight: 600;
         }
 
         .register-link a:hover {
             text-decoration: underline;
         }
+
+        /* 📱 Responsive */
+        @media (max-width: 480px) {
+            .container {
+                width: 90%;
+                padding: 30px 25px;
+            }
+        }
     </style>
 </head>
+
 <body>
 <div class="container">
-    <h2>Login</h2>
+    <h2>Đăng nhập</h2>
 
-    <!-- Hiện thông báo lỗi nếu login sai -->
-    <div class="error-message">
-        <p th:if="${param.error}" th:text="'⚠️ Số điện thoại hoặc mật khẩu không đúng!'"></p>
+    <!-- ⚠️ Thông báo lỗi -->
+    <div th:if="${param.error}" class="error-message">
+        ⚠️ Số điện thoại hoặc mật khẩu không đúng!
     </div>
 
     <form th:action="@{/auth/login}" method="post">
         <div class="form-group">
-            <label for="phoneNumber">Số điện thoại</label>
-            <input type="text" id="phoneNumber" name="phoneNumber" required placeholder="Nhập số điện thoại">
+            <label for="phoneNumber">📱 Số điện thoại</label>
+            <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Nhập số điện thoại" required>
         </div>
 
         <div class="form-group">
-            <label for="password">Mật khẩu</label>
-            <input type="password" id="password" name="password" required placeholder="Nhập mật khẩu">
+            <label for="password">🔒 Mật khẩu</label>
+            <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
         </div>
 
         <div class="options">
@@ -156,13 +191,13 @@
         <button type="submit" class="btn">Đăng nhập</button>
     </form>
 
-    <p>Hoặc đăng nhập bằng tài khoản Google</p>
+    <p style="margin: 18px 0; color: #777;">Hoặc đăng nhập bằng</p>
     <div class="google-signin">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
     </div>
 
     <p class="register-link">
-        Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+        Chưa có tài khoản? <a th:href="@{/auth/register}">Đăng ký ngay</a>
     </p>
 </div>
 </body>

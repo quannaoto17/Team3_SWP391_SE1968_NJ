@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CaseRepository extends JpaRepository<Case, Integer> {
@@ -15,4 +16,6 @@ public interface CaseRepository extends JpaRepository<Case, Integer> {
     @Query("SELECT c FROM Case c WHERE " +
            "(:formFactor IS NULL OR c.formFactor = :formFactor)")
     List<Case> findWithFilters(@Param("formFactor") String formFactor);
+
+    Optional <Case> findByProduct_ProductId(int id);
 }
