@@ -25,12 +25,11 @@ public class OtherController {
     }
 
     @GetMapping("/other")
-    public String showOther(Model model, @ModelAttribute("buildItems") BuildItemDto buildItems,
-                            @RequestParam(value = "message", required = false) String message) {
+    public String showOther(Model model, @ModelAttribute("buildItems") BuildItemDto buildItems) {
         List<Product> others = buildService.getOtherProducts();
         model.addAttribute("others", others != null ? others : new ArrayList<>());
         model.addAttribute("buildItems", buildItems);
-        if (message != null) model.addAttribute("message", message);
+        // 'message' is already available in the model if set as a flash attribute
         return "build/other";
     }
 
