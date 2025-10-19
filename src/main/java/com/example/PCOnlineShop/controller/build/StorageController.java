@@ -51,9 +51,11 @@ public class StorageController {
     }
 
     @PostMapping("/selectStorage")
-    public String selectStorage(@RequestParam int storageId,
+    public String selectStorage(@RequestParam(value = "storageId", required = false) Integer storageId,
                                 @ModelAttribute("buildItems") BuildItemDto buildItem) {
-        buildItem.setStorage(storageService.getStorageById(storageId));
+        if (storageId != null) {
+            buildItem.setStorage(storageService.getStorageById(storageId));
+        }
         return "redirect:/build/psu";
     }
 }

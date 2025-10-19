@@ -51,9 +51,11 @@ public class CoolingController {
     }
 
     @PostMapping("/selectCooling")
-    public String selectCooling(@RequestParam int coolingId,
+    public String selectCooling(@RequestParam(value = "coolingId", required = false) Integer coolingId,
                                 @ModelAttribute("buildItems") BuildItemDto buildItem) {
-        buildItem.setCooling(coolingService.getCoolingById(coolingId));
+        if (coolingId != null) {
+            buildItem.setCooling(coolingService.getCoolingById(coolingId));
+        }
         return "redirect:/build/memory";
     }
 }

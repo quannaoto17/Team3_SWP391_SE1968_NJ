@@ -2,11 +2,16 @@ package com.example.PCOnlineShop.service.build;
 
 import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import com.example.PCOnlineShop.model.build.*;
+import com.example.PCOnlineShop.model.product.Product;
 import com.example.PCOnlineShop.repository.build.*;
+import com.example.PCOnlineShop.repository.product.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class BuildService {
@@ -19,6 +24,7 @@ public class BuildService {
     private final StorageRepository storageRepository;
     private final PowerSupplyRepository powerSupplyRepository;
     private final CoolingRepository coolingRepository;
+    private final ProductRepository productRepository; // added to fetch generic products
 
     public  List<Mainboard> getCompatibleMainboards(BuildItemDto buildItem) {
         // This is a placeholder implementation. In a real scenario, you would check compatibility based on CPU socket types.
@@ -78,5 +84,25 @@ public class BuildService {
         return allCoolings.stream()
                 .filter(cooling -> compatibilityService.checkCoolingCompatibility(buildItem, cooling))
                 .toList();
+    }
+
+    // Other (generic product)
+    public List<Product> getOtherProducts() {
+        List<Product> all = productRepository.findAll();
+        return all.stream()
+                .filter(p -> p.getCategory() != null && "Other".equalsIgnoreCase(p.getCategory().getCategoryName()))
+                .collect(Collectors.toList());
+    }
+    public Optional<Other> findOtherByProductId(Integer productId) {
+        Optional<Product> opt = productRepository.findById(productId);
+        if (opt.isEmpty()) return Optional.empty();
+        Product p = opt.get();
+        Other o = new Other();
+        o.setName(p.getProductName());
+        o.setBrand(p.getBrand() != null ? p.getBrand().getName() : null);
+        o.setType(p.getCategory() != null ? p.getCategory().getCategoryName() : "Other");
+        o.setDescription(p.getDescription());
+        o.setPrice(p.getPrice());
+        return Optional.of(o);
     }
 }

@@ -54,9 +54,11 @@ public class CaseController {
     }
 
     @PostMapping("/selectCase")
-    public String selectCase(@RequestParam("caseId") int caseId,
+    public String selectCase(@RequestParam(value = "caseId", required = false) Integer caseId,
                            @ModelAttribute("buildItems") BuildItemDto buildItem) {
-        buildItem.setPcCase(caseService.getCaseById(caseId));
+        if (caseId != null) {
+            buildItem.setPcCase(caseService.getCaseById(caseId));
+        }
         return "redirect:/build/cooling";
     }
 }

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -79,7 +79,7 @@
         </div>
 
         <!-- Product Grid -->
-        <form th:action="@{/build/selectCpu}" method="post" id="cpuForm">
+        <form th:action="@{/build/selectCpu}" method="post" id="cpuForm" data-require-selection="true">
             <input type="hidden" name="cpuId" id="selectedCpuId"/>
             <div class="product-grid">
                 <div th:each="cpu : ${cpus}"

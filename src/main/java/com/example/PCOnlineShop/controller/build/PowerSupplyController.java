@@ -51,9 +51,11 @@ public class PowerSupplyController {
     }
 
     @PostMapping("/selectPsu")
-    public String selectPsu(@RequestParam int psuId,
+    public String selectPsu(@RequestParam(value = "psuId", required = false) Integer psuId,
                             @ModelAttribute("buildItems") BuildItemDto buildItem) {
-        buildItem.setPowerSupply(powerSupplyService.getPowerSupplyById(psuId));
+        if (psuId != null) {
+            buildItem.setPowerSupply(powerSupplyService.getPowerSupplyById(psuId));
+        }
         return "redirect:/build/other";
     }
 }
