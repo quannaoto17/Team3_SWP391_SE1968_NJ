@@ -12,9 +12,19 @@ html, body {
     background: #f5f5f5;
 }
 
+/* Make body a column so header (outside .container) can take its natural height
+   and .container will fill the remaining viewport. This prevents a double page scrollbar. */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Container should fill remaining space and hide overflow; children manage their own scrolling */
 .container {
     display: flex;
-    height: 100vh;
+    flex: 1; /* take remaining vertical space */
+    overflow: hidden; /* avoid page scrollbar when middle column scrolls */
 }
 
 /* ================= Sidebar ================= */
@@ -74,12 +84,14 @@ html, body {
     display: flex;
     flex-direction: column;
     padding: 15px;
+    min-width: 0; /* allow children to shrink and show scrollbar properly */
 }
 
 .filter-bar {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
+    flex: 0 0 auto;
 }
 
 .filter-bar input {
@@ -106,10 +118,46 @@ html, body {
 
 /* Product grid */
 .product-grid {
-    flex: 1;
+    flex: 1 1 auto; /* take remaining vertical space in main-content */
+    min-height: 0; /* important for flex children to allow overflow */
+    max-height: calc(100vh - 200px); /* force scrollbar when items overflow - adjust 200px based on header/footer/padding */
+    width: 100%; /* take full width of main-content */
+    max-width: 100%; /* don't exceed parent width */
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* responsive columns */
+    grid-auto-rows: minmax(180px, auto); /* fixed minimum row height */
     gap: 15px;
+    overflow-y: auto; /* enable vertical scrolling ONLY */
+    overflow-x: hidden; /* disable horizontal scrolling */
+    padding-right: 8px; /* avoid content being hidden under scrollbar */
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Make scrollbar more visible and attractive - vertical only */
+.product-grid::-webkit-scrollbar {
+    width: 12px;
+}
+
+.product-grid::-webkit-scrollbar-thumb {
+    background: rgba(0, 68, 204, 0.3);
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+.product-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 68, 204, 0.5);
+    background-clip: content-box;
+}
+
+.product-grid::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.05);
+    border-radius: 6px;
+}
+
+/* Ensure grid corner (where scrollbars meet) looks good */
+.product-grid::-webkit-scrollbar-corner {
+    background: rgba(0,0,0,0.05);
 }
 
 .product-card {
