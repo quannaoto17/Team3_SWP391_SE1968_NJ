@@ -4,193 +4,210 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Header UI</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: "Segoe UI", sans-serif;
-        }
 
-        body {
-            background: #f4f5f7;
-            overflow-x: hidden;
-        }
-
-        /* Header */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background-color: #1f2937;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-
-        /* Hamburger */
-        .menu-btn {
-            font-size: 22px;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .menu-btn.active {
-            transform: rotate(90deg);
-        }
-
-        .title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-
-        .search {
-            display: flex;
-            align-items: center;
-            background: #374151;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .search input {
-            border: none;
-            outline: none;
-            background: transparent;
-            color: #fff;
-            padding: 6px 10px;
-            width: 200px;
-        }
-
-        .search button {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .search button:hover {
-            background: #1d4ed8;
-        }
-
-        .logout-btn {
-            background: transparent;
-            border: 1px solid #ccc;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: #374151;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -250px;
-            width: 250px;
-            height: 100%;
-            background-color: #111827;
-            color: white;
-            padding: 20px 15px;
-            transition: left 0.3s ease;
-            z-index: 999;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.3);
-        }
-
-        .sidebar.active {
-            left: 0;
-        }
-
-        .sidebar .profile {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .sidebar img {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            margin-bottom: 8px;
-            border: 2px solid #444;
-        }
-
-        .sidebar h3 {
-            font-size: 16px;
-            margin-bottom: 8px;
-        }
-
-        .sidebar nav {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .sidebar button {
-            width: 100%;
-            padding: 10px;
-            text-align: left;
-            border: none;
-            background: #1f2937;
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .sidebar button:hover {
-            background: #374151;
-        }
-
-        /* Overlay */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.4);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-            z-index: 998;
-        }
-
-        .overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Main */
-        main {
-            margin-top: 70px;
-            padding: 20px;
-            transition: margin-left 0.3s ease;
-        }
-
-        main.shifted {
-            margin-left: 250px;
-        }
-    </style>
 </head>
 
 <body>
 
 <div th:fragment="header-admin">
+    <style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+        background: #f4f5f7;
+        overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background-color: #1f2937;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 1000;
+    }
+
+    /* Hamburger */
+    .menu-btn {
+        font-size: 22px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .menu-btn.active {
+        transform: rotate(90deg);
+    }
+
+    .title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+
+    .search {
+        display: flex;
+        align-items: center;
+        background: #374151;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .search input {
+        border: none;
+        outline: none;
+        background: transparent;
+        color: #fff;
+        padding: 6px 10px;
+        width: 200px;
+    }
+
+    .search button {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .search button:hover {
+        background: #1d4ed8;
+    }
+
+    .logout-btn {
+        background: transparent;
+        border: 1px solid #ccc;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .logout-btn:hover {
+        background: #374151;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -250px;
+        width: 250px;
+        height: 100%;
+        background-color: #111827;
+        color: white;
+        padding: 20px 15px;
+        transition: left 0.3s ease;
+        z-index: 999;
+        box-shadow: 2px 0 8px rgba(0,0,0,0.3);
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .sidebar .profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .sidebar img {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        margin-bottom: 8px;
+        border: 2px solid #444;
+    }
+
+    .sidebar h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .sidebar button {
+        width: 100%;
+        padding: 10px;
+        text-align: left;
+        border: none;
+        background: #1f2937;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .sidebar button:hover {
+        background: #374151;
+    }
+
+    /* Overlay */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.4);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+        z-index: 998;
+    }
+
+    .overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Main */
+    main {
+        margin-top: 70px;
+        padding: 20px;
+        transition: margin-left 0.3s ease;
+    }
+
+    main.shifted {
+        margin-left: 250px;
+    }
+    .nav-btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        text-align: left;
+        border: none;
+        background: #1f2937;
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        margin: 5px 0;
+        transition: background 0.3s;
+    }
+    .nav-btn:hover {
+        background: #374151;
+    }
+</style>
     <header>
         <div class="menu-btn" id="menu-btn">☰</div>
         <div class="title">Admin Dashboard</div>
@@ -211,13 +228,10 @@
             <h3>Admin</h3>
         </div>
         <nav>
-            <button>Dashboard</button>
-            <button>Product Management</button>
-            <button>Category Management</button>
-            <button>User Management</button>
-            <button>Order Management</button>
-            <button>Report</button>
-            <button>System Setting</button>
+            <a >Dashboard</a>
+            <a >Product Management</a>
+            <a th:href="@{/staff/list}" class="nav-btn">Staff Management</a>
+            <a th:href="@{/customer/list}" class="nav-btn">Customer Management</a>
         </nav>
     </aside>
 
