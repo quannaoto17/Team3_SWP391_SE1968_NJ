@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")  // ✅ đổi lại cho khớp với form trong header
+                        .logoutUrl("/logout")
                         .logoutSuccessUrl("/auth/login?logout=true")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)

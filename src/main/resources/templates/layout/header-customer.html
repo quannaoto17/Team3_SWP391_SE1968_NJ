@@ -173,8 +173,8 @@
     <!-- Nút bên phải -->
     <div class="header-right">
         <button th:onclick="|window.location.href='@{/build/start}'|">🧩 Build PC</button>
-        <button th:onclick="|window.location.href='@{/customers/orders/list}'|">📦 My Orders</button>
-        <a th:href="@{/cart}" class="cart">🛒</a>
+        <button th:onclick="|window.location.href='@{/customer/orders/list}'|">📦 My Orders</button>
+        <a th:href="@{/cart}" class="cart">🛒My Cart</a>
 
         <!-- Nút Login (đã check role ở layout chính) -->
         <button th:onclick="|window.location.href='@{/auth/login}'|">Logout</button>
