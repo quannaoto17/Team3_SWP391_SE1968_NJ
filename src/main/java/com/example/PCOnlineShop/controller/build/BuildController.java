@@ -30,8 +30,14 @@ public class BuildController {
     }
 
     @GetMapping("/startover")
-    public String startOver(HttpSession session) {
-        session.removeAttribute("buildItems"); // Clear buildItems from session to start a fresh build without affecting user login session or other session data
+    public String startOver(SessionStatus sessionStatus, org.springframework.ui.Model model) {
+        // Tell Spring to clear the session-managed `buildItems`
+        sessionStatus.setComplete();
+
+        // Provide a fresh empty DTO so the next request's model is clean
+        model.addAttribute("buildItems", new BuildItemDto());
+
+        // Redirect to the first build page (avoids reusing form values)
         return "redirect:/build/mainboard";
     }
 

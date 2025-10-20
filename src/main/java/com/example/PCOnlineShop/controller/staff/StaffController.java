@@ -19,7 +19,7 @@ public class StaffController {
     private final StaffService staffService;
     private final AuthService authService;
 
-    // 🔹 Danh sách nhân viên
+    //  Danh sách nhân viên
     @GetMapping("/list")
     public String listStaff(@RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "10") int size,
@@ -34,21 +34,21 @@ public class StaffController {
         return "staff/staff-list";
     }
 
-    // 🔹 Xem chi tiết
+    //  Xem chi tiết
     @GetMapping("/view/{id}")
     public String viewStaff(@PathVariable int id, Model model) {
         model.addAttribute("account", staffService.getById(id));
         return "staff/view-staff";
     }
 
-    // 🔹 Form thêm
+    //  Form thêm
     @GetMapping("/add")
     public String addStaffForm(Model model) {
         model.addAttribute("account", new Account());
         return "staff/add-staff";
     }
 
-    // 🔹 Lưu nhân viên (Validate)
+    // Lưu nhân viên (Validate)
     @PostMapping("/add")
     public String saveStaff(@Valid @ModelAttribute("account") Account account,
                             BindingResult result,
@@ -67,14 +67,14 @@ public class StaffController {
         return "redirect:/staff/list?statusFilter=all";
     }
 
-    // 🔹 Form sửa
+    // Form sửa
     @GetMapping("/edit/{id}")
     public String editStaffForm(@PathVariable int id, Model model) {
         model.addAttribute("account", staffService.getById(id));
         return "staff/edit-staff";
     }
 
-    // 🔹 Cập nhật (Validate)
+    // Cập nhật (Validate)
     @PostMapping("/edit")
     public String updateStaff(@Valid @ModelAttribute("account") Account account,
                               BindingResult result,
@@ -93,7 +93,7 @@ public class StaffController {
         return "redirect:/staff/list?statusFilter=all";
     }
 
-    // 🔹 Chuyển trạng thái
+    //  Chuyển trạng thái
     @GetMapping("/delete/{id}")
     public String deactivateStaff(@PathVariable int id) {
         staffService.deactivateStaff(id);

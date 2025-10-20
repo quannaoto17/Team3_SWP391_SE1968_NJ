@@ -12,22 +12,22 @@ import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Integer> {
 
-    // 🔹 Lấy toàn bộ theo role (VD: Staff, Customer, Admin)
+    //  Lấy toàn bộ theo role (VD: Staff, Customer, Admin)
     Page<Account> findAllByRole(RoleName role, Pageable pageable);
 
-    // 🔹 Tìm theo số điện thoại
+    // Tìm theo số điện thoại
     Optional<Account> findByPhoneNumber(String phoneNumber);
 
-    // 🔹 Tìm theo email
+    //  Tìm theo email
     Optional<Account> findByEmail(String email);
 
-    // 🔹 Kiểm tra tồn tại email (chặn trùng)
+    //  Kiểm tra tồn tại email (chặn trùng)
     boolean existsByEmail(String email);
 
-    // 🔹 Kiểm tra tồn tại số điện thoại (chặn trùng)
+    //  Kiểm tra tồn tại số điện thoại (chặn trùng)
     boolean existsByPhoneNumber(String phoneNumber);
 
-    // 🔹 Tìm theo role + tìm kiếm phone/email
+    //  Tìm theo role + tìm kiếm phone/email
     @Query("""
         SELECT a FROM Account a 
         WHERE a.role = :role 
@@ -37,7 +37,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
                                            @Param("searchQuery") String searchQuery,
                                            Pageable pageable);
 
-    // 🔹 Tìm theo role + trạng thái (Active / Inactive)
+    //  Tìm theo role + trạng thái (Active / Inactive)
     @Query("""
         SELECT a FROM Account a 
         WHERE a.role = :role
