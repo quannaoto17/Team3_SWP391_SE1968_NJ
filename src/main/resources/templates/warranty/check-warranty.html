@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Check Warranty</title>
@@ -18,12 +18,20 @@
         .not-found { color: red; text-align: center; font-weight: bold; margin-top: 20px; }
         .section-title { color: #dc3545; font-size: 20px; font-weight: bold; margin-top: 30px; margin-bottom: 10px; text-align: center;}
         .view-products-btn { background:none; border:none; color:#007bff; cursor:pointer; padding: 0; font-size: inherit; text-decoration: underline;}
-        .status-active { color: green; font-weight: bold; }
-        .status-expiring { color: orange; font-weight: bold; }
-        .status-expired { color: red; font-weight: bold; }
+
     </style>
 </head>
 <body>
+<div sec:authorize="!isAuthenticated()"
+     th:replace="layout/header-default :: header-default"></div>
+<div sec:authorize="hasRole('ADMIN')"
+     th:replace="layout/header-admin :: header-admin"></div>
+
+<div sec:authorize="hasRole('STAFF')"
+     th:replace="layout/header-staff :: header-staff"></div>
+
+<div sec:authorize="hasRole('CUSTOMER')"
+     th:replace="layout/header-customer :: header-customer"></div>
 <div class="container">
     <h1>Check Warranty Status</h1>
 
