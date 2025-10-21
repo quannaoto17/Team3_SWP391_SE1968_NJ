@@ -166,7 +166,6 @@ public class ProductController {
                                      @RequestParam("productId") int productId,
                                      Model model) {
 
-        // Prefill object vào model
         switch (categoryId) {
             case 1 -> mainboardRepository.findByProduct_ProductId(productId).ifPresent(mb -> model.addAttribute("mb", mb));
             case 2 -> cpuRepository.findByProduct_ProductId(productId).ifPresent(cpu -> model.addAttribute("cpu", cpu));
@@ -179,7 +178,6 @@ public class ProductController {
             default -> {}
         }
 
-        // Trả về fragment trong folder spec-edit
         return switch (categoryId) {
             case 1 -> "product/spec-edit/mainboard-spec-edit";
             case 2 -> "product/spec-edit/cpu-spec-edit";
@@ -189,7 +187,6 @@ public class ProductController {
             case 6 -> "product/spec-edit/case-spec-edit";
             case 7 -> "product/spec-edit/powersupply-spec-edit";
             case 8 -> "product/spec-edit/cooling-spec-edit";
-            // Không có bảng cho 9/10 trong upsert -> trả về trống/fallback
             default -> "product/spec-edit/empty-spec-edit";
         };
     }
@@ -209,10 +206,8 @@ public class ProductController {
         product.setCategory(category);
         product.setBrand(brand);
 
-        // 1) Lưu Product trước
         Product savedProduct = productService.addProduct(product);
 
-        // 2) Lưu ảnh
         if (imageFiles != null && !imageFiles.isEmpty()) {
             List<Image> images = saveImagesToStatic(imageFiles, savedProduct);
             imageRepository.saveAll(images);
@@ -220,7 +215,6 @@ public class ProductController {
             productService.updateProduct(savedProduct);
         }
 
-        // 3) Lưu thông số theo category
         upsertSpec(savedProduct, categoryId, params, true);
 
         return "redirect:/staff/products/list";
@@ -245,7 +239,9 @@ public class ProductController {
                                 @RequestParam("category.categoryId") int categoryId,
                                 @RequestParam("brand.brandId") int brandId,
                                 @RequestParam Map<String, String> params,
-                                @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles
+                                @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
+                                // ===== NEW FEATURE: nhận danh sách ảnh cần xoá =====
+                                @RequestParam(value = "deleteImageIds", required = false) String deleteImageIds
     ) throws IOException {
 
         Product current = productService.getProductById(incoming.getProductId());
@@ -253,14 +249,12 @@ public class ProductController {
 
         Integer oldCatId = (current.getCategory() != null) ? current.getCategory().getCategoryId() : null;
 
-        // Cập nhật field cơ bản
         current.setProductName(incoming.getProductName());
         current.setDescription(incoming.getDescription());
         current.setSpecification(incoming.getSpecification());
         current.setPrice(incoming.getPrice());
         current.setStatus(incoming.isStatus());
 
-        // Cập nhật category/brand
         Category category = categoryRepository.findById(categoryId).orElse(null);
         Brand brand = brandRepository.findById(brandId).orElse(null);
         current.setCategory(category);
@@ -268,34 +262,66 @@ public class ProductController {
 
         Product updated = productService.updateProduct(current);
 
-        // Thêm ảnh mới (nếu có) — save and merge so the product has newest images first
+        // ===== NEW FEATURE: XÓA CÁC ẢNH ĐƯỢC CHỌN =====
+        if (deleteImageIds != null && !deleteImageIds.isBlank()) {
+            List<Integer> ids = Arrays.stream(deleteImageIds.split(","))
+                    .filter(s -> !s.isBlank())
+                    .map(Integer::parseInt)
+                    .toList();
+
+            for (Integer imgId : ids) {
+                imageRepository.findById(imgId).ifPresent(img -> {
+                    try {
+                        Path path = Paths.get("uploads/images" + img.getImageUrl().replace("/image", ""));
+                        Files.deleteIfExists(path);
+                        imageRepository.delete(img);
+                        System.out.println(">>> Deleted selected image: " + path);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        }
+
+        // Thêm ảnh mới
         if (imageFiles != null && !imageFiles.isEmpty()) {
             List<Image> newImages = saveImagesToStatic(imageFiles, updated);
             imageRepository.saveAll(newImages);
-
-            // Merge: put new images in front so newest appear first in UI
             List<Image> merged = new ArrayList<>();
             merged.addAll(newImages);
             if (updated.getImages() != null) merged.addAll(updated.getImages());
             updated.setImages(merged);
-
-            // Persist product with updated image list
             productService.updateProduct(updated);
         }
 
-        // Nếu đổi category -> xoá spec cũ không còn dùng
         if (oldCatId == null || !oldCatId.equals(categoryId)) {
             cleanupOtherSpecs(updated.getProductId(), categoryId);
         }
 
-        // Upsert spec theo category hiện tại
         upsertSpec(updated, categoryId, params, false);
 
-        return "redirect:/staff/products/list";
+        return "redirect:/staff/products/edit/" + updated.getProductId();
+    }
+
+    // ===== NEW FEATURE: XÓA ẢNH NGAY (AJAX) =====
+    @DeleteMapping("/image/{imageId}")
+    @ResponseBody
+    @Transactional
+    public String deleteImage(@PathVariable int imageId) {
+        imageRepository.findById(imageId).ifPresent(img -> {
+            try {
+                Path path = Paths.get("uploads/images" + img.getImageUrl().replace("/image", ""));
+                Files.deleteIfExists(path);
+                imageRepository.delete(img);
+                System.out.println(">>> Deleted via AJAX: " + path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        return "success";
     }
 
     // ========= HELPERS =========
-
     private void upsertSpec(Product product, int categoryId, Map<String, String> params, boolean isCreate) {
         switch (categoryId) {
             case 1 -> {
@@ -306,7 +332,7 @@ public class ProductController {
                 mb.setChipset(params.get("mainboard.chipset"));
                 mb.setFormFactor(params.get("mainboard.formFactor"));
                 mainboardRepository.save(mb);
-             }
+            }
             case 2 -> {
                 CPU cpu = cpuRepository.findByProduct_ProductId(product.getProductId())
                         .orElseGet(CPU::new);
@@ -380,7 +406,7 @@ public class ProductController {
                 cl.setTdp(getInt(params, "cl.maxTdp"));
                 coolingRepository.save(cl);
             }
-            default -> { /* không có spec tương ứng -> bỏ qua */ }
+            default -> { }
         }
     }
 
@@ -407,10 +433,7 @@ public class ProductController {
     }
 
     private List<Image> saveImagesToStatic(List<MultipartFile> imageFiles, Product product) throws IOException {
-        // Thư mục uploads/images (tính từ thư mục gốc project)
         Path uploadPath = Paths.get("uploads/images");
-
-        // Nếu chưa có thì tự tạo
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
@@ -419,27 +442,18 @@ public class ProductController {
 
         for (MultipartFile file : imageFiles) {
             if (file != null && !file.isEmpty()) {
-                // Tạo tên file duy nhất
                 String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-
-                // Đường dẫn vật lý tới file đích
                 Path filePath = uploadPath.resolve(fileName);
-
-                // Ghi file vào ổ đĩa
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                // Tạo entity Image để lưu vào DB
                 Image img = new Image();
-                img.setImageUrl("/image/" + fileName); // URL hiển thị trên web
+                img.setImageUrl("/image/" + fileName);
                 img.setProduct(product);
                 images.add(img);
-
-                // Log kiểm tra (tùy chọn, để debug)
                 System.out.println(">>> Saved image to: " + filePath.toAbsolutePath());
             }
         }
 
         return images;
     }
-
 }
