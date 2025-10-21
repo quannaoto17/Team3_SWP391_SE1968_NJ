@@ -3,7 +3,7 @@ USE pconlineshop;
 -- Tạo orders với final_amount tính toán sẵn
 INSERT INTO orders (account_id, final_amount, status, created_date, shipping_method, shipping_full_name, shipping_phone, shipping_address) VALUES
 -- Customer 1 (0239473473) - Nguyễn Quang Anh
-(1, 1460000, 'Completed', '2023-01-15', 'Giao hàng tận nơi', 'Nguyễn Quang Anh', '0239473473', '123 Đường ABC, Q1, TP.HCM'),
+(1, 1460000, 'Completed', '2023-01-15', 'Giao hàng tận nơi', 'Nguyen An', '0239473473', '123 Đường ABC, Q1, TP.HCM'),
 (1, 4220000, 'Shipped', '2023-02-20', 'Giao hàng tận nơi', 'Nguyễn Quang Anh', '0239473473', '123 Đường ABC, Q1, TP.HCM'),
 (1, 910000, 'Processing', '2023-10-11', 'Giao hàng tận nơi', 'Nguyễn Quang Anh', '0239473473', '123 Đường ABC, Q1, TP.HCM'),
 (1, 5440000, 'Pending', CURDATE(), 'Giao hàng tận nơi', 'Nguyễn Quang Anh', '0239473473', '123 Đường ABC, Q1, TP.HCM'),
