@@ -64,6 +64,15 @@ public class ProductController {
             productPage = productService.getProducts(page, size, sortField, sortDir);
         }
 
+        // Ensure newest image is first for each product (assumes Image has getImageId)
+        for (Product p : productPage.getContent()) {
+            List<Image> imgs = p.getImages();
+            if (imgs != null && !imgs.isEmpty()) {
+                imgs.sort(Comparator.comparing(Image::getImageId).reversed());
+                p.setImages(imgs);
+            }
+        }
+
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productPage.getTotalPages());
@@ -259,10 +268,19 @@ public class ProductController {
 
         Product updated = productService.updateProduct(current);
 
-        // Thêm ảnh mới (nếu có)
+        // Thêm ảnh mới (nếu có) — save and merge so the product has newest images first
         if (imageFiles != null && !imageFiles.isEmpty()) {
             List<Image> newImages = saveImagesToStatic(imageFiles, updated);
             imageRepository.saveAll(newImages);
+
+            // Merge: put new images in front so newest appear first in UI
+            List<Image> merged = new ArrayList<>();
+            merged.addAll(newImages);
+            if (updated.getImages() != null) merged.addAll(updated.getImages());
+            updated.setImages(merged);
+
+            // Persist product with updated image list
+            productService.updateProduct(updated);
         }
 
         // Nếu đổi category -> xoá spec cũ không còn dùng
@@ -288,7 +306,7 @@ public class ProductController {
                 mb.setChipset(params.get("mainboard.chipset"));
                 mb.setFormFactor(params.get("mainboard.formFactor"));
                 mainboardRepository.save(mb);
-            }
+             }
             case 2 -> {
                 CPU cpu = cpuRepository.findByProduct_ProductId(product.getProductId())
                         .orElseGet(CPU::new);
@@ -389,22 +407,39 @@ public class ProductController {
     }
 
     private List<Image> saveImagesToStatic(List<MultipartFile> imageFiles, Product product) throws IOException {
-        Path uploadPath = Paths.get(new File("src/main/resources/static/image").getAbsolutePath());
-        if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
+        // Thư mục uploads/images (tính từ thư mục gốc project)
+        Path uploadPath = Paths.get("uploads/images");
+
+        // Nếu chưa có thì tự tạo
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
 
         List<Image> images = new ArrayList<>();
+
         for (MultipartFile file : imageFiles) {
             if (file != null && !file.isEmpty()) {
+                // Tạo tên file duy nhất
                 String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+                // Đường dẫn vật lý tới file đích
                 Path filePath = uploadPath.resolve(fileName);
+
+                // Ghi file vào ổ đĩa
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
+                // Tạo entity Image để lưu vào DB
                 Image img = new Image();
-                img.setImageUrl("/image/" + fileName);
+                img.setImageUrl("/image/" + fileName); // URL hiển thị trên web
                 img.setProduct(product);
                 images.add(img);
+
+                // Log kiểm tra (tùy chọn, để debug)
+                System.out.println(">>> Saved image to: " + filePath.toAbsolutePath());
             }
         }
+
         return images;
     }
+
 }

@@ -19,22 +19,28 @@
         .logout { padding: 8px 12px; border: 1px solid #aaa; background: #fff; cursor: pointer; border-radius: 6px; }
 
         /* Content */
-        .content { padding: 20px; }
-        .content h2 { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; }
-        .add-btn { background: #007bff; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; }
-        .add-btn:hover { background: #0056b3; }
+        .content {
+            padding: 20px;
+            margin-left: 260px;
+        }
+        .content h2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0;
+        }
 
         /* Toolbar */
-        .toolbar{
-            display:flex; align-items:center; gap:16px; flex-wrap:wrap;
-            background:#fff; padding:12px; border:1px solid #ddd; border-radius:8px; margin-bottom:16px;
+        .toolbar {
+            display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+            background: #fff; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 16px;
         }
-        .toolbar form{ display:flex; align-items:center; gap:8px; margin:0; }
-        .toolbar input[type="text"]{ padding:8px; width:280px; border:1px solid #ccc; border-radius:6px; }
-        .toolbar select{ padding:8px; min-width:140px; border:1px solid #ccc; border-radius:6px; }
-        .toolbar button{ padding:8px 12px; cursor:pointer; border-radius:6px; }
-        .toolbar label{ font-weight:600; margin-right:6px; }
-        .toolbar .spacer{ flex:1; }
+        .toolbar form { display: flex; align-items: center; gap: 8px; margin: 0; }
+        .toolbar input[type="text"] { padding: 8px; width: 280px; border: 1px solid #ccc; border-radius: 6px; }
+        .toolbar select { padding: 8px; min-width: 140px; border: 1px solid #ccc; border-radius: 6px; }
+        .toolbar button { padding: 8px 12px; cursor: pointer; border-radius: 6px; }
+        .toolbar label { font-weight: 600; margin-right: 6px; }
+        .toolbar .spacer { flex: 1; }
 
         /* Table */
         table { width: 100%; border-collapse: collapse; background: #fff; }
@@ -43,7 +49,10 @@
         tr:hover { background-color: #fafafa; }
 
         /* Product Image */
-        .product-image { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; box-shadow: 0 0 4px rgba(0,0,0,0.15); }
+        .product-image {
+            width: 60px; height: 60px; object-fit: cover;
+            border-radius: 6px; box-shadow: 0 0 4px rgba(0,0,0,0.15);
+        }
 
         /* Pagination */
         .pagination { margin-top: 20px; text-align: center; }
@@ -57,292 +66,157 @@
     </style>
 </head>
 <body>
-<div class="layout">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="avatar"></div>
-        <h3>Quản trị</h3>
-        <button>Bảng điều khiển</button>
-        <button>Quản lý sản phẩm</button>
-        <button>Quản lý danh mục</button>
-        <button>Quản lý thương hiệu</button>
+
+<!-- Header -->
+<div th:replace="layout/header-staff :: header-staff"></div>
+
+<!-- Main Content -->
+<div class="content">
+
+    <!-- Toolbar: Tìm kiếm + Lọc -->
+    <div class="toolbar">
+        <!-- Tìm kiếm -->
+        <form th:action="@{/staff/products/list}" method="get" id="searchForm" autocomplete="off">
+            <input id="searchInput" type="text" name="keyword" placeholder="Tìm kiếm sản phẩm..." th:value="${keyword}">
+            <input type="hidden" name="brandId" th:value="${brandId}">
+            <input type="hidden" name="categoryId" th:value="${categoryId}">
+            <input type="hidden" name="sortField" th:value="${sortField}">
+            <input type="hidden" name="sortDir" th:value="${sortDir}">
+            <input id="sizeInput" type="hidden" name="size" th:value="${pageSize}">
+            <button type="submit">Tìm kiếm</button>
+        </form>
+
+        <div class="spacer"></div>
+
+        <!-- Lọc -->
+        <form th:action="@{/staff/products/list}" method="get" class="filter-form">
+            <label>Lọc theo Thương hiệu:</label>
+            <select name="brandId">
+                <option value="">Tất cả</option>
+                <option th:each="brand : ${brands}"
+                        th:value="${brand.brandId}"
+                        th:text="${brand.name}"
+                        th:selected="${brand.brandId == brandId}"></option>
+            </select>
+
+            <label>Lọc theo Danh mục:</label>
+            <select name="categoryId">
+                <option value="">Tất cả</option>
+                <option th:each="category : ${categories}"
+                        th:value="${category.categoryId}"
+                        th:text="${category.categoryName}"
+                        th:selected="${category.categoryId == categoryId}"></option>
+            </select>
+
+            <input type="hidden" name="keyword" th:value="${keyword}">
+            <input type="hidden" name="sortField" th:value="${sortField}">
+            <input type="hidden" name="sortDir" th:value="${sortDir}">
+            <input type="hidden" name="size" th:value="${pageSize}">
+            <button type="submit">Áp dụng</button>
+        </form>
     </div>
 
-    <!-- Main -->
-    <div>
-        <div class="header">
-            <div></div>
-            <button class="logout">Đăng xuất</button>
-        </div>
+    <h2>
+        Danh sách sản phẩm
+        <a th:href="@{/staff/products/add}">
+            <button class="add-btn">➕ Thêm mới</button>
+        </a>
+    </h2>
 
-        <div class="content">
-            <!-- Toolbar: Tìm kiếm + Lọc cùng hàng -->
-            <div class="toolbar">
-                <!-- Tìm kiếm -->
-                <form th:action="@{/staff/products/list}" method="get" id="searchForm" autocomplete="off">
-                    <input id="searchInput" type="text" name="keyword" placeholder="Tìm kiếm sản phẩm..." th:value="${keyword}">
-                    <input type="hidden" name="brandId" th:value="${brandId}">
-                    <input type="hidden" name="categoryId" th:value="${categoryId}">
-                    <input type="hidden" name="sortField" th:value="${sortField}">
-                    <input type="hidden" name="sortDir" th:value="${sortDir}">
-                    <input id="sizeInput" type="hidden" name="size" th:value="${pageSize}">
-                    <button type="submit">Tìm kiếm</button>
-                </form>
+    <!-- ===== LIST WRAPPER ===== -->
+    <div id="listWrapper" th:fragment="listWrapper">
+        <table>
+            <thead>
+            <tr>
+                <th>Mã</th>
+                <th>Hình ảnh</th>
+                <th>Danh mục</th>
+                <th>Thương hiệu</th>
+                <th>
+                    <a th:href="@{/staff/products/list(page=1,size=${pageSize},sortField='productName',sortDir=${reverseSortDir},brandId=${brandId},categoryId=${categoryId},keyword=${keyword})}">
+                        Tên sản phẩm
+                    </a>
+                </th>
+                <th>
+                    <a th:href="@{/staff/products/list(page=1,size=${pageSize},sortField='price',sortDir=${reverseSortDir},brandId=${brandId},categoryId=${categoryId},keyword=${keyword})}">
+                        Giá ($)
+                    </a>
+                </th>
+                <th>Trạng thái</th>
+                <th>Mô tả</th>
+                <th>Thông số kỹ thuật</th>
+            </tr>
+            </thead>
 
-                <div class="spacer"></div>
+            <tbody id="productTbody">
+            <tr th:if="${products == null or #lists.isEmpty(products)}">
+                <td colspan="9" style="text-align:center;color:#777">Không có kết quả</td>
+            </tr>
 
-                <!-- Lọc -->
-                <form th:action="@{/staff/products/list}" method="get" class="filter-form">
-                    <label>Lọc theo Thương hiệu:</label>
-                    <select name="brandId">
-                        <option value="">Tất cả</option>
-                        <option th:each="brand : ${brands}"
-                                th:value="${brand.brandId}"
-                                th:text="${brand.name}"
-                                th:selected="${brand.brandId == brandId}"></option>
-                    </select>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.productId}"></td>
 
-                    <label>Lọc theo Danh mục:</label>
-                    <select name="categoryId">
-                        <option value="">Tất cả</option>
-                        <option th:each="category : ${categories}"
-                                th:value="${category.categoryId}"
-                                th:text="${category.categoryName}"
-                                th:selected="${category.categoryId == categoryId}"></option>
-                    </select>
+                <!-- Hiển thị ảnh sản phẩm (chuẩn Thymeleaf + fallback mặc định) -->
+                <td>
+                    <a th:href="@{/staff/products/edit/{id}(id=${product.productId})}">
+                        <img th:if="${product.images != null and !product.images.isEmpty()}"
+                             th:src="@{${product.images[0].imageUrl}}"
+                             alt="Ảnh sản phẩm" class="product-image"/>
 
-                    <input type="hidden" name="keyword" th:value="${keyword}">
-                    <input type="hidden" name="sortField" th:value="${sortField}">
-                    <input type="hidden" name="sortDir" th:value="${sortDir}">
-                    <input type="hidden" name="size" th:value="${pageSize}">
-                    <button type="submit">Áp dụng</button>
-                </form>
-            </div>
+                        <img th:if="${product.images == null or product.images.isEmpty()}"
+                             th:src="@{/image/default-product.png}"
+                             alt="Không có ảnh" class="product-image"/>
+                    </a>
+                </td>
 
-            <h2>
-                Danh sách sản phẩm
-                <a th:href="@{/staff/products/add}">
-                    <button class="add-btn">➕ Thêm mới</button>
-                </a>
-            </h2>
+                <td th:text="${product.category != null ? product.category.categoryName : 'N/A'}"></td>
+                <td th:text="${product.brand != null ? product.brand.name : 'N/A'}"></td>
 
-            <!-- ===== LIST WRAPPER: bảng + phân trang ===== -->
-            <div id="listWrapper" th:fragment="listWrapper">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Mã</th>
-                        <th>Hình ảnh</th>
-                        <th>Danh mục</th>
-                        <th>Thương hiệu</th>
-                        <th>
-                            <a th:href="@{/staff/products/list(
-                                page=1,
-                                size=${pageSize},
-                                sortField='productName',
-                                sortDir=${reverseSortDir},
-                                brandId=${brandId},
-                                categoryId=${categoryId},
-                                keyword=${keyword}
-                            )}">Tên sản phẩm</a>
-                        </th>
-                        <th>
-                            <a th:href="@{/staff/products/list(
-                                page=1,
-                                size=${pageSize},
-                                sortField='price',
-                                sortDir=${reverseSortDir},
-                                brandId=${brandId},
-                                categoryId=${categoryId},
-                                keyword=${keyword}
-                            )}">Giá ($)</a>
-                        </th>
-                        <th>Trạng thái</th>
-                        <th>Mô tả</th>
-                        <th>Thông số kỹ thuật</th>
-                    </tr>
-                    </thead>
+                <td>
+                    <a class="product-link"
+                       th:href="@{/staff/products/edit/{id}(id=${product.productId})}"
+                       th:text="${product.productName}"></a>
+                </td>
 
-                    <tbody id="productTbody">
-                    <tr th:if="${products == null or #lists.isEmpty(products)}">
-                        <td colspan="9" style="text-align:center;color:#777">Không có kết quả</td>
-                    </tr>
+                <td th:text="${product.price}"></td>
+                <td th:text="${product.status ? 'Còn hàng' : 'Hết hàng'}"></td>
+                <td th:text="${product.description}"></td>
+                <td th:text="${product.specification}"></td>
+            </tr>
+            </tbody>
+        </table>
 
-                    <tr th:each="product : ${products}">
-                        <td th:text="${product.productId}"></td>
+        <!-- Phân trang -->
+        <div class="pagination">
+            <a th:if="${currentPage > 1}"
+               th:href="@{/staff/products/list(page=${currentPage - 1},size=${pageSize},sortField=${sortField},sortDir=${sortDir},brandId=${brandId},categoryId=${categoryId},keyword=${keyword})}">&laquo; Trước</a>
 
-                        <!-- Ảnh: bọc <a> để click ảnh cũng vào chỉnh sửa -->
-                        <td>
-                            <a class="to-detail" th:href="@{/staff/products/edit/{id}(id=${product.productId})}">
-                                <img th:if="${product.images != null and !product.images.isEmpty()}"
-                                     th:src="@{${product.images[0].imageUrl}}"
-                                     alt="Ảnh sản phẩm" class="product-image" />
-                                <img th:if="${product.images == null or product.images.isEmpty()}"
-                                     th:src="@{/image/default-product.png}"
-                                     alt="Không có ảnh" class="product-image" />
-                            </a>
-                        </td>
+            <a th:href="@{/staff/products/list(page=1,size=${pageSize},sortField=${sortField},sortDir=${sortDir},brandId=${brandId},categoryId=${categoryId},keyword=${keyword})}"
+               th:classappend="${currentPage == 1} ? 'active'">1</a>
 
-                        <td th:text="${product.category != null ? product.category.categoryName : 'N/A'}"></td>
-                        <td th:text="${product.brand != null ? product.brand.name : 'N/A'}"></td>
+            <span th:if="${currentPage > 4}">...</span>
 
-                        <td>
-                            <a class="product-link to-detail"
-                               th:href="@{/staff/products/edit/{id}(id=${product.productId})}"
-                               th:text="${product.productName}"></a>
-                        </td>
+            <span th:each="i : ${#numbers.sequence(currentPage - 2, currentPage + 2)}"
+                  th:if="${i > 1 and i < totalPages}">
+                <a th:href="@{/staff/products/list(page=${i},size=${pageSize},sortField=${sortField},sortDir=${sortDir},brandId=${brandId},categoryId=${categoryId},keyword=${keyword})}"
+                   th:text="${i}"
+                   th:classappend="${i == currentPage} ? 'active'"></a>
+            </span>
 
-                        <td th:text="${product.price}"></td>
-                        <td th:text="${product.status ? 'Còn hàng' : 'Hết hàng'}"></td>
-                        <td th:text="${product.description}"></td>
-                        <td th:text="${product.specification}"></td>
-                    </tr>
-                    </tbody>
-                </table>
+            <span th:if="${currentPage < totalPages - 3}">...</span>
 
-                <!-- Phân trang -->
-                <div class="pagination">
-                    <a th:if="${currentPage > 1}"
-                       th:href="@{/staff/products/list(
-                           page=${currentPage - 1},
-                           size=${pageSize},
-                           sortField=${sortField},
-                           sortDir=${sortDir},
-                           brandId=${brandId},
-                           categoryId=${categoryId},
-                           keyword=${keyword}
-                       )}">&laquo; Trước</a>
+            <a th:if="${totalPages > 1}"
+               th:href="@{/staff/products/list(page=${totalPages},size=${pageSize},sortField=${sortField},sortDir=${sortDir},brandId=${brandId},categoryId=${categoryId},keyword=${keyword})}"
+               th:text="${totalPages}"
+               th:classappend="${currentPage == totalPages} ? 'active'"></a>
 
-                    <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-                        <a th:href="@{/staff/products/list(
-                            page=${i},
-                            size=${pageSize},
-                            sortField=${sortField},
-                            sortDir=${sortDir},
-                            brandId=${brandId},
-                            categoryId=${categoryId},
-                            keyword=${keyword}
-                        )}"
-                           th:text="${i}"
-                           th:classappend="${i == currentPage} ? 'active'"></a>
-                    </span>
-
-                    <a th:if="${currentPage < totalPages}"
-                       th:href="@{/staff/products/list(
-                           page=${currentPage + 1},
-                           size=${pageSize},
-                           sortField=${sortField},
-                           sortDir=${sortDir},
-                           brandId=${brandId},
-                           categoryId=${categoryId},
-                           keyword=${keyword}
-                       )}">Sau &raquo;</a>
-                </div>
-            </div>
-            <!-- ===== END LIST WRAPPER ===== -->
-
+            <a th:if="${currentPage < totalPages}"
+               th:href="@{/staff/products/list(page=${currentPage + 1},size=${pageSize},sortField=${sortField},sortDir=${sortDir},brandId=${brandId},categoryId=${categoryId},keyword=${keyword})}">Sau &raquo;</a>
         </div>
     </div>
 </div>
 
-<!-- AJAX + xử lý Back -->
-<script>
-    function debounce(fn, delay){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), delay); }; }
-
-    const searchInput    = document.getElementById('searchInput');
-    const brandSelect    = document.querySelector('select[name="brandId"]');
-    const categorySelect = document.querySelector('select[name="categoryId"]');
-    const sizeInput      = document.getElementById('sizeInput');
-
-    async function fetchBlock(params){
-        const res  = await fetch(`/staff/products/search-block?${params.toString()}`, { headers:{'X-Requested-With':'fetch'} });
-        const html = await res.text();
-        const wrapper = document.getElementById('listWrapper');
-        wrapper.outerHTML = html;
-
-        // tô đậm từ khóa sau khi thay block
-        const kw = params.get('keyword') || '';
-        if (kw.trim()) highlightMatches(kw.trim());
-    }
-
-    function buildParams(overrides = {}){
-        const qs = new URLSearchParams(window.location.search);
-        const params = new URLSearchParams({
-            keyword:    searchInput?.value || '',
-            brandId:    brandSelect?.value || '',
-            categoryId: categorySelect?.value || '',
-            sortField:  qs.get('sortField') || 'productId',
-            sortDir:    qs.get('sortDir')   || 'asc',
-            page:       '1',
-            size:       sizeInput?.value || qs.get('size') || '8'
-        });
-        Object.entries(overrides).forEach(([k,v]) => { if(v!==undefined && v!==null) params.set(k, v); });
-        ['brandId','categoryId','keyword'].forEach(k=>{ if(!params.get(k)) params.delete(k); });
-        return params;
-    }
-
-    async function doLiveSearch(){
-        const params = buildParams({page:'1'});
-        history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
-        await fetchBlock(params);
-    }
-
-    // click phân trang -> AJAX
-    document.addEventListener('click', async (e)=>{
-        const a = e.target.closest('.pagination a');
-        if(!a) return;
-        e.preventDefault();
-        const url = new URL(a.href, window.location.origin);
-        history.replaceState({}, '', `${location.pathname}${url.search}`);
-        await fetchBlock(new URLSearchParams(url.search));
-        document.getElementById('listWrapper')?.scrollIntoView({behavior:'smooth', block:'start'});
-    });
-
-    // click sort -> AJAX
-    document.addEventListener('click', async (e)=>{
-        const a = e.target.closest('th a');
-        if(!a) return;
-        e.preventDefault();
-        const url = new URL(a.href, window.location.origin);
-        history.replaceState({}, '', `${location.pathname}${url.search}`);
-        await fetchBlock(new URLSearchParams(url.search));
-    });
-
-    // live search & filter change
-    searchInput?.addEventListener('input', debounce(doLiveSearch, 300));
-    brandSelect?.addEventListener('change', doLiveSearch);
-    categorySelect?.addEventListener('change', doLiveSearch);
-
-    // đánh dấu khi rời sang trang chi tiết
-    document.addEventListener('click', (e) => {
-        const toDetail = e.target.closest('a.to-detail');
-        if (toDetail) {
-            sessionStorage.setItem('resetProductListOnBack', '1');
-        }
-    });
-
-    // quay lại bằng Back/bfcache -> xóa từ khóa, về trang 1, nạp lại danh sách
-    window.addEventListener('pageshow', async (event) => {
-        const navEntry = performance.getEntriesByType('navigation')[0];
-        const isBackForward = event.persisted || (navEntry && navEntry.type === 'back_forward');
-        if (isBackForward && sessionStorage.getItem('resetProductListOnBack') === '1') {
-            sessionStorage.removeItem('resetProductListOnBack');
-            if (searchInput) searchInput.value = '';
-            const params = buildParams({ keyword: '', page: '1' });
-            params.delete('keyword');
-            history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
-            await fetchBlock(params);
-        }
-    });
-
-    // highlight từ khóa
-    function highlightMatches(term){
-        const regex = new RegExp(`(${escapeRegExp(term)})`, 'ig');
-        document.querySelectorAll('#productTbody td:nth-child(5) a').forEach(a=>{
-            a.innerHTML = a.textContent.replace(regex, '<mark>$1</mark>');
-        });
-    }
-    function escapeRegExp(str){ return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-</script>
+<script th:src="@{/js/jquery.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
 </body>
 </html>
