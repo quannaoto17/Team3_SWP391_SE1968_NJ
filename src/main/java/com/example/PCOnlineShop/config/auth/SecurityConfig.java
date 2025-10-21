@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/staff/products/**", "/staff/warranty/**", "/staff/orders/**", "/staff/shipping/**").hasAnyRole("STAFF")
                         .requestMatchers("/customer/orders/**").hasRole("CUSTOMER")
                         .requestMatchers("/customer/list/**", "/customer/add/**", "/customer/edit/**", "/customer/view/**", "/customer/delete/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/staff/feedback/**").hasAnyRole("STAFF")
                         .requestMatchers("/build/**").authenticated()
                         .anyRequest().authenticated()
                 )
