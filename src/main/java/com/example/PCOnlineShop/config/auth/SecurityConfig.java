@@ -35,14 +35,13 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/auth/**").permitAll()
+                        .requestMatchers("/", "/home", "/auth/**","/build/**").permitAll()
                         .requestMatchers("/assets/**", "/css/**", "/js/**", "/image/**", "/static/**").permitAll()
                         .requestMatchers("/staff/list/**", "/staff/add/**", "/staff/edit/**", "/staff/view/**", "/staff/delete/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/staff/products/**", "/staff/warranty/**", "/staff/orders/**", "/staff/shipping/**").hasAnyRole("STAFF")
+                        .requestMatchers("/staff/products/**", "/staff/warranty/**", "/staff/orders/**", "/staff/shipping/**").hasAnyRole("STAFF", "ADMIN")
                         .requestMatchers("/customer/orders/**").hasRole("CUSTOMER")
                         .requestMatchers("/customer/list/**", "/customer/add/**", "/customer/edit/**", "/customer/view/**", "/customer/delete/**").hasAnyRole("ADMIN", "STAFF")
                         .requestMatchers("/staff/feedback/**").hasAnyRole("STAFF")
-                        .requestMatchers("/build/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -68,7 +67,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/auth/logout")
                         .logoutSuccessUrl("/auth/login?logout=true")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
