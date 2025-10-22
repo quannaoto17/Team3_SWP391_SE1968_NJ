@@ -202,7 +202,7 @@
             <h2>Role: Staff</h2>
             <nav>
                 <a class="sidebar-link">Category Manage</a>
-                <a class="sidebar-link">Product Manage</a>
+                <a th:href="@{/staff/products/list}" class="sidebar-link">Product Manage</a>
                 <a th:href="@{/staff/warranty/check}" class="sidebar-link">Check Warranty</a>
                 <a th:href="@{/staff/orders/list}" class="sidebar-link">Order Management</a>
                 <a th:href="@{/staff/shipping/list}" class="sidebar-link">Ship Management</a>
@@ -222,7 +222,7 @@
                 <button>Search</button>
             </div>
 
-            <form th:action="@{/auth/login}" method="post">
+            <form th:action="@{/auth/logout}" method="get">
                 <button type="submit" class="logout-btn">Logout</button>
             </form>
         </div>
