@@ -24,7 +24,6 @@
             <select name="status" class="form-select" th:value="${status}">
                 <option value="ALL" th:selected="${status=='ALL'}">All</option>
                 <option value="Allow" th:selected="${status=='Allow'}">Allow</option>
-                <option value="Denied" th:selected="${status=='Denied'}">Denied</option>
             </select>
         </div>
         <div class="col-md-2">
@@ -59,7 +58,6 @@
                 <option value="dateAsc" th:selected="${sort=='dateAsc'}">Date ↑</option>
                 <option value="ratingDesc" th:selected="${sort=='ratingDesc'}">Rating ↓</option>
                 <option value="ratingAsc" th:selected="${sort=='ratingAsc'}">Rating ↑</option>
-                <option value="statusAsc" th:selected="${sort=='statusAsc'}">Status A→Z</option>
             </select>
         </div>
         <div class="col-md-2">
@@ -82,8 +80,8 @@
                 <th style="width:110px">Rating</th>
                 <th style="width:110px">Date</th>
                 <th style="width:110px">Status</th>
-                <th style="width:150px">Change Status</th>
-                <th style="width:100px">Reply</th>
+                <th style="width:120px">Change</th>
+                <th style="width:90px">Reply</th>
             </tr>
             </thead>
             <tbody>
@@ -110,7 +108,6 @@
                     <input type="hidden" name="id" th:value="${fb.feedbackId}">
                     <select class="form-select form-select-sm" name="st">
                         <option value="Allow" th:selected="${fb.commentStatus=='Allow'}">Allow</option>
-                        <option value="Denied" th:selected="${fb.commentStatus=='Denied'}">Denied</option>
                     </select>
                 </td>
                 <td>
@@ -127,21 +124,17 @@
         </table>
 
         <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <button class="btn btn-success" type="submit">Save</button>
-            </div>
+            <button class="btn btn-success" type="submit">Save</button>
             <nav th:if="${data.totalPages>1}">
                 <ul class="pagination mb-0">
                     <li class="page-item" th:classappend="${data.first} ? 'disabled'">
-                        <a class="page-link"
-                           th:href="@{|/staff/feedback?${qs}&page=${data.number-1}|}">Prev</a>
+                        <a class="page-link" th:href="@{|/staff/feedback?${qs}&page=${data.number-1}|}">Prev</a>
                     </li>
                     <li class="page-item disabled">
                         <span class="page-link" th:text="${data.number+1} + ' / ' + ${data.totalPages}"></span>
                     </li>
                     <li class="page-item" th:classappend="${data.last} ? 'disabled'">
-                        <a class="page-link"
-                           th:href="@{|/staff/feedback?${qs}&page=${data.number+1}|}">Next</a>
+                        <a class="page-link" th:href="@{|/staff/feedback?${qs}&page=${data.number+1}|}">Next</a>
                     </li>
                 </ul>
             </nav>
@@ -151,7 +144,7 @@
 
 <script>
     function confirmSave() {
-        return confirm('Xác nhận lưu thay đổi trạng thái?');
+        return confirm('Xác nhận duyệt các feedback (Allow)?');
     }
 </script>
 </body>
