@@ -18,32 +18,49 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
 
+    /**
+     * ✅ Tìm kiếm + lọc feedback
+     * Mặc định: chỉ hiển thị feedback chưa xử lý (commentStatus != 'Allow')
+     */
     @Override
     public Page<Feedback> search(String keyword, String status, Integer rating,
                                  LocalDate from, LocalDate to,
                                  int page, int size, String sortKey) {
 
         Specification<Feedback> spec = (root, query, cb) -> cb.conjunction();
-        spec = spec.and(FeedbackSpecs.keyword(keyword));
 
-        // chỉ hiển thị feedback chưa xử lý (chưa reply hoặc chưa Allow)
-        spec = spec.and((root, query, cb) ->
-                cb.or(cb.isNull(root.get("reply")),
-                        cb.notEqual(root.get("commentStatus"), "Allow"))
-        );
+        // 🔍 Tìm theo keyword
+        if (keyword != null && !keyword.isBlank()) {
+            spec = spec.and(FeedbackSpecs.keyword(keyword));
+        }
 
-        if (rating != null && rating > 0)
+        // 🟢 Lọc theo status
+        if (status != null && !"ALL".equalsIgnoreCase(status)) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("commentStatus"), status));
+        } else {
+            // ✅ Mặc định chỉ hiện feedback chưa xử lý (chưa Allow)
+            spec = spec.and((root, query, cb) ->
+                    cb.notEqual(root.get("commentStatus"), "Allow"));
+        }
+
+        // ⭐ Lọc theo rating
+        if (rating != null && rating > 0) {
             spec = spec.and(FeedbackSpecs.rating(rating));
-        if (from != null)
-            spec = spec.and(FeedbackSpecs.dateFrom(from));
-        if (to != null)
-            spec = spec.and(FeedbackSpecs.dateTo(to));
+        }
 
+        // 📅 Lọc theo ngày
+        if (from != null) spec = spec.and(FeedbackSpecs.dateFrom(from));
+        if (to != null) spec = spec.and(FeedbackSpecs.dateTo(to));
+
+        // 🔽 Sắp xếp
         Sort sort = toSort(sortKey);
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1), sort);
+
         return feedbackRepository.findAll(spec, pageable);
     }
 
+    /** 🔽 Sắp xếp linh hoạt */
     private Sort toSort(String key) {
         if (key == null) key = "dateDesc";
         return switch (key) {
@@ -54,21 +71,25 @@ public class FeedbackServiceImpl implements FeedbackService {
         };
     }
 
+    /** 📦 Lấy feedback theo ID */
     @Override
     public Feedback get(Integer id) {
         return feedbackRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Feedback không tồn tại: " + id));
     }
 
+    /** ✉ Cập nhật hoặc thêm reply => tự động Allow */
     @Override
     @Transactional
     public void updateReply(Integer id, String reply) {
         Feedback fb = get(id);
         fb.setReply(reply == null ? null : reply.trim());
-        fb.setCommentStatus("Allow"); // sau khi reply → tự động duyệt
+        fb.setCommentStatus("Allow"); // sau khi reply thì duyệt luôn
         feedbackRepository.save(fb);
     }
 
+    /** 🔄 Cập nhật trạng thái riêng lẻ */
+    @Override
     @Transactional
     public void updateStatus(Integer id, String status) {
         Feedback fb = get(id);
@@ -76,10 +97,12 @@ public class FeedbackServiceImpl implements FeedbackService {
         feedbackRepository.save(fb);
     }
 
+    /** ✅ Cập nhật hàng loạt (bulk update) */
     @Override
     @Transactional
     public void bulkUpdateStatus(Map<Integer, String> idToStatus) {
         if (idToStatus == null || idToStatus.isEmpty()) return;
+
         idToStatus.forEach((id, st) -> {
             if ("Allow".equalsIgnoreCase(st)) {
                 Feedback fb = get(id);
