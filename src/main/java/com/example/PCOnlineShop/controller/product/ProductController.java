@@ -300,7 +300,7 @@ public class ProductController {
 
         upsertSpec(updated, categoryId, params, false);
 
-        return "redirect:/staff/products/edit/" + updated.getProductId();
+        return "redirect:/staff/products/list" ;
     }
 
     // ===== NEW FEATURE: XÓA ẢNH NGAY (AJAX) =====
