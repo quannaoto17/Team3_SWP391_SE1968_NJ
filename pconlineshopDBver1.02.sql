@@ -252,7 +252,9 @@ CREATE TABLE feedback (
     account_id INT NOT NULL,
     product_id INT NOT NULL,
     comment VARCHAR(500),
-    comment_status VARCHAR(50),
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    comment_status VARCHAR(50),        -- Allow / Pending
+    reply VARCHAR(500) NULL,           -- Staff trả lời
     created_at DATE DEFAULT (CURRENT_DATE),
     FOREIGN KEY (account_id) REFERENCES account(account_id),
     FOREIGN KEY (product_id) REFERENCES product(product_id)
