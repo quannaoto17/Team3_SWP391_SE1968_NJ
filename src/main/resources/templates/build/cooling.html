@@ -82,6 +82,7 @@
             <div class="product-grid">
                 <div th:each="cl : ${coolings}"
                      class="product-card"
+                     th:classappend="${buildItems.cooling?.product?.productId == cl.product.productId} ? 'selected' : ''"
                      th:attr="data-id=${cl.product.productId}"
                      th:data-name="${cl.product.productName}"
                      th:data-type="${cl.type}"

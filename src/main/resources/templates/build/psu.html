@@ -84,6 +84,7 @@
             <div class="product-grid">
                 <div th:each="psu : ${psus}"
                      class="product-card"
+                     th:classappend="${buildItems.psu?.product?.productId == psu.product.productId} ? 'selected' : ''"
                      th:attr="data-id=${psu.product.productId}"
                      th:data-name="${psu.product.productName}"
                      th:data-wattage="${psu.wattage}">

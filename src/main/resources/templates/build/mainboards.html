@@ -85,6 +85,7 @@
             <div class="product-grid">
                 <div th:each="mb : ${mainboards}"
                      class="product-card"
+                     th:classappend="${buildItems.mainboard?.product?.productId == mb.product.productId} ? 'selected' : ''"
                      th:attr="data-id=${mb.product.productId}"
                      th:data-name="${mb.product.productName}"
                      th:data-socket="${mb.socket}"

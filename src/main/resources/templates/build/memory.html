@@ -84,6 +84,7 @@
             <div class="product-grid">
                 <div th:each="memory : ${memories}"
                      class="product-card"
+                     th:classappend="${buildItems.memory?.product?.productId == memory.product.productId} ? 'selected' : ''"
                      th:attr="data-id=${memory.product.productId}"
                      th:data-name="${memory.product.productName}"
                      th:data-type="${memory.type}"

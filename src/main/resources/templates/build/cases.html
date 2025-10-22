@@ -84,6 +84,7 @@
             <div class="product-grid">
                 <div th:each="case : ${cases}"
                      class="product-card"
+                     th:classappend="${buildItems.case?.product?.productId == case.productId} ? 'selected' : ''"
                      th:attr="data-id=${case.productId}"
                      th:data-name="${case.product.productName}"
                      th:data-formfactor="${case.formFactor}"

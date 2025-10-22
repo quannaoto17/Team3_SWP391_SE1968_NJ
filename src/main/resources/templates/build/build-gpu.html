@@ -84,6 +84,7 @@
             <div class="product-grid">
                 <div th:each="gpu : ${gpus}"
                      class="product-card"
+                     th:classappend="${buildItems.gpu?.product?.productId == gpu.productId} ? 'selected' : ''"
                      th:attr="data-id=${gpu.productId}"
                      th:data-name="${gpu.product.productName}"
                      th:data-pcie="${gpu.pcieVersion}"
