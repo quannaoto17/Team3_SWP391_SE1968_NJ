@@ -23,6 +23,7 @@ public class FeedbackController {
 
     private final FeedbackService feedbackService;
 
+    /** Danh sách feedback chưa xử lý */
     @GetMapping
     public String list(
             @RequestParam(required = false) String keyword,
@@ -46,12 +47,12 @@ public class FeedbackController {
         model.addAttribute("size", size);
         model.addAttribute("sort", sort);
 
-        // build qs để giữ filter khi chuyển trang / quay về
         String qs = buildQS(keyword, status, rating, from, to, size, sort);
         model.addAttribute("qs", qs);
         return "feedback/feedback-list";
     }
 
+    /** Cập nhật Allow hàng loạt */
     @PostMapping("/bulk-status")
     public String bulkStatus(@RequestParam("id") Integer[] ids,
                              @RequestParam("st") String[] statuses,
@@ -60,35 +61,35 @@ public class FeedbackController {
         Map<Integer, String> payload = new HashMap<>();
         for (int i = 0; i < ids.length; i++) payload.put(ids[i], statuses[i]);
         feedbackService.bulkUpdateStatus(payload);
-        ra.addFlashAttribute("msg", "Đã lưu thay đổi trạng thái.");
+        ra.addFlashAttribute("msg", "Đã duyệt phản hồi (Allow).");
         return "redirect:/staff/feedback" + (qs == null ? "" : ("?" + qs));
     }
 
+    /** Mở trang detail để reply */
     @GetMapping("/{id}")
     public String detail(@PathVariable Integer id,
-                         @RequestParam(required = false) String back, // chuỗi query quay lại list
+                         @RequestParam(required = false) String back,
                          Model model) {
         Feedback fb = feedbackService.get(id);
         model.addAttribute("fb", fb);
-        model.addAttribute("back", back); // có thể null
+        model.addAttribute("back", back);
         return "feedback/feedback-detail";
     }
 
+    /** Gửi hoặc cập nhật reply */
     @PostMapping("/{id}/reply")
     public String reply(@PathVariable Integer id,
                         @RequestParam String reply,
                         @RequestParam(required = false) String back,
                         RedirectAttributes ra) {
         feedbackService.updateReply(id, reply);
-        ra.addFlashAttribute("msg", "Đã cập nhật phản hồi.");
-        // yêu cầu: reply xong → về lại list
-        String target = (back == null || back.isBlank()) ? "/staff/feedback" : ("/staff/feedback?" + back);
-        return "redirect:" + target;
+        feedbackService.updateStatus(id, "Allow"); // Tự động chuyển Allow sau khi reply
+        ra.addFlashAttribute("msg", "Đã phản hồi và duyệt feedback.");
+        return "redirect:/staff/feedback";
     }
 
     private String buildQS(String keyword, String status, Integer rating,
                            LocalDate from, LocalDate to, int size, String sort) {
-        String enc = StandardCharsets.UTF_8.name();
         StringBuilder sb = new StringBuilder();
         if (keyword != null && !keyword.isBlank())
             sb.append("keyword=").append(URLEncoder.encode(keyword, StandardCharsets.UTF_8)).append("&");

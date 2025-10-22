@@ -24,13 +24,20 @@ public class FeedbackServiceImpl implements FeedbackService {
                                  int page, int size, String sortKey) {
 
         Specification<Feedback> spec = (root, query, cb) -> cb.conjunction();
+        spec = spec.and(FeedbackSpecs.keyword(keyword));
 
-        spec = spec.and(FeedbackSpecs.keyword(keyword))
-                .and(FeedbackSpecs.status(status))
-                .and(FeedbackSpecs.rating(rating))
-                .and(FeedbackSpecs.dateFrom(from))
-                .and(FeedbackSpecs.dateTo(to));
+        // chỉ hiển thị feedback chưa xử lý (chưa reply hoặc chưa Allow)
+        spec = spec.and((root, query, cb) ->
+                cb.or(cb.isNull(root.get("reply")),
+                        cb.notEqual(root.get("commentStatus"), "Allow"))
+        );
 
+        if (rating != null && rating > 0)
+            spec = spec.and(FeedbackSpecs.rating(rating));
+        if (from != null)
+            spec = spec.and(FeedbackSpecs.dateFrom(from));
+        if (to != null)
+            spec = spec.and(FeedbackSpecs.dateTo(to));
 
         Sort sort = toSort(sortKey);
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1), sort);
@@ -38,14 +45,12 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     private Sort toSort(String key) {
-        // mặc định: newest first
         if (key == null) key = "dateDesc";
         return switch (key) {
             case "dateAsc" -> Sort.by("createdAt").ascending();
             case "ratingDesc" -> Sort.by(Sort.Order.desc("rating"), Sort.Order.desc("createdAt"));
             case "ratingAsc" -> Sort.by(Sort.Order.asc("rating"), Sort.Order.desc("createdAt"));
-            case "statusAsc" -> Sort.by(Sort.Order.asc("commentStatus"), Sort.Order.desc("createdAt"));
-            default -> Sort.by("createdAt").descending(); // dateDesc
+            default -> Sort.by("createdAt").descending();
         };
     }
 
@@ -60,6 +65,14 @@ public class FeedbackServiceImpl implements FeedbackService {
     public void updateReply(Integer id, String reply) {
         Feedback fb = get(id);
         fb.setReply(reply == null ? null : reply.trim());
+        fb.setCommentStatus("Allow"); // sau khi reply → tự động duyệt
+        feedbackRepository.save(fb);
+    }
+
+    @Transactional
+    public void updateStatus(Integer id, String status) {
+        Feedback fb = get(id);
+        fb.setCommentStatus(status);
         feedbackRepository.save(fb);
     }
 
@@ -68,9 +81,11 @@ public class FeedbackServiceImpl implements FeedbackService {
     public void bulkUpdateStatus(Map<Integer, String> idToStatus) {
         if (idToStatus == null || idToStatus.isEmpty()) return;
         idToStatus.forEach((id, st) -> {
-            Feedback fb = get(id);
-            fb.setCommentStatus(st);
-            feedbackRepository.save(fb);
+            if ("Allow".equalsIgnoreCase(st)) {
+                Feedback fb = get(id);
+                fb.setCommentStatus("Allow");
+                feedbackRepository.save(fb);
+            }
         });
     }
 }

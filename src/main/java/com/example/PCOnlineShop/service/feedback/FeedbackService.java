@@ -14,6 +14,6 @@ public interface FeedbackService {
     Feedback get(Integer id);
 
     void updateReply(Integer id, String reply);
-
+    void updateStatus(Integer id, String status);
     void bulkUpdateStatus(Map<Integer, String> idToStatus);
 }
