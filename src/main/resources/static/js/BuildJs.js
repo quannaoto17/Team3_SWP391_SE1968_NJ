@@ -57,12 +57,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // detail fields (optional on some pages)
     const detailName = document.getElementById("detailName");
+    // Mainboard & CPU fields
     const detailSocket = document.getElementById("detailSocket");
     const detailRAM = document.getElementById("detailRAM");
     const detailForm = document.getElementById("detailForm");
     const detailChipset = document.getElementById("detailChipset");
     const detailTdp = document.getElementById("detailTdp");
     const detailIGPU = document.getElementById("detailIGPU");
+    // GPU fields
+    const detailPCIe = document.getElementById("detailPCIe");
+    const detailVRAM = document.getElementById("detailVRAM");
+    // Case fields
+    const detailFormFactor = document.getElementById("detailFormFactor");
+    const detailGpuLength = document.getElementById("detailGpuLength");
+    const detailCpuHeight = document.getElementById("detailCpuHeight");
+    const detailPsuLength = document.getElementById("detailPsuLength");
+    // Cooling fields
+    const detailType = document.getElementById("detailType");
+    const detailFanSize = document.getElementById("detailFanSize");
+    const detailTDP = document.getElementById("detailTDP");
+    // Memory & Storage fields
+    const detailCapacity = document.getElementById("detailCapacity");
+    // PSU fields
+    const detailWattage = document.getElementById("detailWattage");
 
     // delegate clicks from document level for product-card
     document.addEventListener('click', function (e) {
@@ -76,7 +93,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // id and attributes
         const id = card.getAttribute('data-id');
         const name = card.getAttribute('data-name');
-        const socket = card.getAttribute('data-socket');
 
         // set hidden input in same form (preferred)
         const hiddenInput = findHiddenInputForCard(card);
@@ -85,14 +101,72 @@ document.addEventListener("DOMContentLoaded", function () {
         // parse price (data-price preferred)
         const currentProductPrice = parsePriceFromCard(card) || 0;
 
-        // update detail panel if present
+        // update detail panel - name is common for all
         if (detailName) detailName.innerText = name || '';
-        if (detailSocket) detailSocket.innerText = socket ? ('Socket: ' + socket) : '';
-        if (detailRAM) detailRAM.innerText = 'RAM: ' + (card.getAttribute('data-ramtype') || '');
-        if (detailForm) detailForm.innerText = 'Form Factor: ' + (card.getAttribute('data-formfactor') || '');
-        if (detailChipset) detailChipset.innerText = 'Chipset: ' + (card.getAttribute('data-chipset') || '');
-        if (detailTdp) detailTdp.innerText = 'TDP: ' + (card.getAttribute('data-tdp') || '');
-        if (detailIGPU) detailIGPU.innerText = 'IGPU: ' + ((card.getAttribute('data-igpu') === 'true') ? 'Yes' : 'No');
+
+        // Mainboard & CPU specific
+        if (detailSocket) {
+            const socket = card.getAttribute('data-socket');
+            detailSocket.innerText = socket ? ('Socket: ' + socket) : 'Socket: ...';
+        }
+        if (detailRAM) {
+            detailRAM.innerText = 'RAM: ' + (card.getAttribute('data-ramtype') || '...');
+        }
+        if (detailForm) {
+            detailForm.innerText = 'Form Factor: ' + (card.getAttribute('data-formfactor') || '...');
+        }
+        if (detailChipset) {
+            detailChipset.innerText = 'Chipset: ' + (card.getAttribute('data-chipset') || '...');
+        }
+        if (detailTdp) {
+            detailTdp.innerText = 'TDP: ' + (card.getAttribute('data-tdp') || '...');
+        }
+        if (detailIGPU) {
+            detailIGPU.innerText = 'IGPU: ' + ((card.getAttribute('data-igpu') === 'true') ? 'Yes' : 'No');
+        }
+
+        // GPU specific
+        if (detailPCIe) {
+            detailPCIe.innerText = 'PCIe: ' + (card.getAttribute('data-pcie') || '...');
+        }
+        if (detailVRAM) {
+            detailVRAM.innerText = 'VRAM: ' + (card.getAttribute('data-vram') || '...') + ' GB';
+        }
+
+        // Case specific
+        if (detailFormFactor) {
+            detailFormFactor.innerText = 'Form Factor: ' + (card.getAttribute('data-formfactor') || '...');
+        }
+        if (detailGpuLength) {
+            detailGpuLength.innerText = 'GPU Max Length: ' + (card.getAttribute('data-gpumaxlength') || '...') + 'mm';
+        }
+        if (detailCpuHeight) {
+            detailCpuHeight.innerText = 'CPU Cooler Max Height: ' + (card.getAttribute('data-cpumaxheight') || '...') + 'mm';
+        }
+        if (detailPsuLength) {
+            detailPsuLength.innerText = 'PSU Max Length: ' + (card.getAttribute('data-psumaxlength') || '...') + 'mm';
+        }
+
+        // Cooling specific
+        if (detailType) {
+            detailType.innerText = 'Type: ' + (card.getAttribute('data-type') || '...');
+        }
+        if (detailFanSize) {
+            detailFanSize.innerText = 'Fan Size: ' + (card.getAttribute('data-fansize') || '...');
+        }
+        if (detailTDP) {
+            detailTDP.innerText = 'TDP: ' + (card.getAttribute('data-tdp') || '...');
+        }
+
+        // Memory & Storage specific
+        if (detailCapacity) {
+            detailCapacity.innerText = 'Capacity: ' + (card.getAttribute('data-capacity') || '...') + 'GB';
+        }
+
+        // PSU specific
+        if (detailWattage) {
+            detailWattage.innerText = 'Wattage: ' + (card.getAttribute('data-wattage') || '...') + 'W';
+        }
 
         // update temporary total display (originalTotalPrice + currentProductPrice)
         if (priceTotal) {
@@ -128,6 +202,49 @@ document.addEventListener("DOMContentLoaded", function () {
         closeFilterBtn.onclick = () => {
             filterPopup.style.display = 'none';
         };
+    }
+
+    // ===============================
+    // Overview Popup Handling
+    // ===============================
+    const openOverviewBtn = document.getElementById("openOverviewBtn");
+    const overviewPopup = document.getElementById("overviewPopup");
+    const closeOverviewBtn = document.getElementById("closeOverviewBtn");
+    const closeOverviewFooterBtn = document.getElementById("closeOverviewFooterBtn");
+
+    // Open overview popup
+    if (openOverviewBtn && overviewPopup) {
+        openOverviewBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            overviewPopup.style.display = "flex";
+            console.log("✅ Overview popup opened");
+        });
+    }
+
+    // Close overview popup - X button
+    if (closeOverviewBtn && overviewPopup) {
+        closeOverviewBtn.addEventListener("click", function() {
+            overviewPopup.style.display = "none";
+            console.log("✅ Overview popup closed");
+        });
+    }
+
+    // Close overview popup - Close button in footer
+    if (closeOverviewFooterBtn && overviewPopup) {
+        closeOverviewFooterBtn.addEventListener("click", function() {
+            overviewPopup.style.display = "none";
+            console.log("✅ Overview popup closed via footer button");
+        });
+    }
+
+    // Close overview popup when clicking outside
+    if (overviewPopup) {
+        overviewPopup.addEventListener("click", function(e) {
+            if (e.target === overviewPopup) {
+                overviewPopup.style.display = "none";
+                console.log("✅ Overview popup closed by clicking outside");
+            }
+        });
     }
 
     // If needed, recalc originalTotalPrice whenever server re-renders or other changes appear. We keep one-time read for now.

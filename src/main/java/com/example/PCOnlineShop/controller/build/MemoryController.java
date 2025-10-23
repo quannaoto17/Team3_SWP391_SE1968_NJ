@@ -28,8 +28,9 @@ public class MemoryController {
 
     @GetMapping("/memory")
     public String showMemoryPage(@ModelAttribute("buildItems") BuildItemDto buildItem, Model model) {
-        model.addAttribute("memories", buildService.getCompatibleMemory(buildItem));
-        model.addAttribute("allBrands", memoryService.getAllBrands());
+        List<Memory> memories = buildService.getCompatibleMemory(buildItem);
+        model.addAttribute("memories", memories);
+        model.addAttribute("allBrands", memoryService.getAllBrands(memories));
         return "/build/memory";
     }
 
@@ -44,7 +45,7 @@ public class MemoryController {
         memories = memoryService.filterMemories(memories, filters, sortBy);
 
         model.addAttribute("memories", memories);
-        model.addAttribute("allBrands", memoryService.getAllBrands());
+        model.addAttribute("allBrands", memoryService.getAllBrands(buildService.getCompatibleMemory(buildItem)));
         model.addAttribute("selectedBrands", brands);
         model.addAttribute("selectedSort", sortBy);
         return "/build/memory";

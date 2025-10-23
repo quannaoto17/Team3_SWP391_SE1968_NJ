@@ -3,7 +3,6 @@ package com.example.PCOnlineShop.service.build;
 import com.example.PCOnlineShop.model.build.Storage;
 import com.example.PCOnlineShop.model.product.Brand;
 import com.example.PCOnlineShop.repository.build.StorageRepository;
-import com.example.PCOnlineShop.repository.product.BrandRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class StorageService {
     private StorageRepository storageRepository;
-    private final BrandRepository brandRepository;
 
     public Storage getStorageById(int id) {
         return storageRepository.findById(id).orElse(null);
@@ -73,7 +71,10 @@ public class StorageService {
         return storages;
     }
 
-    public List<Brand> getAllBrands() {
-        return brandRepository.findAll();
+    public List<Brand> getAllBrands(List<Storage> storages) {
+        return storages.stream()
+                .map(storage -> storage.getProduct().getBrand())
+                .distinct()
+                .toList();
     }
 }

@@ -3,7 +3,6 @@ package com.example.PCOnlineShop.service.build;
 import com.example.PCOnlineShop.model.build.PowerSupply;
 import com.example.PCOnlineShop.model.product.Brand;
 import com.example.PCOnlineShop.repository.build.PowerSupplyRepository;
-import com.example.PCOnlineShop.repository.product.BrandRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class PowerSupplyService {
     private PowerSupplyRepository powerSupplyRepository;
-    private final BrandRepository brandRepository;
 
     public List<PowerSupply> getAllPowerSupply() {
         return powerSupplyRepository.findAll();
@@ -72,7 +70,10 @@ public class PowerSupplyService {
         return powerSupplies;
     }
 
-    public List<Brand> getAllBrands() {
-        return brandRepository.findAll();
+    public List<Brand> getAllBrands(List<PowerSupply> powerSupplies) {
+        return powerSupplies.stream()
+                .map(psu -> psu.getProduct().getBrand())
+                .distinct()
+                .toList();
     }
 }

@@ -2,7 +2,6 @@ package com.example.PCOnlineShop.service.build;
 import com.example.PCOnlineShop.model.build.CPU;
 import com.example.PCOnlineShop.model.product.Brand;
 import com.example.PCOnlineShop.repository.build.CpuRepository;
-import com.example.PCOnlineShop.repository.product.BrandRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,6 @@ import java.util.Map;
 @Service
 public class CpuService {
     private final CpuRepository cpuRepository;
-    private final BrandRepository brandRepository;
 
     public List<CPU> getAllCpus() {
         return cpuRepository.findAll();
@@ -71,7 +69,10 @@ public class CpuService {
         return cpus;
     }
 
-    public List<Brand> getAllBrands() {
-        return brandRepository.findAll();
+    public List<Brand> getAllBrands(List<CPU> cpus) {
+        return cpus.stream()
+                .map(cpu -> cpu.getProduct().getBrand())
+                .distinct()
+                .toList();
     }
 }
