@@ -3,7 +3,6 @@ package com.example.PCOnlineShop.service.build;
 import com.example.PCOnlineShop.model.build.Cooling;
 import com.example.PCOnlineShop.model.product.Brand;
 import com.example.PCOnlineShop.repository.build.CoolingRepository;
-import com.example.PCOnlineShop.repository.product.BrandRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,6 @@ import java.util.Map;
 @Service
 public class CoolingService {
     private CoolingRepository coolingRepository;
-    private final BrandRepository brandRepository;
 
     public List<Cooling> getCoolings()
     {
@@ -74,7 +72,10 @@ public class CoolingService {
         return coolings;
     }
 
-    public List<Brand> getAllBrands() {
-        return brandRepository.findAll();
+    public List<Brand> getAllBrands(List<Cooling> coolings) {
+        return coolings.stream()
+                .map(cooling -> cooling.getProduct().getBrand())
+                .distinct()
+                .toList();
     }
 }

@@ -28,8 +28,9 @@ public class StorageController {
 
     @GetMapping("/storage")
     public String showStoragePage(@ModelAttribute("buildItems") BuildItemDto buildItem, Model model) {
-        model.addAttribute("storages", buildService.getCompatibleStorage(buildItem));
-        model.addAttribute("allBrands", storageService.getAllBrands());
+        List<Storage> storages = buildService.getCompatibleStorage(buildItem);
+        model.addAttribute("storages", storages);
+        model.addAttribute("allBrands", storageService.getAllBrands(storages));
         return "/build/storage";
     }
 
@@ -44,7 +45,7 @@ public class StorageController {
         storages = storageService.filterStorages(storages, filters, sortBy);
 
         model.addAttribute("storages", storages);
-        model.addAttribute("allBrands", storageService.getAllBrands());
+        model.addAttribute("allBrands", storageService.getAllBrands(buildService.getCompatibleStorage(buildItem)));
         model.addAttribute("selectedBrands", brands);
         model.addAttribute("selectedSort", sortBy);
         return "/build/storage";

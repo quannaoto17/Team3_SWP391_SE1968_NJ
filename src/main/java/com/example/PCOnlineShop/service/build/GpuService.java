@@ -3,7 +3,6 @@ package com.example.PCOnlineShop.service.build;
 import com.example.PCOnlineShop.model.build.GPU;
 import com.example.PCOnlineShop.model.product.Brand;
 import com.example.PCOnlineShop.repository.build.GpuRepository;
-import com.example.PCOnlineShop.repository.product.BrandRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,6 @@ import java.util.Map;
 @Service
 public class GpuService {
     private  GpuRepository gpuRepository;
-    private final BrandRepository brandRepository;
 
     public List<GPU> getAllGpu() {
         return gpuRepository.findAll();
@@ -72,7 +70,10 @@ public class GpuService {
         return gpus;
     }
 
-    public List<Brand> getAllBrands() {
-        return brandRepository.findAll();
+    public List<Brand> getAllBrands(List<GPU> gpus) {
+        return gpus.stream()
+                .map(gpu -> gpu.getProduct().getBrand())
+                .distinct()
+                .toList();
     }
 }

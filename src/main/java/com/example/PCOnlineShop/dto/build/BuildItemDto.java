@@ -33,7 +33,7 @@ public class BuildItemDto {
         if (powerSupply != null) total += powerSupply.getPrice();
         if (pcCase != null) total += pcCase.getPrice();
         if (cooling != null) total += cooling.getPrice();
-        if (other != null) total += other.getPrice();
+        if (other != null) total += other.getPrice(); // Other has direct price field
         return total;
     }
 }

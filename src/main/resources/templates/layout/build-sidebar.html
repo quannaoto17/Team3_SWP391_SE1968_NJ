@@ -1,0 +1,86 @@
+<!-- Fragment: buildSidebar -->
+<div th:fragment="buildSidebar(currentSection)">
+    <div class="sidebar">
+        <h2>Auto Build</h2>
+        <ul>
+            <li th:classappend="${currentSection}=='mainboard' ? 'active' : ''"><a th:href="@{/build/mainboard}">MainBoard</a></li>
+            <li th:classappend="${currentSection}=='cpu' ? 'active' : ''"><a th:href="@{/build/cpu}">CPU</a></li>
+            <li th:classappend="${currentSection}=='gpu' ? 'active' : ''"><a th:href="@{/build/gpu}">GPU</a></li>
+            <li th:classappend="${currentSection}=='case' ? 'active' : ''"><a th:href="@{/build/case}">Case</a></li>
+            <li th:classappend="${currentSection}=='cooling' ? 'active' : ''"><a th:href="@{/build/cooling}">Cooling</a></li>
+            <li th:classappend="${currentSection}=='memory' ? 'active' : ''"><a th:href="@{/build/memory}">Memory</a></li>
+            <li th:classappend="${currentSection}=='storage' ? 'active' : ''"><a th:href="@{/build/storage}">Storage</a></li>
+            <li th:classappend="${currentSection}=='psu' ? 'active' : ''"><a th:href="@{/build/psu}">PSU</a></li>
+            <li th:classappend="${currentSection}=='other' ? 'active' : ''"><a th:href="@{/build/other}">Other</a></li>
+        </ul>
+        <button class="overview-btn" id="openOverviewBtn">Overview</button>
+        <a th:href="@{/build/startover}">Start over</a>
+    </div>
+
+    <!-- Overview Popup -->
+    <div id="overviewPopup" class="overview-popup" style="display: none;">
+        <div class="overview-popup-content">
+            <div class="overview-header">
+                <h2>Build Overview</h2>
+                <button class="close-overview" id="closeOverviewBtn">&times;</button>
+            </div>
+            <div class="overview-body">
+                <div class="overview-section">
+                    <div class="overview-item">
+                        <span class="overview-label">Mainboard:</span>
+                        <span class="overview-value" th:text="${buildItems.mainboard != null ? buildItems.mainboard.product.productName : 'Not selected'}">Not selected</span>
+                        <span class="overview-price" th:if="${buildItems.mainboard != null}" th:text="'$' + ${buildItems.mainboard.product.price}"></span>
+                    </div>
+                    <div class="overview-item">
+                        <span class="overview-label">CPU:</span>
+                        <span class="overview-value" th:text="${buildItems.cpu != null ? buildItems.cpu.product.productName : 'Not selected'}">Not selected</span>
+                        <span class="overview-price" th:if="${buildItems.cpu != null}" th:text="'$' + ${buildItems.cpu.product.price}"></span>
+                    </div>
+                    <div class="overview-item">
+                        <span class="overview-label">GPU:</span>
+                        <span class="overview-value" th:text="${buildItems.gpu != null ? buildItems.gpu.product.productName : 'Not selected'}">Not selected</span>
+                        <span class="overview-price" th:if="${buildItems.gpu != null}" th:text="'$' + ${buildItems.gpu.product.price}"></span>
+                    </div>
+                    <div class="overview-item">
+                        <span class="overview-label">Case:</span>
+                        <span class="overview-value" th:text="${buildItems.pcCase != null ? buildItems.pcCase.product.productName : 'Not selected'}">Not selected</span>
+                        <span class="overview-price" th:if="${buildItems.pcCase != null}" th:text="'$' + ${buildItems.pcCase.product.price}"></span>
+                    </div>
+                    <div class="overview-item">
+                        <span class="overview-label">Cooling:</span>
+                        <span class="overview-value" th:text="${buildItems.cooling != null ? buildItems.cooling.product.productName : 'Not selected'}">Not selected</span>
+                        <span class="overview-price" th:if="${buildItems.cooling != null}" th:text="'$' + ${buildItems.cooling.product.price}"></span>
+                    </div>
+                    <div class="overview-item">
+                        <span class="overview-label">Memory:</span>
+                        <span class="overview-value" th:text="${buildItems.memory != null ? buildItems.memory.product.productName : 'Not selected'}">Not selected</span>
+                        <span class="overview-price" th:if="${buildItems.memory != null}" th:text="'$' + ${buildItems.memory.product.price}"></span>
+                    </div>
+                    <div class="overview-item">
+                        <span class="overview-label">Storage:</span>
+                        <span class="overview-value" th:text="${buildItems.storage != null ? buildItems.storage.product.productName : 'Not selected'}">Not selected</span>
+                        <span class="overview-price" th:if="${buildItems.storage != null}" th:text="'$' + ${buildItems.storage.product.price}"></span>
+                    </div>
+                    <div class="overview-item">
+                        <span class="overview-label">PSU:</span>
+                        <span class="overview-value" th:text="${buildItems.powerSupply != null ? buildItems.powerSupply.product.productName : 'Not selected'}">Not selected</span>
+                        <span class="overview-price" th:if="${buildItems.powerSupply != null}" th:text="'$' + ${buildItems.powerSupply.product.price}"></span>
+                    </div>
+                    <div class="overview-item">
+                        <span class="overview-label">Other:</span>
+                        <span class="overview-value" th:text="${buildItems.other != null ? buildItems.other.name : 'Not selected'}">Not selected</span>
+                        <span class="overview-price" th:if="${buildItems.other != null}" th:text="'$' + ${buildItems.other.price}"></span>
+                    </div>
+                </div>
+                <div class="overview-total">
+                    <span class="overview-total-label">Total Price:</span>
+                    <span class="overview-total-price" th:text="'$' + ${buildItems.calculateTotalPrice()}">$0</span>
+                </div>
+            </div>
+            <div class="overview-footer">
+                <button class="btn-secondary" id="closeOverviewFooterBtn">Close</button>
+                <a th:href="@{/build/finish}" class="btn-primary">Finish Build</a>
+            </div>
+        </div>
+    </div>
+</div>

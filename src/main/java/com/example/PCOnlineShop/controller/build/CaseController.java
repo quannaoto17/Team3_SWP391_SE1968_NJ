@@ -31,8 +31,9 @@ public class CaseController {
 
     @GetMapping("/case")
     public String showCases(Model model, @ModelAttribute("buildItems") BuildItemDto buildItem) {
-        model.addAttribute("cases", buildService.getCompatibleCases(buildItem));
-        model.addAttribute("allBrands", caseService.getAllBrands());
+        List<Case> cases = buildService.getCompatibleCases(buildItem);
+        model.addAttribute("cases", cases);
+        model.addAttribute("allBrands", caseService.getAllBrands(cases));
         return "build/cases";
     }
 
@@ -47,7 +48,7 @@ public class CaseController {
         cases = caseService.filterCases(cases, filters, sortBy);
 
         model.addAttribute("cases", cases);
-        model.addAttribute("allBrands", caseService.getAllBrands());
+        model.addAttribute("allBrands", caseService.getAllBrands(buildService.getCompatibleCases(buildItem)));
         model.addAttribute("selectedBrands", brands);
         model.addAttribute("selectedSort", sortBy);
         return "build/cases";

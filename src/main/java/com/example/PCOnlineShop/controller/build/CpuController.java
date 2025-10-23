@@ -29,8 +29,9 @@ public class CpuController {
     // Hiển thị danh sách CPU
     @GetMapping("/cpu")
     public String showCpuPage(@ModelAttribute("buildItems") BuildItemDto buildItem, Model model) {
-        model.addAttribute("cpus", buildService.getCompatibleCpus(buildItem));
-        model.addAttribute("allBrands", cpuService.getAllBrands());
+        List<CPU> cpus = buildService.getCompatibleCpus(buildItem);
+        model.addAttribute("cpus", cpus);
+        model.addAttribute("allBrands", cpuService.getAllBrands(cpus));
         return "/build/build-cpu";
     }
 
@@ -46,7 +47,7 @@ public class CpuController {
         cpus = cpuService.filterCpus(cpus, filters, sortBy);
 
         model.addAttribute("cpus", cpus);
-        model.addAttribute("allBrands", cpuService.getAllBrands());
+        model.addAttribute("allBrands", cpuService.getAllBrands(buildService.getCompatibleCpus(buildItem)));
         model.addAttribute("selectedBrands", brands);
         model.addAttribute("selectedSort", sortBy);
         return "/build/build-cpu";

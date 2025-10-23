@@ -30,7 +30,7 @@ public class MainboardController {
     @GetMapping("/mainboard")
     public String showMainboardPage(@ModelAttribute("buildItems") BuildItemDto buildItem, Model model) {
         model.addAttribute("mainboards", buildService.getCompatibleMainboards(buildItem));
-        model.addAttribute("allBrands", mainboardService.getAllBrands());
+        model.addAttribute("allBrands", mainboardService.getAllBrands(buildItem));
         return "build/mainboards";
     }
 
@@ -47,7 +47,7 @@ public class MainboardController {
 
 
         model.addAttribute("mainboards", mainboards);
-        model.addAttribute("allBrands", mainboardService.getAllBrands());
+        model.addAttribute("allBrands", mainboardService.getAllBrands(buildItem));
         model.addAttribute("selectedBrands", brands);
         model.addAttribute("selectedSort", sortBy);
         return "build/mainboards";

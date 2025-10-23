@@ -31,8 +31,9 @@ public class GpuController {
     // Hien thi danh sach GPU
     @GetMapping("/gpu")
     public String showGpuPage(@ModelAttribute("buildItems") BuildItemDto buildItem, Model model) {
-        model.addAttribute("gpus", buildService.getCompatibleGPUs(buildItem));
-        model.addAttribute("allBrands", gpuService.getAllBrands());
+        List<GPU> gpus = buildService.getCompatibleGPUs(buildItem);
+        model.addAttribute("gpus", gpus);
+        model.addAttribute("allBrands", gpuService.getAllBrands(gpus));
         return "/build/build-gpu";
     }
 
@@ -48,7 +49,7 @@ public class GpuController {
         gpus = gpuService.filterGpus(gpus, filters, sortBy);
 
         model.addAttribute("gpus", gpus);
-        model.addAttribute("allBrands", gpuService.getAllBrands());
+        model.addAttribute("allBrands", gpuService.getAllBrands(buildService.getCompatibleGPUs(buildItem)));
         model.addAttribute("selectedBrands", brands);
         model.addAttribute("selectedSort", sortBy);
         return "/build/build-gpu";

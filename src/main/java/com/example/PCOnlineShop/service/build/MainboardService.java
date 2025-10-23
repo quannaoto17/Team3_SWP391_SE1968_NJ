@@ -1,4 +1,5 @@
 package com.example.PCOnlineShop.service.build;
+import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import com.example.PCOnlineShop.model.build.Mainboard;
 import com.example.PCOnlineShop.model.product.Brand;
 import com.example.PCOnlineShop.repository.build.MainboardRepository;
@@ -13,7 +14,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MainboardService {
     private final MainboardRepository mainboardRepository;
-    private final BrandRepository brandRepository;
+    private final BuildService buildService;
 
 
     public List<Mainboard> getAllMainboards() {
@@ -72,7 +73,11 @@ public class MainboardService {
         return mainboards;
     }
 
-    public List<Brand> getAllBrands() {
-        return brandRepository.findAll();
+    public List<Brand> getAllBrands(BuildItemDto buildItem) {
+        List<Mainboard> mainboards =buildService.getCompatibleMainboards(buildItem);
+        return mainboards.stream()
+                .map(mb -> mb.getProduct().getBrand())
+                .distinct()
+                .toList();
     }
 }

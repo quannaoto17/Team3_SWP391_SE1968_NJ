@@ -3,7 +3,6 @@ package com.example.PCOnlineShop.service.build;
 import com.example.PCOnlineShop.model.build.Memory;
 import com.example.PCOnlineShop.model.product.Brand;
 import com.example.PCOnlineShop.repository.build.MemoryRepository;
-import com.example.PCOnlineShop.repository.product.BrandRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,6 @@ import java.util.Map;
 @Service
 public class MemoryService {
     private MemoryRepository memoryRepository;
-    private final BrandRepository brandRepository;
 
     public List<Memory> getAllMemory() {
         return memoryRepository.findAll();
@@ -72,7 +70,10 @@ public class MemoryService {
         return memories;
     }
 
-    public List<Brand> getAllBrands() {
-        return brandRepository.findAll();
+    public List<Brand> getAllBrands(List<Memory> memories) {
+        return memories.stream()
+                .map(memory -> memory.getProduct().getBrand())
+                .distinct()
+                .toList();
     }
 }
