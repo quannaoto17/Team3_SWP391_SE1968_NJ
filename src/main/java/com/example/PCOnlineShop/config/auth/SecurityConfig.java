@@ -38,8 +38,11 @@ public class SecurityConfig {
                         .requestMatchers("/", "/home", "/auth/**","/build/**").permitAll()
                         .requestMatchers("/assets/**", "/css/**", "/js/**", "/image/**", "/static/**").permitAll()
                         .requestMatchers("/staff/list/**", "/staff/add/**", "/staff/edit/**", "/staff/view/**", "/staff/delete/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/staff/products/**", "/staff/warranty/**", "/staff/orders/**", "/staff/shipping/**").hasAnyRole("STAFF", "ADMIN")
-                        .requestMatchers("/customer/orders/**").hasRole("CUSTOMER")
+                        .requestMatchers("/staff/products/**", "/staff/warranty/**",  "/staff/shipping/**").hasAnyRole("STAFF", "ADMIN")
+                        .requestMatchers("/orders/list", "/orders/detail/**").hasAnyRole("CUSTOMER", "STAFF", "ADMIN")
+
+                        // --- Đường dẫn cập nhật chỉ cho Staff/Admin ---
+                        .requestMatchers("/orders/update-all-status").hasAnyRole("STAFF", "ADMIN")
                         .requestMatchers("/customer/list/**", "/customer/add/**", "/customer/edit/**", "/customer/view/**", "/customer/delete/**").hasAnyRole("ADMIN", "STAFF")
                         .requestMatchers("/staff/feedback/**").hasAnyRole("STAFF")
                         .anyRequest().authenticated()
