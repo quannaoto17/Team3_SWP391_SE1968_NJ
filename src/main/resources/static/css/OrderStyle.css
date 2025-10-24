@@ -2,9 +2,22 @@
 body {
     font-family: Arial, sans-serif;
     background: #f6f7fb;
-    padding: 30px;
+    /* padding: 30px; */ /* Bỏ padding body để header chiếm toàn bộ */
     color: #333;
+    margin-top: 60px; /* Thêm margin top để tránh header che mất nội dung */
 }
+
+/* Thêm container để giới hạn chiều rộng và căn giữa */
+.container {
+    width: 90%; /* Hoặc chiều rộng bạn muốn */
+    max-width: 1400px; /* Giới hạn chiều rộng tối đa */
+    margin: 20px auto; /* Thêm margin top/bottom và căn giữa */
+    padding: 20px;
+    background-color: #fff; /* Thêm nền trắng cho container */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
 
 h2 {
     text-align: center;
@@ -17,15 +30,18 @@ table {
     width: 100%;
     border-collapse: collapse;
     background: white;
-    border-radius: 8px;
-    overflow: hidden;
+    /* Bỏ border-radius và overflow vì container đã có */
+    /* border-radius: 8px; */
+    /* overflow: hidden; */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-top: 20px; /* Thêm khoảng cách trên bảng */
 }
 
 th, td {
-    padding: 15px;
+    padding: 12px 15px; /* Điều chỉnh padding */
     text-align: center;
     border-bottom: 1px solid #e0e0e0;
+    vertical-align: middle; /* Căn giữa theo chiều dọc */
 }
 
 th {
@@ -50,12 +66,13 @@ a.view-btn {
     color: white;
     background: #007bff;
     border: none;
-    padding: 8px 15px;
+    padding: 6px 12px; /* Giảm padding */
     border-radius: 6px;
     cursor: pointer;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 13px; /* Giảm font size */
     transition: background-color 0.2s;
+    margin: 2px; /* Thêm margin nhỏ */
 }
 
 a.view-btn:hover {
@@ -77,18 +94,37 @@ button.save-btn:hover {
     background: #218838;
 }
 
+/* Back button specific style */
+a.back-btn {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: white;
+    background: #6c757d; /* Màu xám */
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+a.back-btn:hover {
+    background: #5a6268;
+}
+
+
 /* Form Elements */
 select {
-    padding: 8px;
+    padding: 6px 10px; /* Điều chỉnh padding */
     border-radius: 6px;
     border: 1px solid #ccc;
+    min-width: 150px; /* Đặt chiều rộng tối thiểu */
 }
 
 .action-form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    /* CSS cho form tổng không cần cái này nữa */
+    /* display: flex; */
+    /* align-items: center; */
+    /* justify-content: center; */
+    /* gap: 10px; */
 }
 
 /* Header Controls (Search, Sort) */
@@ -98,38 +134,59 @@ select {
     align-items: center;
     margin-bottom: 20px;
     padding: 15px;
-    background: #fff;
+    background: #f8f9fa; /* Màu nền nhạt hơn */
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0; /* Thêm border */
+    /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); */ /* Bỏ shadow nếu không cần */
 }
 
 .search-form {
     display: flex;
     gap: 10px;
+    align-items: center; /* Căn giữa các element */
 }
 
-.search-form input[type="number"] {
+.search-form input[type="text"] { /* Đổi thành text */
     padding: 8px 12px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    width: 200px;
+    width: 250px; /* Tăng chiều rộng */
 }
 
+/* Style chung cho nút và link trong search form */
 .search-form button, .search-form a {
-    padding: 8px 16px;
+    padding: 9px 16px; /* Đồng bộ padding */
     border-radius: 6px;
     text-decoration: none;
     color: white;
     border: none;
     cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
 }
 
 .search-form button {
     background-color: #007bff;
 }
+.search-form button:hover {
+    background-color: #0056b3;
+}
 
-.search-form a {
+.search-form a { /* Nút Clear */
     background-color: #6c757d;
+}
+.search-form a:hover {
+    background-color: #5a6268;
+}
+
+/* Sort options link */
+.sort-options a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+}
+.sort-options a:hover {
+    text-decoration: underline;
 }
 
 
@@ -139,18 +196,19 @@ select {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 15px;
+    gap: 10px; /* Giảm gap */
 }
 
 .pagination-container a, .pagination-container span {
     color: #007bff;
-    padding: 8px 12px;
+    padding: 6px 10px; /* Giảm padding */
     text-decoration: none;
+    font-size: 14px; /* Chỉnh font size */
 }
 
 .pagination-container a {
     border: 1px solid #ddd;
-    border-radius: 6px;
+    border-radius: 4px; /* Giảm border-radius */
     background: #fff;
     transition: background-color 0.2s, color 0.2s;
 }
@@ -158,11 +216,16 @@ select {
 .pagination-container a:hover {
     background-color: #007bff;
     color: white;
+    border-color: #007bff;
 }
 
 .pagination-container .page-info {
-    font-weight: bold;
+    font-weight: normal; /* Bỏ bold */
     color: #555;
+    padding: 6px 0; /* Chỉ cần padding top/bottom */
+}
+.pagination-container .page-info b {
+    font-weight: bold; /* Chỉ in đậm số trang */
 }
 
 .pagination-container a.disabled {
@@ -172,14 +235,53 @@ select {
     border-color: #e0e0e0;
 }
 
-/* Alert/Error message */
+/* Alert/Error/Success/Info message */
 .alert {
     padding: 15px;
     margin-bottom: 20px;
     border: 1px solid transparent;
     border-radius: 4px;
+    text-align: center;
+}
+.alert-danger { /* Error */
     color: #a94442;
     background-color: #f2dede;
     border-color: #ebccd1;
-    text-align: center;
+}
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+.alert-info {
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+/* Card Style (cho trang detail) */
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e0e0e0; /* Thêm border nhẹ */
+}
+.card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    color: #333;
+}
+.card p {
+    margin: 8px 0;
+    line-height: 1.6;
+    color: #555;
+}
+.card p b {
+    color: #333;
+    min-width: 120px; /* Căn chỉnh các label */
+    display: inline-block;
 }
