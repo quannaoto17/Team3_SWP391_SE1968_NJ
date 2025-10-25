@@ -1,7 +1,6 @@
 package com.example.PCOnlineShop.controller.order;
 
-import com.example.PCOnlineShop.constant.RoleName; // Import RoleName
-import com.example.PCOnlineShop.dto.order.OrderSearchRequest; // Import DTO tìm kiếm
+import com.example.PCOnlineShop.dto.order.OrderSearchRequest;
 import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.model.order.Order;
 import com.example.PCOnlineShop.service.order.OrderService;
@@ -10,10 +9,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication; // Import Authentication
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder; // Import SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetails; // Import UserDetails
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -21,7 +20,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,14 +40,12 @@ public class OrderController {
     // ======================================================
     @GetMapping("/list")
     public String viewOrderList(Model model,
-                                // @AuthenticationPrincipal dùng UserDetails để tương thích nhiều kiểu trả về
                                 @AuthenticationPrincipal UserDetails currentUserDetails,
-                                // Các tham số cho Staff (search, page, sort) - không bắt buộc
-                                @Valid OrderSearchRequest searchRequest,
+                                @Valid OrderSearchRequest searchRequest, // Sử dụng @Valid cho DTO
                                 BindingResult bindingResult,
                                 @RequestParam(name = "page", required = false, defaultValue = "1") int page,
                                 @RequestParam(name = "sort", required = false, defaultValue = "createdDate") String sortField,
-                                @RequestParam(name = "dir", required = false, defaultValue = "desc") String sortDir, // Mặc định mới nhất trước
+                                @RequestParam(name = "dir", required = false, defaultValue = "desc") String sortDir,
                                 RedirectAttributes redirectAttributes) {
 
         // 1. Xác định vai trò và lấy thông tin người dùng
@@ -64,7 +60,6 @@ public class OrderController {
         } else if (currentUserDetails != null) {
             // Nếu UserDetailsService trả về User của Spring, cần lấy Account từ DB
             // currentAccount = accountRepository.findByPhoneNumber(currentUserDetails.getUsername()).orElse(null);
-            // TODO: Cần inject AccountRepository và xử lý trường hợp này nếu cần
             System.err.println("Cảnh báo: UserDetails không phải là kiểu Account. Cần xử lý lấy Account từ DB.");
         }
 
@@ -74,47 +69,58 @@ public class OrderController {
             model.addAttribute("pageTitle", "Order Management"); // Tiêu đề trang
 
             String searchPhone = searchRequest.getSearchPhone();
-
-            // Xử lý lỗi validation DTO (chỉ áp dụng cho Staff/Admin)
-            if (bindingResult.hasErrors()) {
-                String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
-                model.addAttribute("error", errorMessage); // Gửi lỗi trực tiếp, không redirect
-                // Vẫn cần lấy dữ liệu trang 1 để hiển thị
-                Pageable firstPage = PageRequest.of(0, PAGE_SIZE, Sort.by(sortField).descending());
-                model.addAttribute("orders", orderService.findPaginated(firstPage, null)); // Lấy trang đầu
-                model.addAttribute("currentPage", 1);
-                model.addAttribute("totalPages", 0); // Hoặc tính lại nếu cần
-                // ... (thêm các thuộc tính sort/dir mặc định)
-                return "orders/order-list";
-            }
-
-            // Kiểm tra khách hàng tồn tại (nếu có tìm kiếm)
-            if (StringUtils.hasText(searchPhone)) {
-                if (!orderService.customerAccountExistsByPhoneNumber(searchPhone)) {
-                    model.addAttribute("error", "No customer found with phone number: " + searchPhone);
-                    Pageable firstPage = PageRequest.of(0, PAGE_SIZE, Sort.by(sortField).descending());
-                    model.addAttribute("orders", orderService.findPaginated(firstPage, null));
-                    model.addAttribute("currentPage", 1);
-                    model.addAttribute("totalPages", 0);
-                    // ... (thêm các thuộc tính sort/dir mặc định)
-                    return "orders/order-list";
-                }
-            }
-
-            // Sắp xếp & Phân trang
             Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                     ? Sort.by(sortField).ascending()
                     : Sort.by(sortField).descending();
             Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE, sort);
+            String reverseSortDir = sortDir.equals("asc") ? "desc" : "asc";
+
+
+            // --- Xử lý lỗi validation DTO (sai format) ---
+            if (bindingResult.hasErrors()) {
+                String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
+                model.addAttribute("error", errorMessage);
+
+                // Cung cấp model đầy đủ để trang không bị crash
+                model.addAttribute("ordersPage", Page.empty(pageable)); // Gửi trang rỗng
+                model.addAttribute("currentPage", page);
+                model.addAttribute("totalPages", 0);
+                model.addAttribute("sortField", sortField);
+                model.addAttribute("sortDir", sortDir);
+                model.addAttribute("reverseSortDir", reverseSortDir);
+                model.addAttribute("searchPhone", searchPhone); // Giữ lại SĐT sai
+
+                return "orders/order-list";
+            }
+
+            // --- Xử lý SĐT không tồn tại ---
+            if (StringUtils.hasText(searchPhone)) {
+                if (!orderService.customerAccountExistsByPhoneNumber(searchPhone)) {
+                    model.addAttribute("error", "No customer found with phone number: " + searchPhone);
+
+                    // Cung cấp model đầy đủ để trang không bị crash
+                    model.addAttribute("ordersPage", Page.empty(pageable)); // Gửi trang rỗng
+                    model.addAttribute("currentPage", page);
+                    model.addAttribute("totalPages", 0);
+                    model.addAttribute("sortField", sortField);
+                    model.addAttribute("sortDir", sortDir);
+                    model.addAttribute("reverseSortDir", reverseSortDir);
+                    model.addAttribute("searchPhone", searchPhone); // Giữ lại SĐT sai
+
+                    return "orders/order-list";
+                }
+            }
+
+            // --- Logic thành công (Không thay đổi) ---
             Page<Order> orderPage = orderService.findPaginated(pageable, searchPhone);
 
             // Gửi dữ liệu Staff sang view
-            model.addAttribute("ordersPage", orderPage); // Đổi tên để tránh trùng lặp
+            model.addAttribute("ordersPage", orderPage);
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", orderPage.getTotalPages());
             model.addAttribute("sortField", sortField);
             model.addAttribute("sortDir", sortDir);
-            model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
+            model.addAttribute("reverseSortDir", reverseSortDir);
             model.addAttribute("searchPhone", searchPhone);
 
         } else if (currentAccount != null) {
@@ -180,7 +186,6 @@ public class OrderController {
     // 🔹 Cập nhật hàng loạt trạng thái (POST /update-all-status) - Chỉ cho Staff/Admin 🔹
     // =============================================================
     @PostMapping("/update-all-status")
-    // @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')") // Cách bảo mật khác bằng annotation
     public String updateAllOrderStatuses(
             @RequestParam Map<String, String> statusUpdates,
             RedirectAttributes redirectAttributes) {

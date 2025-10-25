@@ -267,3 +267,6 @@ COMMENT 'Timestamp when status became Ready to Ship';
 ALTER TABLE orders
 ADD COLUMN shipment_received_date DATETIME NULL
 COMMENT 'Thời điểm shipper chuyển trạng thái sang Delivering';
+
+alter table product
+add	column inventory_quantity int;

@@ -3,22 +3,26 @@ body {
     background: #f6f7fb;
     margin: 0;
 }
+
 .container {
     width: 80%;
     margin: 40px auto;
     background: #fff;
     padding: 25px;
     border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
+
 h1 {
     text-align: center;
     color: #222;
 }
+
 form {
     text-align: center;
     margin-bottom: 20px;
 }
+
 input[type=text] {
     padding: 8px;
     width: 250px;
@@ -26,6 +30,7 @@ input[type=text] {
     border-radius: 4px;
     margin-right: 5px;
 }
+
 button {
     padding: 9px 16px;
     cursor: pointer;
@@ -33,11 +38,13 @@ button {
     border: 1px solid #ccc;
     background-color: #eee;
 }
+
 button[type=submit] {
     background-color: #007bff;
     color: white;
     border-color: #007bff;
 }
+
 a.clear-btn {
     padding: 9px 16px;
     border-radius: 4px;
@@ -48,25 +55,30 @@ a.clear-btn {
     display: inline-block;
     vertical-align: top;
 }
+
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
 }
+
 th, td {
     border: 1px solid #ccc;
     text-align: center;
     padding: 10px;
 }
+
 th {
     background-color: #f1f1f1;
 }
+
 .not-found {
     color: red;
     text-align: center;
     font-weight: bold;
     margin-top: 20px;
 }
+
 .section-title {
     color: #dc3545;
     font-size: 20px;
@@ -75,6 +87,7 @@ th {
     margin-bottom: 10px;
     text-align: center;
 }
+
 .view-products-btn {
     background: none;
     border: none;
@@ -84,15 +97,25 @@ th {
     font-size: inherit;
     text-decoration: underline;
 }
+
+/* --- Kiểu dáng nổi bật cho trạng thái bảo hành --- */
+.status-active, .status-expiring, .status-expired {
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+    display: inline-block;
+}
+
 .status-active {
-    color: green;
-    font-weight: bold;
+    background-color: #28a745; /* Màu xanh lá */
 }
+
 .status-expiring {
-    color: orange;
-    font-weight: bold;
+    background-color: #ffc107; /* Màu vàng */
+    color: #212529;
 }
+
 .status-expired {
-    color: red;
-    font-weight: bold;
+    background-color: #dc3545; /* Màu đỏ */
 }
