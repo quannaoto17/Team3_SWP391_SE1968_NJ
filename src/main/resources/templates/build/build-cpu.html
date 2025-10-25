@@ -22,22 +22,7 @@
 <div class="layout">
 <div class="container">
     <!-- Sidebar -->
-    <div class="sidebar">
-        <h2>Auto Build</h2>
-        <ul>
-            <li><a th:href="@{/build/mainboard}">MainBoard</a></li>
-            <li class="active">CPU</li>
-            <li><a th:href="@{/build/gpu}">GPU</a></li>
-            <li><a th:href="@{/build/case}">Case</a></li>
-            <li><a th:href="@{/build/cooling}">Cooling</a></li>
-            <li><a th:href="@{/build/memory}">Memory</a></li>
-            <li><a th:href="@{/build/storage}">Storage</a></li>
-            <li><a th:href="@{/build/psu}">PSU</a></li>
-            <li><a th:href="@{/build/other}">Other</a></li>
-        </ul>
-        <button class="overview-btn">Overview</button>
-        <a th:href="@{/build/startover}">Start over</a>
-    </div>
+    <div th:replace="~{layout/build-sidebar :: buildSidebar('cpu')}"></div>
 
     <!-- Main content -->
     <div class="main-content">
@@ -84,6 +69,7 @@
             <div class="product-grid">
                 <div th:each="cpu : ${cpus}"
                      class="product-card"
+                     th:classappend="${buildItems.cpu?.product?.productId == cpu.productId} ? 'selected' : ''"
                      th:attr="data-id=${cpu.productId}"
                      th:data-name="${cpu.product.productName}"
                      th:data-socket="${cpu.socket}"

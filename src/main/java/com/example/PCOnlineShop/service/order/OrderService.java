@@ -62,7 +62,7 @@ public class OrderService {
     }
 
     // ==================================================
-    // == CÁC PHƯƠNG THỨC QUẢN LÝ ĐƠN HÀNG (GIỮ NGUYÊN) ==
+    // == CÁC PHƯƠNG THỨC QUẢN LÝ ĐƠN HÀNG
     // ==================================================
     @Transactional
     public Order createOrder(Account customerAccount, Map<Integer, Integer> cartItems,
@@ -118,7 +118,7 @@ public class OrderService {
                 order.setStatus(newStatus);
                 changed = true;
 
-                // --- 👇 SET readyToShipDate WHEN STATUS CHANGES TO "Ready to Ship" 👇 ---
+                // --- SET readyToShipDate WHEN STATUS CHANGES TO "Ready to Ship" ---
                 if (!"Ready to Ship".equals(oldStatus) && "Ready to Ship".equals(newStatus)) {
                     order.setReadyToShipDate(now);
                 }
@@ -135,7 +135,7 @@ public class OrderService {
     }
 
     public Page<Order> findPaginated(Pageable pageable, String phoneNumber) {
-        // ... (Code lấy danh sách cho staff giữ nguyên như file bạn cung cấp) ...
+
         if (phoneNumber != null && !phoneNumber.isEmpty()) {
             return orderRepository.findByRoleAndPhoneNumber(RoleName.Customer, phoneNumber, pageable);
         }

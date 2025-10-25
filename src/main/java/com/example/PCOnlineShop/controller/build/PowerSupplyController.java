@@ -28,8 +28,9 @@ public class PowerSupplyController {
 
     @GetMapping("/psu")
     public String showPsuPage(@ModelAttribute("buildItems") BuildItemDto buildItem, Model model) {
-        model.addAttribute("psus", buildService.getCompatiblePowerSupplies(buildItem));
-        model.addAttribute("allBrands", powerSupplyService.getAllBrands());
+        List<PowerSupply> psus = buildService.getCompatiblePowerSupplies(buildItem);
+        model.addAttribute("psus", psus);
+        model.addAttribute("allBrands", powerSupplyService.getAllBrands(psus));
         return "/build/psu";
     }
 
@@ -44,7 +45,7 @@ public class PowerSupplyController {
         powerSupplies = powerSupplyService.filterPowerSupplies(powerSupplies, filters, sortBy);
 
         model.addAttribute("psus", powerSupplies);
-        model.addAttribute("allBrands", powerSupplyService.getAllBrands());
+        model.addAttribute("allBrands", powerSupplyService.getAllBrands(buildService.getCompatiblePowerSupplies(buildItem)));
         model.addAttribute("selectedBrands", brands);
         model.addAttribute("selectedSort", sortBy);
         return "/build/psu";

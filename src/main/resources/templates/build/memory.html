@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -22,22 +22,7 @@
 <div class="layout">
 <div class="container">
     <!-- Sidebar -->
-    <div class="sidebar">
-        <h2>Auto Build</h2>
-        <ul>
-            <li><a th:href="@{/build/mainboard}">MainBoard</a></li>
-            <li><a th:href="@{/build/cpu}">CPU</a></li>
-            <li><a th:href="@{/build/gpu}">GPU</a></li>
-            <li><a th:href="@{/build/case}">Case</a></li>
-            <li><a th:href="@{/build/cooling}">Cooling</a></li>
-            <li class="active">Memory</li>
-            <li><a th:href="@{/build/storage}">Storage</a></li>
-            <li><a th:href="@{/build/psu}">PSU</a></li>
-            <li><a th:href="@{/build/other}">Other</a></li>
-        </ul>
-        <button class="overview-btn">Overview</button>
-        <a th:href="@{/build/startover}">Start over</a>
-    </div>
+    <div th:replace="~{layout/build-sidebar :: buildSidebar('memory')}"></div>
 
     <!-- Main content -->
     <div class="main-content">
@@ -84,6 +69,7 @@
             <div class="product-grid">
                 <div th:each="memory : ${memories}"
                      class="product-card"
+                     th:classappend="${buildItems.memory?.product?.productId == memory.product.productId} ? 'selected' : ''"
                      th:attr="data-id=${memory.product.productId}"
                      th:data-name="${memory.product.productName}"
                      th:data-type="${memory.type}"

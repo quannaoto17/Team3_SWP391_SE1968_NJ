@@ -28,8 +28,9 @@ public class CoolingController {
 
     @GetMapping("/cooling")
     public String showCoolingPage(@ModelAttribute("buildItems") BuildItemDto buildItem, Model model) {
-        model.addAttribute("coolings", buildService.getCompatibleCoolings(buildItem));
-        model.addAttribute("allBrands", coolingService.getAllBrands());
+        List<Cooling> coolings = buildService.getCompatibleCoolings(buildItem);
+        model.addAttribute("coolings", coolings);
+        model.addAttribute("allBrands", coolingService.getAllBrands(coolings));
         return "/build/cooling";
     }
 
@@ -44,7 +45,7 @@ public class CoolingController {
         coolings = coolingService.filterCoolings(coolings, filters, sortBy);
 
         model.addAttribute("coolings", coolings);
-        model.addAttribute("allBrands", coolingService.getAllBrands());
+        model.addAttribute("allBrands", coolingService.getAllBrands(buildService.getCompatibleCoolings(buildItem)));
         model.addAttribute("selectedBrands", brands);
         model.addAttribute("selectedSort", sortBy);
         return "/build/cooling";

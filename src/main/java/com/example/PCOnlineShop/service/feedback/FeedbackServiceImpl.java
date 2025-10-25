@@ -18,6 +18,10 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
 
+    /**
+     * ✅ Tìm kiếm + lọc feedback
+     * Mặc định: chỉ hiển thị feedback chưa xử lý (commentStatus != 'Allow')
+     */
     @Override
     public Page<Feedback> search(String keyword, String status, Integer rating,
                                  LocalDate from, LocalDate to,
@@ -25,52 +29,86 @@ public class FeedbackServiceImpl implements FeedbackService {
 
         Specification<Feedback> spec = (root, query, cb) -> cb.conjunction();
 
-        spec = spec.and(FeedbackSpecs.keyword(keyword))
-                .and(FeedbackSpecs.status(status))
-                .and(FeedbackSpecs.rating(rating))
-                .and(FeedbackSpecs.dateFrom(from))
-                .and(FeedbackSpecs.dateTo(to));
+        // 🔍 Tìm theo keyword
+        if (keyword != null && !keyword.isBlank()) {
+            spec = spec.and(FeedbackSpecs.keyword(keyword));
+        }
 
+        // 🟢 Lọc theo status
+        if (status != null && !"ALL".equalsIgnoreCase(status)) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("commentStatus"), status));
+        } else {
+            // ✅ Mặc định chỉ hiện feedback chưa xử lý (chưa Allow)
+            spec = spec.and((root, query, cb) ->
+                    cb.notEqual(root.get("commentStatus"), "Allow"));
+        }
 
+        // ⭐ Lọc theo rating
+        if (rating != null && rating > 0) {
+            spec = spec.and(FeedbackSpecs.rating(rating));
+        }
+
+        // 📅 Lọc theo ngày
+        if (from != null) spec = spec.and(FeedbackSpecs.dateFrom(from));
+        if (to != null) spec = spec.and(FeedbackSpecs.dateTo(to));
+
+        // 🔽 Sắp xếp
         Sort sort = toSort(sortKey);
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1), sort);
+
         return feedbackRepository.findAll(spec, pageable);
     }
 
+    /** 🔽 Sắp xếp linh hoạt */
     private Sort toSort(String key) {
-        // mặc định: newest first
         if (key == null) key = "dateDesc";
         return switch (key) {
             case "dateAsc" -> Sort.by("createdAt").ascending();
             case "ratingDesc" -> Sort.by(Sort.Order.desc("rating"), Sort.Order.desc("createdAt"));
             case "ratingAsc" -> Sort.by(Sort.Order.asc("rating"), Sort.Order.desc("createdAt"));
-            case "statusAsc" -> Sort.by(Sort.Order.asc("commentStatus"), Sort.Order.desc("createdAt"));
-            default -> Sort.by("createdAt").descending(); // dateDesc
+            default -> Sort.by("createdAt").descending();
         };
     }
 
+    /** 📦 Lấy feedback theo ID */
     @Override
     public Feedback get(Integer id) {
         return feedbackRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Feedback không tồn tại: " + id));
     }
 
+    /** ✉ Cập nhật hoặc thêm reply => tự động Allow */
     @Override
     @Transactional
     public void updateReply(Integer id, String reply) {
         Feedback fb = get(id);
         fb.setReply(reply == null ? null : reply.trim());
+        fb.setCommentStatus("Allow"); // sau khi reply thì duyệt luôn
         feedbackRepository.save(fb);
     }
 
+    /** 🔄 Cập nhật trạng thái riêng lẻ */
+    @Override
+    @Transactional
+    public void updateStatus(Integer id, String status) {
+        Feedback fb = get(id);
+        fb.setCommentStatus(status);
+        feedbackRepository.save(fb);
+    }
+
+    /** ✅ Cập nhật hàng loạt (bulk update) */
     @Override
     @Transactional
     public void bulkUpdateStatus(Map<Integer, String> idToStatus) {
         if (idToStatus == null || idToStatus.isEmpty()) return;
+
         idToStatus.forEach((id, st) -> {
-            Feedback fb = get(id);
-            fb.setCommentStatus(st);
-            feedbackRepository.save(fb);
+            if ("Allow".equalsIgnoreCase(st)) {
+                Feedback fb = get(id);
+                fb.setCommentStatus("Allow");
+                feedbackRepository.save(fb);
+            }
         });
     }
 }

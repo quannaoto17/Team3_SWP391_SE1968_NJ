@@ -1,10 +1,8 @@
 package com.example.PCOnlineShop.service.build;
 
-import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import com.example.PCOnlineShop.model.build.Case;
 import com.example.PCOnlineShop.model.product.Brand;
 import com.example.PCOnlineShop.repository.build.CaseRepository;
-import com.example.PCOnlineShop.repository.product.BrandRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +14,6 @@ public class CaseService {
 
     @Autowired
     private CaseRepository caseRepository;
-
-    @Autowired
-    private BrandRepository brandRepository;
 
     public List<Case> getAllCases() {
         return caseRepository.findAll();
@@ -76,7 +71,10 @@ public class CaseService {
         return cases;
     }
 
-    public List<Brand> getAllBrands() {
-        return brandRepository.findAll();
+    public List<Brand> getAllBrands(List<Case> cases) {
+        return cases.stream()
+                .map(c -> c.getProduct().getBrand())
+                .distinct()
+                .toList();
     }
 }

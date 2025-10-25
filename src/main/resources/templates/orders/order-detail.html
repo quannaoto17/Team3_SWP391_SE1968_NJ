@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle ?: 'Order Detail'}">Order Detail</title>
+    <link rel="stylesheet" th:href="@{/css/OrderStyle.css}"> </head>
+<body>
+
+<div sec:authorize="!isAuthenticated()" th:replace="~{layout/header-default :: header-default}"></div>
+<div sec:authorize="hasRole('ADMIN')" th:replace="~{layout/header-admin :: header-admin}"></div>
+<div sec:authorize="hasRole('STAFF')" th:replace="~{layout/header-staff :: header-staff}"></div>
+<div sec:authorize="hasRole('CUSTOMER')" th:replace="~{layout/header-customer :: header-customer}"></div>
+
+<div class="container"> <h2 th:text="${pageTitle ?: 'Order Detail'}">Order Detail</h2>
+
+    <div class="card">
+        <h3>Order Summary</h3>
+        <p><b>Order ID:</b> <span th:text="${order.orderId}"></span></p>
+        <p th:if="${isStaffOrAdmin}"><b>Customer:</b> <span th:text="${order.account?.fullName}"></span> (<span th:text="${order.account?.phoneNumber}"></span>)</p>
+        <p><b>Status:</b> <span th:text="${order.status}"></span></p>
+        <p><b>Order Date:</b> <span th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy')}"></span></p>
+        <p><b>Final Amount:</b> <span th:text="${#numbers.formatInteger(order.finalAmount, 1, 'COMMA')} + ' ₫'"></span></p>
+    </div>
+
+    <div class="card">
+        <h3>Shipping Information</h3>
+        <p><b>Method:</b> <span th:text="${order.shippingMethod}"></span></p>
+        <p><b>Recipient:</b> <span th:text="${order.shippingFullName}"></span></p>
+        <p><b>Phone:</b> <span th:text="${order.shippingPhone}"></span></p>
+        <p><b>Address:</b> <span th:text="${order.shippingAddress}"></span></p>
+        <p th:if="${order.note != null and order.note != ''}"><b>Note:</b> <span th:text="${order.note}"></span></p>
+    </div>
+
+    <div class="card">
+        <h3>Ordered Products</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="d, stat : ${details}">
+                <td th:text="${stat.count}"></td>
+                <td th:text="${d.product?.productName ?: 'N/A'}"></td>
+                <td th:text="${d.quantity}"></td>
+                <td th:text="${#numbers.formatInteger(d.price, 1, 'COMMA')} + ' ₫'"></td>
+                <td th:text="${#numbers.formatInteger(d.quantity * d.price, 1, 'COMMA')} + ' ₫'"></td>
+            </tr>
+            <tr th:if="${details == null or #lists.isEmpty(details)}">
+                <td colspan="5" style="text-align: center;">No product details found for this order.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a th:href="@{/orders/list}" class="back-btn">← Back to Order List</a>
+
+</div> </body>
+</html>

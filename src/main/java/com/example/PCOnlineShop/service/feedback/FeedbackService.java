@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 public interface FeedbackService {
+
     Page<Feedback> search(String keyword, String status, Integer rating,
                           LocalDate from, LocalDate to,
                           int page, int size, String sortKey);
@@ -14,6 +15,8 @@ public interface FeedbackService {
     Feedback get(Integer id);
 
     void updateReply(Integer id, String reply);
+
+    void updateStatus(Integer id, String status);
 
     void bulkUpdateStatus(Map<Integer, String> idToStatus);
 }
