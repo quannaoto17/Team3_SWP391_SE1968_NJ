@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
+    <meta charset="UTF-8">
     <title>Feedback List</title>
+
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <style>
         .star { font-size: 14px; color: #f0ad4e; }
@@ -9,6 +13,18 @@
     </style>
 </head>
 <body class="bg-light">
+
+<!-- ========== HEADER BY ROLE ========== -->
+<div sec:authorize="!isAuthenticated()"
+     th:replace="layout/header-default :: header-default"></div>
+<div sec:authorize="hasRole('ADMIN')"
+     th:replace="layout/header-admin :: header-admin"></div>
+<div sec:authorize="hasRole('STAFF')"
+     th:replace="layout/header-staff :: header-staff"></div>
+<div sec:authorize="hasRole('CUSTOMER')"
+     th:replace="layout/header-customer :: header-customer"></div>
+<!-- ========== END HEADER ========== -->
+
 <div class="container py-4">
     <h3 class="mb-3">Feedback List</h3>
 
@@ -17,52 +33,59 @@
     <!-- ================== SEARCH FILTER FORM ================== -->
     <form class="row gy-2 gx-2 align-items-end mb-3" method="get" th:action="@{/staff/feedback}">
         <div class="col-md-3">
-            <label class="form-label">Keyword</label>
-            <input type="text" class="form-control" name="keyword"
+            <label class="form-label" for="kw">Keyword</label>
+            <input id="kw" type="text" class="form-control" name="keyword"
                    th:value="${keyword}" placeholder="user / product / comment / reply">
         </div>
+
         <div class="col-md-2">
-            <label class="form-label">Status</label>
-            <select name="status" class="form-select" th:value="${status}">
+            <label class="form-label" for="st">Status</label>
+            <select id="st" name="status" class="form-select" th:value="${status}">
                 <option value="ALL" th:selected="${status=='ALL'}">All</option>
                 <option value="Pending" th:selected="${status=='Pending'}">Pending</option>
                 <option value="Allow" th:selected="${status=='Allow'}">Allow</option>
             </select>
         </div>
+
         <div class="col-md-2">
-            <label class="form-label">Rating</label>
-            <select name="rating" class="form-select">
+            <label class="form-label" for="rt">Rating</label>
+            <select id="rt" name="rating" class="form-select">
                 <option th:selected="${rating==null}" value="">All</option>
                 <option th:each="r : ${#numbers.sequence(1,5)}"
                         th:value="${r}" th:text="${r + ' ★'}"
                         th:selected="${rating!=null and rating==r}"></option>
             </select>
         </div>
+
         <div class="col-md-2">
-            <label class="form-label">From</label>
-            <input type="date" class="form-control" name="from" th:value="${from}">
+            <label class="form-label" for="from">From</label>
+            <input id="from" type="date" class="form-control" name="from" th:value="${from}">
         </div>
+
         <div class="col-md-2">
-            <label class="form-label">To</label>
-            <input type="date" class="form-control" name="to" th:value="${to}">
+            <label class="form-label" for="to">To</label>
+            <input id="to" type="date" class="form-control" name="to" th:value="${to}">
         </div>
+
         <div class="col-md-1">
-            <label class="form-label">Size</label>
-            <select name="size" class="form-select" th:value="${size}">
+            <label class="form-label" for="sz">Size</label>
+            <select id="sz" name="size" class="form-select" th:value="${size}">
                 <option th:selected="${size==5}" value="5">5</option>
                 <option th:selected="${size==10}" value="10">10</option>
                 <option th:selected="${size==20}" value="20">20</option>
             </select>
         </div>
+
         <div class="col-md-2">
-            <label class="form-label">Sort</label>
-            <select name="sort" class="form-select" th:value="${sort}">
+            <label class="form-label" for="sort">Sort</label>
+            <select id="sort" name="sort" class="form-select" th:value="${sort}">
                 <option value="dateDesc" th:selected="${sort=='dateDesc'}">Date ↓ (newest)</option>
                 <option value="dateAsc" th:selected="${sort=='dateAsc'}">Date ↑</option>
                 <option value="ratingDesc" th:selected="${sort=='ratingDesc'}">Rating ↓</option>
                 <option value="ratingAsc" th:selected="${sort=='ratingAsc'}">Rating ↑</option>
             </select>
         </div>
+
         <div class="col-md-2">
             <button class="btn btn-primary w-100" type="submit">Search</button>
         </div>
@@ -139,24 +162,29 @@
         <!-- ================== PAGINATION + SAVE ================== -->
         <div class="d-flex justify-content-between align-items-center">
             <button class="btn btn-success" type="submit">Save</button>
+
             <nav th:if="${data.totalPages > 1}">
                 <ul class="pagination mb-0">
                     <!-- Prev -->
                     <li class="page-item" th:classappend="${data.first} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{|/staff/feedback?${qs}&page=${data.number - 1}|}">Prev</a>
+                           th:href="@{${'/staff/feedback?' +
+                                      ((qs == null or #strings.isEmpty(qs)) ? '' : qs + '&') +
+                                      'page=' + (data.number - 1)}}">Prev</a>
                     </li>
 
                     <!-- Current page / total -->
                     <li class="page-item disabled">
                         <span class="page-link"
-                              th:text="${data.number + 1} + ' / ' + ${data.totalPages}"></span>
+                              th:text="${(data.number + 1) + ' / ' + data.totalPages}"></span>
                     </li>
 
                     <!-- Next -->
                     <li class="page-item" th:classappend="${data.last} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{|/staff/feedback?${qs}&page=${data.number + 1}|}">Next</a>
+                           th:href="@{${'/staff/feedback?' +
+                                      ((qs == null or #strings.isEmpty(qs)) ? '' : qs + '&') +
+                                      'page=' + (data.number + 1)}}">Next</a>
                     </li>
                 </ul>
             </nav>
