@@ -4,19 +4,12 @@
     <meta charset="UTF-8">
     <title>Shipping Management</title>
     <link rel="stylesheet" th:href="@{/css/OrderStyle.css}">
-    <style>
-        .container { width: 95%; margin: 20px auto; }
-        .status-form select, .status-form button { margin-left: 5px; vertical-align: middle;}
-        .alert { padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; }
-        .alert-danger { color: #a94442; background-color: #f2dede; border-color: #ebccd1; }
-        .alert-success { color: #3c763d; background-color: #dff0d8; border-color: #d6e9c6; }
-        .alert-info { color: #31708f; background-color: #d9edf7; border-color: #bce8f1; }
-        th, td { vertical-align: middle; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/ShippingStyle.css}">
 </head>
 <body>
 
-<div th:replace="~{layout/header-staff :: header-staff}"></div> <div class="container">
+<div th:replace="~{layout/header-staff :: header-staff}"></div>
+<div class="container">
     <h2>Shipping Management (Ready & Delivering Orders)</h2>
 
     <div th:if="${error}" class="alert alert-danger"> <p th:text="${error}"></p> </div>
@@ -65,7 +58,7 @@
     </table>
 
     <div style="margin-top: 20px;">
-        <a th:href="@{/staff/orders/list}" class="back-btn">← Back to All Orders</a>
+        <a th:href="@{/orders/list}" class="back-btn">← Back to All Orders</a>
     </div>
 
 </div>

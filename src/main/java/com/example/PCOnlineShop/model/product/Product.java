@@ -32,6 +32,8 @@ public class Product {
     private String specification;
     @Column (name = "created_at")
     private Date createAt;
+    @Column (name = "inventory_quantity")
+    private Integer inventoryQuantity;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", nullable = false)
