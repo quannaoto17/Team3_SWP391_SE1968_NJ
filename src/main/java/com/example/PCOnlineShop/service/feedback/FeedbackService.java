@@ -19,4 +19,9 @@ public interface FeedbackService {
     void updateStatus(Integer id, String status);
 
     void bulkUpdateStatus(Map<Integer, String> idToStatus);
+
+    Page<Feedback> getAllowedByProduct(Integer productId, int page, int size);
+
+    void createFeedback(Integer productId, Integer accountId, Integer rating, String comment);
+
 }

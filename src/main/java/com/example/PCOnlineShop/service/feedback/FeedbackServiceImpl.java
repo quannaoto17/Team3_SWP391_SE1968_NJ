@@ -1,8 +1,12 @@
 package com.example.PCOnlineShop.service.feedback;
 
+import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.model.feedback.Feedback;
+import com.example.PCOnlineShop.model.product.Product;
+import com.example.PCOnlineShop.repository.account.AccountRepository;
 import com.example.PCOnlineShop.repository.feedback.FeedbackRepository;
 import com.example.PCOnlineShop.repository.feedback.FeedbackSpecs;
+import com.example.PCOnlineShop.repository.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -17,6 +22,8 @@ import java.util.Map;
 public class FeedbackServiceImpl implements FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
+    private final ProductRepository productRepository;
+    private AccountRepository accountRepository;
 
     /**
      * ✅ Tìm kiếm + lọc feedback
@@ -110,5 +117,31 @@ public class FeedbackServiceImpl implements FeedbackService {
                 feedbackRepository.save(fb);
             }
         });
+    }
+    @Override
+    public Page<Feedback> getAllowedByProduct(Integer productId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return feedbackRepository.findByProduct_ProductIdAndCommentStatusOrderByCreatedAtDesc(
+                productId,
+                "Allow",
+                pageable
+        );
+    }
+
+    @Override
+    @Transactional
+    public void createFeedback(Integer productId, Integer accountId, Integer rating, String comment) {
+        Product product = productRepository.findById(productId).orElseThrow();
+        Account account = accountRepository.findById(accountId).orElseThrow();
+
+        Feedback feedback = new Feedback();
+        feedback.setProduct(product);
+        feedback.setAccount(account);
+        feedback.setRating(rating);
+        feedback.setComment(comment);
+        feedback.setCommentStatus("Pending");
+        feedback.setCreatedAt(LocalDate.now());
+
+        feedbackRepository.save(feedback);
     }
 }

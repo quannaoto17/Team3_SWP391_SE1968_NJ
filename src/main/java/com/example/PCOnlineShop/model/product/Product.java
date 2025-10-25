@@ -33,7 +33,7 @@ public class Product {
     @Column (name = "created_at")
     private Date createAt;
     @Column (name = "inventory_quantity")
-    private int inventoryQuantity;
+    private Integer inventoryQuantity;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", nullable = false)
