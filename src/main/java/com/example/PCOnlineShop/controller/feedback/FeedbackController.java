@@ -12,6 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -110,4 +111,21 @@ public class FeedbackController {
         sb.append("sort=").append(sort);
         return sb.toString();
     }
+    @PostMapping("/detail/{id}/feedback")
+    public String submitFeedback(
+            @PathVariable("id") Integer id,
+            @RequestParam("rating") Integer rating,
+            @RequestParam("comment") String comment,
+            Principal principal
+    ) {
+        // Lấy account hiện tại (ví dụ tạm accountId = 1)
+        Integer accountId = 1;
+
+        // Gọi service để lưu feedback
+        feedbackService.createFeedback(id, accountId, rating, comment);
+
+        return "redirect:/product/product-details/" + id + "?feedback_success=1";
+    }
+
+
 }
