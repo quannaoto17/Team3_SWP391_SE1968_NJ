@@ -247,6 +247,63 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // ===============================
+    // Save as Image Functionality
+    // ===============================
+    const saveAsImageBtn = document.getElementById("saveAsImageBtn");
+
+    if (saveAsImageBtn) {
+        saveAsImageBtn.addEventListener("click", function() {
+            // Lấy phần nội dung overview để chụp
+            const overviewContent = document.querySelector(".overview-popup-content");
+
+            if (!overviewContent) {
+                alert("⚠️ Cannot find overview content to save.");
+                return;
+            }
+
+            // Tạm ẩn các nút trong footer để không chụp vào ảnh
+            const footer = overviewContent.querySelector(".overview-footer");
+            const originalDisplay = footer ? footer.style.display : null;
+            if (footer) footer.style.display = "none";
+
+            // Sử dụng html2canvas để chụp
+            html2canvas(overviewContent, {
+                backgroundColor: '#ffffff',
+                scale: 2,
+                logging: false,
+                useCORS: true,
+                allowTaint: true
+            }).then(function(canvas) {
+                // Khôi phục footer
+                if (footer && originalDisplay !== null) {
+                    footer.style.display = originalDisplay;
+                } else if (footer) {
+                    footer.style.display = "";
+                }
+
+                // Tạo link download
+                const link = document.createElement('a');
+                const timestamp = new Date().getTime();
+                link.download = 'my-pc-build-' + timestamp + '.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                console.log("✅ Build image saved successfully!");
+            }).catch(function(error) {
+                // Khôi phục footer nếu có lỗi
+                if (footer && originalDisplay !== null) {
+                    footer.style.display = originalDisplay;
+                } else if (footer) {
+                    footer.style.display = "";
+                }
+
+                console.error('❌ Error generating image:', error);
+                alert('Failed to save image. Please try again.');
+            });
+        });
+    }
+
     // If needed, recalc originalTotalPrice whenever server re-renders or other changes appear. We keep one-time read for now.
 });
 
