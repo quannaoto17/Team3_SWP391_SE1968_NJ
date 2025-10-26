@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" th:href="@{/css/OrderStyle.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
+</head>
+<body>
+<div sec:authorize="!isAuthenticated()" th:replace="~{layout/header-default :: header-default}"></div>
+<div sec:authorize="hasRole('ADMIN')" th:replace="~{layout/header-admin :: header-admin}"></div>
+<div sec:authorize="hasRole('STAFF')" th:replace="~{layout/header-staff :: header-staff}"></div>
+<div sec:authorize="hasRole('CUSTOMER')" th:replace="~{layout/header-customer :: header-customer}"></div>
+
+<div class="cart-container">
+    <h1>Your Shopping Cart</h1>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${warning}" class="alert alert-warning" th:text="${warning}"></div>
+
+    <div th:if="${isEmpty}" class="empty-cart">
+        <p>Your cart is currently empty.</p>
+        <p><a th:href="@{/}">Continue Shopping</a></p>
+    </div>
+
+    <div th:unless="${isEmpty}">
+        <table>
+            <thead>
+            <tr>
+                <th style="width: 10%;">Image</th>
+                <th style="width: 35%;">Product</th>
+                <th style="width: 15%;">Price</th>
+                <th style="width: 15%;">Quantity</th>
+                <th style="width: 15%;">Subtotal</th>
+                <th style="width: 10%;">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${cartItems}">
+                <td>
+                    <a th:href="@{'/product/detail/' + ${item.productId}}" class="product-link">
+                        <img th:src="${item.imageUrl}" alt="Product Image" class="product-image">
+                    </a>
+                </td>
+                <td class="product-name">
+                    <a th:href="@{'/product/detail/' + ${item.productId}}" class="product-link" th:text="${item.productName}">
+                        Product Name
+                    </a>
+                </td>
+                <td th:text="${#numbers.formatInteger(item.price, 1, 'COMMA')} + ' ₫'">Price</td>
+                <td>
+                    <form th:action="@{'/cart/update/' + ${item.productId}}" method="post" class="quantity-form">
+                        <input type="number" name="quantity" th:value="${item.quantity}" min="1" th:max="${item.inventoryQuantity}" class="quantity-input" required
+                               title="Enter quantity (Max: ${item.inventoryQuantity})">
+                        <button type="submit" class="update-btn">Update</button>
+                    </form>
+                </td>
+                <td th:text="${#numbers.formatInteger(item.subtotal, 1, 'COMMA')} + ' ₫'">Subtotal</td>
+                <td>
+                    <form th:action="@{'/cart/remove/' + ${item.productId}}" method="post">
+                        <button type="submit" class="remove-btn" title="Remove item">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="cart-actions">
+            <form th:action="@{/cart/clear}" method="post">
+                <button type="submit" class="clear-cart-btn" onclick="return confirm('Are you sure you want to clear the entire cart?');">Clear Entire Cart</button>
+            </form>
+            <div class="cart-summary">
+                <h3>Grand Total: <span th:text="${#numbers.formatInteger(grandTotal, 1, 'COMMA')} + ' ₫'">0 ₫</span></h3>
+                <a th:href="@{/checkout}" class="checkout-btn">Proceed to Checkout</a>
+            </div>
+        </div>
+    </div> </div> </body>
+</html>
