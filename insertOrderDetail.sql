@@ -104,3 +104,11 @@ INSERT INTO order_detail (order_id, product_id, quantity, price) VALUES
 (22, 47, 1, 450000),  -- AMD Ryzen 7 7800X3D
 (22, 79, 1, 700000),  -- AMD Radeon RX 6950 XT
 (22, 24, 1, 190000);  -- ASUS PRIME X570-P
+
+INSERT INTO order_detail (order_id, product_id, quantity, price) VALUES
+(21, 43, 1, 90000),   -- AMD Ryzen 3 4100
+(21, 71, 1, 310000),  -- NVIDIA RTX 4060
+
+(23, 85, 1, 260000), 
+
+(20, 77, 1, 270000);
