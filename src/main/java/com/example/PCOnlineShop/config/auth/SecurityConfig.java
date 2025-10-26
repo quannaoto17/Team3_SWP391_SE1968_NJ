@@ -40,6 +40,8 @@ public class SecurityConfig {
                         .requestMatchers("/staff/list/**", "/staff/add/**", "/staff/edit/**", "/staff/view/**", "/staff/delete/**").hasAnyRole("ADMIN")
                         .requestMatchers("/staff/products/**", "/staff/warranty/**",  "/staff/shipping/**").hasAnyRole("STAFF", "ADMIN")
                         .requestMatchers("/orders/list", "/orders/detail/**").hasAnyRole("CUSTOMER", "STAFF", "ADMIN")
+                        .requestMatchers("/cart/**").hasRole("CUSTOMER") // Only Customers can access the cart
+                        .requestMatchers("/checkout/**", "/payment/**").hasRole("CUSTOMER")
 
                         // --- Đường dẫn cập nhật chỉ cho Staff/Admin ---
                         .requestMatchers("/orders/update-all-status").hasAnyRole("STAFF", "ADMIN")
