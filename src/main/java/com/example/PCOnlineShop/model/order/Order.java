@@ -17,12 +17,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int orderId;
 
-    // Khách hàng đặt
     @ManyToOne(fetch = FetchType.EAGER) // EAGER để dễ lấy thông tin hiển thị
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
-
-    // Đã bỏ totalAmount, discountAmount, voucherCode, customerEmail
 
     @Column(name = "final_amount")
     private Double finalAmount; // Tổng tiền cuối cùng
@@ -51,15 +48,14 @@ public class Order {
     @Column(name = "shipping_address", nullable = false)
     private String shippingAddress;
 
-    @Temporal(TemporalType.TIMESTAMP) // Store date and time
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "ready_to_ship_date")
-    private Date readyToShipDate; // Timestamp when status became Ready to Ship
+    private Date readyToShipDate;
 
-    @Temporal(TemporalType.TIMESTAMP) // Lưu cả giờ phút
-    @Column(name = "shipment_received_date") // Đảm bảo cột này tồn tại trong DB
-    private Date shipmentReceivedDate; // Thời điểm Staff chuyển sang Delivering
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "shipment_received_date")
+    private Date shipmentReceivedDate;
 
-    // Quan hệ với OrderDetail (Giữ nguyên)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderDetail> orderDetails;
 
