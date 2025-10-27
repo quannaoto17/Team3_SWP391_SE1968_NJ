@@ -1,18 +1,15 @@
-/* CSS specific to the cart page */
 body {
-    background-color: #f8f9fa; /* Light background for the whole page */
-    /* Remove top margin/padding if header handles it */
-    /* margin-top: 0; */
-    /* padding: 0; */
+    background-color: #f8f9fa;
+    padding-top: 70px; /* Adjust if header height differs */
 }
 
 .cart-container {
     max-width: 1200px;
     margin: 30px auto;
     background-color: #fff;
-    padding: 30px;
+    padding: 20px 30px 30px; /* Adjust padding */
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .cart-container h1 {
@@ -20,165 +17,221 @@ body {
     margin-bottom: 30px;
     color: #333;
     font-weight: 600;
+    font-size: 24px;
 }
 
-/* Overriding general table styles if needed */
-.cart-container table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+/* Cart Header (Select All / Clear All) */
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #f8f9fa; /* Light background */
+    border: 1px solid #dee2e6;
+    border-radius: 6px 6px 0 0; /* Rounded top corners */
+    margin-bottom: 0; /* Remove margin if items list connects directly */
 }
 
-.cart-container th,
-.cart-container td {
-    border-bottom: 1px solid #dee2e6;
-    padding: 15px; /* Increase padding for better spacing */
-    text-align: center;
-    vertical-align: middle;
+.select-all-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.cart-container th {
-    background-color: #f8f9fa;
+.select-all-container label {
+    margin-bottom: 0; /* Override default label margin */
+    font-weight: 500;
     color: #495057;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 13px;
-    border-top: 1px solid #dee2e6; /* Add top border for header */
+    cursor: pointer;
 }
 
-.product-image {
-    max-width: 70px;
+.cart-checkbox { /* Style chung cho checkbox */
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.clear-cart-icon-btn {
+    background: none;
+    border: none;
+    color: #dc3545; /* Red color for delete */
+    font-size: 20px; /* Larger icon */
+    cursor: pointer;
+    padding: 5px;
+    line-height: 1;
+}
+.clear-cart-icon-btn:hover {
+    color: #a71d2a;
+}
+
+/* Cart Items List */
+.cart-items-list {
+    border: 1px solid #dee2e6;
+    border-top: none; /* Remove top border as header has bottom border */
+    border-radius: 0 0 6px 6px; /* Rounded bottom corners */
+    overflow: hidden; /* Ensure rounded corners apply */
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 50px 100px 1fr 120px 120px 120px 50px; /* Columns for checkbox, img, details, price, qty, subtotal, remove */
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee; /* Lighter border between items */
+    gap: 15px;
+}
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.item-selection, .item-remove {
+    text-align: center;
+}
+.item-image img {
+    max-width: 100%;
     height: auto;
+    max-height: 80px; /* Limit image height */
     border-radius: 4px;
     border: 1px solid #eee;
-    vertical-align: middle; /* Ensure image aligns well */
+    object-fit: contain;
 }
-
-.product-name {
+.item-details {
     text-align: left;
+}
+.product-name {
     font-weight: 500;
     color: #333;
+    font-size: 15px;
+    display: block; /* Ensure it takes block space */
 }
-
 .product-link {
     text-decoration: none;
     color: inherit;
-    transition: color 0.2s;
 }
-
 .product-link:hover {
-    text-decoration: underline;
     color: #0056b3;
+    text-decoration: underline;
 }
 
-.quantity-form {
+.item-price, .item-subtotal {
+    font-weight: 500;
+    font-size: 15px;
+}
+.item-subtotal {
+    color: #dc3545; /* Red subtotal */
+    font-weight: bold;
+}
+
+.item-quantity {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
 }
-
-.quantity-input {
-    width: 60px;
-    text-align: center;
-    padding: 6px 8px; /* Adjust padding */
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.075); /* Subtle inner shadow */
-}
-/* Style for number input arrows (optional) */
-.quantity-input::-webkit-outer-spin-button,
-.quantity-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-.quantity-input[type=number] {
-    -moz-appearance: textfield; /* Firefox */
-}
-
-
-.update-btn,
-.remove-btn {
-    padding: 6px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 13px;
-    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
-    border: 1px solid transparent; /* Base border */
-}
-
-.update-btn {
+.quantity-change-btn {
     background-color: #e9ecef;
+    border: 1px solid #ced4da;
     color: #495057;
-    border-color: #ced4da;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+    line-height: 26px; /* Center text vertically */
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
-
-.update-btn:hover {
+.quantity-change-btn:hover:not(:disabled) {
     background-color: #dee2e6;
-    border-color: #adb5bd;
+}
+.quantity-change-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.quantity-display {
+    width: 45px;
+    text-align: center;
+    border: none; /* Remove border */
+    background: none; /* Remove background */
+    font-weight: 500;
+    padding: 0 5px; /* Add slight padding */
+    font-size: 15px;
+    /* Prevent user input */
+    pointer-events: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
-.remove-btn {
-    background-color: #f8d7da;
-    color: #721c24;
-    border-color: #f5c6cb;
+.remove-item-btn {
+    background: none;
+    border: none;
+    color: #6c757d; /* Muted color */
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px;
+}
+.remove-item-btn:hover {
+    color: #dc3545; /* Red on hover */
 }
 
-.remove-btn:hover {
-    background-color: #f1b0b7;
-    border-color: #eea4af;
-}
-
-.cart-actions {
+/* Checkout Section */
+.cart-checkout-section {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start; /* Align top edges */
-    margin-bottom: 20px;
+    justify-content: space-between; /* Push summary to the right */
+    align-items: flex-start;
+    margin-top: 30px;
     padding-top: 20px;
     border-top: 1px solid #eee;
 }
 
-.clear-cart-btn {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 14px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.clear-cart-btn:hover {
-    background-color: #5a6268;
+.voucher-placeholder {
+    /* Style for voucher section if added later */
+    flex-grow: 1; /* Take up remaining space */
 }
 
 .cart-summary {
-    text-align: right;
-    width: 300px;
-    padding: 15px; /* Add some padding */
-    background-color: #f8f9fa; /* Light background for summary */
+    width: 320px; /* Fixed width for summary */
+    padding: 20px;
+    background-color: #f8f9fa;
     border-radius: 6px;
     border: 1px solid #e9ecef;
 }
-
 .cart-summary h3 {
-    margin-top: 0; /* Remove top margin */
-    margin-bottom: 15px;
+    margin-top: 0;
+    margin-bottom: 20px;
     font-size: 18px;
     color: #333;
     font-weight: 600;
+    text-align: center;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
 }
-
-.cart-summary span {
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #495057;
+}
+.summary-line span:last-child {
+    font-weight: 500;
+    color: #333;
+}
+.summary-line.grand-total span {
+    font-size: 18px; /* Larger grand total */
     font-weight: bold;
-    color: #dc3545; /* Red color for total */
-    font-size: 20px; /* Make total slightly larger */
+}
+.summary-line.grand-total span:last-child {
+    color: #dc3545; /* Red grand total */
+}
+.cart-summary hr {
+    border-top: 1px solid #dee2e6;
+    margin: 15px 0;
 }
 
 .checkout-btn {
-    display: block; /* Make it block level */
-    width: 100%; /* Full width within summary */
+    display: block;
+    width: 100%;
     padding: 12px 25px;
     background-color: #dc3545;
     color: white;
@@ -189,13 +242,20 @@ body {
     font-weight: bold;
     text-decoration: none;
     text-align: center;
-    margin-top: 15px; /* Space above button */
+    margin-top: 20px;
     transition: background-color 0.2s;
 }
-
 .checkout-btn:hover {
     background-color: #c82333;
+    color: white; /* Ensure text remains white */
 }
+.checkout-btn.disabled { /* Style for disabled checkout button */
+    background-color: #ced4da;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+
 
 /* Alert styles (copied from OrderStyle.css - remove if OrderStyle is always included) */
 .alert {
@@ -255,4 +315,26 @@ body {
     background-color: #007bff;
     color: white;
     text-decoration: none;
+}
+
+/* Style cho nút icon thùng rác (dùng emoji) */
+.clear-cart-icon-btn, .remove-item-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    line-height: 1;
+    font-size: 20px; /* Tăng kích thước emoji */
+    color: #6c757d; /* Màu mặc định */
+    transition: color 0.2s;
+}
+.clear-cart-icon-btn {
+    color: #dc3545; /* Màu đỏ cho nút xóa tất cả */
+    font-size: 22px; /* Có thể to hơn chút */
+}
+.clear-cart-icon-btn:hover {
+    color: #a71d2a;
+}
+.remove-item-btn:hover {
+    color: #dc3545; /* Đỏ khi hover */
 }
