@@ -19,29 +19,39 @@ public class StaffController {
     private final StaffService staffService;
     private final AuthService authService;
 
-    //  Danh sách nhân viên
+    // Danh sách nhân viên (1-based page, giống Product)
     @GetMapping("/list")
-    public String listStaff(@RequestParam(defaultValue = "0") int page,
+    public String listStaff(@RequestParam(defaultValue = "1") int page,          //
                             @RequestParam(defaultValue = "10") int size,
                             @RequestParam(defaultValue = "") String searchQuery,
                             @RequestParam(defaultValue = "all") String statusFilter,
                             Model model) {
 
-        Page<Account> staffPage = staffService.getStaffPage(page, size, searchQuery, statusFilter);
+        int safePage = Math.max(page, 1);
+        int zeroBasedPage = safePage - 1; // convert về 0-based cho service/repo
+
+        Page<Account> staffPage = staffService.getStaffPage(zeroBasedPage, size, searchQuery, statusFilter);
+
         model.addAttribute("staffPage", staffPage);
         model.addAttribute("searchQuery", searchQuery);
         model.addAttribute("statusFilter", statusFilter);
+
+        // đồng bộ biến giống Product
+        model.addAttribute("currentPage", safePage);                 //
+        model.addAttribute("totalPages", staffPage.getTotalPages());
+        model.addAttribute("pageSize", size);
+
         return "staff/staff-list";
     }
 
-    //  Xem chi tiết
+    // Xem chi tiết
     @GetMapping("/view/{id}")
     public String viewStaff(@PathVariable int id, Model model) {
         model.addAttribute("account", staffService.getById(id));
         return "staff/view-staff";
     }
 
-    //  Form thêm
+    // Form thêm
     @GetMapping("/add")
     public String addStaffForm(Model model) {
         model.addAttribute("account", new Account());
@@ -93,7 +103,7 @@ public class StaffController {
         return "redirect:/staff/list?statusFilter=all";
     }
 
-    //  Chuyển trạng thái
+    // Chuyển trạng thái
     @GetMapping("/delete/{id}")
     public String deactivateStaff(@PathVariable int id) {
         staffService.deactivateStaff(id);

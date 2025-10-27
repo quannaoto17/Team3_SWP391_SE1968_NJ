@@ -8,55 +8,50 @@
 </head>
 <body>
 
-<div>
-    <div sec:authorize="!isAuthenticated()"
-         th:replace="layout/header-default :: header-default"></div>
-    <div sec:authorize="hasRole('ADMIN')"
-         th:replace="layout/header-admin :: header-admin"></div>
+<!-- Header phân quyền -->
+<div sec:authorize="!isAuthenticated()" th:replace="layout/header-default :: header-default"></div>
+<div sec:authorize="hasRole('ADMIN')" th:replace="layout/header-admin :: header-admin"></div>
+<div sec:authorize="hasRole('STAFF')" th:replace="layout/header-staff :: header-staff"></div>
+<div sec:authorize="hasRole('CUSTOMER')" th:replace="layout/header-customer :: header-customer"></div>
 
-    <div sec:authorize="hasRole('STAFF')"
-         th:replace="layout/header-staff :: header-staff"></div>
+<!-- Header -->
+<div class="header">
+    <h2>Admin Dashboard</h2>
+</div>
 
-    <div sec:authorize="hasRole('CUSTOMER')"
-         th:replace="layout/header-customer :: header-customer"></div>
-    <!-- Header -->
-    <div class="header">
-        <h2>Staff Management</h2>
-    </div>
+<!-- Main Content -->
+<div class="content">
+    <h2>Staff List</h2>
 
-    <!-- Content -->
-    <div class="content">
-        <h2>Staff List</h2>
-
-        <!-- Search + Filter + Add -->
-        <div class="search-sort-container">
-
-            <!-- Bên trái: Search -->
-            <div class="search-left">
-                <form th:action="@{/staff/list}" method="get" class="search-form">
-                    <input type="text" name="searchQuery" placeholder="Search by phone or email"
-                           th:value="${searchQuery}"/>
-                    <button type="submit" class="btn-filter">Filter</button>
-                </form>
-            </div>
-
-            <!-- Bên phải: Dropdown + Add Staff -->
-            <div class="search-right">
-                <form th:action="@{/staff/list}" method="get" class="status-form">
-                    <select name="statusFilter" onchange="this.form.submit()">
-                        <option value="all" th:selected="${statusFilter == 'all'}">All</option>
-                        <option value="active" th:selected="${statusFilter == 'active'}">Active</option>
-                        <option value="inactive" th:selected="${statusFilter == 'inactive'}">Inactive</option>
-                    </select>
-                </form>
-
-                <div class="add-staff">
-                    <a href="/staff/add">Add Staff</a>
-                </div>
-            </div>
+    <!-- Search + Filter + Add -->
+    <div class="search-sort-container">
+        <!-- Search -->
+        <div class="search-left">
+            <form th:action="@{/staff/list}" method="get" class="search-form">
+                <input type="text" name="searchQuery" placeholder="Search by phone or email"
+                       th:value="${searchQuery}"/>
+                <button type="submit" class="btn-filter">Search</button>
+            </form>
         </div>
 
-        <!-- Bảng danh sách -->
+        <!-- Filter + Add -->
+        <div class="search-right">
+            <form th:action="@{/staff/list}" method="get" class="status-form">
+                <select name="statusFilter" onchange="this.form.submit()">
+                    <option value="all" th:selected="${statusFilter == 'all'}">All</option>
+                    <option value="active" th:selected="${statusFilter == 'active'}">Active</option>
+                    <option value="inactive" th:selected="${statusFilter == 'inactive'}">Inactive</option>
+                </select>
+            </form>
+
+            <div class="add-staff">
+                <a href="/staff/add">Add Staff</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLE SCROLL WRAPPER -->
+    <div class="table-scroll">
         <table>
             <thead>
             <tr>
@@ -84,7 +79,6 @@
                 <td>
                     <a th:href="@{'/staff/view/' + ${s.accountId}}" class="btn-action btn-view">View</a>
                     <a th:href="@{'/staff/edit/' + ${s.accountId}}" class="btn-action btn-edit">Edit</a>
-                    <!--  Thêm class 'btn-action' vào đây -->
                     <a th:href="@{'/staff/delete/' + ${s.accountId}}"
                        class="btn-action"
                        th:text="${s.enabled ? 'Deactivate' : 'Activate'}"
@@ -94,20 +88,50 @@
             </tr>
             </tbody>
         </table>
-
-        <!-- Phân trang -->
-        <div class="pagination">
-            <a th:href="@{/staff/list(page=${staffPage.number - 1}, size=${staffPage.size}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}"
-               th:classappend="${!staffPage.hasPrevious()} ? 'disabled' : ''">← Prev</a>
-
-            <span th:text="${staffPage.number + 1}"></span> /
-            <span th:text="${staffPage.totalPages}"></span>
-
-            <a th:href="@{/staff/list(page=${staffPage.number + 1}, size=${staffPage.size}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}"
-               th:classappend="${!staffPage.hasNext()} ? 'disabled' : ''">Next →</a>
-        </div>
-
     </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination">
+
+        <!-- Prev -->
+        <a th:if="${currentPage > 1}"
+           th:href="@{/staff/list(page=${currentPage - 1}, size=${pageSize}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}">
+            « Prev
+        </a>
+
+        <!-- Page 1 -->
+        <a th:href="@{/staff/list(page=1, size=${pageSize}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}"
+           th:classappend="${currentPage == 1} ? 'active'">
+            1
+        </a>
+
+        <!-- ... LEFT -->
+        <span th:if="${totalPages > 3 and currentPage > 2}">...</span>
+
+        <!-- CURRENT PAGE (not 1 or last) -->
+        <a th:if="${currentPage != 1 and currentPage != totalPages}"
+           th:text="${currentPage}"
+           class="active"
+           th:href="@{/staff/list(page=${currentPage}, size=${pageSize}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}">
+        </a>
+
+        <!-- ... RIGHT -->
+        <span th:if="${totalPages > 3 and currentPage < totalPages - 1}">...</span>
+
+        <!-- LAST PAGE -->
+        <a th:if="${totalPages > 1}"
+           th:text="${totalPages}"
+           th:classappend="${currentPage == totalPages} ? 'active'"
+           th:href="@{/staff/list(page=${totalPages}, size=${pageSize}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}">
+        </a>
+
+        <!-- Next -->
+        <a th:if="${currentPage < totalPages}"
+           th:href="@{/staff/list(page=${currentPage + 1}, size=${pageSize}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}">
+            Next »
+        </a>
+    </div>
+
 </div>
 
 </body>
