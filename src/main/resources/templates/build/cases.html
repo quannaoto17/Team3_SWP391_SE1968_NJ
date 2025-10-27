@@ -75,11 +75,13 @@
                      th:data-formfactor="${case.formFactor}"
                      th:data-gpumaxlength="${case.gpuMaxLength}"
                      th:data-cpumaxheight="${case.cpuMaxCoolerHeight}"
-                     th:data-psumaxlength="${case.psuMaxLength}">
+                     th:data-psuformfactor="${case.psuFormFactor}">
 <!--                    <img th:if="${case.product.image != null}" th:src="${case.product.image}" alt="Case Image"/>-->
                     <h4 th:text="${case.product.productName}"></h4>
                     <p th:text="'Form Factor: ' + ${case.formFactor}"></p>
                     <p th:text="'GPU Max Length: ' + ${case.gpuMaxLength} + 'mm'"></p>
+                    <p th:text="'PSU Support: ' + ${case.psuFormFactor}"></p>
+                    <p th:text="'CPU Cooler Height: ' + ${case.cpuMaxCoolerHeight} + 'mm'"></p>
                     <strong th:text="'$' + ${case.product.price}"></strong>
                 </div>
             </div>
@@ -103,7 +105,7 @@
                 <p id="detailFormFactor">Form Factor: ...</p>
                 <p id="detailGpuLength">GPU Max Length: ...</p>
                 <p id="detailCpuHeight">CPU Cooler Max Height: ...</p>
-                <p id="detailPsuLength">PSU Max Length: ...</p>
+                <p id="detailPsuFormFactor">PSU Form Factor: ...</p>
             </div>
         </div>
     </div>
