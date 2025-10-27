@@ -22,6 +22,8 @@ public class Memory {
     private int speed; // in MHz
     @Column(name = "tdp")
     private int tdp; // in Watts
+    @Column(name = "modules")
+    private int modules; // number of modules
     @OneToOne
     @MapsId
     @JoinColumn(name = "product_id")

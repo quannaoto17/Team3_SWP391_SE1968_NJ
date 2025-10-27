@@ -72,9 +72,14 @@
                      th:classappend="${buildItems.powerSupply?.product?.productId == psu.product.productId} ? 'selected' : ''"
                      th:attr="data-id=${psu.product.productId}"
                      th:data-name="${psu.product.productName}"
-                     th:data-wattage="${psu.wattage}">
+                     th:data-wattage="${psu.wattage}"
+                     th:data-formfactor="${psu.formFactor}"
+                     th:data-efficiency="${psu.efficiency}"
+                     th:data-modular="${psu.modular}">
                     <h4 th:text="${psu.product.productName}"></h4>
                     <p th:text="'Wattage: ' + ${psu.wattage} + 'W'"></p>
+                    <p th:text="'Form Factor: ' + ${psu.formFactor}"></p>
+                    <p th:text="'Efficiency: ' + ${psu.efficiency}"></p>
                     <strong th:text="'$' + ${psu.product.price}"></strong>
                 </div>
             </div>
@@ -96,6 +101,9 @@
             <div class="detail-spec">
                 <h4>SPECIFICATION</h4>
                 <p id="detailWattage">Wattage: ...</p>
+                <p id="detailFormFactor">Form Factor: ...</p>
+                <p id="detailEfficiency">Efficiency: ...</p>
+                <p id="detailModular">Modular: ...</p>
             </div>
         </div>
     </div>
