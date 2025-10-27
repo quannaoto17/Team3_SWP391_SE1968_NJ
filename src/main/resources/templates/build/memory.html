@@ -73,10 +73,13 @@
                      th:attr="data-id=${memory.product.productId}"
                      th:data-name="${memory.product.productName}"
                      th:data-type="${memory.type}"
-                     th:data-capacity="${memory.capacity}">
+                     th:data-capacity="${memory.capacity}"
+                     th:data-speed="${memory.speed}"
+                     th:data-modules="${memory.modules}">
                     <h4 th:text="${memory.product.productName}"></h4>
                     <p th:text="'Type: ' + ${memory.type}"></p>
-                    <p th:text="'Capacity: ' + ${memory.capacity} + 'GB'"></p>
+                    <p th:text="'Capacity: ' + ${memory.capacity} + 'GB (' + ${memory.modules} + 'x' + ${memory.capacity / memory.modules} + 'GB)'"></p>
+                    <p th:text="'Speed: ' + ${memory.speed} + 'MHz'"></p>
                     <strong th:text="'$' + ${memory.product.price}"></strong>
                 </div>
             </div>
@@ -99,6 +102,8 @@
                 <h4>SPECIFICATION</h4>
                 <p id="detailType">Type: ...</p>
                 <p id="detailCapacity">Capacity: ...</p>
+                <p id="detailModules">Modules: ...</p>
+                <p id="detailSpeed">Speed: ...</p>
             </div>
         </div>
     </div>
