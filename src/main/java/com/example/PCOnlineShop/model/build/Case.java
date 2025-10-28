@@ -1,6 +1,7 @@
 package com.example.PCOnlineShop.model.build;
 import com.example.PCOnlineShop.model.product.Product;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import  lombok.*;
 
 @Entity
@@ -13,14 +14,30 @@ public class Case {
     @Id
     @Column(name = "product_id")
     private int productId;
+
     @Column(name = "form_factor")
-    private String formFactor; // e.g., ATX, Micro-ATX, Mini
+    @NotBlank(message = "Form factor is required")
+    @Size(min =  1, max = 100, message = "Form factor must be between 1 and 100 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Form factor must not contain special characters")
+    private String formFactor;
+
     @Column(name = "gpu_max_length")
+    @NotNull(message = "GPU max length is required")
+    @Min(value = 1, message = "GPU max length must be at least 1 mm")
+    @Max(value = 500, message = "GPU max length must be at most 500 mm")
     private int gpuMaxLength; // in mm
+
     @Column(name = "cpu_max_cooler_height")
+    @NotNull(message = "CPU max cooler height is required")
+    @Min(value = 1, message = "CPU max cooler height must be at least 1 mm")
+    @Max(value = 300, message = "CPU max cooler height must be at most 300 mm")
     private int cpuMaxCoolerHeight; // in mm
-    @Column(name = "psu_form_factor")
-    private String psuFormFactor; // e.g., ATX, SFX, SFX-L (case hỗ trợ PSU form factor nào)
+
+    @Column(name = "psu_max_length")
+    @NotNull(message = "PSU max length is required")
+    @Min(value = 1, message = "PSU max length must be at least 1 mm")
+    @Max(value = 300, message = "PSU max length must be at most 300 mm")
+    private int psuMaxLength; // in mm
 
 
     @OneToOne

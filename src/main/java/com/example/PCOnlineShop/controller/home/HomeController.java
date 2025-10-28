@@ -26,7 +26,7 @@ public class HomeController {
      * - Lọc theo danh mục
      * - Tìm kiếm theo tên sản phẩm
      */
-    @GetMapping({"", "home"})
+    @GetMapping({"home"})
     public String showHomePage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "9") int size,
