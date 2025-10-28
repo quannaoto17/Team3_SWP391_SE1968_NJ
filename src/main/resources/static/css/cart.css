@@ -1,0 +1,225 @@
+body {
+    background-color: #f8f9fa;
+    padding-top: 70px; /* Adjust if needed */
+}
+
+/* Use Bootstrap container class for consistent padding/width */
+.cart-container.container {
+    background-color: transparent;
+    box-shadow: none;
+    padding-left: var(--bs-gutter-x, .75rem); /* Match Bootstrap padding */
+    padding-right: var(--bs-gutter-x, .75rem);
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.cart-container h1 {
+    margin-bottom: 30px;
+    color: #333;
+    font-weight: 600;
+    font-size: 24px;
+    text-align: left;
+    /* Removed padding-left as container handles it */
+}
+
+/* Cart Header */
+.cart-header {
+    display: grid;
+    /* Columns: Checkbox | Spacer | Price | Qty | Subtotal | RemoveBtn */
+    grid-template-columns: auto 1fr 120px 120px 120px 50px; /* Adjusted columns */
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px 6px 0 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: -1px; /* Overlap border with list */
+}
+
+.select-all-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    grid-column: 1 / 2;
+}
+
+.select-all-container label {
+    margin-bottom: 0;
+    font-weight: 500;
+    color: #495057;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 14px; /* Slightly smaller */
+}
+
+.cart-checkbox.form-check-input {
+    width: 1.15em;
+    height: 1.15em;
+    margin-top: 0;
+}
+
+/* Column Headers */
+.cart-column-headers {
+    display: contents; /* Makes spans act as grid cells */
+    font-weight: 500;
+    font-size: 12px; /* Smaller header text */
+    color: #6c757d;
+    text-transform: uppercase;
+    text-align: center;
+}
+/* Align header text with item columns */
+.cart-column-headers span:nth-of-type(1) { grid-column: 3 / 4; } /* Price */
+.cart-column-headers span:nth-of-type(2) { grid-column: 4 / 5; } /* Quantity */
+.cart-column-headers span:nth-of-type(3) { grid-column: 5 / 6; } /* Subtotal */
+/* No Action header needed */
+
+#clear-cart-form {
+    grid-column: 6 / 7; /* Adjusted column for clear button */
+    justify-self: end;
+}
+
+.clear-cart-icon-btn {
+    background: none; border: none; cursor: pointer; padding: 0; line-height: 1;
+    font-size: 20px; color: #dc3545; transition: color 0.2s;
+}
+.clear-cart-icon-btn:hover { color: #a71d2a; }
+
+/* Cart Items List */
+.cart-items-list {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-top: none; /* Connects to header border */
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    overflow: hidden; /* Important for border-radius */
+}
+
+.cart-item {
+    display: grid;
+    /* Columns: Checkbox | Img | Details | Price | Qty | Subtotal | Remove */
+    grid-template-columns: 50px 100px 1fr 120px 120px 120px 50px;
+    align-items: center;
+    padding: 20px 15px;
+    border-bottom: 1px solid #f1f1f1; /* Lighter border inside list */
+    gap: 15px;
+}
+.cart-item:last-child { border-bottom: none; }
+
+.item-selection, .item-remove { text-align: center; }
+.item-image img { max-width: 100%; height: auto; max-height: 80px; border-radius: 4px; border: 1px solid #eee; object-fit: contain; }
+.item-details { text-align: left; }
+.product-name { font-weight: 500; color: #333; font-size: 15px; display: block; }
+.product-link { text-decoration: none; color: inherit; }
+.product-link:hover { color: #0056b3; text-decoration: underline; }
+
+.item-price, .item-subtotal { font-weight: 500; font-size: 15px; text-align: center; }
+.item-subtotal { color: #dc3545; font-weight: bold; }
+
+.item-quantity { display: flex; align-items: center; justify-content: center; }
+.quantity-change-btn { /* Style nút +/- dùng Bootstrap */ width: 32px; height: 32px; font-size: 16px; line-height: 1; text-align: center; padding: 0;}
+.quantity-display { width: 50px; text-align: center; background: none; border: 1px solid #ced4da; margin: 0 5px; height: 32px; font-weight: 500;}
+
+.remove-item-btn { background: none; border: none; cursor: pointer; padding: 0; line-height: 1; font-size: 18px; color: #6c757d; transition: color 0.2s; }
+.remove-item-btn:hover { color: #dc3545; }
+
+.cart-summary {
+    width: 100%;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.cart-summary h3 { margin-top: 0; margin-bottom: 20px; font-size: 18px; color: #333; font-weight: 600; text-align: center; border-bottom: 1px solid #dee2e6; padding-bottom: 10px; }
+.summary-line { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; color: #495057; }
+.summary-line span:last-child { font-weight: 500; color: #333; }
+.summary-line.grand-total span { font-size: 18px; font-weight: bold; }
+.summary-line.grand-total span:last-child { color: #dc3545; }
+.cart-summary hr { border-top: 1px solid #dee2e6; margin: 15px 0; }
+
+.checkout-btn { /* Style nút checkout dùng Bootstrap */ margin-top: 20px; font-weight: bold; padding: 12px; }
+.checkout-btn.disabled { background-color: #6c757d; border-color: #6c757d; cursor: not-allowed; opacity: 0.65;}
+
+
+/* Alert styles (copied from OrderStyle.css - remove if OrderStyle is always included) */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    text-align: center;
+}
+.alert-danger {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+.alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+.alert-info { /* Added from previous step */
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+
+.empty-cart {
+    text-align: center;
+    padding: 50px 20px;
+    color: #6c757d;
+    border: 1px dashed #ced4da; /* Add a dashed border */
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.empty-cart p {
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.empty-cart a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 20px; /* Style link like a button */
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    transition: all 0.2s;
+}
+
+.empty-cart a:hover {
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+}
+
+/* Style cho nút icon thùng rác (dùng emoji) */
+.clear-cart-icon-btn, .remove-item-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    line-height: 1;
+    font-size: 20px; /* Tăng kích thước emoji */
+    color: #6c757d; /* Màu mặc định */
+    transition: color 0.2s;
+}
+.clear-cart-icon-btn {
+    color: #dc3545; /* Màu đỏ cho nút xóa tất cả */
+    font-size: 22px; /* Có thể to hơn chút */
+}
+.clear-cart-icon-btn:hover {
+    color: #a71d2a;
+}
+.remove-item-btn:hover {
+    color: #dc3545; /* Đỏ khi hover */
+}

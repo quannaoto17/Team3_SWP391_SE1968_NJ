@@ -13,6 +13,24 @@
         .related-title { margin-top: 40px; font-weight: 600; text-transform: uppercase; }
         .related-item img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; }
         .related-item h6 { margin-top: 10px; font-size: 15px; }
+
+        /* Feedback */
+        .feedback-section { margin-top: 50px; }
+        .feedback-item { background: #fff; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 0 6px rgba(0,0,0,0.05); }
+        .feedback-item strong { color: #2c3e50; }
+        .rating-stars { unicode-bidi: bidi-override; direction: rtl; display: inline-flex; gap: 4px; }
+        .rating-stars input { display: none; }
+        .rating-stars label { font-size: 24px; cursor: pointer; user-select: none; line-height: 1; color: #ccc; }
+        .rating-stars input:checked ~ label,
+        .rating-stars label:hover,
+        .rating-stars label:hover ~ label { color: #f1c40f; }
+        .feedback-form textarea { min-height: 150px; resize: vertical; }
+
+        /* Style cho form add to cart */
+        .add-cart-form-detail { display: flex; align-items: center; gap: 10px; margin-top: 20px; }
+        .add-cart-form-detail label { margin-bottom: 0; }
+        .add-cart-form-detail input[type=number] { width: 70px; text-align: center; }
+        .add-cart-form-detail button { padding: 10px 20px; } /* Kích thước nút lớn hơn */
     </style>
 </head>
 <body>
@@ -32,17 +50,24 @@
             <div class="col-md-7">
                 <h2 th:text="${product.productName}">Product Name</h2>
                 <p th:text="${product.category != null ? 'Category: ' + product.category.categoryName : ''}"></p>
-                <p class="price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</p>
-
-                <p><b>Description:</b></p>
+                <p class="price" th:text="${#numbers.formatInteger(product.price, 1, 'COMMA')} + ' ₫'">0 ₫</p> <p><b>Description:</b></p>
                 <p th:text="${product.description != null ? product.description : 'No description available.'}"></p>
 
-                <a href="/home" class="btn btn-secondary mt-3">
-                    <i class="fa fa-arrow-left"></i> Back to Home
+                <form th:action="@{'/cart/add/' + ${product.productId}}" method="post" class="add-cart-form-detail">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1"
+                           th:max="${product.inventoryQuantity ?: 1}" class="form-control" required
+                           th:disabled="${product.inventoryQuantity == null or product.inventoryQuantity <= 0}">
+
+                    <button type="submit" class="btn btn-success"
+                            th:disabled="${product.inventoryQuantity == null or product.inventoryQuantity <= 0}">
+                        <i class="fa fa-shopping-cart"></i> Add to Cart
+                    </button>
+                    <span th:if="${product.inventoryQuantity == null or product.inventoryQuantity <= 0}" class="text-danger ms-2">Out of stock</span>
+                </form>
+                <a th:href="@{/}" class="btn btn-secondary mt-3"> <i class="fa fa-arrow-left"></i> Back to Shop
                 </a>
-                <a href="#" class="btn btn-success mt-3">
-                    <i class="fa fa-shopping-cart"></i> Add to Cart
-                </a>
+
             </div>
         </div>
 
@@ -61,6 +86,67 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="feedback-section mt-5">
+            <h4 class="related-title">Customer Feedback</h4>
+
+            <!-- Hiển thị thông báo -->
+            <div th:if="${param.feedback_success}" class="alert alert-success mt-3">
+                Gửi đánh giá thành công! Bình luận của bạn đang chờ duyệt.
+            </div>
+            <div th:if="${param.feedback_error}" class="alert alert-danger mt-3">
+                Vui lòng chọn sao và nhập nội dung trước khi gửi.
+            </div>
+
+            <!-- Danh sách feedback -->
+            <div th:if="${feedbackPage != null and feedbackPage.totalElements > 0}">
+                <div th:each="fb : ${feedbackPage.content}" class="feedback-item">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong th:text="${fb.account != null ? fb.account.fullName : 'Người dùng'}">User</strong>
+                        <div>
+                            <span th:each="i : ${#numbers.sequence(1,5)}"
+                                  th:classappend="${i <= fb.rating} ? 'text-warning' : 'text-secondary'">&#9733;</span>
+                        </div>
+                    </div>
+                    <p th:text="${fb.comment}">Feedback content...</p>
+                    <small class="text-muted" th:text="${#temporals.format(fb.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+                </div>
+            </div>
+            <div th:if="${feedbackPage == null or feedbackPage.totalElements == 0}" class="text-muted">
+                Chưa có đánh giá nào cho sản phẩm này.
+            </div>
+
+            <hr class="my-4"/>
+
+            <!-- Form nhập feedback -->
+            <h5 class="mb-3">Viết đánh giá của bạn</h5>
+            <form th:action="@{/product/detail/{id}/feedback(id=${product.productId})}" method="post" class="feedback-form bg-white p-3 rounded border">
+
+
+                <!-- Rating -->
+                <div class="mb-3">
+                    <label class="form-label d-block">Đánh giá</label>
+                    <div class="rating-stars">
+                        <input type="radio" id="star5" name="rating" value="5"><label for="star5">&#9733;</label>
+                        <input type="radio" id="star4" name="rating" value="4"><label for="star4">&#9733;</label>
+                        <input type="radio" id="star3" name="rating" value="3"><label for="star3">&#9733;</label>
+                        <input type="radio" id="star2" name="rating" value="2"><label for="star2">&#9733;</label>
+                        <input type="radio" id="star1" name="rating" value="1"><label for="star1">&#9733;</label>
+                    </div>
+                </div>
+
+                <!-- Comment -->
+                <div class="mb-3">
+                    <label class="form-label">Nội dung</label>
+                    <textarea class="form-control" name="comment" rows="6" placeholder="Chia sẻ cảm nhận của bạn..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-paper-plane"></i> Gửi đánh giá
+                </button>
+            </form>
         </div>
     </div>
 </div>

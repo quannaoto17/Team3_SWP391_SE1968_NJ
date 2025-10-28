@@ -68,7 +68,7 @@ public class OrderService {
     public Order createOrder(Account customerAccount, Map<Integer, Integer> cartItems,
                              String shippingMethod, String note,
                              String shippingFullName, String shippingPhone, String shippingAddress) {
-        // ... (Code tạo đơn hàng giữ nguyên như file bạn cung cấp) ...
+
         Order order = new Order();
         order.setAccount(customerAccount);
         order.setCreatedDate(new Date());
@@ -122,7 +122,6 @@ public class OrderService {
                 if (!"Ready to Ship".equals(oldStatus) && "Ready to Ship".equals(newStatus)) {
                     order.setReadyToShipDate(now);
                 }
-                // --- Keep other status change logic if needed ---
 
             } else if (order == null) {
                 System.err.println("Order not found for update: " + entry.getKey());
@@ -143,29 +142,25 @@ public class OrderService {
     }
 
     public boolean customerAccountExistsByPhoneNumber(String phoneNumber) {
-        // ... (Code kiểm tra customer tồn tại giữ nguyên như file bạn cung cấp) ...
         return accountRepository.existsByPhoneNumberAndRole(phoneNumber, RoleName.Customer);
     }
 
     public List<Order> getOrdersByAccount(Account account) {
-        // ... (Code lấy đơn hàng cho customer giữ nguyên như file bạn cung cấp) ...
         return orderRepository.findByAccount(account);
     }
 
     public Order getOrderById(int id) {
-        // ... (Code lấy đơn hàng theo ID giữ nguyên như file bạn cung cấp) ...
         return orderRepository.findById(id).orElse(null);
     }
 
     public List<OrderDetail> getOrderDetails(int orderId) {
-        // ... (Code lấy chi tiết đơn hàng giữ nguyên như file bạn cung cấp) ...
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Đơn hàng không tồn tại: " + orderId));
         return orderDetailRepository.findByOrder(order);
     }
 
     // ==================================================
-    // == LOGIC CHO TRANG KIỂM TRA BẢO HÀNH (ĐÃ THÊM) ==
+    // == LOGIC CHO TRANG KIỂM TRA BẢO HÀNH
     // ==================================================
 
     // Lấy danh sách Orders theo SĐT (cho Warranty check)
@@ -193,7 +188,7 @@ public class OrderService {
                     int categoryId = category.getCategoryId();
                     int warrantyMonths = WARRANTY_MONTHS_BY_CATEGORY.getOrDefault(categoryId, 0);
 
-                    // --- Tính ngày hết hạn (giữ nguyên) ---
+                    // --- Tính ngày hết hạn ---
                     LocalDate orderLocalDate;
                     if (createdDate instanceof java.sql.Date) {
                         orderLocalDate = ((java.sql.Date) createdDate).toLocalDate();
@@ -204,7 +199,7 @@ public class OrderService {
                     }
                     LocalDate expiryDate = orderLocalDate.plusMonths(warrantyMonths);
 
-                    // --- 👇 TÍNH TOÁN TRẠNG THÁI BẢO HÀNH 👇 ---
+                    // ---TÍNH TOÁN TRẠNG THÁI BẢO HÀNH---
                     String warrantyStatus;
                     long daysUntilExpiry = ChronoUnit.DAYS.between(today, expiryDate);
 
@@ -242,8 +237,6 @@ public class OrderService {
     public List<Order> getShippingQueueOrders() { // Renamed method
         // Fetch orders with either status
         List<String> shippingStatuses = List.of("Ready to Ship", "Delivering");
-        // Use the existing repository method, just change the statuses passed in
-        // Assuming findByStatusWithAccount fetches the necessary associations (like Account)
         return orderRepository.findByStatusIn(shippingStatuses); // Pass both statuses
     }
 
@@ -269,18 +262,13 @@ public class OrderService {
         } else if ("Delivering".equals(currentStatus) && List.of("Completed", "Cancelled", "Delivery Failed").contains(newStatus)) { // Added Delivery Failed
             isValidTransition = true;
         }
-        // Optional: Allow changing back from Delivering to Ready to Ship?
-         /* else if ("Delivering".equals(currentStatus) && "Ready to Ship".equals(newStatus)) {
-              isValidTransition = true;
-              order.setReadyToShipDate(null); // Clear the date if moved back
-         } */
+
 
 
         if (!isValidTransition) {
             // Or handle silently and just don't update if transition is invalid from this screen
             System.err.println("Attempted invalid status transition from '" + currentStatus + "' to '" + newStatus + "' on shipping screen.");
-            // Optional: throw new IllegalStateException("Cannot change status from " + currentStatus + " to "+ newStatus + " on this screen.");
-            return; // Don't update if invalid
+            return;
         }
 
         order.setStatus(newStatus);

@@ -19,8 +19,8 @@ public class Case {
     private int gpuMaxLength; // in mm
     @Column(name = "cpu_max_cooler_height")
     private int cpuMaxCoolerHeight; // in mm
-    @Column(name = "psu_max_length")
-    private int psuMaxLength; // in mm
+    @Column(name = "psu_form_factor")
+    private String psuFormFactor; // e.g., ATX, SFX, SFX-L (case hỗ trợ PSU form factor nào)
 
     @OneToOne
     @MapsId // dùng chung id với Product

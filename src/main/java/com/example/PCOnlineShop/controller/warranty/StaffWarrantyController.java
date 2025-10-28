@@ -47,13 +47,7 @@ public class StaffWarrantyController {
             model.addAttribute("warrantyDetails", warrantyDetails);
             model.addAttribute("selectedOrderId", orderId);
         }
-        // Optional: Tự động hiển thị BH của đơn mới nhất
-        /* else if (!orders.isEmpty()) {
-            Order latestOrder = orders.get(0);
-            List<WarrantyDetailDTO> warrantyDetails = orderService.getWarrantyDetailsByOrderId(latestOrder.getOrderId());
-            model.addAttribute("warrantyDetails", warrantyDetails);
-            model.addAttribute("selectedOrderId", latestOrder.getOrderId());
-        } */
+
 
         return "warranty/check-warranty";
     }

@@ -20,6 +20,8 @@ public class PowerSupply {
     private String efficiency; // e.g., 80 Plus Bronze, Gold
     @Column(name = "modular")
     private boolean modular; // true if modular, false otherwise
+    @Column(name = "form_factor")
+    private String formFactor; // e.g., ATX (150mm), SFX (100mm), SFX-L (125mm), TFX (85mm)
 
     @OneToOne
     @MapsId

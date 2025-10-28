@@ -3,25 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Check Warranty</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f6f7fb; margin: 0; }
-        .container { width: 80%; margin: 40px auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-        h1 { text-align: center; color: #222; }
-        form { text-align: center; margin-bottom: 20px; }
-        input[type=text] { padding: 8px; width: 250px; border: 1px solid #ccc; border-radius: 4px; margin-right: 5px;}
-        button { padding: 9px 16px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; background-color: #eee; }
-        button[type=submit] { background-color: #007bff; color: white; border-color: #007bff; }
-        a.clear-btn { padding: 9px 16px; border-radius: 4px; border: 1px solid #ccc; background-color: #eee; text-decoration: none; color: #333; display: inline-block; vertical-align: top;}
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; text-align: center; padding: 10px; }
-        th { background-color: #f1f1f1; }
-        .not-found { color: red; text-align: center; font-weight: bold; margin-top: 20px; }
-        .section-title { color: #dc3545; font-size: 20px; font-weight: bold; margin-top: 30px; margin-bottom: 10px; text-align: center;}
-        .view-products-btn { background:none; border:none; color:#007bff; cursor:pointer; padding: 0; font-size: inherit; text-decoration: underline;}
 
-    </style>
+    <link rel="stylesheet" th:href="@{/css/WarrantyStyle.css}">
+
 </head>
 <body>
+
 <div sec:authorize="!isAuthenticated()"
      th:replace="layout/header-default :: header-default"></div>
 <div sec:authorize="hasRole('ADMIN')"
@@ -91,8 +78,10 @@
                 <td th:text="${wd.productName}"></td>
                 <td th:text="${wd.warrantyMonths + ' months'}"></td>
                 <td th:text="${#temporals.format(wd.expiryDate, 'dd/MM/yyyy')}"></td>
-                <td th:text="${wd.status}"
-                    th:classappend="${wd.status == 'Active' ? 'status-active' : (wd.status == 'Expiring Soon' ? 'status-expiring' : 'status-expired')}">
+                <td>
+                    <span th:text="${wd.status}"
+                        th:classappend="${wd.status == 'Active' ? 'status-active' : (wd.status == 'Expiring Soon' ? 'status-expiring' : 'status-expired')}">
+                    </span>
                 </td>
             </tr>
             <tr th:if="${#lists.isEmpty(warrantyDetails)}">

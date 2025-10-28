@@ -91,6 +91,7 @@ CREATE TABLE memory
     capacity   INT,
     speed      INT,
     tdp        INT,
+    modules INT DEFAULT 1,
     FOREIGN KEY (product_id) REFERENCES product (product_id) ON DELETE CASCADE
 );
 
@@ -117,7 +118,7 @@ CREATE TABLE pc_case
     form_factor           VARCHAR(50),
     gpu_max_length        INT,
     cpu_max_cooler_height INT,
-    psu_max_length        INT,
+    psu_form_factor       VARCHAR(20), -- ATX, SFX, SFX-L, TFX (case hỗ trợ PSU form factor nào)
     FOREIGN KEY (product_id) REFERENCES product (product_id) ON DELETE CASCADE
 );
 
@@ -126,10 +127,11 @@ CREATE TABLE pc_case
 -- ==============================================
 CREATE TABLE power_supply
 (
-    product_id INT AUTO_INCREMENT PRIMARY KEY,
-    wattage    INT,
-    efficiency VARCHAR(50),
-    modular    BIT,
+    product_id  INT AUTO_INCREMENT PRIMARY KEY,
+    wattage     INT,
+    efficiency  VARCHAR(50),
+    modular     BIT,
+    form_factor VARCHAR(20),
     FOREIGN KEY (product_id) REFERENCES product (product_id) ON DELETE CASCADE
 );
 
@@ -267,3 +269,6 @@ COMMENT 'Timestamp when status became Ready to Ship';
 ALTER TABLE orders
 ADD COLUMN shipment_received_date DATETIME NULL
 COMMENT 'Thời điểm shipper chuyển trạng thái sang Delivering';
+
+alter table product
+add	column inventory_quantity int;

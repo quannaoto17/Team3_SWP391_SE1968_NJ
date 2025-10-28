@@ -9,10 +9,10 @@ import java.util.Date; // Thêm Date cho orderDate
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class WarrantyDetailDTO { // Đổi tên class
-    private int orderId;        // Thêm orderId
+public class WarrantyDetailDTO {
+    private int orderId;
     private String productName;
-    private Date orderDate;     // Thêm orderDate
+    private Date orderDate;
     private int warrantyMonths;
     private LocalDate expiryDate;
     private String status;

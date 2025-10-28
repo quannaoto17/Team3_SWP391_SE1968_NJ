@@ -71,15 +71,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const detailFormFactor = document.getElementById("detailFormFactor");
     const detailGpuLength = document.getElementById("detailGpuLength");
     const detailCpuHeight = document.getElementById("detailCpuHeight");
-    const detailPsuLength = document.getElementById("detailPsuLength");
+    const detailPsuFormFactor = document.getElementById("detailPsuFormFactor");
     // Cooling fields
     const detailType = document.getElementById("detailType");
     const detailFanSize = document.getElementById("detailFanSize");
     const detailTDP = document.getElementById("detailTDP");
     // Memory & Storage fields
     const detailCapacity = document.getElementById("detailCapacity");
+    const detailModules = document.getElementById("detailModules");
+    const detailSpeed = document.getElementById("detailSpeed");
     // PSU fields
     const detailWattage = document.getElementById("detailWattage");
+    const detailEfficiency = document.getElementById("detailEfficiency");
+    const detailModular = document.getElementById("detailModular");
 
     // delegate clicks from document level for product-card
     document.addEventListener('click', function (e) {
@@ -143,8 +147,8 @@ document.addEventListener("DOMContentLoaded", function () {
         if (detailCpuHeight) {
             detailCpuHeight.innerText = 'CPU Cooler Max Height: ' + (card.getAttribute('data-cpumaxheight') || '...') + 'mm';
         }
-        if (detailPsuLength) {
-            detailPsuLength.innerText = 'PSU Max Length: ' + (card.getAttribute('data-psumaxlength') || '...') + 'mm';
+        if (detailPsuFormFactor) {
+            detailPsuFormFactor.innerText = 'PSU Form Factor: ' + (card.getAttribute('data-psuformfactor') || '...');
         }
 
         // Cooling specific
@@ -156,6 +160,26 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         if (detailTDP) {
             detailTDP.innerText = 'TDP: ' + (card.getAttribute('data-tdp') || '...');
+        }
+
+        // Memory specific
+        if (detailModules) {
+            detailModules.innerText = 'Modules: ' + (card.getAttribute('data-modules') || '...');
+        }
+        if (detailSpeed) {
+            detailSpeed.innerText = 'Speed: ' + (card.getAttribute('data-speed') || '...') + 'MHz';
+        }
+
+        // PSU specific
+        if (detailWattage) {
+            detailWattage.innerText = 'Wattage: ' + (card.getAttribute('data-wattage') || '...') + 'W';
+        }
+        if (detailEfficiency) {
+            detailEfficiency.innerText = 'Efficiency: ' + (card.getAttribute('data-efficiency') || '...');
+        }
+        if (detailModular) {
+            const isModular = card.getAttribute('data-modular') === 'true';
+            detailModular.innerText = 'Modular: ' + (isModular ? 'Yes' : 'No');
         }
 
         // Memory & Storage specific
@@ -244,6 +268,63 @@ document.addEventListener("DOMContentLoaded", function () {
                 overviewPopup.style.display = "none";
                 console.log("✅ Overview popup closed by clicking outside");
             }
+        });
+    }
+
+    // ===============================
+    // Save as Image Functionality
+    // ===============================
+    const saveAsImageBtn = document.getElementById("saveAsImageBtn");
+
+    if (saveAsImageBtn) {
+        saveAsImageBtn.addEventListener("click", function() {
+            // Lấy phần nội dung overview để chụp
+            const overviewContent = document.querySelector(".overview-popup-content");
+
+            if (!overviewContent) {
+                alert("⚠️ Cannot find overview content to save.");
+                return;
+            }
+
+            // Tạm ẩn các nút trong footer để không chụp vào ảnh
+            const footer = overviewContent.querySelector(".overview-footer");
+            const originalDisplay = footer ? footer.style.display : null;
+            if (footer) footer.style.display = "none";
+
+            // Sử dụng html2canvas để chụp
+            html2canvas(overviewContent, {
+                backgroundColor: '#ffffff',
+                scale: 2,
+                logging: false,
+                useCORS: true,
+                allowTaint: true
+            }).then(function(canvas) {
+                // Khôi phục footer
+                if (footer && originalDisplay !== null) {
+                    footer.style.display = originalDisplay;
+                } else if (footer) {
+                    footer.style.display = "";
+                }
+
+                // Tạo link download
+                const link = document.createElement('a');
+                const timestamp = new Date().getTime();
+                link.download = 'my-pc-build-' + timestamp + '.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                console.log("✅ Build image saved successfully!");
+            }).catch(function(error) {
+                // Khôi phục footer nếu có lỗi
+                if (footer && originalDisplay !== null) {
+                    footer.style.display = originalDisplay;
+                } else if (footer) {
+                    footer.style.display = "";
+                }
+
+                console.error('❌ Error generating image:', error);
+                alert('Failed to save image. Please try again.');
+            });
         });
     }
 

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping Cart</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/OrderStyle.css}"> <link rel="stylesheet" th:href="@{/css/cart.css}">
+</head>
+<body>
+<div sec:authorize="!isAuthenticated()" th:replace="~{layout/header-default :: header-default}"></div>
+<div sec:authorize="hasRole('ADMIN')" th:replace="~{layout/header-admin :: header-admin}"></div>
+<div sec:authorize="hasRole('STAFF')" th:replace="~{layout/header-staff :: header-staff}"></div>
+<div sec:authorize="hasRole('CUSTOMER')" th:replace="~{layout/header-customer :: header-customer}"></div>
+
+<div class="cart-container container mt-4">
+    <h1>Your Shopping Cart</h1>
+
+    <div id="cart-messages">
+    </div>
+
+    <div th:if="${isEmpty}" class="empty-cart">
+    </div>
+
+    <div th:unless="${isEmpty}" class="row g-4"> <div class="col-lg-8 col-md-7">
+        <div class="cart-header">
+            <div class="select-all-container">
+                <input type="checkbox" id="select-all-checkbox" class="cart-checkbox form-check-input">
+                <label for="select-all-checkbox">Select All (<span id="total-items-count" th:text="${#lists.size(cartItems)}">0</span>)</label>
+            </div>
+            <div class="cart-column-headers">
+                <span>Price</span>
+                <span>Quantity</span>
+                <span>Subtotal</span>
+            </div>
+            <form th:action="@{/cart/clear}" method="post" id="clear-cart-form">
+                <button type="button" class="clear-cart-icon-btn" title="Clear Entire Cart">🗑️</button>
+            </form>
+        </div>
+
+        <div class="cart-items-list">
+            <div class="cart-item" th:each="item : ${cartItems}" th:attr="data-product-id=${item.productId}, data-price=${item.price}, data-inventory=${item.inventoryQuantity}">
+                <div class="item-selection">
+                    <input type="checkbox" class="cart-item-checkbox cart-checkbox form-check-input" name="selectedItems" th:value="${item.productId}" checked>
+                </div>
+                <div class="item-image">
+                    <a th:href="@{'/product/detail/' + ${item.productId}}">
+                        <img th:src="${item.imageUrl}" alt="Product Image" class="product-image">
+                    </a>
+                </div>
+                <div class="item-details">
+                    <a th:href="@{'/product/detail/' + ${item.productId}}" class="product-link product-name" th:text="${item.productName}">Product Name</a>
+                </div>
+                <div class="item-price" th:text="${#numbers.formatInteger(item.price, 1, 'COMMA')} + ' ₫'">Price</div>
+                <div class="item-quantity">
+                    <button type="button" class="quantity-change-btn decrease-qty-btn btn btn-sm btn-outline-secondary" th:disabled="${item.quantity <= 1}">-</button>
+                    <input type="text" class="quantity-display form-control form-control-sm" th:value="${item.quantity}" readonly>
+                    <button type="button" class="quantity-change-btn increase-qty-btn btn btn-sm btn-outline-secondary" th:disabled="${item.quantity >= item.inventoryQuantity}">+</button>
+                </div>
+                <div class="item-subtotal" th:text="${#numbers.formatInteger(item.subtotal, 1, 'COMMA')} + ' ₫'">Subtotal</div>
+                <div class="item-remove">
+                    <button type="button" class="remove-item-btn" title="Remove item">🗑️</button>
+                </div>
+            </div> </div> </div> <div class="col-lg-4 col-md-5">
+        <div class="summary-wrapper sticky-top">
+            <div class="cart-summary">
+                <h3>Summary</h3>
+                <div class="summary-line">
+                    <span>Selected Items (<span id="selected-items-count">0</span>):</span>
+                    <span id="selected-items-total">0 ₫</span>
+                </div>
+                <hr>
+                <div class="summary-line grand-total">
+                    <span>Grand Total:</span>
+                    <span id="grand-total-value">0 ₫</span>
+                </div>
+                <a th:href="@{/checkout}" id="checkout-link" class="checkout-btn disabled btn btn-danger w-100 mt-3">Proceed to Checkout</a> </div>
+        </div> </div> </div> </div> <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/cart.js}"></script>
+</body>
+</html>
