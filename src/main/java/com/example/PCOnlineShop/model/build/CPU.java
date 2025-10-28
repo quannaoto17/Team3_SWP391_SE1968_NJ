@@ -2,6 +2,7 @@ package com.example.PCOnlineShop.model.build;
 
 import com.example.PCOnlineShop.model.product.Product;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Data
@@ -15,18 +16,39 @@ public class CPU {
     @Id
     @Column(name = "product_id")
     private Integer productId;
+
     @Column(name = "socket")
-    private String socket; // e.g., LGA1200, AM4
+    @NotBlank(message = "Socket type is required")
+    @Size(min = 1, max = 100, message = "Socket type must be between 1 and 100 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Socket type must not contain special characters")
+    private String socket;
+
     @Column(name = "tdp")
-    private Integer tdp; // in Watts
+    @NotNull(message = "TDP is required")
+    @Min(value = 1, message = "TDP must be at least 1 watt")
+    @Max(value = 500, message = "TDP must be at most 500 watts")
+    private Integer tdp;
+
     @Column(name = "max_memory_speed")
-    private Integer maxMemorySpeed; // in GB
+    @NotNull(message = "Max memory speed is required")
+    @Min(value = 1, message = "Max memory speed must be at least 1 MHz")
+    @Max(value = 10000, message = "Max memory speed must be at most 10000 MHz")
+    private Integer maxMemorySpeed;
+
     @Column(name = "memory_channels")
-    private Integer memoryChannels; // e.g., Dual, Quad
+    @NotNull(message = "Memory channels is required")
+    @Min(value = 1, message = "Memory channels must be at least 1")
+    @Max(value = 8, message = "Memory channels must be at most 8")
+    private Integer memoryChannels;
+
     @Column(name = "has_igpu")
-    private Boolean hasIGPU; // Integrated GPU presence
+    private Boolean hasIGPU;
+
     @Column(name = "pcie_version")
-    private String pcieVersion; // e.g., PCIe 4.0
+    @NotBlank(message = "PCIe version is required")
+    @Size(min = 1, max = 100, message = "PCIe version must be between 1 and 100 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\.\\s-]+$", message = "PCIe version must not contain special characters")
+    private String pcieVersion;
 
      @OneToOne
      @MapsId
