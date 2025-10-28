@@ -1,260 +1,145 @@
 body {
     background-color: #f8f9fa;
-    padding-top: 70px; /* Adjust if header height differs */
+    padding-top: 70px; /* Adjust if needed */
 }
 
-.cart-container {
-    max-width: 1200px;
-    margin: 30px auto;
-    background-color: #fff;
-    padding: 20px 30px 30px; /* Adjust padding */
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+/* Use Bootstrap container class for consistent padding/width */
+.cart-container.container {
+    background-color: transparent;
+    box-shadow: none;
+    padding-left: var(--bs-gutter-x, .75rem); /* Match Bootstrap padding */
+    padding-right: var(--bs-gutter-x, .75rem);
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .cart-container h1 {
-    text-align: center;
     margin-bottom: 30px;
     color: #333;
     font-weight: 600;
     font-size: 24px;
+    text-align: left;
+    /* Removed padding-left as container handles it */
 }
 
-/* Cart Header (Select All / Clear All) */
+/* Cart Header */
 .cart-header {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    /* Columns: Checkbox | Spacer | Price | Qty | Subtotal | RemoveBtn */
+    grid-template-columns: auto 1fr 120px 120px 120px 50px; /* Adjusted columns */
     align-items: center;
+    gap: 15px;
     padding: 15px;
-    background-color: #f8f9fa; /* Light background */
+    background-color: #fff;
     border: 1px solid #dee2e6;
-    border-radius: 6px 6px 0 0; /* Rounded top corners */
-    margin-bottom: 0; /* Remove margin if items list connects directly */
+    border-radius: 6px 6px 0 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: -1px; /* Overlap border with list */
 }
 
 .select-all-container {
     display: flex;
     align-items: center;
     gap: 10px;
+    grid-column: 1 / 2;
 }
 
 .select-all-container label {
-    margin-bottom: 0; /* Override default label margin */
+    margin-bottom: 0;
     font-weight: 500;
     color: #495057;
     cursor: pointer;
+    white-space: nowrap;
+    font-size: 14px; /* Slightly smaller */
 }
 
-.cart-checkbox { /* Style chung cho checkbox */
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
+.cart-checkbox.form-check-input {
+    width: 1.15em;
+    height: 1.15em;
+    margin-top: 0;
+}
+
+/* Column Headers */
+.cart-column-headers {
+    display: contents; /* Makes spans act as grid cells */
+    font-weight: 500;
+    font-size: 12px; /* Smaller header text */
+    color: #6c757d;
+    text-transform: uppercase;
+    text-align: center;
+}
+/* Align header text with item columns */
+.cart-column-headers span:nth-of-type(1) { grid-column: 3 / 4; } /* Price */
+.cart-column-headers span:nth-of-type(2) { grid-column: 4 / 5; } /* Quantity */
+.cart-column-headers span:nth-of-type(3) { grid-column: 5 / 6; } /* Subtotal */
+/* No Action header needed */
+
+#clear-cart-form {
+    grid-column: 6 / 7; /* Adjusted column for clear button */
+    justify-self: end;
 }
 
 .clear-cart-icon-btn {
-    background: none;
-    border: none;
-    color: #dc3545; /* Red color for delete */
-    font-size: 20px; /* Larger icon */
-    cursor: pointer;
-    padding: 5px;
-    line-height: 1;
+    background: none; border: none; cursor: pointer; padding: 0; line-height: 1;
+    font-size: 20px; color: #dc3545; transition: color 0.2s;
 }
-.clear-cart-icon-btn:hover {
-    color: #a71d2a;
-}
+.clear-cart-icon-btn:hover { color: #a71d2a; }
 
 /* Cart Items List */
 .cart-items-list {
+    background-color: #fff;
     border: 1px solid #dee2e6;
-    border-top: none; /* Remove top border as header has bottom border */
-    border-radius: 0 0 6px 6px; /* Rounded bottom corners */
-    overflow: hidden; /* Ensure rounded corners apply */
+    border-top: none; /* Connects to header border */
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    overflow: hidden; /* Important for border-radius */
 }
 
 .cart-item {
     display: grid;
-    grid-template-columns: 50px 100px 1fr 120px 120px 120px 50px; /* Columns for checkbox, img, details, price, qty, subtotal, remove */
+    /* Columns: Checkbox | Img | Details | Price | Qty | Subtotal | Remove */
+    grid-template-columns: 50px 100px 1fr 120px 120px 120px 50px;
     align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #eee; /* Lighter border between items */
+    padding: 20px 15px;
+    border-bottom: 1px solid #f1f1f1; /* Lighter border inside list */
     gap: 15px;
 }
-.cart-item:last-child {
-    border-bottom: none;
-}
+.cart-item:last-child { border-bottom: none; }
 
-.item-selection, .item-remove {
-    text-align: center;
-}
-.item-image img {
-    max-width: 100%;
-    height: auto;
-    max-height: 80px; /* Limit image height */
-    border-radius: 4px;
-    border: 1px solid #eee;
-    object-fit: contain;
-}
-.item-details {
-    text-align: left;
-}
-.product-name {
-    font-weight: 500;
-    color: #333;
-    font-size: 15px;
-    display: block; /* Ensure it takes block space */
-}
-.product-link {
-    text-decoration: none;
-    color: inherit;
-}
-.product-link:hover {
-    color: #0056b3;
-    text-decoration: underline;
-}
+.item-selection, .item-remove { text-align: center; }
+.item-image img { max-width: 100%; height: auto; max-height: 80px; border-radius: 4px; border: 1px solid #eee; object-fit: contain; }
+.item-details { text-align: left; }
+.product-name { font-weight: 500; color: #333; font-size: 15px; display: block; }
+.product-link { text-decoration: none; color: inherit; }
+.product-link:hover { color: #0056b3; text-decoration: underline; }
 
-.item-price, .item-subtotal {
-    font-weight: 500;
-    font-size: 15px;
-}
-.item-subtotal {
-    color: #dc3545; /* Red subtotal */
-    font-weight: bold;
-}
+.item-price, .item-subtotal { font-weight: 500; font-size: 15px; text-align: center; }
+.item-subtotal { color: #dc3545; font-weight: bold; }
 
-.item-quantity {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.quantity-change-btn {
-    background-color: #e9ecef;
-    border: 1px solid #ced4da;
-    color: #495057;
-    width: 28px;
-    height: 28px;
-    font-size: 16px;
-    line-height: 26px; /* Center text vertically */
-    text-align: center;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-.quantity-change-btn:hover:not(:disabled) {
-    background-color: #dee2e6;
-}
-.quantity-change-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-.quantity-display {
-    width: 45px;
-    text-align: center;
-    border: none; /* Remove border */
-    background: none; /* Remove background */
-    font-weight: 500;
-    padding: 0 5px; /* Add slight padding */
-    font-size: 15px;
-    /* Prevent user input */
-    pointer-events: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-}
+.item-quantity { display: flex; align-items: center; justify-content: center; }
+.quantity-change-btn { /* Style nút +/- dùng Bootstrap */ width: 32px; height: 32px; font-size: 16px; line-height: 1; text-align: center; padding: 0;}
+.quantity-display { width: 50px; text-align: center; background: none; border: 1px solid #ced4da; margin: 0 5px; height: 32px; font-weight: 500;}
 
-.remove-item-btn {
-    background: none;
-    border: none;
-    color: #6c757d; /* Muted color */
-    font-size: 18px;
-    cursor: pointer;
-    padding: 5px;
-}
-.remove-item-btn:hover {
-    color: #dc3545; /* Red on hover */
-}
-
-/* Checkout Section */
-.cart-checkout-section {
-    display: flex;
-    justify-content: space-between; /* Push summary to the right */
-    align-items: flex-start;
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-}
-
-.voucher-placeholder {
-    /* Style for voucher section if added later */
-    flex-grow: 1; /* Take up remaining space */
-}
+.remove-item-btn { background: none; border: none; cursor: pointer; padding: 0; line-height: 1; font-size: 18px; color: #6c757d; transition: color 0.2s; }
+.remove-item-btn:hover { color: #dc3545; }
 
 .cart-summary {
-    width: 320px; /* Fixed width for summary */
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 6px;
-    border: 1px solid #e9ecef;
-}
-.cart-summary h3 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 18px;
-    color: #333;
-    font-weight: 600;
-    text-align: center;
-    border-bottom: 1px solid #dee2e6;
-    padding-bottom: 10px;
-}
-.summary-line {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #495057;
-}
-.summary-line span:last-child {
-    font-weight: 500;
-    color: #333;
-}
-.summary-line.grand-total span {
-    font-size: 18px; /* Larger grand total */
-    font-weight: bold;
-}
-.summary-line.grand-total span:last-child {
-    color: #dc3545; /* Red grand total */
-}
-.cart-summary hr {
-    border-top: 1px solid #dee2e6;
-    margin: 15px 0;
-}
-
-.checkout-btn {
-    display: block;
     width: 100%;
-    padding: 12px 25px;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    text-decoration: none;
-    text-align: center;
-    margin-top: 20px;
-    transition: background-color 0.2s;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
-.checkout-btn:hover {
-    background-color: #c82333;
-    color: white; /* Ensure text remains white */
-}
-.checkout-btn.disabled { /* Style for disabled checkout button */
-    background-color: #ced4da;
-    cursor: not-allowed;
-    pointer-events: none;
-}
+.cart-summary h3 { margin-top: 0; margin-bottom: 20px; font-size: 18px; color: #333; font-weight: 600; text-align: center; border-bottom: 1px solid #dee2e6; padding-bottom: 10px; }
+.summary-line { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; color: #495057; }
+.summary-line span:last-child { font-weight: 500; color: #333; }
+.summary-line.grand-total span { font-size: 18px; font-weight: bold; }
+.summary-line.grand-total span:last-child { color: #dc3545; }
+.cart-summary hr { border-top: 1px solid #dee2e6; margin: 15px 0; }
 
+.checkout-btn { /* Style nút checkout dùng Bootstrap */ margin-top: 20px; font-weight: bold; padding: 12px; }
+.checkout-btn.disabled { background-color: #6c757d; border-color: #6c757d; cursor: not-allowed; opacity: 0.65;}
 
 
 /* Alert styles (copied from OrderStyle.css - remove if OrderStyle is always included) */
