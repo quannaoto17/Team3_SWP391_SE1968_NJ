@@ -23,6 +23,7 @@ public class PowerSupply {
     @Column(name = "form_factor")
     private String formFactor; // e.g., ATX (150mm), SFX (100mm), SFX-L (125mm), TFX (85mm)
 
+
     @OneToOne
     @MapsId
     @JoinColumn(name = "product_id")
