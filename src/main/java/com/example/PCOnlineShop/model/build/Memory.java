@@ -35,10 +35,9 @@ public class Memory {
     private int speed;
 
     @Column(name = "tdp")
-    @NotNull(message = "TDP is required")
-    @Min(value = 1, message = "TDP must be at least 1 watt")
-    @Max(value = 100, message = "TDP must be at most 100 watts")
-    private int tdp;
+    private int tdp; // in Watts
+    @Column(name = "modules")
+    private int modules; // number of modules
 
     @OneToOne
     @MapsId
