@@ -1,6 +1,7 @@
 package com.example.PCOnlineShop.model.product;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -20,18 +21,33 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column (name = "product_id")
     private int productId;
+
+    @NotBlank(message = "Product name is required" )
+    @Size(min = 5, max = 100, message = "Product name must be between 5 and 100 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "Product name must not contain special characters")
     @Column (name = "product_name")
     private String productName;
+
+
     @Column (name = "price")
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.01", message = "Price must be at least 0.01")
+    @DecimalMax(value = "100000.00", message = "Price must be at most 100000.00")
     private double price;
+
+
     @Column (name = "status")
     private boolean status;
+
     @Column (name = "description")
     private String description;
+
     @Column (name = "specification")
     private String specification;
+
     @Column (name = "created_at")
     private Date createAt;
+
     @Column (name = "inventory_quantity")
     private Integer inventoryQuantity;
 

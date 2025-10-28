@@ -18,4 +18,5 @@ public interface CaseRepository extends JpaRepository<Case, Integer> {
     List<Case> findWithFilters(@Param("formFactor") String formFactor);
 
     Optional <Case> findByProduct_ProductId(int id);
+
 }

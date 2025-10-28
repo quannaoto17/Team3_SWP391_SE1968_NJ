@@ -6,14 +6,17 @@ import com.example.PCOnlineShop.repository.product.*;
 import com.example.PCOnlineShop.repository.build.*;
 import com.example.PCOnlineShop.service.product.ProductService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional; // <— dùng Spring Transactional
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.naming.Binding;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -41,96 +44,12 @@ public class ProductController {
 
     // ===== DANH SÁCH =====
     @GetMapping("/list")
-    public String listProducts(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "8") int size,
-            @RequestParam(defaultValue = "productId") String sortField,
-            @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(required = false) Integer brandId,
-            @RequestParam(required = false) Integer categoryId,
-            @RequestParam(required = false) String keyword,
-            Model model) {
-
-        Page<Product> productPage;
-
-        boolean hasKeyword = (keyword != null && !keyword.isBlank());
-        if (hasKeyword) {
-            productPage = productService.search(keyword, brandId, categoryId, page, size, sortField, sortDir);
-        } else if (brandId != null) {
-            productPage = productService.getProductsByBrand(brandId, page, size, sortField, sortDir);
-        } else if (categoryId != null) {
-            productPage = productService.getProductsByCategory(categoryId, page, size, sortField, sortDir);
-        } else {
-            productPage = productService.getProducts(page, size, sortField, sortDir);
-        }
-
-        // Ensure newest image is first for each product (assumes Image has getImageId)
-        for (Product p : productPage.getContent()) {
-            List<Image> imgs = p.getImages();
-            if (imgs != null && !imgs.isEmpty()) {
-                imgs.sort(Comparator.comparing(Image::getImageId).reversed());
-                p.setImages(imgs);
-            }
-        }
-
-        model.addAttribute("products", productPage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", productPage.getTotalPages());
-        model.addAttribute("totalItems", productPage.getTotalElements());
-        model.addAttribute("sortField", sortField);
-        model.addAttribute("sortDir", sortDir);
-        model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
-        model.addAttribute("brandId", brandId);
-        model.addAttribute("categoryId", categoryId);
-        model.addAttribute("keyword", keyword);
+    public String listProducts(Model model) {
+        List<Product> products = productService.getProducts();
+        model.addAttribute("products", products);
         model.addAttribute("brands", brandRepository.findAll());
         model.addAttribute("categories", categoryRepository.findAll());
-        model.addAttribute("pageSize", size);
         return "product/product-list";
-    }
-
-    // ===== LIVE SEARCH fragment =====
-    @GetMapping("/search-fragment")
-    public String searchFragment(@RequestParam(required = false) String keyword,
-                                 @RequestParam(required = false) Integer brandId,
-                                 @RequestParam(required = false) Integer categoryId,
-                                 @RequestParam(defaultValue = "productId") String sortField,
-                                 @RequestParam(defaultValue = "asc") String sortDir,
-                                 @RequestParam(defaultValue = "1") int page,
-                                 @RequestParam(defaultValue = "8") int size,
-                                 Model model) {
-        Page<Product> productPage =
-                productService.search(keyword, brandId, categoryId, page, size, sortField, sortDir);
-        model.addAttribute("products", productPage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("pageSize", size);
-        return "product/product-list :: tbodyRows";
-    }
-
-    // ===== LIVE SEARCH block =====
-    @GetMapping("/search-block")
-    public String searchBlock(@RequestParam(required = false) String keyword,
-                              @RequestParam(required = false) Integer brandId,
-                              @RequestParam(required = false) Integer categoryId,
-                              @RequestParam(defaultValue = "productId") String sortField,
-                              @RequestParam(defaultValue = "asc") String sortDir,
-                              @RequestParam(defaultValue = "1") int page,
-                              @RequestParam(defaultValue = "8") int size,
-                              Model model) {
-        Page<Product> productPage = productService.search(keyword, brandId, categoryId, page, size, sortField, sortDir);
-
-        model.addAttribute("products",     productPage.getContent());
-        model.addAttribute("currentPage",  page);
-        model.addAttribute("totalPages",   productPage.getTotalPages());
-        model.addAttribute("totalItems",   productPage.getTotalElements());
-        model.addAttribute("sortField", sortField);
-        model.addAttribute("sortDir",   sortDir);
-        model.addAttribute("reverseSortDir", "asc".equalsIgnoreCase(sortDir) ? "desc" : "asc");
-        model.addAttribute("brandId",  brandId);
-        model.addAttribute("categoryId", categoryId);
-        model.addAttribute("keyword",  keyword);
-        model.addAttribute("pageSize", size);
-        return "product/product-list :: listWrapper";
     }
 
     // ===== FORM THÊM =====
@@ -139,6 +58,7 @@ public class ProductController {
         model.addAttribute("product", new Product());
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("brands", brandRepository.findAll());
+        model.addAttribute("isEdit", false);
         return "product/product-form";
     }
 
@@ -194,13 +114,25 @@ public class ProductController {
     // ===== LƯU (THÊM MỚI) =====
     @PostMapping("/save")
     @Transactional
-    public String saveProduct(@ModelAttribute("product") Product product,
+    public String saveProduct(@Valid @ModelAttribute("product") Product product,
+                              BindingResult result,
                               @RequestParam("category.categoryId") int categoryId,
                               @RequestParam("brand.brandId") int brandId,
                               @RequestParam Map<String, String> params,
                               @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles
+
     ) throws IOException {
 
+        if(productService.existsByProductName(product.getProductName()))
+            result.rejectValue("productName", "error.product", "Product name already exists.");
+
+        if (result.hasErrors()) {
+            Category category = categoryRepository.findById(categoryId).orElse(null);
+            Brand brand = brandRepository.findById(brandId).orElse(null);
+            product.setCategory(category);
+            product.setBrand(brand);
+            return "product/product-form";
+        }
         Category category = categoryRepository.findById(categoryId).orElse(null);
         Brand brand = brandRepository.findById(brandId).orElse(null);
         product.setCategory(category);
@@ -229,21 +161,29 @@ public class ProductController {
         model.addAttribute("product", product);
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("brands", brandRepository.findAll());
-        return "product/product-update";
+        model.addAttribute("isEdit", true);
+        return "product/product-form";
     }
 
     // ===== CẬP NHẬT =====
     @PostMapping("/edit")
     @Transactional
-    public String updateProduct(@ModelAttribute("product") Product incoming,
+    public String updateProduct(@Valid @ModelAttribute("product") Product incoming,
+                                BindingResult result,
                                 @RequestParam("category.categoryId") int categoryId,
                                 @RequestParam("brand.brandId") int brandId,
                                 @RequestParam Map<String, String> params,
                                 @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
-                                // ===== NEW FEATURE: nhận danh sách ảnh cần xoá =====
                                 @RequestParam(value = "deleteImageIds", required = false) String deleteImageIds
     ) throws IOException {
 
+        if(productService.existsByProductName(incoming.getProductName()))
+            result.rejectValue("productName", "error.product", "Product name already exists.");
+        if (result.hasErrors()) {
+            Category category = categoryRepository.findById(categoryId).orElse(null);
+            Brand brand = brandRepository.findById(brandId).orElse(null);
+            return "product/product-update";
+        }
         Product current = productService.getProductById(incoming.getProductId());
         if (current == null) return "redirect:/staff/products/list";
 

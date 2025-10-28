@@ -1,177 +1,311 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Chỉnh sửa sản phẩm</title>
+    <title>Edit Product</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <style>
-        body { margin:0; font-family:Arial, sans-serif; background:#f6f7fb; }
-        .layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+        :root {
+            --ink: #111827;
+            --muted: #6b7280;
+            --bg: #f6f7fb;
+            --card: #fff;
+            --border: #e5e7eb;
+            --radius: 12px;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --error: #dc2626;
+        }
 
-        /* Sidebar */
-        .sidebar { background:#555; color:#fff; display:flex; flex-direction:column; align-items:center; padding:20px; }
-        .sidebar img { width:80px; height:80px; border-radius:50%; background:#ccc; margin-bottom:10px; }
-        .sidebar h3 { margin:8px 0 16px; }
-        .sidebar button { width:100%; padding:8px; margin:5px 0; border:none; border-radius:4px; background:#eee; cursor:pointer; }
-        .sidebar button:hover { background:#ddd; }
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: var(--bg);
+            font-family: 'Inter', system-ui, Arial, sans-serif;
+            color: var(--ink);
+        }
 
-        /* Header */
-        .header { display:flex; justify-content:space-between; align-items:center; background:#fff; border-bottom:1px solid #ddd; padding:10px 20px; }
-        .logout-btn { border:1px solid #aaa; background:#fff; padding:6px 12px; cursor:pointer; border-radius:4px; }
-        .logout-btn:hover { background:#eee; }
+        .container {
+            max-width: 960px;
+            margin: 40px auto;
+            padding: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .05);
+        }
 
-        /* Content */
-        .content { padding:30px 50px; background:#fff; }
-        h2 { margin-bottom:20px; color:#333; }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
 
-        form { display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; align-items:start; }
-        label { display:block; font-weight:bold; margin-bottom:6px; color:#333; }
-        input, select, textarea { width:90%; padding:8px; border:1px solid #ccc; border-radius:4px; font-size:14px; }
-        textarea { grid-column:span 3; width:95%; padding:10px; resize:vertical; }
+        form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px 28px;
+        }
 
-        /* IMAGE */
-        .image-section { grid-column:span 3; background:#fafafa; border:1px dashed #ddd; border-radius:8px; padding:16px; }
-        .image-list { display:flex; flex-wrap:wrap; gap:12px; }
-        .image-box { position:relative; width:150px; height:120px; border:2px dashed #bbb; border-radius:8px; background:#f9f9f9; display:flex; justify-content:center; align-items:center; overflow:hidden; cursor:pointer; transition:all 0.2s ease; }
-        .image-box img { width:100%; height:100%; object-fit:cover; }
-        .image-box:hover { transform:scale(1.03); border-color:#777; }
-        .image-box.selected { border:3px solid #007bff; box-shadow:0 0 8px rgba(0,123,255,0.5); }
-        .delete-btn { position:absolute; top:4px; right:4px; background:rgba(255,0,0,0.7); color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-weight:bold; line-height:18px; }
-        .delete-btn:hover { background:red; }
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+        }
 
-        .note { color:#666; font-size:12px; margin-top:4px; }
-        .choose-btn { padding:8px 12px; border:1px solid #aaa; background:#f1f1f1; border-radius:4px; cursor:pointer; }
-        .choose-btn:hover { background:#ddd; }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fafafa;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
 
-        /* SPEC */
-        #specContainer { grid-column:span 3; background:#fafafa; border:1px dashed #ddd; border-radius:8px; padding:16px; }
-        #specContainer h3 { margin-top:0; }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+        }
 
-        /* BUTTON */
-        .update-btn { grid-column:span 3; justify-self:end; padding:12px 30px; background:#333; color:#fff; font-weight:bold; border:none; border-radius:4px; cursor:pointer; font-size:16px; }
-        .update-btn:hover { background:#111; }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
 
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        /* === Image Section === */
+        .image-section {
+            grid-column: 1 / -1;
+            background: #fafafa;
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .image-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .image-box {
+            position: relative;
+            width: 140px;
+            height: 110px;
+            border: 2px dashed #bbb;
+            border-radius: 8px;
+            background: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-box:hover {
+            transform: scale(1.03);
+            border-color: #777;
+        }
+
+        .image-box.selected {
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 8px rgba(37, 99, 235, .5);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(220, 38, 38, 0.9);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 18px;
+        }
+
+        .choose-btn {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .choose-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .note {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        /* === Submit button === */
+        .actions {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+
+        .update-btn {
+            padding: 10px 22px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .update-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .error {
+            color: var(--error);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            form {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
+
 <body>
-<div class="layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <img src="https://via.placeholder.com/80" alt="Ảnh đại diện">
-        <h3>Quản trị</h3>
-        <button>Bảng điều khiển</button>
-        <button>Quản lý danh mục</button>
-        <button style="background:#eee;">Quản lý sản phẩm</button>
-        <button>Khác</button>
-    </aside>
+<div th:replace="layout/header-staff :: header-staff"></div>
 
-    <!-- Main -->
-    <div>
-        <!-- Header -->
-        <div class="header">
-            <h2 style="margin:0;">Chỉnh sửa sản phẩm</h2>
-            <button class="logout-btn">Đăng xuất</button>
+<div class="container">
+    <h1>Edit Product</h1>
+
+    <form th:action="@{/staff/products/edit}" th:object="${product}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:field="*{productId}">
+        <input type="hidden" id="productId" th:value="${product.productId}">
+        <input type="hidden" id="initCategoryId" th:value="${product.category != null ? product.category.categoryId : 0}">
+        <input type="hidden" id="deleteImageIdsInput" name="deleteImageIds" value="">
+
+        <!-- === Image Section === -->
+        <div class="image-section">
+            <label><b>Current Images:</b></label>
+            <div class="image-list" id="existingImages">
+                <div class="image-box" th:each="img : ${product.images}"
+                     th:attr="data-id=${img.imageId}"
+                     onclick="toggleSelectImage(this)">
+                    <img th:src="@{${img.imageUrl}}" alt="Product Image">
+                    <button type="button" class="delete-btn"
+                            th:attr="data-id=${img.imageId}"
+                            onclick="deleteImage(event,this)">×</button>
+                </div>
+                <div class="image-box" th:if="${product.images == null or #lists.isEmpty(product.images)}">
+                    <span>No Image</span>
+                </div>
+            </div>
+
+            <label style="margin-top:16px;"><b>Add New Images:</b></label>
+            <input type="file" name="imageFiles" multiple accept="image/*" id="imageInput" style="display:none;">
+            <button type="button" class="choose-btn" onclick="document.getElementById('imageInput').click()">Choose Images</button>
+            <div id="newPreview" class="image-list"></div>
+            <div class="note">Click an image to mark for deletion (blue border = selected). Press × to delete immediately.</div>
         </div>
 
-        <!-- Content -->
-        <div class="content">
-            <form th:action="@{/staff/products/edit}" th:object="${product}" method="post" enctype="multipart/form-data">
-                <!-- Hidden -->
-                <input type="hidden" th:field="*{productId}"/>
-                <input type="hidden" id="productId" th:value="${product.productId}">
-                <input type="hidden" id="initCategoryId" th:value="${product.category != null ? product.category.categoryId : 0}">
-                <input type="hidden" id="deleteImageIdsInput" name="deleteImageIds" value="">
-
-                <!-- IMAGE SECTION -->
-                <div class="image-section">
-                    <label><b>Ảnh hiện có:</b></label>
-                    <div class="image-list" id="existingImages">
-                        <div class="image-box" th:each="img : ${product.images}"
-                             th:attr="data-id=${img.imageId}"
-                             onclick="toggleSelectImage(this)">
-                            <img th:src="@{${img.imageUrl}}" alt="Ảnh sản phẩm">
-                            <button type="button" class="delete-btn" th:attr="data-id=${img.imageId}" onclick="deleteImage(event,this)">×</button>
-                        </div>
-                        <div class="image-box" th:if="${product.images == null or #lists.isEmpty(product.images)}">
-                            <span>Chưa có ảnh</span>
-                        </div>
-                    </div>
-
-                    <label><b>Thêm ảnh mới:</b></label>
-                    <input type="file" name="imageFiles" multiple accept="image/*" id="imageInput" style="display:none;">
-                    <button type="button" class="choose-btn" onclick="document.getElementById('imageInput').click()">Chọn ảnh</button>
-                    <div id="newPreview" class="image-list" style="margin-top:10px;"></div>
-                    <div class="note">* Click vào ảnh để chọn xoá (viền xanh = đã chọn). Ấn dấu × để xoá ngay.</div>
-                </div>
-
-                <!-- Tên -->
-                <div>
-                    <label>Tên sản phẩm:</label>
-                    <input type="text" th:field="*{productName}" placeholder="Nhập tên sản phẩm" required>
-                </div>
-
-                <!-- Danh mục -->
-                <div>
-                    <label>Danh mục:</label>
-                    <select id="categorySelect" name="category.categoryId" required>
-                        <option value="">Chọn</option>
-                        <option th:each="cat : ${categories}" th:value="${cat.categoryId}"
-                                th:text="${cat.categoryName}"
-                                th:selected="${product.category != null and cat.categoryId == product.category.categoryId}"></option>
-                    </select>
-                </div>
-
-                <!-- Thương hiệu -->
-                <div>
-                    <label>Thương hiệu:</label>
-                    <select name="brand.brandId" required>
-                        <option value="">Chọn</option>
-                        <option th:each="b : ${brands}" th:value="${b.brandId}"
-                                th:text="${b.name}"
-                                th:selected="${product.brand != null and b.brandId == product.brand.brandId}"></option>
-                    </select>
-                </div>
-
-                <!-- Giá -->
-                <div>
-                    <label>Giá ($):</label>
-                    <input type="number" th:field="*{price}" min="0" step="0.01" required>
-                </div>
-
-                <!-- Trạng thái -->
-                <div>
-                    <label>Trạng thái:</label>
-                    <select th:field="*{status}">
-                        <option th:value="true" th:selected="${product.status == true}">Còn hàng</option>
-                        <option th:value="false" th:selected="${product.status == false}">Hết hàng</option>
-                    </select>
-                </div>
-
-                <!-- Mô tả -->
-                <div style="grid-column:span 3;">
-                    <label>Mô tả:</label>
-                    <textarea th:field="*{description}" rows="3"></textarea>
-                </div>
-
-                <!-- SPEC -->
-                <div id="specContainer"><em>Đang tải thông số...</em></div>
-
-                <!-- Ghi chú kỹ thuật -->
-                <div style="grid-column:span 3;">
-                    <label>Thông số kỹ thuật (ghi chú):</label>
-                    <textarea th:field="*{specification}" rows="3"></textarea>
-                </div>
-
-                <!-- SUBMIT -->
-                <button type="submit" class="update-btn">Cập nhật</button>
-            </form>
+        <!-- Product Name -->
+        <div>
+            <label>Product Name:</label>
+            <input type="text" th:field="*{productName}" placeholder="Enter product name" required>
         </div>
-    </div>
+
+        <!-- Category -->
+        <div>
+            <label>Category:</label>
+            <select id="categorySelect" name="category.categoryId" required>
+                <option value="">Select</option>
+                <option th:each="cat : ${categories}" th:value="${cat.categoryId}"
+                        th:text="${cat.categoryName}"
+                        th:selected="${product.category != null and cat.categoryId == product.category.categoryId}"></option>
+            </select>
+        </div>
+
+        <!-- Brand -->
+        <div>
+            <label>Brand:</label>
+            <select name="brand.brandId" required>
+                <option value="">Select</option>
+                <option th:each="b : ${brands}" th:value="${b.brandId}"
+                        th:text="${b.name}"
+                        th:selected="${product.brand != null and b.brandId == product.brand.brandId}"></option>
+            </select>
+        </div>
+
+        <!-- Price -->
+        <div>
+            <label>Price ($):</label>
+            <input type="number" th:field="*{price}" min="0.01" step="0.01" required>
+        </div>
+
+        <!-- Status -->
+        <div>
+            <label>Status:</label>
+            <select th:field="*{status}">
+                <option th:value="true" th:selected="${product.status == true}">In Stock</option>
+                <option th:value="false" th:selected="${product.status == false}">Out of Stock</option>
+            </select>
+        </div>
+
+        <!-- Description -->
+        <div class="full">
+            <label>Description:</label>
+            <textarea th:field="*{description}" rows="3" placeholder="Short description..."></textarea>
+        </div>
+
+        <!-- SPEC -->
+        <div id="specContainer" class="full"><em>Loading specifications...</em></div>
+
+        <!-- Specification Notes -->
+        <div class="full">
+            <label>Technical Specification (Notes):</label>
+            <textarea th:field="*{specification}" rows="3"></textarea>
+        </div>
+
+        <!-- Submit -->
+        <div class="actions">
+            <button type="submit" class="update-btn">Update Product</button>
+        </div>
+    </form>
 </div>
 
 <script>
-    // ======= Xem trước ảnh mới =======
     const imageInput = document.getElementById('imageInput');
     const newPreview = document.getElementById('newPreview');
+
     imageInput.addEventListener('change', (e) => {
         newPreview.innerHTML = '';
         Array.from(e.target.files).forEach(file => {
@@ -186,8 +320,8 @@
         });
     });
 
-    // ======= Quản lý chọn ảnh (bôi viền xanh) =======
     const selectedImages = new Set();
+
     function toggleSelectImage(box) {
         const id = box.getAttribute("data-id");
         if (selectedImages.has(id)) {
@@ -200,55 +334,56 @@
         document.getElementById("deleteImageIdsInput").value = Array.from(selectedImages).join(",");
     }
 
-    // ======= Xóa ảnh bằng nút × =======
     async function deleteImage(event, btn) {
         event.stopPropagation();
         const id = btn.getAttribute("data-id");
-        if (!confirm("Bạn có chắc muốn xóa ảnh này?")) return;
+        if (!confirm("Are you sure you want to delete this image?")) return;
         try {
             const res = await fetch(`/staff/products/image/${id}`, { method: "DELETE" });
             if (res.ok) {
-                const box = btn.closest(".image-box");
-                box.remove();
+                btn.closest(".image-box").remove();
             } else {
-                alert("Không thể xóa ảnh!");
+                alert("Failed to delete image!");
             }
         } catch {
-            alert("Lỗi khi xóa ảnh!");
+            alert("Error deleting image!");
         }
     }
 
-    // ======= Nạp SPEC động =======
     async function loadSpec(cid, pid){
         const box = document.getElementById('specContainer');
-        if (!cid || !pid) { box.innerHTML = '<em>Chưa có thông số cho danh mục này.</em>'; return; }
+        if (!cid || !pid) {
+            box.innerHTML = '<em>No specifications available for this category.</em>';
+            return;
+        }
         try {
             const res = await fetch(`/staff/products/spec-form-edit?categoryId=${cid}&productId=${pid}`, {
                 headers: { 'X-Requested-With': 'fetch' }
             });
             box.innerHTML = await res.text();
         } catch {
-            box.innerHTML = '<em>Không tải được form thông số.</em>';
+            box.innerHTML = '<em>Failed to load specification form.</em>';
         }
     }
 
-    // ======= Tự động tải spec khi trang load =======
     document.addEventListener('DOMContentLoaded', () => {
         const pid = document.getElementById('productId').value;
         const initCid = document.getElementById('initCategoryId').value;
         loadSpec(initCid, pid);
-        const catSel = document.getElementById('categorySelect');
-        catSel?.addEventListener('change', e => loadSpec(e.target.value, pid));
+        document.getElementById('categorySelect')?.addEventListener('change', e => loadSpec(e.target.value, pid));
     });
 
-    // ======= Cảnh báo nếu có ảnh chọn xoá =======
     document.querySelector("form").addEventListener("submit", e => {
         if (selectedImages.size > 0) {
-            if (!confirm(`Bạn đã chọn ${selectedImages.size} ảnh để xóa. Tiếp tục?`)) {
+            if (!confirm(`You have selected ${selectedImages.size} image(s) for deletion. Continue?`)) {
                 e.preventDefault();
             }
         }
     });
+
+    window.toggleSelectImage = toggleSelectImage;
+    window.deleteImage = deleteImage;
+    window.loadSpec = loadSpec;
 </script>
 </body>
 </html>
