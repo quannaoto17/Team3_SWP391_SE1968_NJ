@@ -36,6 +36,7 @@ public class Memory {
 
     @Column(name = "tdp")
     private int tdp; // in Watts
+
     @Column(name = "modules")
     private int modules; // number of modules
 
