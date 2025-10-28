@@ -26,7 +26,7 @@
         <!-- Search + Filter + Add -->
         <div class="search-sort-container">
 
-            <!-- Bên trái: Search -->
+            <!-- Left: Search -->
             <div class="search-left">
                 <form th:action="@{/customer/list}" method="get" class="search-form">
                     <input type="text" name="searchQuery" placeholder="Search by phone or email"
@@ -35,7 +35,7 @@
                 </form>
             </div>
 
-            <!-- Bên phải: Dropdown + Add Customer -->
+            <!-- Right: Dropdown + Add -->
             <div class="search-right">
                 <form th:action="@{/customer/list}" method="get" class="status-form">
                     <select name="statusFilter" onchange="this.form.submit()">
@@ -45,13 +45,13 @@
                     </select>
                 </form>
 
-                <div class="add-customer">
+                <div class="add-staff">
                     <a href="/customer/add">Add Customer</a>
                 </div>
             </div>
         </div>
 
-        <!-- Bảng danh sách khách hàng -->
+        <!-- Table -->
         <table>
             <thead>
             <tr>
@@ -89,16 +89,26 @@
             </tbody>
         </table>
 
-        <!-- Phân trang -->
+        <!-- Pagination -->
         <div class="pagination">
-            <a th:href="@{/customer/list(page=${customerPage.number - 1}, size=${customerPage.size}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}"
-               th:classappend="${!customerPage.hasPrevious()} ? 'disabled' : ''">← Prev</a>
+            <a th:if="${customerPage.hasPrevious()}"
+               th:href="@{/customer/list(page=${customerPage.number - 1}, size=${customerPage.size}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}">
+                ← Prev
+            </a>
 
-            <span th:text="${customerPage.number + 1}"></span> /
-            <span th:text="${customerPage.totalPages}"></span>
+            <span th:each="i : ${#numbers.sequence(0, customerPage.totalPages - 1)}">
+                <a th:if="${i == 0 or i == customerPage.totalPages - 1 or (i >= customerPage.number - 1 and i <= customerPage.number + 1)}"
+                   th:href="@{/customer/list(page=${i}, size=${customerPage.size}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}"
+                   th:text="${i + 1}"
+                   th:classappend="${i == customerPage.number} ? 'active'"></a>
 
-            <a th:href="@{/customer/list(page=${customerPage.number + 1}, size=${customerPage.size}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}"
-               th:classappend="${!customerPage.hasNext()} ? 'disabled' : ''">Next →</a>
+                <span th:if="${i == customerPage.number - 2 or i == customerPage.number + 2}">...</span>
+            </span>
+
+            <a th:if="${customerPage.hasNext()}"
+               th:href="@{/customer/list(page=${customerPage.number + 1}, size=${customerPage.size}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}">
+                Next →
+            </a>
         </div>
 
     </div>

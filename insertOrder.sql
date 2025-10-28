@@ -30,4 +30,10 @@ INSERT INTO orders (account_id, final_amount, status, created_date, shipping_met
 (5, 400000, 'Completed', '2023-02-25', 'Giao hàng tận nơi', 'Hoàng Thị Em', '0934567890', '202 Đường JKL, Q9, TP.HCM'),
 (5, 1340000, 'Pending', CURDATE(), 'Giao hàng tận nơi', 'Hoàng Thị Em', '0934567890', '202 Đường JKL, Q9, TP.HCM'),
 (5, 260000, 'Shipped', '2023-03-30', 'Giao hàng tận nơi', 'Hoàng Thị Em', '0934567890', '202 Đường JKL, Q9, TP.HCM'),
-(5, 270000, 'Processing', '2023-04-20', 'Giao hàng tận nơi', 'Hoàng Thị Em', '0934567890', '202 Đường JKL, Q9, TP.HCM');
+(5, 270000, 'Processing', '2023-04-20', 'Giao hàng tận nơi', 'Hoàng Thị Em', '0934567890', '202 Đường JKL, Q9, TP.HCM')
+;
+INSERT INTO orders (account_id, final_amount, status, created_date, shipping_method, shipping_full_name, shipping_phone, shipping_address) VALUES
+(34, 400000, 'Completed', '2023-10-25', 'Giao hàng tận nơi', 'Nguyễn Phương Anh', '061251565', '202 Đường JKL, Q9, TP.HCM'),
+(34, 1340000, 'Pending', CURDATE(), 'Giao hàng tận nơi', 'Nguyễn Phương Anh', '061251565', '202 Đường JKL, Q9, TP.HCM'),
+(34, 260000, 'Shipped', '2023-04-04', 'Giao hàng tận nơi', 'Nguyễn Phương Anh', '061251565', '202 Đường JKL, Q9, TP.HCM'),
+(34, 270000, 'Processing', '2023-04-20', 'Giao hàng tận nơi', 'Nguyễn Phương Anh', '061251565', '202 Đường JKL, Q9, TP.HCM');

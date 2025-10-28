@@ -616,63 +616,63 @@ VALUES (LAST_INSERT_ID(), 4, 'GDDR6', 53, 'PCIe x4', '4.0', 170);
 
 -- 1. Corsair Vengeance LPX 16GB (2x8GB) DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 2, 'Corsair Vengeance LPX 16GB (2x8GB) DDR4 3200MHz C16', 54.99, 'Kit RAM DDR4 phổ biến, hiệu năng ổn định, tản nhiệt thấp.', 'Kit 16GB, DDR4, 3200MHz, CL16', 50);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 5);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 5, 2);
 
 -- 2. G.Skill Ripjaws V 16GB (2x8GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 14, 'G.Skill Ripjaws V 16GB (2x8GB) DDR4 3600MHz C18', 61.99, 'Hiệu năng cao cho các hệ thống AMD Ryzen.', 'Kit 16GB, DDR4, 3600MHz, CL18', 45);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3600, 6);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3600, 6, 2);
 
 -- 3. Kingston Fury Beast 8GB DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 15, 'Kingston Fury Beast 8GB DDR4 3200MHz', 29.99, 'Thanh RAM lẻ 8GB cho các cấu hình cơ bản.', '8GB, DDR4, 3200MHz, CL16', 60);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3200, 5);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3200, 5, 1);
 
 -- 4. Crucial Ballistix 32GB (2x16GB) DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 16, 'Crucial Ballistix 32GB (2x16GB) DDR4 3200MHz C16', 109.99, 'Kit 32GB hiệu năng tốt cho gaming và làm việc đa nhiệm.', 'Kit 32GB, DDR4, 3200MHz, CL16', 35);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3200, 7);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3200, 7, 2);
 
 -- 5. Teamgroup T-Force Vulcan Z 16GB (2x8GB) DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 17, 'Teamgroup T-Force Vulcan Z 16GB (2x8GB) DDR4 3200MHz', 49.99, 'RAM giá rẻ với tản nhiệt cách điệu.', 'Kit 16GB, DDR4, 3200MHz, CL16', 55);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 5);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 5, 2);
 
 -- 6. G.Skill Trident Z RGB 16GB (2x8GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 14, 'G.Skill Trident Z RGB 16GB (2x8GB) DDR4 3600MHz C18', 84.99, 'Thiết kế RGB đẹp mắt, hiệu năng cao.', 'Kit 16GB, DDR4, 3600MHz, CL18', 40);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3600, 8);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3600, 8, 2);
 
 -- 7. Corsair Dominator Platinum RGB 32GB (2x16GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 2, 'Corsair Dominator Platinum RGB 32GB (2x16GB) DDR4 3600MHz', 179.99, 'Dòng RAM cao cấp nhất của Corsair, LED Capellix.', 'Kit 32GB, DDR4, 3600MHz, CL18', 25);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600, 10);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600, 10, 2);
 
 -- 8. Kingston Fury Beast 32GB (2x16GB) DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 15, 'Kingston Fury Beast 32GB (2x16GB) DDR4 3200MHz', 104.99, 'Kit 32GB cho người dùng cần nhiều dung lượng.', 'Kit 32GB, DDR4, 3200MHz, CL16', 30);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3200, 7);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3200, 7, 2);
 
 -- 9. Crucial Pro 16GB (2x8GB) DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 16, 'Crucial Pro 16GB (2x8GB) DDR4 3200MHz', 52.99, 'RAM ổn định, không RGB, tập trung vào hiệu năng.', 'Kit 16GB, DDR4, 3200MHz, CL22', 48);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 5);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 5, 2);
 
 -- 10. G.Skill Ripjaws V 32GB (2x16GB) DDR4 4000MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 14, 'G.Skill Ripjaws V 32GB (2x16GB) DDR4 4000MHz C18', 149.99, 'Tốc độ bus cực cao cho các hệ thống Intel cao cấp.', 'Kit 32GB, DDR4, 4000MHz, CL18', 28);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 4000, 8);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 4000, 8, 2);
 
 -- 11. Corsair Vengeance RGB Pro 16GB (2x8GB) DDR4 3200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 2, 'Corsair Vengeance RGB Pro 16GB (2x8GB) DDR4 3200MHz', 69.99, 'Dòng RAM RGB tầm trung phổ biến.', 'Kit 16GB, DDR4, 3200MHz, CL16', 42);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 7);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 7, 2);
 
 -- 12. Teamgroup T-Create Expert 32GB (2x16GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 17, 'Teamgroup T-Create Expert 32GB (2x16GB) DDR4 3600MHz', 99.99, 'Dòng RAM chuyên cho người làm sáng tạo nội dung.', 'Kit 32GB, DDR4, 3600MHz, CL18', 32);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600, 7);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600, 7, 2);
 
 -- 13. Kingston Fury Renegade 16GB (2x8GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 15, 'Kingston Fury Renegade 16GB (2x8GB) DDR4 3600MHz', 75.99, 'Dòng RAM hiệu năng cao của Kingston.', 'Kit 16GB, DDR4, 3600MHz, CL16', 38);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3600, 7);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3600, 7, 2);
 
 -- 14. G.Skill Trident Z Royal Silver 32GB (2x16GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 14, 'G.Skill Trident Z Royal Silver 32GB (2x16GB) DDR4 3600MHz', 189.99, 'Thiết kế kim cương sang trọng, hiệu năng đỉnh cao.', 'Kit 32GB, DDR4, 3600MHz, CL18', 22);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600, 10);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600, 10, 2);
 
 -- 15. Corsair Vengeance LPX 32GB (2x16GB) DDR4 3600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 2, 'Corsair Vengeance LPX 32GB (2x16GB) DDR4 3600MHz C18', 114.99, 'Kit 32GB tốc độ cao, tản nhiệt thấp không cấn tản khí.', 'Kit 32GB, DDR4, 3600MHz, CL18', 34);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600, 7);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 32, 3600, 7, 2);
 
 -- -----------------------------------------------------------------
 -- RAM DDR5
@@ -680,63 +680,63 @@ INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_
 
 -- 16. Corsair Vengeance 32GB (2x16GB) DDR5 5600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 2, 'Corsair Vengeance 32GB (2x16GB) DDR5 5600MHz C36', 134.99, 'Kit RAM DDR5 tiêu chuẩn cho các hệ thống mới.', 'Kit 32GB, DDR5, 5600MHz, CL36', 40);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 5600, 8);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 5600, 8, 2);
 
 -- 17. G.Skill Trident Z5 RGB 32GB (2x16GB) DDR5 6000MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 14, 'G.Skill Trident Z5 RGB 32GB (2x16GB) DDR5 6000MHz C36', 159.99, 'Tốc độ tối ưu cho AMD EXPO, thiết kế đẹp.', 'Kit 32GB, DDR5, 6000MHz, CL36', 35);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000, 10);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000, 10, 2);
 
 -- 18. Kingston Fury Beast 16GB (2x8GB) DDR5 5200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 15, 'Kingston Fury Beast 16GB (2x8GB) DDR5 5200MHz', 94.99, 'Kit 16GB DDR5 cho các cấu hình tầm trung.', 'Kit 16GB, DDR5, 5200MHz, CL40', 45);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 16, 5200, 7);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 16, 5200, 7, 2);
 
 -- 19. Crucial Pro 32GB (2x16GB) DDR5 5600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 16, 'Crucial Pro 32GB (2x16GB) DDR5 5600MHz', 129.99, 'RAM DDR5 ổn định, hỗ trợ cả Intel XMP và AMD EXPO.', 'Kit 32GB, DDR5, 5600MHz, CL46', 38);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 5600, 8);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 5600, 8, 2);
 
 -- 20. Teamgroup T-Force Delta RGB 32GB (2x16GB) DDR5 6000MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 17, 'Teamgroup T-Force Delta RGB 32GB (2x16GB) DDR5 6000MHz', 149.99, 'Thiết kế RGB góc cạnh, hiệu năng tốt.', 'Kit 32GB, DDR5, 6000MHz, CL38', 32);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000, 10);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000, 10, 2);
 
 -- 21. Corsair Dominator Platinum RGB 32GB (2x16GB) DDR5 6200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 2, 'Corsair Dominator Platinum RGB 32GB (2x16GB) DDR5 6200MHz', 229.99, 'Dòng RAM DDR5 cao cấp nhất của Corsair.', 'Kit 32GB, DDR5, 6200MHz, CL36', 20);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6200, 12);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6200, 12, 2);
 
 -- 22. G.Skill Ripjaws S5 32GB (2x16GB) DDR5 5200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 14, 'G.Skill Ripjaws S5 32GB (2x16GB) DDR5 5200MHz Black', 124.99, 'Thiết kế tản nhiệt thấp, phù hợp nhiều loại tản khí.', 'Kit 32GB, DDR5, 5200MHz, CL40', 36);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 5200, 8);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 5200, 8, 2);
 
 -- 23. Kingston Fury Renegade 32GB (2x16GB) DDR5 6400MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 15, 'Kingston Fury Renegade 32GB (2x16GB) DDR5 6400MHz', 179.99, 'Hiệu năng cao, tản nhiệt bạc-đen.', 'Kit 32GB, DDR5, 6400MHz, CL32', 28);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6400, 10);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6400, 10, 2);
 
 -- 24. G.Skill Trident Z5 RGB 64GB (2x32GB) DDR5 6400MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 14, 'G.Skill Trident Z5 RGB 64GB (2x32GB) DDR5 6400MHz', 319.99, 'Dung lượng cực lớn cho workstation và các tác vụ nặng.', 'Kit 64GB, DDR5, 6400MHz, CL32', 15);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 64, 6400, 12);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 64, 6400, 12, 2);
 
 -- 25. Corsair Vengeance RGB 32GB (2x16GB) DDR5 6000MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 2, 'Corsair Vengeance RGB 32GB (2x16GB) DDR5 6000MHz C36', 164.99, 'Dòng Vengeance với dải LED RGB toàn cảnh.', 'Kit 32GB, DDR5, 6000MHz, CL36', 30);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000, 10);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000, 10, 2);
 
 -- 26. Crucial 16GB (1x16GB) DDR5 4800MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 16, 'Crucial 16GB DDR5 4800MHz', 59.99, 'Thanh RAM lẻ DDR5 tiêu chuẩn JEDEC, không tản nhiệt.', '16GB, DDR5, 4800MHz, CL40', 50);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 16, 4800, 6);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 16, 4800, 6, 1);
 
 -- 27. Teamgroup T-Force Xtreem 32GB (2x16GB) DDR5 7600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 17, 'Teamgroup T-Force Xtreem 32GB (2x16GB) DDR5 7600MHz', 249.99, 'Tốc độ bus cực cao cho những người đam mê ép xung.', 'Kit 32GB, DDR5, 7600MHz, CL36', 18);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 7600, 12);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 7600, 12, 2);
 
 -- 28. Kingston Fury Beast 64GB (2x32GB) DDR5 5600MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 15, 'Kingston Fury Beast 64GB (2x32GB) DDR5 5600MHz', 279.99, 'Kit 64GB dung lượng lớn, ổn định.', 'Kit 64GB, DDR5, 5600MHz, CL40', 20);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 64, 5600, 10);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 64, 5600, 10, 2);
 
 -- 29. G.Skill Flare X5 32GB (2x16GB) DDR5 6000MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 14, 'G.Skill Flare X5 32GB (2x16GB) DDR5 6000MHz CL30', 169.99, 'Tối ưu cho AMD EXPO với độ trễ C30 cực thấp.', 'Kit 32GB, DDR5, 6000MHz, CL30', 26);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000, 9);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 32, 6000, 9, 2);
 
 -- 30. Corsair Vengeance 64GB (2x32GB) DDR5 5200MHz
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 2, 'Corsair Vengeance 64GB (2x32GB) DDR5 5200MHz', 269.99, 'Kit 64GB không RGB, tập trung vào dung lượng và sự ổn định.', 'Kit 64GB, DDR5, 5200MHz, CL40', 22);
-INSERT INTO memory (product_id, type, capacity, speed, tdp) VALUES (LAST_INSERT_ID(), 'DDR5', 64, 5200, 9);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 64, 5200, 9, 2);
 
 -- =================================================================
 -- SCRIPT INSERT 30 SẢN PHẨM LƯU TRỮ (STORAGE) - GIÁ ĐÃ SỬA SANG USD
@@ -885,23 +885,23 @@ INSERT INTO storage (product_id, type, capacity, interface, read_speed, write_sp
 
 -- 1. Cooler Master MasterBox Q300L
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 1, 'Cooler Master MasterBox Q300L', 49.99, 'Vỏ case Micro-ATX nhỏ gọn, linh hoạt với tấm lọc bụi từ tính.', 'Micro-ATX, Mini-ITX', 25);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'Micro-ATX', 360, 159, 160);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'Micro-ATX', 360, 159, 'ATX');
 
 -- 2. Corsair Carbide Series 175R RGB
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 2, 'Corsair Carbide Series 175R RGB', 54.99, 'Thiết kế tối giản với mặt kính cường lực và logo RGB.', 'Mid-Tower, ATX', 30);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 330, 160, 180);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 330, 160, 'ATX');
 
 -- 3. Thermaltake Versa H18
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 8, 'Thermaltake Versa H18', 44.99, 'Vỏ case Micro-ATX giá rẻ, tối ưu cho luồng khí.', 'Micro-ATX', 35);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'Micro-ATX', 350, 155, 220);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'Micro-ATX', 350, 155, 'ATX');
 
 -- 4. NZXT H510
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 3, 'NZXT H510 Matte White', 69.99, 'Thiết kế biểu tượng của NZXT, hiện đại và sạch sẽ.', 'Mid-Tower, ATX', 28);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 381, 165, 180);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 381, 165, 'ATX');
 
 -- 5. Phanteks Eclipse P300A Mesh
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 6, 'Phanteks Eclipse P300A Mesh', 59.99, 'Mặt trước dạng lưới cho hiệu năng tản nhiệt vượt trội.', 'Mid-Tower, ATX', 32);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 355, 165, 200);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 355, 165, 'ATX');
 
 -- -----------------------------------------------------------------
 -- Phân khúc tầm trung (Mid-range Cases)
@@ -909,31 +909,31 @@ INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_hei
 
 -- 6. Fractal Design Meshify C
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 5, 'Fractal Design Meshify C TG', 94.99, 'Thiết kế mặt lưới kim cương tối ưu luồng gió, nội thất thông minh.', 'Mid-Tower, ATX', 22);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 315, 170, 175);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 315, 170, 'ATX');
 
 -- 7. Lian Li Lancool 215
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 4, 'Lian Li Lancool 215 Black', 89.99, 'Trang bị sẵn 2 quạt ARGB 200mm phía trước cho luồng gió cực mạnh.', 'Mid-Tower, ATX', 26);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 370, 166, 210);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 370, 166, 'ATX');
 
 -- 8. Cooler Master MasterBox TD500 Mesh
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 1, 'Cooler Master MasterBox TD500 Mesh ARGB', 104.99, 'Mặt trước 3D độc đáo, đi kèm 3 quạt ARGB.', 'Mid-Tower, ATX', 24);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 410, 165, 180);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 410, 165, 'ATX');
 
 -- 9. Corsair 4000D Airflow
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 2, 'Corsair 4000D Airflow Black', 99.99, 'Thiết kế thông minh, quản lý dây cáp dễ dàng, luồng khí tốt.', 'Mid-Tower, ATX', 28);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 360, 170, 180);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 360, 170, 'ATX');
 
 -- 10. NZXT H5 Flow
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 3, 'NZXT H5 Flow Black', 94.99, 'Phiên bản tối ưu luồng gió của H5, có quạt nghiêng cho GPU.', 'Mid-Tower, ATX', 26);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 365, 165, 180);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 365, 165, 'ATX');
 
 -- 11. ASUS TUF Gaming GT301
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 9, 'ASUS TUF Gaming GT301', 84.99, 'Thiết kế hầm hố, mặt trước tổ ong, có giá treo tai nghe.', 'Mid-Tower, ATX', 30);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 320, 160, 160);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 320, 160, 'ATX');
 
 -- 12. Phanteks Eclipse G360A
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 6, 'Phanteks Eclipse G360A Black', 109.99, 'Hiệu năng tản nhiệt cao với 3 quạt ARGB và mặt lưới siêu mịn.', 'Mid-Tower, ATX', 22);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 400, 162, 220);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 400, 162, 'ATX');
 
 -- -----------------------------------------------------------------
 -- Phân khúc cao cấp (High-end Cases)
@@ -941,31 +941,31 @@ INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_hei
 
 -- 13. Lian Li O11 Dynamic EVO
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 4, 'Lian Li O11 Dynamic EVO Black', 179.99, 'Thiết kế bể cá trứ danh, có thể đảo ngược layout.', 'Mid-Tower, ATX, E-ATX', 18);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'E-ATX', 422, 167, 220);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'E-ATX', 422, 167, 'ATX');
 
 -- 14. Corsair 5000D Airflow
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 2, 'Corsair 5000D Airflow White', 174.99, 'Không gian rộng rãi, hỗ trợ radiator lớn, quản lý dây cáp chuyên nghiệp.', 'Mid-Tower, ATX', 16);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 420, 170, 225);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 420, 170, 'ATX');
 
 -- 15. Fractal Design Torrent
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 5, 'Fractal Design Torrent Black TG', 219.99, 'Vua tản nhiệt khí với 2 quạt 180mm phía trước, thiết kế độc đáo.', 'Mid-Tower, E-ATX', 14);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'E-ATX', 423, 188, 230);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'E-ATX', 423, 188, 'ATX');
 
 -- 16. NZXT H7 Flow
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 3, 'NZXT H7 Flow White', 139.99, 'Thiết kế tối giản, không gian rộng, luồng gió tốt hơn H7 tiêu chuẩn.', 'Mid-Tower, ATX', 20);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 400, 185, 200);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 400, 185, 'ATX');
 
 -- 17. Cooler Master HAF 500
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 1, 'Cooler Master HAF 500 Black', 134.99, 'Huyền thoại tản nhiệt HAF trở lại với 2 quạt 200mm ARGB.', 'Mid-Tower, ATX', 22);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 410, 167, 180);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 410, 167, 'ATX');
 
 -- 18. Phanteks Enthoo Evolv X
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 6, 'Phanteks Enthoo Evolv X Glass', 229.99, 'Chất liệu nhôm cao cấp, hỗ trợ lắp 2 hệ thống.', 'Mid-Tower, E-ATX', 12);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'E-ATX', 435, 190, 200);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'E-ATX', 435, 190, 'ATX');
 
 -- 19. Lian Li Lancool III
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 4, 'Lian Li Lancool III RGB Black', 169.99, 'Thiết kế module, dễ dàng lắp đặt, đi kèm 4 quạt PWM ARGB.', 'Mid-Tower, E-ATX', 18);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'E-ATX', 435, 185, 220);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'E-ATX', 435, 185, 'ATX');
 
 -- -----------------------------------------------------------------
 -- Dòng Full Tower và các kích thước đặc biệt
@@ -973,19 +973,19 @@ INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_hei
 
 -- 20. Corsair 7000D Airflow
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 2, 'Corsair 7000D Airflow Black', 299.99, 'Vỏ case Full-Tower siêu rộng rãi, hỗ trợ tản nhiệt nước custom đỉnh cao.', 'Full-Tower, E-ATX', 10);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'E-ATX', 450, 190, 225);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'E-ATX', 450, 190, 'ATX');
 
 -- 21. Cooler Master Cosmos C700M
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 1, 'Cooler Master Cosmos C700M', 489.99, 'Thiết kế module đỉnh cao, có thể xoay và đảo ngược layout, vật liệu cao cấp.', 'Full-Tower, E-ATX', 8);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'E-ATX', 490, 198, 300);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'E-ATX', 490, 198, 'ATX');
 
 -- 22. Thermaltake Tower 900
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 8, 'Thermaltake The Tower 900 Black', 279.99, 'Thiết kế dạng tủ trưng bày độc đáo, tối ưu cho tản nhiệt nước custom.', 'Super-Tower, E-ATX', 9);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'E-ATX', 400, 260, 220);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'E-ATX', 400, 260, 'ATX');
 
 -- 23. Fractal Design Define 7 XL
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 5, 'Fractal Design Define 7 XL', 264.99, 'Không gian cực lớn, tối ưu cho sự im lặng và khả năng lưu trữ.', 'Full-Tower, E-ATX', 11);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'E-ATX', 549, 185, 250);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'E-ATX', 549, 185, 'ATX');
 
 -- -----------------------------------------------------------------
 -- Dòng ITX (nhỏ gọn)
@@ -993,19 +993,19 @@ INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_hei
 
 -- 24. Cooler Master MasterBox NR200P
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 1, 'Cooler Master MasterBox NR200P White', 104.99, 'Vỏ case ITX phổ biến nhất, lắp đặt dễ dàng, hỗ trợ cả kính và mặt lưới.', 'Mini-ITX', 20);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'Mini-ITX', 330, 155, 130);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'Mini-ITX', 330, 155, 'SFX');
 
 -- 25. Lian Li A4-H2O
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 4, 'Lian Li A4-H2O Black', 169.99, 'Thiết kế sandwich nhỏ gọn, chất liệu nhôm cao cấp, hỗ trợ AIO 240mm.', 'Mini-ITX', 16);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'Mini-ITX', 322, 55, 130);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'Mini-ITX', 322, 55, 'SFX');
 
 -- 26. NZXT H1 (V2)
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 3, 'NZXT H1 (V2) Matte Black', 199.99, 'Thiết kế dạng tháp, đi kèm sẵn nguồn 750W và tản nhiệt nước AIO.', 'Mini-ITX', 14);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'Mini-ITX', 324, 140, 130);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'Mini-ITX', 324, 140, 'SFX');
 
 -- 27. Fractal Design Terra
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 5, 'Fractal Design Terra Jade', 204.99, 'Thiết kế sang trọng với nhôm và gỗ, có thể điều chỉnh không gian bên trong.', 'Mini-ITX', 12);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'Mini-ITX', 322, 77, 130);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'Mini-ITX', 322, 77, 'SFX');
 
 -- -----------------------------------------------------------------
 -- Một vài lựa chọn đa dạng khác
@@ -1013,15 +1013,15 @@ INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_hei
 
 -- 28. ASUS ROG Strix Helios
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 9, 'ASUS ROG Strix Helios White', 319.99, 'Vỏ case cao cấp cho fan ROG, kính cường lực 3 mặt, có quai xách.', 'Mid-Tower, E-ATX', 10);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'E-ATX', 450, 190, 220);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'E-ATX', 450, 190, 'ATX');
 
 -- 29. Thermaltake Core P3
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 8, 'Thermaltake Core P3 TG Black', 154.99, 'Thiết kế khung mở (Open-Frame), có thể treo tường.', 'Mid-Tower, ATX', 18);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 450, 180, 200);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 450, 180, 'ATX');
 
 -- 30. Hyte Y60
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 30, 'Hyte Y60 Black', 209.99, 'Thiết kế bể cá 3 mặt kính độc đáo, tối ưu cho việc khoe linh kiện.', 'Mid-Tower, ATX', 15);
-INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_max_length) VALUES (LAST_INSERT_ID(), 'ATX', 375, 160, 235);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 375, 160, 'ATX');
 
 -- =================================================================
 -- SCRIPT INSERT 30 SẢN PHẨM NGUỒN (POWER SUPPLY) - GIÁ ĐÃ SỬA SANG USD
@@ -1033,31 +1033,31 @@ INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_hei
 
 -- 1. Corsair CV550
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 2, 'Corsair CV550 550W 80+ Bronze', 52.99, 'Nguồn 550W chứng nhận 80+ Bronze, ổn định cho các cấu hình phổ thông.', '550W, 80+ Bronze, Non-Modular', 40);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 550, '80+ Bronze', 0);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 550, '80+ Bronze', 0, 'ATX');
 
 -- 2. Cooler Master MWE Bronze V2 650W
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 1, 'Cooler Master MWE Bronze V2 650W', 62.99, 'Nguồn 650W hiệu năng tốt, quạt HDB êm ái.', '650W, 80+ Bronze, Non-Modular', 35);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 650, '80+ Bronze', 0);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 650, '80+ Bronze', 0, 'ATX');
 
 -- 3. Seasonic S12III 550W
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 26, 'Seasonic S12III 550W 80+ Bronze', 57.99, 'Nguồn từ thương hiệu Seasonic danh tiếng, bền bỉ.', '550W, 80+ Bronze, Non-Modular', 38);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 550, '80+ Bronze', 0);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 550, '80+ Bronze', 0, 'ATX');
 
 -- 4. Thermaltake Smart BX1 650W
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 8, 'Thermaltake Smart BX1 650W 80+ Bronze', 59.99, 'Nguồn 650W với quạt 120mm Hydraulic Bearing.', '650W, 80+ Bronze, Non-Modular', 36);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 650, '80+ Bronze', 0);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 650, '80+ Bronze', 0, 'ATX');
 
 -- 5. EVGA 600 W1
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 27, 'EVGA 600 W1 600W 80+', 49.99, 'Nguồn 600W giá rẻ, chứng nhận 80+ White.', '600W, 80+ White, Non-Modular', 42);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 600, '80+ White', 0);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 600, '80+ White', 0, 'ATX');
 
 -- 6. be quiet! System Power 9 500W
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 12, 'be quiet! System Power 9 500W 80+ Bronze', 54.99, 'Nguồn 500W hoạt động cực kỳ yên tĩnh.', '500W, 80+ Bronze, Non-Modular', 39);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 500, '80+ Bronze', 0);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 500, '80+ Bronze', 0, 'ATX');
 
 -- 7. Corsair CX650M
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 2, 'Corsair CX650M 650W 80+ Bronze', 74.99, 'Nguồn semi-modular, giúp đi dây gọn gàng hơn.', '650W, 80+ Bronze, Semi-Modular', 32);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 650, '80+ Bronze', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 650, '80+ Bronze', 1, 'ATX');
 
 -- -----------------------------------------------------------------
 -- Phân khúc 750W - 850W (Gaming cao cấp)
@@ -1065,39 +1065,39 @@ INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST
 
 -- 8. Corsair RM750e
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 2, 'Corsair RM750e 750W 80+ Gold', 119.99, 'Nguồn 750W 80+ Gold, full modular, tụ điện Nhật Bản.', '750W, 80+ Gold, Full-Modular', 28);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 750, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 750, '80+ Gold', 1, 'ATX');
 
 -- 9. Seasonic Focus Plus Gold 850W
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 26, 'Seasonic Focus Plus Gold FX-850', 134.99, 'Nguồn 850W 80+ Gold, full modular, chất lượng hàng đầu.', '850W, 80+ Gold, Full-Modular', 24);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1, 'ATX');
 
 -- 10. Cooler Master MWE Gold V2 850W
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 1, 'Cooler Master MWE Gold V2 850W', 124.99, 'Nguồn 850W 80+ Gold, full modular, 2 đầu cắm EPS cho CPU.', '850W, 80+ Gold, Full-Modular', 26);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1, 'ATX');
 
 -- 11. ASUS ROG Strix 850G
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 9, 'ASUS ROG Strix 850G 850W 80+ Gold', 154.99, 'Nguồn 850W cho fan ROG, tản nhiệt tích hợp, full modular.', '850W, 80+ Gold, Full-Modular', 20);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1, 'ATX');
 
 -- 12. Thermaltake Toughpower GF1 750W
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 8, 'Thermaltake Toughpower GF1 750W 80+ Gold', 109.99, 'Nguồn full modular với quạt Zero RPM thông minh.', '750W, 80+ Gold, Full-Modular', 30);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 750, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 750, '80+ Gold', 1, 'ATX');
 
 -- 13. EVGA SuperNOVA 850 G6
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 27, 'EVGA SuperNOVA 850 G6 850W 80+ Gold', 139.99, 'Nguồn 850W từ EVGA, chất lượng được khẳng định.', '850W, 80+ Gold, Full-Modular', 22);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1, 'ATX');
 
 -- 14. be quiet! Pure Power 11 FM 750W
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 12, 'be quiet! Pure Power 11 FM 750W 80+ Gold', 119.99, 'Full modular, hoạt động êm ái, hiệu suất cao.', '750W, 80+ Gold, Full-Modular', 26);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 750, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 750, '80+ Gold', 1, 'ATX');
 
 -- 15. Corsair RM850x SHIFT
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 2, 'Corsair RM850x SHIFT 850W 80+ Gold', 164.99, 'Thiết kế độc đáo với cổng cắm bên hông, dễ đi dây.', '850W, 80+ Gold, Full-Modular', 18);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1, 'ATX');
 
 -- 16. NZXT C850 Gold
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 3, 'NZXT C850 Gold V2 850W', 129.99, 'Nguồn 850W full modular, thiết kế tối giản.', '850W, 80+ Gold, Full-Modular', 24);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1, 'ATX');
 
 -- -----------------------------------------------------------------
 -- Phân khúc trên 1000W (Workstation, Enthusiast)
@@ -1105,31 +1105,31 @@ INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST
 
 -- 17. Corsair RM1000e
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 2, 'Corsair RM1000e 1000W 80+ Gold', 179.99, 'Nguồn 1000W 80+ Gold, hỗ trợ ATX 3.0 và PCIe 5.0.', '1000W, 80+ Gold, Full-Modular', 20);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 1000, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 1000, '80+ Gold', 1, 'ATX');
 
 -- 18. Seasonic PRIME TX-1000
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 26, 'Seasonic PRIME TX-1000 1000W 80+ Titanium', 319.99, 'Hiệu suất đỉnh cao 80+ Titanium, chất lượng tốt nhất.', '1000W, 80+ Titanium, Full-Modular', 12);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 1000, '80+ Titanium', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 1000, '80+ Titanium', 1, 'ATX');
 
 -- 19. Cooler Master V1300 Platinum
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 1, 'Cooler Master V1300 Platinum 1300W', 299.99, 'Nguồn 1300W hiệu suất Platinum, cho các cấu hình khủng.', '1300W, 80+ Platinum, Full-Modular', 14);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 1300, '80+ Platinum', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 1300, '80+ Platinum', 1, 'ATX');
 
 -- 20. ASUS ROG Thor 1200P2
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 9, 'ASUS ROG Thor 1200P2 1200W 80+ Platinum', 379.99, 'Nguồn 1200W có màn hình OLED hiển thị công suất.', '1200W, 80+ Platinum, Full-Modular', 10);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 1200, '80+ Platinum', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 1200, '80+ Platinum', 1, 'ATX');
 
 -- 21. EVGA SuperNOVA 1600 P+
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 27, 'EVGA SuperNOVA 1600 P+ 1600W 80+ Platinum', 399.99, 'Nguồn 1600W cho các hệ thống đào coin hoặc workstation đa GPU.', '1600W, 80+ Platinum, Full-Modular', 8);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 1600, '80+ Platinum', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 1600, '80+ Platinum', 1, 'ATX');
 
 -- 22. be quiet! Dark Power Pro 12 1500W
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 12, 'be quiet! Dark Power Pro 12 1500W 80+ Titanium', 469.99, 'Nguồn 1500W 80+ Titanium, vỏ nhôm, quạt không viền siêu tĩnh.', '1500W, 80+ Titanium, Full-Modular', 6);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 1500, '80+ Titanium', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 1500, '80+ Titanium', 1, 'ATX');
 
 -- 23. Thermaltake Toughpower PF1 1200W
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 8, 'Thermaltake Toughpower PF1 1200W 80+ Platinum', 249.99, 'Nguồn 1200W Platinum với quạt Riing Duo RGB.', '1200W, 80+ Platinum, Full-Modular', 16);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 1200, '80+ Platinum', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 1200, '80+ Platinum', 1, 'ATX');
 
 -- -----------------------------------------------------------------
 -- Dòng SFX (Cho case ITX nhỏ gọn)
@@ -1137,15 +1137,15 @@ INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST
 
 -- 24. Corsair SF750
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 2, 'Corsair SF750 750W 80+ Platinum', 174.99, 'Nguồn SFX 750W tốt nhất thị trường, hiệu suất Platinum.', '750W, SFX, 80+ Platinum, Full-Modular', 22);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 750, '80+ Platinum', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 750, '80+ Platinum', 1, 'SFX');
 
 -- 25. Cooler Master V850 SFX Gold
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 1, 'Cooler Master V850 SFX Gold 850W', 149.99, 'Nguồn SFX công suất cao 850W, 80+ Gold.', '850W, SFX, 80+ Gold, Full-Modular', 20);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1, 'SFX');
 
 -- 26. Lian Li SP850
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 4, 'Lian Li SP850 850W 80+ Gold White', 149.99, 'Nguồn SFX 850W màu trắng, dây cáp bọc dù.', '850W, SFX, 80+ Gold, Full-Modular', 18);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1, 'SFX');
 
 -- -----------------------------------------------------------------
 -- Các lựa chọn đa dạng khác
@@ -1153,19 +1153,19 @@ INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST
 
 -- 27. Deepcool PQ1000M
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 10, 'Deepcool PQ1000M 1000W 80+ Gold', 169.99, 'Nguồn 1000W từ Deepcool, dựa trên nền tảng của Seasonic.', '1000W, 80+ Gold, Full-Modular', 24);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 1000, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 1000, '80+ Gold', 1, 'ATX');
 
 -- 28. FSP Hydro G Pro 1000W
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 28, 'FSP Hydro G Pro 1000W 80+ Gold', 174.99, 'Nguồn 1000W từ FSP, bền bỉ và ổn định.', '1000W, 80+ Gold, Full-Modular', 22);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 1000, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 1000, '80+ Gold', 1, 'ATX');
 
 -- 29. MSI MPG A850G PCIE5
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 2, 'MSI MPG A850G 850W 80+ Gold PCIE5', 149.99, 'Nguồn 850W sẵn sàng cho chuẩn PCIe 5.0 (cáp 12VHPWR).', '850W, 80+ Gold, Full-Modular', 26);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1, 'ATX');
 
 -- 30. Antec NeoECO Gold Zen 700W
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 29, 'Antec NeoECO Gold Zen 700W', 89.99, 'Nguồn 700W 80+ Gold, non-modular giá tốt.', '700W, 80+ Gold, Non-Modular', 34);
-INSERT INTO power_supply (product_id, wattage, efficiency, modular) VALUES (LAST_INSERT_ID(), 700, '80+ Gold', 0);
+INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 700, '80+ Gold', 0, 'ATX');
 
 -- =================================================================
 -- SCRIPT INSERT 20 SẢN PHẨM TẢN NHIỆT (COOLING) - GIÁ ĐÃ SỬA SANG USD

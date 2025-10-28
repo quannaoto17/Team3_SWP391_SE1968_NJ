@@ -1,7 +1,6 @@
 package com.example.PCOnlineShop.controller.build;
 
 import com.example.PCOnlineShop.dto.build.BuildItemDto;
-import com.example.PCOnlineShop.model.build.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;

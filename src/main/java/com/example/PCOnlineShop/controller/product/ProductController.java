@@ -324,7 +324,8 @@ public class ProductController {
                 pcCase.setProduct(product);
                 pcCase.setFormFactor(params.get("pcase.formFactor"));
                 pcCase.setGpuMaxLength(getInt(params, "pcase.gpu.maxLength"));
-                pcCase.setPsuMaxLength(getInt(params, "pcase.psu.maxLength"));
+                pcCase.setPsuFormFactor(params.get( "pcase.psu.formFactor"));
+                pcCase.setCpuMaxCoolerHeight(getInt(params, "pcase.cpu.maxCoolerHeight"));
                 caseRepository.save(pcCase);
             }
             case 7 -> {
@@ -334,6 +335,7 @@ public class ProductController {
                 psu.setWattage(getInt(params, "psu.wattage"));
                 psu.setEfficiency(params.get("psu.efficiency"));
                 psu.setModular(getBool(params, "psu.modular"));
+                psu.setFormFactor(params.get("psu.formFactor"));
                 powerSupplyRepository.save(psu);
             }
             case 8 -> {
