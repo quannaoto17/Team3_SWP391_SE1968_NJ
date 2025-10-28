@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Thanh toán</title>
+
+    <style>
+        /* --- Reset & Font --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* --- Layout chính (2 cột) --- */
+        .checkout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .back-to-cart-link {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-to-cart-link:hover {
+            text-decoration: underline;
+        }
+
+        .checkout-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 60%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar {
+            flex-basis: 320px; /* Độ rộng cố định cho sidebar */
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* --- Component "Card" (Khối bo góc) --- */
+        .checkout-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 24px;
+        }
+        .checkout-card h4 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* --- 1. Danh sách sản phẩm --- */
+        .product-list .product-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+        .product-list .product-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .product-item img.product-image-small {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+        .product-item .product-info {
+            flex: 1;
+        }
+        .product-item .product-info p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .product-item .product-price-details {
+            text-align: right;
+        }
+        .product-item .price-new {
+            font-weight: 600;
+            color: #d70018;
+        }
+        .product-item .price-old {
+            font-size: 0.9em;
+            color: #777;
+            text-decoration: line-through;
+        }
+
+        /* --- 2. Thông tin người đặt hàng --- */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+        .form-group input:disabled {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+        .form-group .error {
+            color: #d70018;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        /* --- 3. Địa chỉ & Ghi chú --- */
+        .custom-radio-group {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .custom-radio {
+            flex: 1;
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .custom-radio input[type="radio"] {
+            margin-right: 10px;
+            accent-color: #007bff;
+        }
+        .custom-radio.selected {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.2);
+            background-color: #f7faff;
+        }
+
+        #shipping-details-block {
+            padding: 16px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+        #shipping-details-block p {
+            margin: 0 0 8px 0;
+        }
+        #shipping-details-block .shipping-address-text {
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .btn-change-address {
+            background: none;
+            border: none;
+            color: #007bff;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px 0;
+        }
+        .btn-change-address:hover {
+            text-decoration: underline;
+        }
+
+        /* --- 4. Sidebar (Tổng tiền & Thanh toán) --- */
+        .total-summary .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+        .total-summary .summary-row span:first-child {
+            color: #555;
+        }
+        .total-summary .summary-row span:last-child {
+            font-weight: 500;
+        }
+        .total-summary .summary-row.grand-total {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px dashed #ccc;
+        }
+        .total-summary .grand-total span:last-child {
+            color: #d70018;
+            font-size: 1.25rem;
+        }
+        .total-summary .vat-note {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .payment-method {
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        .payment-method input[type="radio"] {
+            margin-right: 10px;
+            accent-color: #d70018;
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            background-color: #d70018;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #b00014;
+        }
+
+        .btn-secondary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-outline {
+            background-color: white;
+            color: #007bff;
+            border: 1px solid #007bff;
+        }
+        .btn-outline:hover {
+            background-color: #f7faff;
+        }
+
+        /* --- CSS cho Pop-up (Modal) --- */
+        .modal {
+            display: none; /* Ẩn mặc định */
+            position: fixed; z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.5);
+            justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto; padding: 24px;
+            border-radius: 8px;
+            width: 90%; max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .modal-content h4 {
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+        .modal .address-item {
+            padding: 12px;
+            border-radius: 6px;
+        }
+        .modal .address-item:hover {
+            background-color: #f9f9f9;
+        }
+        .modal .address-item input[type="radio"] {
+            margin-right: 10px;
+        }
+        .modal .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .modal .btn-modal {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-modal-cancel { background-color: #f1f1f1; }
+        .btn-modal-confirm { background-color: #d70018; color: white; border-color: #d70018; }
+        .btn-modal-add { background-color: #007bff; color: white; border-color: #007bff; }
+
+        #new-address-modal .form-group { margin-bottom: 16px; }
+
+        /* Ẩn/hiện khối địa chỉ */
+        #shipping-details-block.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="checkout-container">
+
+    <a th:href="@{/cart}" class="back-to-cart-link">&lt; Quay lại giỏ hàng</a>
+
+    <form id="checkout-form" th:action="@{/orders/checkout}" th:object="${checkoutDTO}" method="POST">
+
+        <div class="checkout-grid">
+
+            <div class="main-content">
+
+                <div class="checkout-card product-list">
+                    <h4>Sản phẩm trong đơn (<span th:text="${cartItems.size()}"></span>)</h4>
+
+                    <div th:each="item : ${cartItems}" class="product-item">
+                        <img th:src="${item.imageUrl != null ? item.imageUrl : '/images/placeholder.png'}"
+                             alt="Product" class="product-image-small" />
+
+                        <div class="product-info">
+                            <p th:text="${item.productName}">Tên sản phẩm</p>
+                            <p th:text="'Số lượng: ' + ${item.quantity}">x1</p>
+                        </div>
+
+                        <div class="product-price-details">
+                            <p class="price-new" th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' VND'"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkout-card">
+                    <h4>Thông tin người đặt hàng</h4>
+                    <div class="form-group">
+                        <input type="text" th:value="${account.getFullName()}" disabled />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" th:value="${account.getPhoneNumber()}"
+                               th:classappend="${#fields.hasErrors('shippingPhone') ? 'input-error' : ''}"
+                               disabled />
+                        <div class="error" th:if="${#fields.hasErrors('shippingPhone')}" th:errors="*{shippingPhone}"></div>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" th:value="${account.getEmail()}" disabled />
+                    </div>
+                </div>
+
+                <div class="checkout-card">
+                    <h4>Địa chỉ nhận hàng</h4>
+
+                    <div class="custom-radio-group">
+                        <label for="ship-home" class="custom-radio" th:classappend="*{shippingMethod == 'Giao hàng tận nơi'} ? 'selected' : ''">
+                            <input type="radio" id="ship-home" name="shippingMethodRadio" value="Giao hàng tận nơi" th:checked="*{shippingMethod == 'Giao hàng tận nơi'}">
+                            Giao hàng tận nơi
+                        </label>
+
+                        <label for="ship-store" class="custom-radio" th:classappend="*{shippingMethod == 'Nhận tại cửa hàng'} ? 'selected' : ''">
+                            <input type="radio" id="ship-store" name="shippingMethodRadio" value="Nhận tại cửa hàng" th:checked="*{shippingMethod == 'Nhận tại cửa hàng'}">
+                            Nhận tại cửa hàng
+                        </label>
+                    </div>
+                    <input type="hidden" th:field="*{shippingMethod}" id="shippingMethodInput" />
+
+                    <div id="shipping-details-block" th:classappend="*{shippingMethod != 'Giao hàng tận nơi'} ? 'hidden' : ''">
+                        <div th:if="${defaultAddress != null}">
+                            <p>
+                                <strong id="display-name" th:text="*{shippingFullName}"></strong> -
+                                <span id="display-phone" th:text="*{shippingPhone}"></span>
+                            </p>
+                            <p id="display-address" class="shipping-address-text" th:text="*{shippingAddress}"></p>
+                        </div>
+                        <div th:if="${defaultAddress == null}">
+                            <p class="error">Bạn chưa có thông tin địa chỉ. Vui lòng thêm địa chỉ.</p>
+                        </div>
+                        <button type="button" id="btn-change-address" class="btn-change-address">
+                            Thay đổi
+                        </button>
+                    </div>
+                    <div class="error" th:if="${#fields.hasErrors('shippingFullName')}" th:errors="*{shippingFullName}"></div>
+                    <div class="error" th:if="${#fields.hasErrors('shippingAddress')}" th:errors="*{shippingAddress}"></div>
+
+                    <div class="form-group">
+                        <label for="note">Ghi chú</label>
+                        <textarea id="note" th:field="*{note}" placeholder="Ví dụ: Giao hàng vào giờ hành chính..." rows="3"></textarea>
+                    </div>
+
+                    <input type="hidden" th:field="*{shippingFullName}" id="shippingFullNameInput" />
+                    <input type="hidden" th:field="*{shippingPhone}" id="shippingPhoneInput" />
+                    <input type="hidden" th:field="*{shippingAddress}" id="shippingAddressInput" />
+                </div>
+            </div>
+
+            <div class="sidebar">
+
+                <div class="checkout-card total-summary">
+                    <div class="summary-row">
+                        <span>Tổng tiền sản phẩm</span>
+                        <span th:text="${#numbers.formatDecimal(grandTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                    </div>
+                    <div class="summary-row grand-total">
+                        <span>Cần thanh toán</span>
+                        <span th:text="${#numbers.formatDecimal(grandTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+                    </div>
+                    <p class="vat-note">(Đã bao gồm VAT)</p>
+                </div>
+
+                <div class="checkout-card">
+                    <h4>Chọn phương thức thanh toán</h4>
+                    <label class="payment-method">
+                        <input type="radio" name="paymentMethod" value="COD" checked> Thanh toán khi nhận hàng
+                    </label>
+                    <label class="payment-method">
+                        <input type="radio" name="paymentMethod" value="BANK"> Thanh toán bằng chuyển khoản
+                    </label>
+                </div>
+
+                <div class="checkout-card">
+                    <button type="submit" class="btn btn-primary">Đặt hàng</button>
+
+                    <button type="button" class="btn btn-secondary">Chọn thêm sản phẩm</button>
+                    <button type="button" class="btn btn-outline">Tải ảnh báo giá</button>
+                    <button type="button" class="btn btn-outline">In báo giá</button>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="address-list-modal" class="modal">
+    <div class="modal-content">
+        <h4>Địa Chỉ Của Tôi</h4>
+
+        <div id="address-radio-list">
+            <th:block th:if="${allAddresses != null && !allAddresses.isEmpty()}">
+                <div th:each="addr : ${allAddresses}" class="address-item">
+                    <input type="radio" name="selectedAddress"
+                           th:id="'addr-' + ${addr.addressId}"
+                           th:value="${addr.addressId}"
+                           th:checked="${defaultAddress != null && addr.addressId == defaultAddress.addressId}"
+                           th:data-name="${addr.fullName}"
+                           th:data-phone="${addr.phone}"
+                           th:data-address="${addr.address}" />
+                    <label th:for="'addr-' + ${addr.addressId}">
+                        <strong th:text="${addr.fullName}"></strong> -
+                        <span th:text="${addr.phone}"></span><br>
+                        <span th:text="${addr.address}"></span>
+                    </label>
+                </div>
+            </th:block>
+            <p id="no-address-msg" class="error" th:if="${allAddresses == null || allAddresses.isEmpty()}">
+                Bạn chưa có địa chỉ. Hãy thêm địa chỉ giao hàng mới.
+            </p>
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" id="btn-open-new-address-modal" class="btn-modal btn-modal-add">Thêm Địa Chỉ Mới</button>
+            <button type="button" id="btn-cancel-list" class="btn-modal btn-modal-cancel">Hủy</button>
+            <button type="button" id="btn-confirm-address" class="btn-modal btn-modal-confirm">Xác Nhận</button>
+        </div>
+    </div>
+</div>
+
+<div id="new-address-modal" class="modal">
+    <div class="modal-content">
+        <h4>Địa Chỉ Mới</h4>
+        <div id="new-address-error" class="error"></div>
+
+        <form id="new-address-form">
+            <div class="form-group">
+                <label for="new-name">Họ Và Tên:</label>
+                <input type="text" id="new-name" name="fullName" required>
+            </div>
+            <div class="form-group">
+                <label for="new-phone">Số Điện Thoại:</label>
+                <input type="text" id="new-phone" name="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="new-address">Địa Chỉ:</label>
+                <input type="text" id="new-address" name="address" required>
+            </div>
+        </form>
+
+        <div class="modal-actions">
+            <button type="button" id="btn-cancel-new" class="btn-modal btn-modal-cancel">Trở Lại</button>
+            <button type="button" id="btn-confirm-new-address" class="btn-modal btn-modal-confirm">Xác Nhận</button>
+        </div>
+    </div>
+</div>
+
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+
+        // --- Lấy các Element ---
+        const shipHomeRadio = document.getElementById("ship-home");
+        const shipStoreRadio = document.getElementById("ship-store");
+        const shippingDetailsBlock = document.getElementById("shipping-details-block");
+        const shippingMethodInput = document.getElementById("shippingMethodInput");
+
+        // Input ẩn của form chính
+        const inputFullName = document.getElementById("shippingFullNameInput");
+        const inputPhone = document.getElementById("shippingPhoneInput");
+        const inputAddress = document.getElementById("shippingAddressInput");
+
+        // Hiển thị trên UI
+        const displayName = document.getElementById("display-name");
+        const displayPhone = document.getElementById("display-phone");
+        const displayAddress = document.getElementById("display-address");
+
+        // Modals
+        const listModal = document.getElementById("address-list-modal");
+        const newModal = document.getElementById("new-address-modal");
+
+        // --- 1. Logic chọn Phương thức Vận chuyển ---
+        function updateShippingMethod() {
+            // Cập nhật style cho radio buttons
+            shipHomeRadio.closest('.custom-radio').classList.toggle('selected', shipHomeRadio.checked);
+            shipStoreRadio.closest('.custom-radio').classList.toggle('selected', shipStoreRadio.checked);
+
+            if (shipStoreRadio.checked) {
+                shippingDetailsBlock.classList.add("hidden");
+                shippingMethodInput.value = "Nhận tại cửa hàng";
+            } else {
+                shippingDetailsBlock.classList.remove("hidden");
+                shippingMethodInput.value = "Giao hàng tận nơi";
+            }
+        }
+        shipHomeRadio.addEventListener("change", updateShippingMethod);
+        shipStoreRadio.addEventListener("change", updateShippingMethod);
+
+        // --- 2. Logic mở Pop-up 1 (Danh sách địa chỉ) ---
+        document.getElementById("btn-change-address").addEventListener("click", function() {
+            listModal.style.display = "flex";
+        });
+        document.getElementById("btn-cancel-list").addEventListener("click", function() {
+            listModal.style.display = "none";
+        });
+
+        // --- 3. Logic mở Pop-up 2 (Thêm địa chỉ) ---
+        document.getElementById("btn-open-new-address-modal").addEventListener("click", function() {
+            listModal.style.display = "none";
+            newModal.style.display = "flex";
+            document.getElementById("new-address-error").innerText = "";
+        });
+        document.getElementById("btn-cancel-new").addEventListener("click", function() {
+            newModal.style.display = "none";
+            listModal.style.display = "flex";
+        });
+
+        // --- 4. Logic "Xác nhận" (Từ Pop-up 1) ---
+        document.getElementById("btn-confirm-address").addEventListener("click", function() {
+            const selectedRadio = document.querySelector('input[name="selectedAddress"]:checked');
+            if (selectedRadio) {
+                const name = selectedRadio.getAttribute('data-name');
+                const phone = selectedRadio.getAttribute('data-phone');
+                const address = selectedRadio.getAttribute('data-address');
+
+                if(displayName) displayName.innerText = name;
+                if(displayPhone) displayPhone.innerText = phone;
+                if(displayAddress) displayAddress.innerText = address;
+
+                inputFullName.value = name;
+                inputPhone.value = phone;
+                inputAddress.value = address;
+
+                listModal.style.display = "none";
+            } else {
+                alert("Bạn chưa chọn địa chỉ.");
+            }
+        });
+
+        // --- 5. Logic "Xác nhận" (Từ Pop-up 2 - AJAX) ---
+        document.getElementById("btn-confirm-new-address").addEventListener("click", function() {
+            const fullName = document.getElementById("new-name").value;
+            const phone = document.getElementById("new-phone").value;
+            const address = document.getElementById("new-address").value;
+            const errorDiv = document.getElementById("new-address-error");
+
+            if (!fullName || !phone || !address) {
+                errorDiv.innerText = "Vui lòng nhập đầy đủ thông tin.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('fullName', fullName);
+            formData.append('phone', phone);
+            formData.append('address', address);
+
+            fetch('/address/add', {
+                method: 'POST',
+                body: formData,
+                // (Thêm CSRF token nếu cần)
+            })
+                .then(response => response.json())
+                .then(newAddress => {
+                    if (newAddress.error) {
+                        errorDiv.innerText = newAddress.error;
+                    } else {
+                        addAddressToRadioList(newAddress);
+
+                        if(displayName) displayName.innerText = newAddress.fullName;
+                        if(displayPhone) displayPhone.innerText = newAddress.phone;
+                        if(displayAddress) displayAddress.innerText = newAddress.address;
+
+                        inputFullName.value = newAddress.fullName;
+                        inputPhone.value = newAddress.phone;
+                        inputAddress.value = newAddress.address;
+
+                        newModal.style.display = "none";
+                        // Không đóng modal list để user có thể thấy địa chỉ mới
+                        // listModal.style.display = "none";
+                    }
+                })
+                .catch(err => {
+                    errorDiv.innerText = "Lỗi hệ thống, không thể thêm địa chỉ.";
+                });
+        });
+
+        // Hàm helper: Thêm địa chỉ mới (từ AJAX) vào danh sách radio
+        function addAddressToRadioList(addr) {
+            const noAddressMsg = document.getElementById("no-address-msg");
+            if (noAddressMsg) noAddressMsg.style.display = 'none';
+
+            const oldChecked = document.querySelector('input[name="selectedAddress"]:checked');
+            if (oldChecked) oldChecked.checked = false;
+
+            const listDiv = document.getElementById("address-radio-list");
+            const newItem = document.createElement('div');
+            newItem.className = 'address-item';
+            newItem.innerHTML = `
+                    <input type="radio" name="selectedAddress"
+                           id="addr-${addr.addressId}"
+                           value="${addr.addressId}"
+                           data-name="${addr.fullName}"
+                           data-phone="${addr.phone}"
+                           data-address="${addr.address}"
+                           checked>
+                    <label for="addr-${addr.addressId}">
+                        <strong>${addr.fullName}</strong> -
+                        <span>${addr.phone}</span><br>
+                        <span>${addr.address}</span>
+                    </label>
+                `;
+            listDiv.appendChild(newItem);
+
+            // Sau khi thêm xong, quay lại modal list
+            newModal.style.display = "none";
+            listModal.style.display = "flex";
+        }
+    });
+</script>
+</body>
+</html>

@@ -112,4 +112,8 @@ public class ProductService {
     public List<Product> getTopRelatedProducts(Integer categoryId, Integer currentProductId) {
         return productRepository.findTop4ByCategory_CategoryIdAndProductIdNot(categoryId, currentProductId);
     }
+    public boolean existsByProductName(String productName) {
+        return productRepository.existsByProductName(productName);
+    }
+
 }
