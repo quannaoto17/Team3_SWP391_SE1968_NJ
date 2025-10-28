@@ -1,8 +1,13 @@
 package com.example.PCOnlineShop.controller.order;
 
+import com.example.PCOnlineShop.dto.cart.CartItemDTO;
+import com.example.PCOnlineShop.dto.order.CheckoutDTO;
 import com.example.PCOnlineShop.dto.order.OrderSearchRequest;
 import com.example.PCOnlineShop.model.account.Account;
+import com.example.PCOnlineShop.model.account.Address;
 import com.example.PCOnlineShop.model.order.Order;
+import com.example.PCOnlineShop.service.address.AddressService;
+import com.example.PCOnlineShop.service.cart.CartService;
 import com.example.PCOnlineShop.service.order.OrderService;
 import com.example.PCOnlineShop.repository.account.AccountRepository;
 import jakarta.validation.Valid;
@@ -24,6 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/orders")
@@ -31,14 +37,26 @@ public class OrderController {
 
     private final OrderService orderService;
     private final int PAGE_SIZE = 10;
-
-    // THÊM TRƯỜNG NÀY
+    private final CartService cartService;
     private final AccountRepository accountRepository;
+    private final AddressService addressService;
 
-    // SỬA CONSTRUCTOR
-    public OrderController(OrderService orderService, AccountRepository accountRepository) {
+
+    public OrderController(OrderService orderService, AccountRepository accountRepository,
+                           CartService cartService, AddressService addressService) {
+        this.addressService = addressService;
         this.orderService = orderService;
-        this.accountRepository = accountRepository; // THÊM DÒNG NÀY
+        this.accountRepository = accountRepository;
+        this.cartService = cartService;
+    }
+
+    // --- Lấy Account (Tách hàm helper) ---
+    private Account getCurrentAccount(UserDetails userDetails) {
+        if (userDetails == null) return null;
+        if (userDetails instanceof Account) {
+            return (Account) userDetails;
+        }
+        return accountRepository.findByPhoneNumber(userDetails.getUsername()).orElse(null);
     }
 
     // ======================================================
@@ -233,6 +251,132 @@ public class OrderController {
 
 
         return "redirect:/orders/list"; // Quay về list chung
+    }
+
+    // ======================================================
+    // == HIỂN THỊ TRANG CHECKOUT (GET)
+    // ======================================================
+    @GetMapping("/checkout")
+    public String showCheckoutPage(Model model,
+                                   @AuthenticationPrincipal UserDetails currentUserDetails) {
+
+        Account currentAccount = getCurrentAccount(currentUserDetails);
+        if (currentAccount == null) return "redirect:/auth/login";
+
+        List<CartItemDTO> cartItems = cartService.getCartItems(currentAccount);
+        if (cartItems.isEmpty()) return "redirect:/cart";
+
+        double grandTotal = cartService.calculateGrandTotal(cartItems);
+
+        // --- Logic lấy địa chỉ ---
+        List<Address> allAddresses = addressService.getAddressesForAccount(currentAccount);
+        Optional<Address> defaultAddressOpt = addressService.getDefaultAddress(currentAccount);
+
+        // Nếu không có địa chỉ mặc định, lấy cái đầu tiên (nếu có)
+        Address defaultAddress = defaultAddressOpt.orElse(
+                allAddresses.isEmpty() ? null : allAddresses.get(0)
+        );
+
+        CheckoutDTO checkoutDTO = new CheckoutDTO();
+        checkoutDTO.setShippingMethod("Giao hàng tận nơi"); // Mặc định
+
+        if (defaultAddress != null) {
+            checkoutDTO.setShippingFullName(defaultAddress.getFullName());
+            checkoutDTO.setShippingPhone(defaultAddress.getPhone());
+            checkoutDTO.setShippingAddress(defaultAddress.getAddress());
+        }
+
+        // Gửi thông tin sang view
+        model.addAttribute("checkoutDTO", checkoutDTO);
+        model.addAttribute("cartItems", cartItems);
+        model.addAttribute("grandTotal", grandTotal);
+        model.addAttribute("account", currentAccount); // Gửi thông tin người đặt hàng
+        model.addAttribute("defaultAddress", defaultAddress); // Địa chỉ mặc định để hiển thị
+        model.addAttribute("allAddresses", allAddresses); // Gửi DANH SÁCH địa chỉ cho pop-up
+        model.addAttribute("pageTitle", "Checkout");
+
+        return "orders/checkout"; // Trả về file checkout
+    }
+
+    // ======================================================
+    // == PHẦN MỚI: XỬ LÝ ĐẶT HÀNG (POST)
+    // ======================================================
+    @PostMapping("/checkout")
+    public String processCheckout(@Valid @ModelAttribute("checkoutDTO") CheckoutDTO checkoutDTO,
+                                  BindingResult bindingResult,
+                                  @AuthenticationPrincipal UserDetails currentUserDetails,
+                                  RedirectAttributes redirectAttributes,
+                                  Model model) {
+
+        Account currentAccount = getCurrentAccount(currentUserDetails);
+        if (currentAccount == null) return "redirect:/auth/login";
+
+        // --- Validate thủ công ---
+        // Chỉ validate địa chỉ nếu chọn "Giao hàng tận nơi"
+        if ("Giao hàng tận nơi".equals(checkoutDTO.getShippingMethod())) {
+            if (checkoutDTO.getShippingFullName() == null || checkoutDTO.getShippingFullName().isBlank()) {
+                bindingResult.rejectValue("shippingFullName", "NotBlank", "Họ tên không được để trống");
+            }
+            if (checkoutDTO.getShippingPhone() == null || checkoutDTO.getShippingPhone().isBlank()) {
+                bindingResult.rejectValue("shippingPhone", "NotBlank", "Số điện thoại không được để trống");
+            }
+            if (checkoutDTO.getShippingAddress() == null || checkoutDTO.getShippingAddress().isBlank()) {
+                bindingResult.rejectValue("shippingAddress", "NotBlank", "Địa chỉ không được để trống");
+            }
+        } else {
+            // Nếu "Nhận tại cửa hàng", set giá trị mặc định để qua mặt DB
+            checkoutDTO.setShippingFullName("Store Pickup");
+            checkoutDTO.setShippingPhone("000000000");
+            checkoutDTO.setShippingAddress("Nhận tại cửa hàng");
+        }
+
+
+        if (bindingResult.hasErrors()) {
+            // Nếu lỗi, phải gửi lại toàn bộ thông tin
+            List<CartItemDTO> cartItems = cartService.getCartItems(currentAccount);
+            double grandTotal = cartService.calculateGrandTotal(cartItems);
+            List<Address> allAddresses = addressService.getAddressesForAccount(currentAccount);
+
+            model.addAttribute("cartItems", cartItems);
+            model.addAttribute("grandTotal", grandTotal);
+            model.addAttribute("account", currentAccount);
+            model.addAttribute("allAddresses", allAddresses);
+
+            // Tìm lại default address để hiển thị
+            Address defaultAddress = addressService.getDefaultAddress(currentAccount).orElse(
+                    allAddresses.isEmpty() ? null : allAddresses.get(0)
+            );
+            model.addAttribute("defaultAddress", defaultAddress);
+
+            return "orders/checkout";
+        }
+
+        // Lấy Map giỏ hàng để tạo đơn
+        Map<Integer, Integer> cartMap = cartService.getCartMapForCheckout(currentAccount);
+        if (cartMap.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Giỏ hàng của bạn bị trống!");
+            return "redirect:/cart";
+        }
+
+        try {
+            Order newOrder = orderService.createOrder(
+                    currentAccount,
+                    cartMap,
+                    checkoutDTO.getShippingMethod(),
+                    checkoutDTO.getNote(),
+                    checkoutDTO.getShippingFullName(),
+                    checkoutDTO.getShippingPhone(),
+                    checkoutDTO.getShippingAddress()
+            );
+
+            cartService.clearCart(currentAccount);
+            redirectAttributes.addFlashAttribute("success", "Đặt hàng thành công! Mã đơn hàng của bạn là #" + newOrder.getOrderId());
+            return "redirect:/orders/list";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi đặt hàng: " + e.getMessage());
+            return "redirect:/checkout";
+        }
     }
 
 }
