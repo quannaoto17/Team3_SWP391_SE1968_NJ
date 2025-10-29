@@ -22,8 +22,10 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
+    // Lưu mã reset tạm thời (theo email/phone)
     private final Map<String, String> resetCodeMap = new HashMap<>();
 
+    /* ===================== AUTH (CUSTOMER) ===================== */
 
     public void register(Account account) {
         if (accountRepository.existsByEmail(account.getEmail())) {
@@ -37,28 +39,28 @@ public class AuthService {
         account.setEnabled(true);
         accountRepository.save(account);
     }
+
     public void sendResetCode(String identifier) {
-        // ✅ Tìm tài khoản theo email hoặc sđt
+        // Tìm theo email trước, không có thì theo phone
         Optional<Account> optionalAccount = accountRepository.findByEmail(identifier);
         if (optionalAccount.isEmpty()) {
             optionalAccount = accountRepository.findByPhoneNumber(identifier);
         }
-
         if (optionalAccount.isEmpty()) {
             throw new IllegalArgumentException("Không tìm thấy tài khoản với thông tin đã nhập!");
         }
 
-        // ✅ Tạo mã ngẫu nhiên 6 chữ số
+        // Tạo mã 6 chữ số
         String code = String.format("%06d", new Random().nextInt(999999));
         resetCodeMap.put(identifier, code);
 
-        // ✅ Gửi email
-        Account account = optionalAccount.get();
-        sendEmail(account.getEmail(), "Mã xác nhận đặt lại mật khẩu",
-                "Xin chào " + account.getFullName() + ",\n\n" +
+        Account acc = optionalAccount.get();
+        String content =
+                "Xin chào " + acc.getFullName() + ",\n\n" +
                         "Mã xác nhận của bạn là: " + code + "\n\n" +
                         "Mã này sẽ hết hạn sau 5 phút.\n\n" +
-                        "Trân trọng,\nĐội ngũ PC Online Shop");
+                        "Trân trọng,\nPC Online Shop";
+        sendEmail(acc.getEmail(), "Mã xác nhận đặt lại mật khẩu", content);
     }
 
     public boolean verifyResetCode(String identifier, String code) {
@@ -71,7 +73,6 @@ public class AuthService {
         if (optionalAccount.isEmpty()) {
             optionalAccount = accountRepository.findByPhoneNumber(identifier);
         }
-
         if (optionalAccount.isEmpty()) {
             throw new IllegalArgumentException("Không tìm thấy tài khoản!");
         }
@@ -80,28 +81,49 @@ public class AuthService {
         acc.setPassword(passwordEncoder.encode(newPassword));
         accountRepository.save(acc);
 
-        // ✅ Xóa mã sau khi đổi mật khẩu xong
+        // Xoá mã sau khi dùng
         resetCodeMap.remove(identifier);
     }
 
-    // ⬇️ đổi kiểu trả về: Account
-    public Account saveStaff(Account account) {
+    /* ===================== MAIL HELPER ===================== */
 
+    private void sendEmail(String to, String subject, String text) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(text);
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Không thể gửi email!");
+        }
+    }
+
+    /* ===================== STAFF / CUSTOMER MGMT ===================== */
+
+    /** Dùng cho tạo/cập nhật Staff. Trả về Account để client (DataTable/Ajax) dùng. */
+    public Account saveStaff(Account account) {
+        // Validate unique email
         accountRepository.findByEmail(account.getEmail()).ifPresent(existing -> {
             if (account.getAccountId() == 0 || existing.getAccountId() != account.getAccountId()) {
                 throw new IllegalArgumentException("Email đã tồn tại!");
             }
         });
 
+        // Validate unique phone
         accountRepository.findByPhoneNumber(account.getPhoneNumber()).ifPresent(existing -> {
             if (account.getAccountId() == 0 || existing.getAccountId() != account.getAccountId()) {
                 throw new IllegalArgumentException("Số điện thoại đã tồn tại!");
             }
         });
 
-        Account existing = accountRepository.findByIdentifier(String.valueOf(account.getAccountId())).orElse(null);
+        // Nếu update: giữ enabled, giữ password cũ nếu không đổi
+        Account existing = (account.getAccountId() == 0)
+                ? null
+                : accountRepository.findById(account.getAccountId()).orElse(null);
 
         if (existing != null) {
+            // Đổi mật khẩu nếu khác chuỗi hiện tại
             if (!existing.getPassword().equals(account.getPassword())) {
                 account.setPassword(passwordEncoder.encode(account.getPassword()));
             } else {
@@ -109,14 +131,16 @@ public class AuthService {
             }
             account.setEnabled(existing.getEnabled());
         } else {
+            // Tạo mới
             account.setPassword(passwordEncoder.encode(account.getPassword()));
             account.setEnabled(true);
         }
 
         account.setRole(RoleName.Staff);
-        return accountRepository.save(account); // ⬅️ trả về để dùng lưu Address
+        return accountRepository.save(account);
     }
 
+    /** Dùng cho tạo/cập nhật Customer (không cần trả về). */
     public void saveCustomer(Account account) {
         accountRepository.findByEmail(account.getEmail()).ifPresent(existing -> {
             if (account.getAccountId() == 0 || existing.getAccountId() != account.getAccountId()) {
@@ -130,7 +154,9 @@ public class AuthService {
             }
         });
 
-        Account existing = accountRepository.findById(account.getAccountId()).orElse(null);
+        Account existing = (account.getAccountId() == 0)
+                ? null
+                : accountRepository.findById(account.getAccountId()).orElse(null);
 
         if (existing != null) {
             if (!existing.getPassword().equals(account.getPassword())) {
@@ -147,11 +173,11 @@ public class AuthService {
         account.setRole(RoleName.Customer);
         accountRepository.save(account);
     }
+
     public void updatePassword(String email, String newPassword) {
         accountRepository.findByEmail(email).ifPresent(acc -> {
             acc.setPassword(passwordEncoder.encode(newPassword));
             accountRepository.save(acc);
         });
     }
-
 }
