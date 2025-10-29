@@ -17,7 +17,6 @@
         .btn-add{background:#20bf6b;color:#fff;font-weight:600;padding:8px 14px;border-radius:6px;text-decoration:none}
         .btn-add:hover{opacity:.9}
 
-        /* FILTER BAR */
         .filter-bar {display:flex;align-items:center;gap:10px;margin-bottom:12px}
         .filter-bar select {
             padding:6px 10px;
@@ -61,7 +60,6 @@
         <a th:href="@{/staff/add}" class="btn-add">+ Add Staff</a>
     </div>
 
-    <!-- ✅ FILTER BAR -->
     <div class="filter-bar">
         <label for="statusFilter">Status:</label>
         <select id="statusFilter">
@@ -71,29 +69,29 @@
         </select>
     </div>
 
-    <table id="staffTable" class="display nowrap" style="width:100%">
+    <table id="staffTable" class="display" style="width:100%">
         <thead>
         <tr>
             <th>ID</th>
             <th>Tên</th>
             <th>Email</th>
             <th>Phone</th>
-            <th>Address</th>
+            <th>Address</th> <!-- ✅ đã thêm -->
             <th>Status</th>
             <th style="min-width:200px;">Actions</th>
         </tr>
         </thead>
 
         <tbody>
-        <tr th:each="s : ${staffPage.content}">
-            <td th:text="${s.accountId}">1</td>
-            <td th:text="${s.firstname + ' ' + s.lastname}">Nguyen Van A</td>
-            <td th:text="${s.email}">staff@shop.com</td>
-            <td th:text="${s.phoneNumber}">0888888888</td>
-            <td th:text="${s.defaultAddress}">N/A</td>
+        <tr th:each="s : ${staffList}">
+            <td th:text="${s.accountId}"></td>
+            <td th:text="${s.fullName}"></td>
+            <td th:text="${s.email}"></td>
+            <td th:text="${s.phoneNumber}"></td>
+            <td th:text="${s.defaultAddress}"></td>
             <td>
-                <span th:classappend="${s.enabled} ? 'badge badge-active' : 'badge badge-inactive'"
-                      th:text="${s.enabled} ? 'Active' : 'Inactive'">Active</span>
+        <span th:classappend="${s.enabled} ? 'badge badge-active' : 'badge badge-inactive'"
+              th:text="${s.enabled} ? 'Active' : 'Inactive'">Active</span>
             </td>
             <td>
                 <a th:href="@{'/staff/view/' + ${s.accountId}}" class="btn btn-sm btn-view">View</a>
@@ -101,10 +99,12 @@
                 <a th:href="@{'/staff/delete/' + ${s.accountId}}"
                    class="btn btn-sm"
                    th:classappend="${s.enabled} ? 'btn-deactivate' : 'btn-activate'"
-                   th:text="${s.enabled} ? 'Deactivate' : 'Activate'">Deactivate</a>
+                   th:text="${s.enabled} ? 'Deactivate' : 'Activate'">
+                </a>
             </td>
         </tr>
         </tbody>
+
     </table>
 </div>
 
@@ -114,21 +114,19 @@
 
 <script th:inline="none">
     $(function () {
-
-        // ✅ handling filter status
         $('#statusFilter').on('change', function () {
             const status = $(this).val();
             window.location.href = '/staff/list?statusFilter=' + status;
         });
 
-        // ✅ init DataTable
         $('#staffTable').DataTable({
-            responsive: true,
-            pageLength: 10,
+            responsive: false,
+            pageLength: 5,
             lengthMenu: [5, 10, 25, 50, 100],
             order: [[0, 'asc']],
             columnDefs: [
                 { targets: -1, orderable: false, searchable: false, responsivePriority: 1 },
+                { targets: 4, className: 'all' },
                 { targets: -2, responsivePriority: 2 }
             ],
             language: {

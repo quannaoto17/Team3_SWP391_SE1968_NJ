@@ -5,13 +5,13 @@ import com.example.PCOnlineShop.service.auth.AuthService;
 import com.example.PCOnlineShop.service.staff.StaffService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-// StaffController.java
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/staff")
@@ -21,26 +21,17 @@ public class StaffController {
     private final AuthService authService;
 
     @GetMapping("/list")
-    public String listStaff(@RequestParam(defaultValue = "1") int page,
-                            @RequestParam(defaultValue = "10") int size,
-                            @RequestParam(defaultValue = "") String searchQuery,
-                            @RequestParam(defaultValue = "active") String statusFilter,
+    public String listStaff(@RequestParam(defaultValue = "active") String statusFilter,
                             Model model) {
 
-        int safePage = Math.max(page, 1);
-        int zeroBasedPage = safePage - 1;
+        List<Account> staffList = staffService.getAllStaff(statusFilter);
 
-        Page<Account> staffPage = staffService.getStaffPage(zeroBasedPage, size, searchQuery, statusFilter);
-
-        model.addAttribute("staffPage", staffPage);
-        model.addAttribute("searchQuery", searchQuery);
+        model.addAttribute("staffList", staffList);
         model.addAttribute("statusFilter", statusFilter);
-        model.addAttribute("currentPage", safePage);
-        model.addAttribute("totalPages", staffPage.getTotalPages());
-        model.addAttribute("pageSize", size);
 
         return "staff/staff-list";
     }
+
 
     @GetMapping("/view/{id}")
     public String viewStaff(@PathVariable int id, Model model) {
@@ -54,25 +45,22 @@ public class StaffController {
         return "staff/add-staff";
     }
 
-    // ⬇️ Lưu + địa chỉ
     @PostMapping("/add")
     public String saveStaff(@Valid @ModelAttribute("account") Account account,
                             BindingResult result,
                             @RequestParam(name = "addressStr", required = false) String addressStr,
                             Model model) {
-        if (result.hasErrors()) {
-            return "staff/add-staff";
-        }
+        if (result.hasErrors()) return "staff/add-staff";
 
         try {
             Account saved = authService.saveStaff(account);
-            staffService.saveDefaultAddress(saved, addressStr); // ⬅️ lưu địa chỉ
+            staffService.saveDefaultAddress(saved, addressStr);
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "staff/add-staff";
         }
 
-        return "redirect:/staff/list?statusFilter=all";
+        return "redirect:/staff/list";
     }
 
     @GetMapping("/edit/{id}")
@@ -81,30 +69,26 @@ public class StaffController {
         return "staff/edit-staff";
     }
 
-    // ⬇️ Cập nhật + địa chỉ
     @PostMapping("/edit")
     public String updateStaff(@Valid @ModelAttribute("account") Account account,
                               BindingResult result,
                               @RequestParam(name = "addressStr", required = false) String addressStr,
                               Model model) {
-        if (result.hasErrors()) {
-            return "staff/edit-staff";
-        }
+        if (result.hasErrors()) return "staff/edit-staff";
 
         try {
             Account saved = authService.saveStaff(account);
-            staffService.updateDefaultAddress(saved, addressStr); // ⬅️ cập nhật địa chỉ
+            staffService.updateDefaultAddress(saved, addressStr);
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "staff/edit-staff";
         }
-
-        return "redirect:/staff/list?statusFilter=all";
+        return "redirect:/staff/list";
     }
 
     @GetMapping("/delete/{id}")
     public String deactivateStaff(@PathVariable int id) {
         staffService.deactivateStaff(id);
-        return "redirect:/staff/list?statusFilter=all";
+        return "redirect:/staff/list";
     }
 }

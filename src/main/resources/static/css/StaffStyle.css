@@ -107,6 +107,18 @@ body {
 /* Keep Actions column in one line */
 #staffTable tbody td:last-child { white-space: nowrap; }
 
+/* ===== FIX: stable layout ===== */
+#staffTable {
+    table-layout: fixed;    /* prevent Datatables auto-stretch columns */
+}
+
+/* ===== FIX: long address wrap but not overflow ===== */
+#staffTable tbody td:nth-child(5) {
+    white-space: normal !important;
+    max-width: 260px;
+    word-break: break-word;
+}
+
 /* Avoid fixed row height (breaks responsive) – use min-height on large screens */
 @media (min-width: 992px) {
     #staffTable tbody tr { min-height: 56px; }

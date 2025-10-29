@@ -15,45 +15,37 @@ public class CustomerService {
         this.accountRepository = accountRepository;
     }
 
-    //  Lấy danh sách customer có thể tìm kiếm & lọc trạng thái
-    public Page<Account> getCustomerPage(int page, int size, String searchQuery, String statusFilter) {
+    /**
+     * Lấy danh sách customer có phân trang + lọc trạng thái
+     * KHÔNG cần search theo tên/sđt/email ở đây nữa
+     * vì DataTables đã xử lý search client-side
+     */
+    public Page<Account> getCustomerPage(int page, int size, String statusFilter) {
         Pageable pageable = PageRequest.of(page, size);
 
-        boolean filterActive = "active".equalsIgnoreCase(statusFilter);
-        boolean filterInactive = "inactive".equalsIgnoreCase(statusFilter);
-
-        //  Lọc theo trạng thái
-        if (filterActive) {
-            return accountRepository.findByRoleAndEnabled(RoleName.Customer, true, searchQuery, pageable);
-        } else if (filterInactive) {
-            return accountRepository.findByRoleAndEnabled(RoleName.Customer, false, searchQuery, pageable);
-        } else {
-            // all
-            if (searchQuery == null || searchQuery.trim().isEmpty()) {
-                return accountRepository.findAllByRole(RoleName.Customer, pageable);
-            } else {
-                return accountRepository.findByPhoneNumberOrEmail(RoleName.Customer, searchQuery, pageable);
-            }
+        if ("active".equalsIgnoreCase(statusFilter)) {
+            return accountRepository.findByRoleAndEnabled(RoleName.Customer, true, pageable);
         }
+        if ("inactive".equalsIgnoreCase(statusFilter)) {
+            return accountRepository.findByRoleAndEnabled(RoleName.Customer, false, pageable);
+        }
+        // all
+        return accountRepository.findAllByRole(RoleName.Customer, pageable);
     }
 
-    //  Lưu khách hàng
     public Account saveCustomer(Account account) {
         account.setRole(RoleName.Customer);
         return accountRepository.save(account);
     }
 
-    //  Lấy theo ID
     public Account getById(int id) {
         return accountRepository.findById(id).orElse(null);
     }
 
-    //  Đổi trạng thái Active/Inactive
     public void deactivateCustomer(int id) {
-        Account account = accountRepository.findById(id).orElse(null);
-        if (account != null) {
-            account.setEnabled(!account.getEnabled());
-            accountRepository.save(account);
-        }
+        accountRepository.findById(id).ifPresent(acc -> {
+            acc.setEnabled(!acc.getEnabled());
+            accountRepository.save(acc);
+        });
     }
 }
