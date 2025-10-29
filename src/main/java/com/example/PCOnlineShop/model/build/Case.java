@@ -33,11 +33,11 @@ public class Case {
     @Max(value = 300, message = "CPU max cooler height must be at most 300 mm")
     private int cpuMaxCoolerHeight; // in mm
 
-    @Column(name = "psu_max_length")
-    @NotNull(message = "PSU max length is required")
-    @Min(value = 1, message = "PSU max length must be at least 1 mm")
-    @Max(value = 300, message = "PSU max length must be at most 300 mm")
-    private int psuMaxLength; // in mm
+    @Column(name = "psu_form_factor")
+    @NotBlank(message = "PSU form factor is required")
+    @Size(min = 1, max = 50, message = "PSU form factor must be between 1 and 50 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "PSU form factor must not contain special characters")
+    private String psuFormFactor;
 
     @OneToOne
     @MapsId // dùng chung id với Product
