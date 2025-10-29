@@ -19,38 +19,39 @@ public class CustomerController {
     private final CustomerService customerService;
     private final AuthService authService;
 
-    // Danh sách khách hàng
     @GetMapping("/list")
-    public String listCustomers(@RequestParam(defaultValue = "0") int page,
+    public String listCustomers(@RequestParam(defaultValue = "1") int page,
                                 @RequestParam(defaultValue = "10") int size,
-                                @RequestParam(defaultValue = "") String searchQuery,
-                                @RequestParam(defaultValue = "all") String statusFilter,
+                                @RequestParam(defaultValue = "active") String statusFilter,
                                 Model model) {
 
+        int safePage = Math.max(page, 1);
+        int zeroBasedPage = safePage - 1;
+
         Page<Account> customerPage =
-                customerService.getCustomerPage(Math.max(page, 0), size, searchQuery, statusFilter);
+                customerService.getCustomerPage(zeroBasedPage, size, statusFilter);
 
         model.addAttribute("customerPage", customerPage);
-        model.addAttribute("searchQuery", searchQuery);
         model.addAttribute("statusFilter", statusFilter);
+        model.addAttribute("currentPage", safePage);
+        model.addAttribute("totalPages", customerPage.getTotalPages());
+        model.addAttribute("pageSize", size);
+
         return "customer/customer-list";
     }
 
-    //  Xem chi tiết
     @GetMapping("/view/{id}")
     public String viewCustomer(@PathVariable int id, Model model) {
         model.addAttribute("account", customerService.getById(id));
         return "customer/view-customer";
     }
 
-    //  Form thêm
     @GetMapping("/add")
     public String addCustomerForm(Model model) {
         model.addAttribute("account", new Account());
         return "customer/add-customer";
     }
 
-    //  Lưu khách hàng (Validate)
     @PostMapping("/add")
     public String addCustomer(@Valid @ModelAttribute("account") Account account,
                               BindingResult result,
@@ -69,14 +70,12 @@ public class CustomerController {
         return "redirect:/customer/list?statusFilter=all";
     }
 
-    //  Form sửa
     @GetMapping("/edit/{id}")
     public String editCustomerForm(@PathVariable int id, Model model) {
         model.addAttribute("account", customerService.getById(id));
         return "customer/edit-customer";
     }
 
-    //  Cập nhật (Validate)
     @PostMapping("/edit")
     public String updateCustomer(@Valid @ModelAttribute("account") Account account,
                                  BindingResult result,
@@ -95,7 +94,6 @@ public class CustomerController {
         return "redirect:/customer/list?statusFilter=all";
     }
 
-    //  Chuyển trạng thái
     @GetMapping("/delete/{id}")
     public String deactivateCustomer(@PathVariable int id) {
         customerService.deactivateCustomer(id);

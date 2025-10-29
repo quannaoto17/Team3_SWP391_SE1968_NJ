@@ -4,63 +4,62 @@ import com.example.PCOnlineShop.constant.RoleName;
 import com.example.PCOnlineShop.model.account.Account;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Integer> {
 
-    //  Lấy toàn bộ theo role (VD: Staff, Customer, Admin)
+    /* ==================== Basic lookup ==================== */
+    Optional<Account> findByPhoneNumber(String phoneNumber);
+    Optional<Account> findByEmail(String email);
+    boolean existsByEmail(String email);
+    boolean existsByPhoneNumber(String phoneNumber);
+    boolean existsByPhoneNumberAndRole(String phoneNumber, RoleName role);
+
+    /* ==================== Dùng cho DataTable (trả ALL) ==================== */
+
+    // Không fetch address → dùng khi không cần hiển thị address
+    List<Account> findAllByRole(RoleName role);
+
+    // Fetch luôn địa chỉ mặc định (JOIN FETCH)
+    @Query("""
+        SELECT DISTINCT a FROM Account a 
+        LEFT JOIN FETCH a.addresses addr
+        WHERE a.role = :role
+    """)
+    List<Account> findAllByRoleWithAddresses(@Param("role") RoleName role);
+
+    @Query("""
+        SELECT DISTINCT a FROM Account a 
+        LEFT JOIN FETCH a.addresses addr
+        WHERE a.role = :role
+          AND a.enabled = :enabled
+    """)
+    List<Account> findByRoleAndEnabledWithAddresses(@Param("role") RoleName role,
+                                                    @Param("enabled") boolean enabled);
+
+    /* ==================== Phân trang cũ (giữ tạm để không lỗi code khác) ==================== */
     Page<Account> findAllByRole(RoleName role, Pageable pageable);
 
-    // Tìm theo số điện thoại
-    Optional<Account> findByPhoneNumber(String phoneNumber);
-
-    //  Tìm theo email
-    Optional<Account> findByEmail(String email);
-
-    //  Kiểm tra tồn tại email (chặn trùng)
-    boolean existsByEmail(String email);
-
-    //  Kiểm tra tồn tại số điện thoại (chặn trùng)
-    boolean existsByPhoneNumber(String phoneNumber);
-
-    //  Tìm theo role + tìm kiếm phone/email
     @Query("""
-        SELECT a FROM Account a 
-        WHERE a.role = :role 
-          AND (a.phoneNumber LIKE %:searchQuery% OR a.email LIKE %:searchQuery%)
+        SELECT a FROM Account a
+        WHERE a.role = :role
+          AND (LOWER(a.phoneNumber) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
+            OR LOWER(a.email) LIKE LOWER(CONCAT('%', :searchQuery, '%')))
     """)
     Page<Account> findByPhoneNumberOrEmail(@Param("role") RoleName role,
                                            @Param("searchQuery") String searchQuery,
                                            Pageable pageable);
 
-    //  Tìm theo role + trạng thái (Active / Inactive)
     @Query("""
-        SELECT a FROM Account a 
+        SELECT a FROM Account a
         WHERE a.role = :role
           AND a.enabled = :enabled
-          AND (:searchQuery = '' OR a.phoneNumber LIKE %:searchQuery% OR a.email LIKE %:searchQuery%)
     """)
     Page<Account> findByRoleAndEnabled(@Param("role") RoleName role,
                                        @Param("enabled") Boolean enabled,
-                                       @Param("searchQuery") String searchQuery,
                                        Pageable pageable);
-
-    boolean existsByPhoneNumberAndRole(String phoneNumber, RoleName role);
-    default Optional<Account> findByIdentifier(String identifier) {
-        if (identifier == null || identifier.trim().isEmpty()) {
-            return Optional.empty();
-        }
-
-        if (identifier.contains("@")) {
-            // Nếu nhập email
-            return findByEmail(identifier.trim());
-        } else {
-            // Nếu nhập số điện thoại
-            return findByPhoneNumber(identifier.trim());
-        }
-    }
 }
