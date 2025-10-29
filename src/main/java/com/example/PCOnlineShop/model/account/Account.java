@@ -50,7 +50,6 @@ public class Account {
     @Column(name = "gender")
     private Boolean gender;
 
-    @NotBlank(message = "Address is required")
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Address> addresses;
 
