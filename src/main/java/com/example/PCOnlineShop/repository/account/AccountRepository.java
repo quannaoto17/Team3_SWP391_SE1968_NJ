@@ -50,4 +50,17 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
                                        Pageable pageable);
 
     boolean existsByPhoneNumberAndRole(String phoneNumber, RoleName role);
+    default Optional<Account> findByIdentifier(String identifier) {
+        if (identifier == null || identifier.trim().isEmpty()) {
+            return Optional.empty();
+        }
+
+        if (identifier.contains("@")) {
+            // Nếu nhập email
+            return findByEmail(identifier.trim());
+        } else {
+            // Nếu nhập số điện thoại
+            return findByPhoneNumber(identifier.trim());
+        }
+    }
 }
