@@ -20,4 +20,5 @@ public class AccountUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with phone number: " + phoneNumber));
         return new AccountUserDetails(account);
     }
+
 }
