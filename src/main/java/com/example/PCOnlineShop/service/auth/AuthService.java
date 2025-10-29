@@ -20,19 +20,17 @@ public class AuthService {
         if (accountRepository.existsByEmail(account.getEmail())) {
             throw new IllegalArgumentException("Email đã tồn tại!");
         }
-
         if (accountRepository.existsByPhoneNumber(account.getPhoneNumber())) {
             throw new IllegalArgumentException("Số điện thoại đã tồn tại!");
         }
-
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         account.setRole(RoleName.Customer);
         account.setEnabled(true);
-
         accountRepository.save(account);
     }
 
-    public void saveStaff(Account account) {
+    // ⬇️ đổi kiểu trả về: Account
+    public Account saveStaff(Account account) {
 
         accountRepository.findByEmail(account.getEmail()).ifPresent(existing -> {
             if (account.getAccountId() == 0 || existing.getAccountId() != account.getAccountId()) {
@@ -61,17 +59,15 @@ public class AuthService {
         }
 
         account.setRole(RoleName.Staff);
-        accountRepository.save(account);
+        return accountRepository.save(account); // ⬅️ trả về để dùng lưu Address
     }
 
     public void saveCustomer(Account account) {
-
         accountRepository.findByEmail(account.getEmail()).ifPresent(existing -> {
             if (account.getAccountId() == 0 || existing.getAccountId() != account.getAccountId()) {
                 throw new IllegalArgumentException("Email đã tồn tại!");
             }
         });
-
 
         accountRepository.findByPhoneNumber(account.getPhoneNumber()).ifPresent(existing -> {
             if (account.getAccountId() == 0 || existing.getAccountId() != account.getAccountId()) {
