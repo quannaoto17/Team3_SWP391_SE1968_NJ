@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.List;
+
 
 @Entity
 @Table(name = "account")
@@ -48,9 +50,8 @@ public class Account {
     @Column(name = "gender")
     private Boolean gender;
 
-    @NotBlank(message = "Address is required")
-    @Column(name = "address", length = 255)
-    private String address;
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Address> addresses;
 
     @Column(name = "enabled")
     private Boolean enabled = true;

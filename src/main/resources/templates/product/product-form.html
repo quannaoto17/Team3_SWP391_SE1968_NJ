@@ -1,193 +1,320 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Thêm sản phẩm</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; background: #f6f7fb; }
-
-        /* Layout */
-        .container { display: flex; min-height: 100vh; }
-        .sidebar { width: 220px; background: #555; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .sidebar img { width: 70px; height: 70px; border-radius: 50%; background: #ccc; margin-bottom: 10px; }
-        .sidebar button { width: 100%; padding: 8px; margin: 6px 0; border: none; border-radius: 4px; background: #eee; cursor: pointer; }
-        .sidebar button:hover { background: #ddd; }
-
-        .main { flex: 1; display: flex; flex-direction: column; }
-        .header { display: flex; justify-content: space-between; align-items: center; background: #fff; border-bottom: 1px solid #ddd; padding: 10px 20px; }
-        .logout-btn { padding: 5px 10px; border: 1px solid #aaa; background: #fff; cursor: pointer; }
-
-        .content { flex: 1; padding: 30px 40px; background: #fff; display: flex; flex-direction: column; gap: 20px; }
-        h2 { margin-top: 0; }
-
-        /* Image preview */
-        .image-section { display: flex; flex-direction: column; gap: 10px; }
-        .image-preview { display: flex; flex-wrap: wrap; gap: 10px; }
-        .preview-box { width: 120px; height: 120px; border: 2px dashed #bbb; border-radius: 8px; background: #f9f9f9; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
-        .choose-btn { width: fit-content; padding: 8px 12px; border: 1px solid #aaa; border-radius: 4px; background: #f1f1f1; cursor: pointer; }
-        .choose-btn:hover { background: #e2e2e2; }
-
-        label { font-weight: bold; margin-top: 8px; display: block; }
-        input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
-
-        /* Category message */
-        .category-message { border: 1px solid #ccc; padding: 12px; width: 400px; background: #fafafa; border-radius: 4px; font-size: 14px; }
-
-        /* Product form */
-        .product-form { display: none; flex-direction: column; gap: 12px; width: 70%; }
-
-        .create-btn { align-self: flex-end; padding: 10px 20px; font-weight: bold; border: none; background: #4b7bec; color: #fff; border-radius: 4px; cursor: pointer; }
-        .create-btn:hover { background: #3867d6; }
-
-        /* Dynamic spec form */
-        #specFormContainer {
-            background: #f9fafc;
-            padding: 15px;
-            border-radius: 6px;
-            border: 1px dashed #ccc;
-            margin-top: 10px;
+        :root{
+            --header-h:60px;
+            --ink:#111827;
+            --muted:#6b7280;
+            --bg:#f6f7fb;
+            --card:#fff;
+            --border:#e5e7eb;
+            --radius:12px;
+            --error:#dc2626;
         }
+
+        body{
+            margin:0;
+            font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;
+            background:var(--bg);
+            color:var(--ink);
+        }
+
+        .container{
+            max-width:820px;
+            margin:0 auto;
+            padding:calc(var(--header-h) + 10px) 16px 24px;
+        }
+
+        .card{
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius:var(--radius);
+            padding:18px;
+            box-shadow:0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        h1.title{
+            font-weight:700;
+            font-size:22px;
+            margin:0 0 14px;
+        }
+
+        label{
+            display:block;
+            font-weight:600;
+            margin:12px 0 6px;
+        }
+
+        input,select,textarea{
+            width:100%;
+            padding:10px;
+            border:1px solid #cfd4dc;
+            border-radius:8px;
+            background:#fafafa;
+            font-size:14px;
+            transition:border-color 0.2s, background 0.2s;
+        }
+
+        input:focus,select:focus,textarea:focus{
+            outline:none;
+            border-color:#3b82f6;
+            background:#fff;
+        }
+
+        textarea{min-height:90px;resize:vertical}
+
+        .hint{color:var(--muted);font-size:13px;margin-top:4px}
+
+        .error{
+            color:var(--error);
+            font-size:13px;
+            margin-top:4px;
+        }
+
+        .gate{
+            display:flex;
+            gap:8px;
+            align-items:center;
+            flex-wrap:wrap;
+            margin-bottom:14px;
+        }
+
+        .btn{
+            padding:10px 14px;
+            border:1px solid #cfd4dc;
+            background:#fff;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:600;
+        }
+
+        .btn:hover{background:#f3f4f6}
+
+        .preview{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            margin-top:10px;
+        }
+
+        .thumb{
+            width:110px;
+            height:88px;
+            border:1px dashed #cfd4dc;
+            border-radius:8px;
+            background:#f9fafb;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            overflow:hidden;
+        }
+
+        .thumb img{width:100%;height:100%;object-fit:cover}
+
+        .actions{
+            display:flex;
+            justify-content:flex-end;
+            margin-top:14px;
+        }
+
+        .primary{
+            background:#111827;
+            color:#fff;
+            border:none;
+            padding:12px 18px;
+            border-radius:10px;
+            font-weight:700;
+            cursor:pointer;
+            transition:background 0.2s;
+        }
+
+        .primary:hover{background:#0b1220}
+
+        #productForm{display:none}
     </style>
 </head>
 <body>
 
+<!-- Header cố định -->
+<div th:replace="layout/header-staff :: header-staff"></div>
+
 <div class="container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <img src="https://via.placeholder.com/70" alt="Ảnh đại diện">
-        <h3>Nhân viên</h3>
-        <button>Bảng điều khiển</button>
-        <button>Quản lý danh mục</button>
-        <button>Quản lý sản phẩm</button>
-        <button>Khác</button>
-    </aside>
-
-    <!-- Main -->
-    <div class="main">
-        <div class="header">
-            <h2>Thêm sản phẩm</h2>
-            <button class="logout-btn">Đăng xuất</button>
+    <h1 class="title" th:text="${isEdit} ? 'Edit Product' : 'Add Product'"></h1>
+    <!-- Bước 1: chọn danh mục -->
+    <div class="card">
+        <div class="gate">
+            <label for="categorySelect" style="margin:0">Danh mục</label>
+            <select id="categorySelect" name="category.categoryId" style="min-width:240px" required>
+                <option value="">-- Chọn danh mục --</option>
+                <option th:each="cat : ${categories}" th:value="${cat.categoryId}" th:text="${cat.categoryName}"></option>
+            </select>
+            <button type="button" class="btn" id="btnStart">Tiếp tục</button>
         </div>
-
-        <div class="content">
-            <form th:action="@{/staff/products/save}" th:object="${product}" method="post" enctype="multipart/form-data">
-
-                <!-- Category -->
-                <label>Danh mục:</label>
-                <select id="categorySelect" name="category.categoryId" required>
-                    <option value="">-- Chọn danh mục --</option>
-                    <option th:each="cat : ${categories}"
-                            th:value="${cat.categoryId}"
-                            th:text="${cat.categoryName}"></option>
-                </select>
-
-                <!-- Message nếu chưa chọn Category -->
-                <div class="category-message" id="categoryMessage">
-                    <p>Vui lòng chọn danh mục để thêm sản phẩm.</p>
-                </div>
-
-                <!-- Form nhập sản phẩm (ẩn ban đầu) -->
-                <div class="product-form" id="productForm">
-
-                    <!-- Brand -->
-                    <label>Thương hiệu:</label>
-                    <select name="brand.brandId" required>
-                        <option value="">-- Chọn thương hiệu --</option>
-                        <option th:each="b : ${brands}"
-                                th:value="${b.brandId}"
-                                th:text="${b.name}"></option>
-                    </select>
-
-                    <!-- Name -->
-                    <label>Tên sản phẩm:</label>
-                    <input type="text" th:field="*{productName}" placeholder="Nhập tên sản phẩm" required>
-
-                    <!-- Price -->
-                    <label>Giá ($):</label>
-                    <input type="number" th:field="*{price}" min="0" step="0.01" placeholder="Nhập giá" required>
-
-                    <!-- Description -->
-                    <label>Mô tả:</label>
-                    <textarea th:field="*{description}" rows="3" placeholder="Mô tả sản phẩm..."></textarea>
-
-
-                    <!-- Dynamic spec form -->
-                    <div id="specFormContainer">
-                        <p style="color:#777;">Chọn danh mục để nhập thông số chi tiết (CPU, GPU,...)</p>
-                    </div>
-
-                    <!-- Status -->
-                    <label>Trạng thái:</label>
-                    <select th:field="*{status}">
-                        <option th:value="true" selected>Còn hàng</option>
-                        <option th:value="false">Hết hàng</option>
-                    </select>
-
-                    <!-- Image upload -->
-                    <label>Ảnh sản phẩm:</label>
-                    <div class="image-section">
-                        <div class="image-preview" id="imagePreview">
-                            <div class="preview-box"><span>Chưa có ảnh</span></div>
-                        </div>
-                        <input type="file" name="imageFiles" multiple accept="image/*" id="imageInput" style="display:none;">
-                        <button type="button" class="choose-btn" onclick="document.getElementById('imageInput').click()">Chọn ảnh</button>
-                    </div>
-
-                    <button type="submit" class="create-btn">Tạo mới</button>
-                </div>
-            </form>
-        </div>
+        <p id="gateMsg" class="hint" style="margin:0">Chọn danh mục để mở form nhập chi tiết.</p>
     </div>
+
+    <!-- Form thêm sản phẩm -->
+    <form id="productForm" class="card"
+          th:action="${isEdit} ? '/staff/products/edit' : '/staff/products/save'"
+          th:object="${product}" th:style="${isEdit} ? 'display:block' : 'display:none'"
+          method="post" enctype="multipart/form-data">
+
+
+
+    <input type="hidden" id="chosenCategoryId" name="category.categoryId" value=""/>
+
+        <label for="brand">Thương hiệu *</label>
+        <select id="brand" name="brand.brandId" required>
+            <option value="">-- Chọn thương hiệu --</option>
+            <option th:each="b : ${brands}" th:value="${b.brandId}" th:text="${b.name}"></option>
+        </select>
+        <div class="error" id="brandError"></div>
+
+        <label for="name">Tên sản phẩm *</label>
+        <input id="name" type="text" th:field="*{productName}" placeholder="VD: ASUS PRIME B550M-A"
+               pattern="^[A-Za-zÀ-ỹ0-9\\s\\-_,\\.;:()]+$" minlength="3" maxlength="100" required/>
+        <div class="error" th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}"></div>
+        <div class="error" id="nameError"></div>
+
+        <label for="price">Giá ($) *</label>
+        <input id="price" type="number" th:field="*{price}" min="0.01" step="0.01" placeholder="VD: 149.90" required/>
+        <div class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+        <div class="error" id="priceError"></div>
+
+        <label for="desc">Mô tả</label>
+        <textarea id="desc" th:field="*{description}" placeholder="Mô tả ngắn gọn..."></textarea>
+
+        <label>Thông số kỹ thuật</label>
+        <div id="specFormContainer" class="card" style="padding:12px">
+            <p class="hint" style="margin:0">Form thông số sẽ hiển thị sau khi chọn danh mục.</p>
+        </div>
+
+        <label for="status">Trạng thái</label>
+        <select id="status" th:field="*{status}">
+            <option th:value="true" selected>Còn hàng</option>
+            <option th:value="false">Hết hàng</option>
+        </select>
+
+        <label>Ảnh sản phẩm</label>
+        <input type="file" id="imageInput" name="imageFiles" accept="image/png, image/jpeg" multiple style="display:none"/>
+        <button type="button" class="btn" onclick="document.getElementById('imageInput').click()">Chọn ảnh</button>
+        <div class="error" id="imageError"></div>
+        <div class="preview" id="imagePreview"><div class="thumb"><span class="hint">Chưa có ảnh</span></div></div>
+
+        <div class="actions">
+            <button type="submit" class="primary">Tạo mới</button>
+        </div>
+    </form>
 </div>
 
 <script>
     const categorySelect = document.getElementById('categorySelect');
-    const categoryMessage = document.getElementById('categoryMessage');
+    const btnStart = document.getElementById('btnStart');
+    const gateMsg = document.getElementById('gateMsg');
     const productForm = document.getElementById('productForm');
+    const chosenCategoryId = document.getElementById('chosenCategoryId');
     const specContainer = document.getElementById('specFormContainer');
 
-    // Khi chọn category
-    categorySelect.addEventListener('change', () => {
-        const categoryId = categorySelect.value;
-        if (categoryId) {
-            categoryMessage.style.display = 'none';
-            productForm.style.display = 'flex';
-
-            // Load form thông số kỹ thuật tương ứng
-            fetch(`/staff/products/spec-form?categoryId=${categoryId}`)
-                .then(res => res.text())
-                .then(html => specContainer.innerHTML = html)
-                .catch(() => specContainer.innerHTML = "<p style='color:red;'>Lỗi tải form thông số!</p>");
-        } else {
-            categoryMessage.style.display = 'block';
+    // ===== Bật form sau khi chọn danh mục =====
+    function openFormWithCategory(cid){
+        if(!cid){
             productForm.style.display = 'none';
-            specContainer.innerHTML = "<p style='color:#777;'>Chọn danh mục để nhập thông số chi tiết (CPU, GPU,...)</p>";
-        }
-    });
-
-    // Xem trước ảnh
-    const imageInput = document.getElementById('imageInput');
-    const imagePreview = document.getElementById('imagePreview');
-
-    imageInput.addEventListener('change', (event) => {
-        const files = event.target.files;
-        imagePreview.innerHTML = '';
-        if (files.length === 0) {
-            imagePreview.innerHTML = '<div class="preview-box"><span>Chưa có ảnh</span></div>';
+            gateMsg.textContent = 'Chọn danh mục trước để mở form nhập chi tiết.';
+            specContainer.innerHTML = '<p class="hint">Chưa có — sẽ hiển thị sau khi chọn danh mục.</p>';
             return;
         }
+        chosenCategoryId.value = cid;
+        productForm.style.display = 'block';
+        gateMsg.textContent = 'Danh mục đã chọn, nhập thông tin sản phẩm.';
+        loadSpec(cid);
+        productForm.scrollIntoView({behavior:'smooth', block:'start'});
+    }
 
-        Array.from(files).forEach(file => {
+    btnStart.addEventListener('click', () => openFormWithCategory(categorySelect.value));
+    categorySelect.addEventListener('change', () => {
+        if(productForm.style.display === 'block'){ openFormWithCategory(categorySelect.value); }
+    });
+
+    // ===== Load spec form =====
+    async function loadSpec(categoryId){
+        try{
+            const res = await fetch(`/staff/products/spec-form?categoryId=${categoryId}`);
+            specContainer.innerHTML = await res.text();
+        }catch(e){
+            specContainer.innerHTML = '<p class="error">Lỗi tải form thông số!</p>';
+        }
+    }
+
+    // ===== Preview ảnh =====
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    imageInput.addEventListener('change', (e) => {
+        imagePreview.innerHTML = '';
+        const files = Array.from(e.target.files);
+        if(files.length === 0){
+            imagePreview.innerHTML = '<div class="thumb"><span class="hint">Chưa có ảnh</span></div>';
+            return;
+        }
+        files.forEach(f => {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                const div = document.createElement('div');
-                div.classList.add('preview-box');
-                div.innerHTML = `<img src="${e.target.result}" alt="Xem trước">`;
-                imagePreview.appendChild(div);
+            reader.onload = ev => {
+                const box = document.createElement('div');
+                box.className = 'thumb';
+                box.innerHTML = `<img src="${ev.target.result}" alt="preview">`;
+                imagePreview.appendChild(box);
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(f);
         });
+    });
+
+    // ===== Validate trước khi submit =====
+    document.getElementById('productForm').addEventListener('submit', e => {
+        let valid = true;
+
+        const name = document.getElementById('name');
+        const price = document.getElementById('price');
+        const brand = document.getElementById('brand');
+        const nameError = document.getElementById('nameError');
+        const priceError = document.getElementById('priceError');
+        const brandError = document.getElementById('brandError');
+        const imageError = document.getElementById('imageError');
+
+        nameError.textContent = priceError.textContent = brandError.textContent = imageError.textContent = "";
+
+        if(name.value.trim().length < 3){
+            nameError.textContent = "Tên sản phẩm phải có ít nhất 3 ký tự.";
+            valid = false;
+        }
+        if(!brand.value){
+            brandError.textContent = "Vui lòng chọn thương hiệu.";
+            valid = false;
+        }
+        if(price.value === "" || parseFloat(price.value) <= 0){
+            priceError.textContent = "Giá phải lớn hơn 0.";
+            valid = false;
+        }
+
+        const files = imageInput.files;
+        for(let f of files){
+            const ext = f.name.split('.').pop().toLowerCase();
+            if(!['jpg','jpeg','png'].includes(ext)){
+                imageError.textContent = "Chỉ cho phép ảnh JPG hoặc PNG.";
+                valid = false; break;
+            }
+            if(f.size > 2 * 1024 * 1024){
+                imageError.textContent = "Ảnh không được vượt quá 2MB.";
+                valid = false; break;
+            }
+        }
+
+        if(!valid){
+            e.preventDefault();
+            window.scrollTo({top: productForm.offsetTop - 80, behavior:'smooth'});
+        }
     });
 </script>
 </body>

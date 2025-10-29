@@ -37,4 +37,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
                          @Param("categoryId") Integer categoryId,
                          Pageable pageable);
     Page<Product> findByProductNameContainingIgnoreCase(String keyword, Pageable pageable);
+
+    boolean existsByProductName(String productName);
+
 }

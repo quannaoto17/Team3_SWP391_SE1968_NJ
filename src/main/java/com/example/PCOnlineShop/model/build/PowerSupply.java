@@ -1,5 +1,6 @@
 package com.example.PCOnlineShop.model.build;
 import com.example.PCOnlineShop.model.product.Product;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -14,14 +15,25 @@ public class PowerSupply {
     @Id
     @Column(name = "product_id")
     private int productId;
+
     @Column(name = "wattage")
-    private int wattage; // in Watts
+    @NotNull(message = "Wattage is required")
+    @Min(value = 100, message = "Wattage must be at least 100 watts")
+    @Max(value = 2000, message = "Wattage must be at most 2000 watts")
+    private int wattage;
+
     @Column(name = "efficiency")
-    private String efficiency; // e.g., 80 Plus Bronze, Gold
+    @NotBlank(message = "Efficiency rating is required")
+    @Size(min = 2, max = 10, message = "Efficiency rating must be between 2 and 10 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Efficiency rating must not contain special characters")
+    private String efficiency;
+
     @Column(name = "modular")
     private boolean modular; // true if modular, false otherwise
+
     @Column(name = "form_factor")
     private String formFactor; // e.g., ATX (150mm), SFX (100mm), SFX-L (125mm), TFX (85mm)
+
 
     @OneToOne
     @MapsId
