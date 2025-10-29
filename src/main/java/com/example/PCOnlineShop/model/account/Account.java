@@ -62,4 +62,17 @@ public class Account {
         // Dùng trim() để loại bỏ khoảng trắng thừa nếu một trong hai tên là rỗng
         return (first + " " + last).trim();
     }
+    // ✅ Helper: lấy địa chỉ mặc định hiển thị lên UI
+    public String getDefaultAddress() {
+        if (addresses == null || addresses.isEmpty()) {
+            return "N/A";
+        }
+
+        return addresses.stream()
+                .filter(Address::isDefault)
+                .findFirst()
+                .map(Address::getAddress)
+                .orElse(addresses.get(0).getAddress());
+    }
+
 }

@@ -1,138 +1,147 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="vi">
 <head>
     <meta charset="UTF-8">
     <title>Staff List</title>
-    <link rel="stylesheet" th:href="@{/css/StaffStyle.css}">
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Arial,sans-serif;background:#f6f7fb;color:#333}
+        .container{width:min(1200px,94%);margin:24px auto;background:#fff;border-radius:10px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+        .container>h2{font-size:22px;color:#4b7bec;margin-bottom:12px}
+
+        .toolbar{display:flex;justify-content:flex-end;margin:10px 0 14px}
+        .btn-add{background:#20bf6b;color:#fff;font-weight:600;padding:8px 14px;border-radius:6px;text-decoration:none}
+        .btn-add:hover{opacity:.9}
+
+        /* FILTER BAR */
+        .filter-bar {display:flex;align-items:center;gap:10px;margin-bottom:12px}
+        .filter-bar select {
+            padding:6px 10px;
+            border-radius:6px;
+            border:1px solid #ccc;
+            background:#fff;
+        }
+
+        .badge{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;display:inline-block}
+        .badge-active{background:#e6f9ef;color:#16a34a}
+        .badge-inactive{background:#fee2e2;color:#dc2626}
+
+        .btn{display:inline-block;text-decoration:none;padding:6px 12px;border-radius:6px;font-size:13px;margin:0 3px;color:#fff;font-weight:500;min-width:70px;text-align:center}
+        .btn.btn-sm{padding:6px 10px}
+        .btn-view{background:#3867d6}.btn-view:hover{background:#4b7bec}
+        .btn-edit{background:#f7b731;color:#1f2937}.btn-edit:hover{background:#fed330;color:#111827}
+        .btn-deactivate{background:#eb3b5a}.btn-deactivate:hover{background:#fc5c65}
+        .btn-activate{background:#20bf6b}.btn-activate:hover{background:#26de81}
+
+        #staffTable{width:100%;border-collapse:collapse;background:#fff;border:1px solid #ddd}
+        #staffTable thead th{background:#f1f1f1;padding:10px;text-align:center;font-weight:600;color:#444;border:1px solid #ddd}
+        #staffTable tbody td{padding:10px;text-align:center;border:1px solid #ddd;font-size:14px;vertical-align:middle}
+        #staffTable tbody tr:hover{background:#fafafa}
+        #staffTable td:last-child{white-space:nowrap !important}
+
+        .dataTables_wrapper{margin-top:12px;font-size:14px}
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter{margin:8px 0}
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input{border:1px solid #ccc;border-radius:6px;padding:6px 10px;background:#fff}
+    </style>
 </head>
 <body>
 
-<!-- Header phân quyền -->
-<div sec:authorize="!isAuthenticated()" th:replace="layout/header-default :: header-default"></div>
-<div sec:authorize="hasRole('ADMIN')" th:replace="layout/header-admin :: header-admin"></div>
-<div sec:authorize="hasRole('STAFF')" th:replace="layout/header-staff :: header-staff"></div>
-<div sec:authorize="hasRole('CUSTOMER')" th:replace="layout/header-customer :: header-customer"></div>
+<div th:replace="layout/header-admin :: header-admin"></div>
 
-<!-- Header -->
-<div class="header">
-    <h2>Admin Dashboard</h2>
-</div>
-
-<!-- Main Content -->
-<div class="content">
+<div class="container">
     <h2>Staff List</h2>
 
-    <!-- Search + Filter + Add -->
-    <div class="search-sort-container">
-        <!-- Search -->
-        <div class="search-left">
-            <form th:action="@{/staff/list}" method="get" class="search-form">
-                <input type="text" name="searchQuery" placeholder="Search by phone or email"
-                       th:value="${searchQuery}"/>
-                <button type="submit" class="btn-filter">Search</button>
-            </form>
-        </div>
-
-        <!-- Filter + Add -->
-        <div class="search-right">
-            <form th:action="@{/staff/list}" method="get" class="status-form">
-                <select name="statusFilter" onchange="this.form.submit()">
-                    <option value="all" th:selected="${statusFilter == 'all'}">All</option>
-                    <option value="active" th:selected="${statusFilter == 'active'}">Active</option>
-                    <option value="inactive" th:selected="${statusFilter == 'inactive'}">Inactive</option>
-                </select>
-            </form>
-
-            <div class="add-staff">
-                <a href="/staff/add">Add Staff</a>
-            </div>
-        </div>
+    <div class="toolbar" sec:authorize="hasRole('ADMIN')">
+        <a th:href="@{/staff/add}" class="btn-add">+ Add Staff</a>
     </div>
 
-    <!-- TABLE SCROLL WRAPPER -->
-    <div class="table-scroll">
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Address</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            <tr th:each="s : ${staffPage.content}">
-                <td th:text="${s.accountId}"></td>
-                <td th:text="${s.firstname + ' ' + s.lastname}"></td>
-                <td th:text="${s.email}"></td>
-                <td th:text="${s.phoneNumber}"></td>
-                <td th:text="${s.address}"></td>
-                <td>
-                    <span th:text="${s.enabled ? 'Active' : 'Inactive'}"
-                          th:classappend="${s.enabled ? 'status-active' : 'status-inactive'}"></span>
-                </td>
-                <td>
-                    <a th:href="@{'/staff/view/' + ${s.accountId}}" class="btn-action btn-view">View</a>
-                    <a th:href="@{'/staff/edit/' + ${s.accountId}}" class="btn-action btn-edit">Edit</a>
-                    <a th:href="@{'/staff/delete/' + ${s.accountId}}"
-                       class="btn-action"
-                       th:text="${s.enabled ? 'Deactivate' : 'Activate'}"
-                       th:classappend="${s.enabled ? 'btn-deactivate' : 'btn-activate'}"
-                       onclick="return confirm('Are you sure to change status?')"></a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <!-- ✅ FILTER BAR -->
+    <div class="filter-bar">
+        <label for="statusFilter">Status:</label>
+        <select id="statusFilter">
+            <option value="active"   th:selected="${statusFilter == 'active'}">Active</option>
+            <option value="inactive" th:selected="${statusFilter == 'inactive'}">Inactive</option>
+            <option value="all"      th:selected="${statusFilter == 'all'}">All</option>
+        </select>
     </div>
 
-    <!-- PAGINATION -->
-    <div class="pagination">
+    <table id="staffTable" class="display nowrap" style="width:100%">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Status</th>
+            <th style="min-width:200px;">Actions</th>
+        </tr>
+        </thead>
 
-        <!-- Prev -->
-        <a th:if="${currentPage > 1}"
-           th:href="@{/staff/list(page=${currentPage - 1}, size=${pageSize}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}">
-            « Prev
-        </a>
-
-        <!-- Page 1 -->
-        <a th:href="@{/staff/list(page=1, size=${pageSize}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}"
-           th:classappend="${currentPage == 1} ? 'active'">
-            1
-        </a>
-
-        <!-- ... LEFT -->
-        <span th:if="${totalPages > 3 and currentPage > 2}">...</span>
-
-        <!-- CURRENT PAGE (not 1 or last) -->
-        <a th:if="${currentPage != 1 and currentPage != totalPages}"
-           th:text="${currentPage}"
-           class="active"
-           th:href="@{/staff/list(page=${currentPage}, size=${pageSize}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}">
-        </a>
-
-        <!-- ... RIGHT -->
-        <span th:if="${totalPages > 3 and currentPage < totalPages - 1}">...</span>
-
-        <!-- LAST PAGE -->
-        <a th:if="${totalPages > 1}"
-           th:text="${totalPages}"
-           th:classappend="${currentPage == totalPages} ? 'active'"
-           th:href="@{/staff/list(page=${totalPages}, size=${pageSize}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}">
-        </a>
-
-        <!-- Next -->
-        <a th:if="${currentPage < totalPages}"
-           th:href="@{/staff/list(page=${currentPage + 1}, size=${pageSize}, searchQuery=${searchQuery}, statusFilter=${statusFilter})}">
-            Next »
-        </a>
-    </div>
-
+        <tbody>
+        <tr th:each="s : ${staffPage.content}">
+            <td th:text="${s.accountId}">1</td>
+            <td th:text="${s.firstname + ' ' + s.lastname}">Nguyen Van A</td>
+            <td th:text="${s.email}">staff@shop.com</td>
+            <td th:text="${s.phoneNumber}">0888888888</td>
+            <td th:text="${s.defaultAddress}">N/A</td>
+            <td>
+                <span th:classappend="${s.enabled} ? 'badge badge-active' : 'badge badge-inactive'"
+                      th:text="${s.enabled} ? 'Active' : 'Inactive'">Active</span>
+            </td>
+            <td>
+                <a th:href="@{'/staff/view/' + ${s.accountId}}" class="btn btn-sm btn-view">View</a>
+                <a th:href="@{'/staff/edit/' + ${s.accountId}}" class="btn btn-sm btn-edit">Edit</a>
+                <a th:href="@{'/staff/delete/' + ${s.accountId}}"
+                   class="btn btn-sm"
+                   th:classappend="${s.enabled} ? 'btn-deactivate' : 'btn-activate'"
+                   th:text="${s.enabled} ? 'Deactivate' : 'Activate'">Deactivate</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+<script th:inline="none">
+    $(function () {
+
+        // ✅ handling filter status
+        $('#statusFilter').on('change', function () {
+            const status = $(this).val();
+            window.location.href = '/staff/list?statusFilter=' + status;
+        });
+
+        // ✅ init DataTable
+        $('#staffTable').DataTable({
+            responsive: true,
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50, 100],
+            order: [[0, 'asc']],
+            columnDefs: [
+                { targets: -1, orderable: false, searchable: false, responsivePriority: 1 },
+                { targets: -2, responsivePriority: 2 }
+            ],
+            language: {
+                search: "Tìm:",
+                lengthMenu: "Hiển thị _MENU_ dòng",
+                info: "Hiển thị _START_–_END_ / _TOTAL_",
+                paginate: { previous: "Trước", next: "Sau" },
+                zeroRecords: "Không có dữ liệu phù hợp",
+                infoEmpty: "Không có bản ghi"
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
