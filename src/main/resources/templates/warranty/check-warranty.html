@@ -6,6 +6,31 @@
 
     <link rel="stylesheet" th:href="@{/css/WarrantyStyle.css}">
 
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+
+    <style>
+        .dataTables_wrapper{
+            margin-top:12px;
+            font-size:14px;
+        }
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter{
+            margin:8px 0;
+        }
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input{
+            border:1px solid #ccc;
+            border-radius:6px;
+            padding:6px 10px;
+            background:#fff;
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+        #ordersTable {
+            width: 100% !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -13,12 +38,11 @@
      th:replace="layout/header-default :: header-default"></div>
 <div sec:authorize="hasRole('ADMIN')"
      th:replace="layout/header-admin :: header-admin"></div>
-
 <div sec:authorize="hasRole('STAFF')"
      th:replace="layout/header-staff :: header-staff"></div>
-
 <div sec:authorize="hasRole('CUSTOMER')"
      th:replace="layout/header-customer :: header-customer"></div>
+
 <div class="container">
     <h1>Check Warranty Status</h1>
 
@@ -28,38 +52,33 @@
         <a th:href="@{/staff/warranty/check}" class="clear-btn">Clear</a>
     </form>
 
-    <div th:if="${orders != null}">
-        <div th:if="${#lists.isEmpty(orders)}" class="not-found">
-            No orders found for this phone number.
-        </div>
+    <div>
+        <div class="section-title">Customer Orders Found</div>
 
-        <div th:if="${!#lists.isEmpty(orders)}">
-            <div class="section-title">Customer Orders Found</div>
-            <table>
-                <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Order Date</th>
-                    <th>Final Amount (₫)</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="order : ${orders}">
-                    <td th:text="${order.orderId}"></td>
-                    <td th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy')}"></td>
-                    <td th:text="${#numbers.formatInteger(order.finalAmount, 1, 'COMMA')}"></td>
-                    <td>
-                        <form th:action="@{/staff/warranty/search}" method="post" style="display:inline;">
-                            <input type="hidden" name="phone" th:value="${phone}">
-                            <input type="hidden" name="orderId" th:value="${order.orderId}">
-                            <button type="submit" class="view-products-btn">View Warranty Details</button>
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+        <table id="ordersTable" class="display" style="width:100%">
+            <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Phone</th> <th>Order Date</th>
+                <th>Final Amount (₫)</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.orderId}"></td>
+                <td th:text="${phone}"></td> <td th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy')}"></td>
+                <td th:text="${#numbers.formatInteger(order.finalAmount, 1, 'COMMA')}"></td>
+                <td>
+                    <form th:action="@{/staff/warranty/search}" method="post" style="display:inline;">
+                        <input type="hidden" name="phone" th:value="${phone}">
+                        <input type="hidden" name="orderId" th:value="${order.orderId}">
+                        <button type="submit" class="view-products-btn">View Warranty Details</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
     <div th:if="${warrantyDetails != null}">
@@ -80,7 +99,7 @@
                 <td th:text="${#temporals.format(wd.expiryDate, 'dd/MM/yyyy')}"></td>
                 <td>
                     <span th:text="${wd.status}"
-                        th:classappend="${wd.status == 'Active' ? 'status-active' : (wd.status == 'Expiring Soon' ? 'status-expiring' : 'status-expired')}">
+                          th:classappend="${wd.status == 'Active' ? 'status-active' : (wd.status == 'Expiring Soon' ? 'status-expiring' : 'status-expired')}">
                     </span>
                 </td>
             </tr>
@@ -92,5 +111,36 @@
     </div>
 
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+<script th:inline="none">
+    $(function () {
+        $('#ordersTable').DataTable({
+            responsive: false,
+            pageLength: 5,
+            lengthMenu: [5, 10, 25, 50],
+
+            order: [[0, 'asc']],
+
+            columnDefs: [
+
+                { targets: 4, orderable: false, searchable: false }
+            ],
+
+            language: {
+                search: "Search:",
+                lengthMenu: "View _MENU_ lines per page",
+                info: "View _START_–_END_ / _TOTAL_",
+                paginate: { previous: "Previous", next: "Next" },
+                zeroRecords: "No matching data found",
+                infoEmpty: "No records available"
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
