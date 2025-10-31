@@ -19,96 +19,93 @@ function checkStrength() {
     }
 
     switch (strength) {
-        case 1:
-            message.textContent = "Weak ";
-            message.style.color = "red";
-            break;
-        case 2:
-            message.textContent = "Medium ";
-            message.style.color = "orange";
-            break;
-        case 3:
-            message.textContent = "Strong ";
-            message.style.color = "#4b7bec";
-            break;
-        case 4:
-            message.textContent = "Very Strong ";
-            message.style.color = "green";
-            break;
+        case 1:  message.textContent = "Weak";  message.style.color = "red"; break;
+        case 2:  message.textContent = "Medium"; message.style.color = "orange"; break;
+        case 3:  message.textContent = "Strong"; message.style.color = "#4b7bec"; break;
+        case 4:  message.textContent = "Very Strong"; message.style.color = "green"; break;
     }
 }
 
 /* ==========================================================
-    ADDRESS API (Tỉnh / Huyện / Xã)
+    ADDRESS API (Tỉnh / Huyện / Xã) + PREFILL KHI EDIT
    ========================================================== */
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
     const provinceSelect = document.getElementById("province");
     const districtSelect = document.getElementById("district");
     const wardSelect = document.getElementById("ward");
     const addressInput = document.getElementById("address");
 
-    // Nếu không có các phần tử này (ví dụ trang View Staff) thì bỏ qua
     if (!provinceSelect || !districtSelect || !wardSelect || !addressInput) return;
 
-    // === 1. Load danh sách Tỉnh/Thành ===
-    fetch("https://provinces.open-api.vn/api/p/")
-        .then(res => res.json())
-        .then(data => {
-            data.forEach(province => {
-                const opt = new Option(province.name, province.code);
-                provinceSelect.add(opt);
-            });
-        })
-        .catch(err => console.error("Lỗi tải danh sách tỉnh:", err));
+    // 1. Load Tỉnh
+    const provinces = await fetch("https://provinces.open-api.vn/api/p/").then(r => r.json());
+    provinces.forEach(p => provinceSelect.add(new Option(p.name, p.code)));
 
-    // === 2. Khi chọn Tỉnh -> load Huyện ===
-    provinceSelect.addEventListener("change", () => {
-        districtSelect.innerHTML = "<option value=''>-- Chọn Quận/Huyện --</option>";
-        wardSelect.innerHTML = "<option value=''>-- Chọn Phường/Xã --</option>";
+    // Nếu có địa chỉ cũ → tách ra để prefill
+    const oldAddress = addressInput.value;  // Ví dụ: "Phường X, Quận Y, TP Z, Việt Nam"
+    let provinceName = "", districtName = "", wardName = "";
 
-        if (provinceSelect.value) {
-            fetch(`https://provinces.open-api.vn/api/p/${provinceSelect.value}?depth=2`)
-                .then(res => res.json())
-                .then(data => {
-                    data.districts.forEach(district => {
-                        const opt = new Option(district.name, district.code);
-                        districtSelect.add(opt);
-                    });
-                })
-                .catch(err => console.error("Lỗi tải danh sách huyện:", err));
+    if (oldAddress) {
+        const parts = oldAddress.split(",").map(p => p.trim());
+        wardName = parts[0] || "";
+        districtName = parts[1] || "";
+        provinceName = parts[2] || "";
+    }
+
+    // 2. Nếu đang Edit → chọn Tỉnh cũ
+    if (provinceName) {
+        const foundProvince = provinces.find(p => p.name === provinceName);
+        if (foundProvince) {
+            provinceSelect.value = foundProvince.code;
+
+            // Load Huyện tương ứng
+            const provinceDetail = await fetch(`https://provinces.open-api.vn/api/p/${foundProvince.code}?depth=2`).then(r => r.json());
+            provinceDetail.districts.forEach(d => districtSelect.add(new Option(d.name, d.code)));
+
+            const foundDistrict = provinceDetail.districts.find(d => d.name === districtName);
+            if (foundDistrict) {
+                districtSelect.value = foundDistrict.code;
+
+                // Load Xã tương ứng
+                const districtDetail = await fetch(`https://provinces.open-api.vn/api/d/${foundDistrict.code}?depth=2`).then(r => r.json());
+                districtDetail.wards.forEach(w => wardSelect.add(new Option(w.name, w.name)));
+
+                wardSelect.value = wardName;
+            }
         }
-        updateAddress();
-    });
+    }
 
-    // === 3. Khi chọn Huyện -> load Xã ===
-    districtSelect.addEventListener("change", () => {
-        wardSelect.innerHTML = "<option value=''>-- Chọn Phường/Xã --</option>";
-
-        if (districtSelect.value) {
-            fetch(`https://provinces.open-api.vn/api/d/${districtSelect.value}?depth=2`)
-                .then(res => res.json())
-                .then(data => {
-                    data.wards.forEach(ward => {
-                        const opt = new Option(ward.name, ward.name);
-                        wardSelect.add(opt);
-                    });
-                })
-                .catch(err => console.error("Lỗi tải danh sách xã:", err));
-        }
-        updateAddress();
-    });
-
-    // === 4. Khi chọn Xã -> tự cập nhật ô Address ===
+    // 3. Lắng nghe thay đổi realtime
+    provinceSelect.addEventListener("change", handleProvinceChange);
+    districtSelect.addEventListener("change", handleDistrictChange);
     wardSelect.addEventListener("change", updateAddress);
 
-    function updateAddress() {
-        const provinceText = provinceSelect.options[provinceSelect.selectedIndex]?.text || "";
-        const districtText = districtSelect.options[districtSelect.selectedIndex]?.text || "";
-        const wardText = wardSelect.options[wardSelect.selectedIndex]?.text || "";
+    async function handleProvinceChange() {
+        districtSelect.innerHTML = "<option value=''>-- Chọn Quận/Huyện --</option>";
+        wardSelect.innerHTML = "<option value=''>-- Chọn Phường/Xã --</option>";
+        if (!provinceSelect.value) { updateAddress(); return; }
 
-        // Tự động ghép chuỗi vào ô input address
-        addressInput.value = [wardText, districtText, provinceText, "Việt Nam"]
-            .filter(Boolean)
-            .join(", ");
+        const data = await fetch(`https://provinces.open-api.vn/api/p/${provinceSelect.value}?depth=2`).then(r => r.json());
+        data.districts.forEach(d => districtSelect.add(new Option(d.name, d.code)));
+
+        updateAddress();
+    }
+
+    async function handleDistrictChange() {
+        wardSelect.innerHTML = "<option value=''>-- Chọn Phường/Xã --</option>";
+        if (!districtSelect.value) { updateAddress(); return; }
+
+        const data = await fetch(`https://provinces.open-api.vn/api/d/${districtSelect.value}?depth=2`).then(r => r.json());
+        data.wards.forEach(w => wardSelect.add(new Option(w.name, w.name)));
+
+        updateAddress();
+    }
+
+    function updateAddress() {
+        const p = provinceSelect.options[provinceSelect.selectedIndex]?.text || "";
+        const d = districtSelect.options[districtSelect.selectedIndex]?.text || "";
+        const w = wardSelect.options[wardSelect.selectedIndex]?.text || "";
+
+        addressInput.value = [w, d, p, "Việt Nam"].filter(Boolean).join(", ");
     }
 });

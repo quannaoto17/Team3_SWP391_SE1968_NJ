@@ -5,11 +5,12 @@ import com.example.PCOnlineShop.service.auth.AuthService;
 import com.example.PCOnlineShop.service.staff.StaffService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -19,94 +20,75 @@ public class StaffController {
     private final StaffService staffService;
     private final AuthService authService;
 
-    // Danh sách nhân viên (1-based page, giống Product)
     @GetMapping("/list")
-    public String listStaff(@RequestParam(defaultValue = "1") int page,          //
-                            @RequestParam(defaultValue = "10") int size,
-                            @RequestParam(defaultValue = "") String searchQuery,
-                            @RequestParam(defaultValue = "all") String statusFilter,
+    public String listStaff(@RequestParam(defaultValue = "active") String statusFilter,
                             Model model) {
 
-        int safePage = Math.max(page, 1);
-        int zeroBasedPage = safePage - 1; // convert về 0-based cho service/repo
+        List<Account> staffList = staffService.getAllStaff(statusFilter);
 
-        Page<Account> staffPage = staffService.getStaffPage(zeroBasedPage, size, searchQuery, statusFilter);
-
-        model.addAttribute("staffPage", staffPage);
-        model.addAttribute("searchQuery", searchQuery);
+        model.addAttribute("staffList", staffList);
         model.addAttribute("statusFilter", statusFilter);
-
-        // đồng bộ biến giống Product
-        model.addAttribute("currentPage", safePage);                 //
-        model.addAttribute("totalPages", staffPage.getTotalPages());
-        model.addAttribute("pageSize", size);
 
         return "staff/staff-list";
     }
 
-    // Xem chi tiết
+
     @GetMapping("/view/{id}")
     public String viewStaff(@PathVariable int id, Model model) {
         model.addAttribute("account", staffService.getById(id));
         return "staff/view-staff";
     }
 
-    // Form thêm
     @GetMapping("/add")
     public String addStaffForm(Model model) {
         model.addAttribute("account", new Account());
         return "staff/add-staff";
     }
 
-    // Lưu nhân viên (Validate)
     @PostMapping("/add")
     public String saveStaff(@Valid @ModelAttribute("account") Account account,
                             BindingResult result,
+                            @RequestParam(name = "addressStr", required = false) String addressStr,
                             Model model) {
-        if (result.hasErrors()) {
-            return "staff/add-staff";
-        }
+        if (result.hasErrors()) return "staff/add-staff";
 
         try {
-            authService.saveStaff(account);
+            Account saved = authService.saveStaff(account);
+            staffService.saveDefaultAddress(saved, addressStr);
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "staff/add-staff";
         }
 
-        return "redirect:/staff/list?statusFilter=all";
+        return "redirect:/staff/list";
     }
 
-    // Form sửa
     @GetMapping("/edit/{id}")
     public String editStaffForm(@PathVariable int id, Model model) {
         model.addAttribute("account", staffService.getById(id));
         return "staff/edit-staff";
     }
 
-    // Cập nhật (Validate)
     @PostMapping("/edit")
     public String updateStaff(@Valid @ModelAttribute("account") Account account,
                               BindingResult result,
+                              @RequestParam(name = "addressStr", required = false) String addressStr,
                               Model model) {
-        if (result.hasErrors()) {
-            return "staff/edit-staff";
-        }
+        if (result.hasErrors()) return "staff/edit-staff";
 
         try {
-            authService.saveStaff(account);
+            Account saved = authService.saveStaff(account);
+            staffService.updateDefaultAddress(saved, addressStr);
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "staff/edit-staff";
         }
-
-        return "redirect:/staff/list?statusFilter=all";
+        return "redirect:/staff/list";
     }
 
-    // Chuyển trạng thái
     @GetMapping("/delete/{id}")
     public String deactivateStaff(@PathVariable int id) {
         staffService.deactivateStaff(id);
-        return "redirect:/staff/list?statusFilter=all";
+        return "redirect:/staff/list";
     }
 }

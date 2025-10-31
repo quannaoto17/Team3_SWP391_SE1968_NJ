@@ -1,13 +1,10 @@
 /* ==========================================================
-   STAFF MODULE STYLE - PRODUCT-LIKE PAGING (NO BOOTSTRAP)
-   FINAL CLEAN VERSION (SPACING FIXED)
+   STAFF MODULE STYLE – DATATABLES VERSION (NO BOOTSTRAP)
+   Clean + Responsive + Theming for DataTables
    ========================================================== */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* Base reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     font-family: Arial, sans-serif;
@@ -16,7 +13,7 @@ body {
     min-height: 100vh;
 }
 
-/* ===== HEADER ===== */
+/* ===== Header ===== */
 .header {
     background: #4b7bec;
     color: #fff;
@@ -24,146 +21,39 @@ body {
     padding: 20px 0;
     font-size: 26px;
     font-weight: 600;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-/* ===== MAIN CONTENT ===== */
-.content {
-    width: 90%;
-    max-width: 1100px;
-    margin: 40px auto;
+/* ===== Page container ===== */
+.container {
+    width: min(1200px, 94%);
+    margin: 24px auto;
     background: #fff;
     border-radius: 10px;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-.content h2 {
-    text-align: center;
+.container > h2 {
+    text-align: left;
     font-size: 22px;
     color: #4b7bec;
-    margin-bottom: 25px;
+    margin-bottom: 16px;
 }
 
-/* ===== SEARCH + FILTER + ADD ===== */
-.search-sort-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 25px;
-    margin-bottom: 20px;
-}
-
-/* ---- Search ---- */
-.search-left .search-form {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.search-left input {
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    width: 240px;
-}
-
-.search-left .btn-filter {
-    padding: 8px 14px;
-    background: #4b7bec;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: 0.2s;
-}
-
-.search-left .btn-filter:hover {
-    background: #3867d6;
-}
-
-/* ---- Filter + Add Staff ---- */
-.search-right {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 50px; /* thêm khoảng cách giữa select và nút Add */
-}
-
-.search-right select {
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    background: #fff;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-
-/* ---- Add Staff / Customer button ---- */
-.add-staff a,
-.add-customer a {
-    background: #20bf6b;
-    color: #fff;
-    text-decoration: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-weight: 500;
-    transition: 0.25s;
-    white-space: nowrap;
+/* ===== Badges (status) ===== */
+.badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
     display: inline-block;
-    text-align: center;
 }
-.add-staff a:hover,
-.add-customer a:hover {
-    background: #26de81;
-    transform: translateY(-2px);
-}
+.badge-active   { background: #e6f9ef; color: #16a34a; }
+.badge-inactive { background: #fee2e2; color: #dc2626; }
 
-/* ===== TABLE ===== */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    border: 1px solid #ddd;
-}
-
-table th {
-    background: #f1f1f1;
-    padding: 10px;
-    text-align: center;
-    font-weight: 600;
-    color: #444;
-    border: 1px solid #ddd;
-}
-
-table td {
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #ddd;
-    font-size: 14px;
-}
-
-table tr:hover {
-    background: #fafafa;
-}
-
-/* ===== STATUS ===== */
-.status-active {
-    color: #20bf6b;
-    font-weight: 600;
-}
-
-.status-inactive {
-    color: #eb3b5a;
-    font-weight: 600;
-}
-
-/* ===== ACTION BUTTONS ===== */
-.btn-action {
+/* ===== Action buttons (links) ===== */
+.btn {
     display: inline-block;
     text-decoration: none;
     padding: 6px 12px;
@@ -172,113 +62,160 @@ table tr:hover {
     margin: 0 3px;
     color: #fff;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: all .2s ease;
     text-align: center;
     min-width: 70px;
 }
+.btn.btn-sm { padding: 6px 10px; font-size: 13px; }
 
-.btn-view { background: #3867d6; }
-.btn-view:hover { background: #4b7bec; }
+.btn-view      { background: #3867d6; }
+.btn-view:hover{ background: #4b7bec; }
 
-.btn-edit { background: #f7b731; }
-.btn-edit:hover { background: #fed330; }
+.btn-edit      { background: #f7b731; color: #1f2937; }
+.btn-edit:hover{ background: #fed330; color: #111827; }
 
-.btn-deactivate { background: #eb3b5a; }
-.btn-deactivate:hover { background: #fc5c65; }
+.btn-deactivate      { background: #eb3b5a; }
+.btn-deactivate:hover{ background: #fc5c65; }
 
-.btn-activate { background: #20bf6b; }
-.btn-activate:hover { background: #26de81; }
+.btn-activate      { background: #20bf6b; }
+.btn-activate:hover{ background: #26de81; }
 
-
-/* ===== PAGINATION – COMPACT LIKE PRODUCT LIST ===== */
-.pagination {
-    margin-top: 20px;
+/* ===== Staff table (namespace with #staffTable) ===== */
+#staffTable {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border: 1px solid #ddd;
+}
+#staffTable thead th {
+    background: #f1f1f1;
+    padding: 10px;
     text-align: center;
+    font-weight: 600;
+    color: #444;
+    border: 1px solid #ddd;
+}
+#staffTable tbody td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    vertical-align: middle; /* align middle content */
+}
+#staffTable tbody tr:hover { background: #fafafa; }
+
+/* Keep Actions column in one line */
+#staffTable tbody td:last-child { white-space: nowrap; }
+
+/* ===== FIX: stable layout ===== */
+#staffTable {
+    table-layout: fixed;    /* prevent Datatables auto-stretch columns */
 }
 
-.pagination a,
-.pagination span {
-    display: inline-block;
-    padding: 4px 10px;         /* giảm padding cho sát hơn */
-    margin: 0 1px;             /* giảm khoảng cách */
+/* ===== FIX: long address wrap but not overflow ===== */
+#staffTable tbody td:nth-child(5) {
+    white-space: normal !important;
+    max-width: 260px;
+    word-break: break-word;
+}
+
+/* Avoid fixed row height (breaks responsive) – use min-height on large screens */
+@media (min-width: 992px) {
+    #staffTable tbody tr { min-height: 56px; }
+}
+
+/* ===== DataTables theming (harmonize with page style) ===== */
+.dataTables_wrapper { margin-top: 12px; font-size: 14px; }
+
+/* Length + Search */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter { margin: 8px 0; }
+
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
     border: 1px solid #ccc;
     border-radius: 6px;
+    padding: 6px 10px;
     background: #fff;
-    color: #000;
-    text-decoration: none;
-    font-size: 14px;           /* nhỏ gọn hơn */
-    font-weight: 500;
-    line-height: 1.2;
-    transition: all 0.2s ease;
+    outline: none;
+}
+.dataTables_wrapper .dataTables_filter input:focus,
+.dataTables_wrapper .dataTables_length select:focus {
+    border-color: #4b7bec;
+    box-shadow: 0 0 0 3px rgba(75,123,236,0.15);
 }
 
-.pagination a.active {
-    background-color: #007bff;
-    color: #fff;
-    border-color: #007bff;
-    font-weight: bold;
-    box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+/* Info + Pagination */
+.dataTables_wrapper .dataTables_info { padding-top: 12px; color: #555; }
+.dataTables_wrapper .dataTables_paginate { padding-top: 8px; }
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border: 1px solid #ddd !important;
+    border-radius: 6px !important;
+    padding: 4px 10px !important;
+    margin: 0 2px !important;
+    background: #fff !important;
+    color: #333 !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #4b7bec !important;
+    border-color: #4b7bec !important;
+    color: #fff !important;
+    box-shadow: 0 0 4px rgba(75,123,236,.3);
 }
 
-.pagination a:hover {
-    background-color: #0056b3;
-    color: #fff;
-    border-color: #0056b3;
+/* Remove default top border and align header style */
+table.dataTable.no-footer { border: 1px solid #ddd; border-top: none; }
+table.dataTable thead th, table.dataTable thead td {
+    border-bottom: 1px solid #ddd;
+    background: #f1f1f1;
+    color: #444;
 }
+table.dataTable tbody tr:hover { background: #fafafa; }
 
-.pagination span {
+/* Responsive “child-row” caret color */
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+    background-color: #4b7bec;
     border: none;
-    background: transparent;
-    color: #555;
-    font-weight: 600;
-    pointer-events: none;
+    box-shadow: none;
 }
 
-.pagination a.disabled,
-.pagination a.disabled:hover {
-    pointer-events: none;
-    opacity: 0.6;
-    background: #f8f8f8;
-    color: #999;
-    border-color: #ddd;
+/* ===== Optional: Search/Filter header bar (if you keep custom controls elsewhere) ===== */
+.search-sort-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 12px;
 }
+.search-right { display: flex; align-items: center; gap: 12px; }
+.search-right select,
+.search-left input {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background: #fff;
+}
+.search-left .btn-filter {
+    padding: 8px 14px;
+    background: #4b7bec;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: .2s;
+}
+.search-left .btn-filter:hover { background: #3867d6; }
 
-
-/* ===== RESPONSIVE ===== */
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
-    .search-sort-container {
-        flex-direction: column;
-        gap: 15px;
-        align-items: stretch;
-    }
-
-    .search-right {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    table th, table td {
-        font-size: 12px;
-        padding: 8px;
-    }
-
-    .add-staff a {
-        width: 100%;
-        text-align: center;
-    }
-}
-/* ===== ALIGN ACTION BUTTONS IN TABLE ===== */
-table td {
-    vertical-align: middle; /* căn giữa nội dung theo chiều dọc */
-}
-
-/* Cột Actions giữ độ cao ổn định */
-td:last-child {
-    white-space: nowrap; /* tránh xuống dòng */
-}
-
-/* Nếu dòng có text dài (Address), vẫn giữ chiều cao hợp lý */
-table tr {
-    height: 60px; /* có thể chỉnh 50–60px tùy bảng */
+    .container { padding: 16px; }
+    .search-sort-container { flex-direction: column; align-items: stretch; gap: 12px; }
+    #staffTable thead th, #staffTable tbody td { font-size: 12px; padding: 8px; }
+    .btn { min-width: 64px; }
 }

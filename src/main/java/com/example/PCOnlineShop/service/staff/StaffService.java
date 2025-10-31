@@ -2,58 +2,76 @@ package com.example.PCOnlineShop.service.staff;
 
 import com.example.PCOnlineShop.constant.RoleName;
 import com.example.PCOnlineShop.model.account.Account;
+import com.example.PCOnlineShop.model.account.Address;
 import com.example.PCOnlineShop.repository.account.AccountRepository;
-import org.springframework.data.domain.*;
+import com.example.PCOnlineShop.repository.account.AddressRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
+@RequiredArgsConstructor
 public class StaffService {
 
     private final AccountRepository accountRepository;
+    private final AddressRepository addressRepository;
 
-    public StaffService(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
-    }
+    // ✅ Lấy ALL staff bao gồm địa chỉ (client-side paging bằng DataTables)
+    public List<Account> getAllStaff(String statusFilter) {
 
-    // Lấy danh sách staff có thể tìm kiếm & lọc trạng thái
-    public Page<Account> getStaffPage(int page, int size, String searchQuery, String statusFilter) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        boolean filterActive = "active".equalsIgnoreCase(statusFilter);
-        boolean filterInactive = "inactive".equalsIgnoreCase(statusFilter);
-
-        //  Lọc theo trạng thái
-        if (filterActive) {
-            return accountRepository.findByRoleAndEnabled(RoleName.Staff, true, searchQuery, pageable);
-        } else if (filterInactive) {
-            return accountRepository.findByRoleAndEnabled(RoleName.Staff, false, searchQuery, pageable);
-        } else {
-            // all
-            if (searchQuery == null || searchQuery.trim().isEmpty()) {
-                return accountRepository.findAllByRole(RoleName.Staff, pageable);
-            } else {
-                return accountRepository.findByPhoneNumberOrEmail(RoleName.Staff, searchQuery, pageable);
-            }
+        if ("active".equalsIgnoreCase(statusFilter)) {
+            return accountRepository.findByRoleAndEnabledWithAddresses(RoleName.Staff, true);
         }
+
+        if ("inactive".equalsIgnoreCase(statusFilter)) {
+            return accountRepository.findByRoleAndEnabledWithAddresses(RoleName.Staff, false);
+        }
+
+        // ALL
+        return accountRepository.findAllByRoleWithAddresses(RoleName.Staff);
     }
 
-    //  Lưu nhân viên
-    public Account saveStaff(Account account) {
-        account.setRole(RoleName.Staff);
-        return accountRepository.save(account);
-    }
-
-    //  Lấy theo ID
     public Account getById(int id) {
         return accountRepository.findById(id).orElse(null);
     }
 
-    // Đổi trạng thái Active/Inactive
+    // Bật / tắt tài khoản
     public void deactivateStaff(int id) {
-        Account account = accountRepository.findById(id).orElse(null);
-        if (account != null) {
-            account.setEnabled(!account.getEnabled());
-            accountRepository.save(account);
-        }
+        accountRepository.findById(id).ifPresent(acc -> {
+            acc.setEnabled(!acc.getEnabled());
+            accountRepository.save(acc);
+        });
+    }
+
+    // Lưu địa chỉ mặc định khi tạo staff
+    public void saveDefaultAddress(Account account, String addressStr) {
+        if (account == null || addressStr == null || addressStr.trim().isEmpty()) return;
+
+        // Hạ default cũ
+        addressRepository.findByAccount(account).forEach(a -> a.setDefault(false));
+
+        Address addr = new Address();
+        addr.setAccount(account);
+        addr.setFullName(account.getFullName());
+        addr.setPhone(account.getPhoneNumber());
+        addr.setAddress(addressStr.trim());
+        addr.setDefault(true);
+
+        addressRepository.save(addr);
+    }
+
+    // Cập nhật địa chỉ mặc định
+    public void updateDefaultAddress(Account account, String addressStr) {
+        if (account == null || addressStr == null || addressStr.trim().isEmpty()) return;
+
+        Address defaultAddr = addressRepository.findDefaultByAccount(account).orElse(new Address());
+        defaultAddr.setAccount(account);
+        defaultAddr.setFullName(account.getFullName());
+        defaultAddr.setPhone(account.getPhoneNumber());
+        defaultAddr.setAddress(addressStr.trim());
+        defaultAddr.setDefault(true);
+
+        addressRepository.save(defaultAddr);
     }
 }
