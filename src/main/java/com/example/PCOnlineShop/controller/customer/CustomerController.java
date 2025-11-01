@@ -5,11 +5,12 @@ import com.example.PCOnlineShop.service.auth.AuthService;
 import com.example.PCOnlineShop.service.customer.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -19,33 +20,27 @@ public class CustomerController {
     private final CustomerService customerService;
     private final AuthService authService;
 
+    // ======================== LIST ========================
     @GetMapping("/list")
-    public String listCustomers(@RequestParam(defaultValue = "1") int page,
-                                @RequestParam(defaultValue = "10") int size,
-                                @RequestParam(defaultValue = "active") String statusFilter,
+    public String listCustomers(@RequestParam(defaultValue = "active") String statusFilter,
                                 Model model) {
 
-        int safePage = Math.max(page, 1);
-        int zeroBasedPage = safePage - 1;
+        List<Account> customerList = customerService.getAllCustomers(statusFilter);
 
-        Page<Account> customerPage =
-                customerService.getCustomerPage(zeroBasedPage, size, statusFilter);
-
-        model.addAttribute("customerPage", customerPage);
+        model.addAttribute("customerList", customerList);
         model.addAttribute("statusFilter", statusFilter);
-        model.addAttribute("currentPage", safePage);
-        model.addAttribute("totalPages", customerPage.getTotalPages());
-        model.addAttribute("pageSize", size);
 
         return "customer/customer-list";
     }
 
+    // ======================== VIEW ========================
     @GetMapping("/view/{id}")
     public String viewCustomer(@PathVariable int id, Model model) {
         model.addAttribute("account", customerService.getById(id));
         return "customer/view-customer";
     }
 
+    // ======================== ADD ========================
     @GetMapping("/add")
     public String addCustomerForm(Model model) {
         model.addAttribute("account", new Account());
@@ -53,23 +48,24 @@ public class CustomerController {
     }
 
     @PostMapping("/add")
-    public String addCustomer(@Valid @ModelAttribute("account") Account account,
-                              BindingResult result,
-                              Model model) {
-        if (result.hasErrors()) {
-            return "customer/add-customer";
-        }
+    public String saveCustomer(@Valid @ModelAttribute("account") Account account,
+                               BindingResult result,
+                               @RequestParam(name = "addressStr", required = false) String addressStr,
+                               Model model) {
+        if (result.hasErrors()) return "customer/add-customer";
 
         try {
-            authService.saveCustomer(account);
+            Account saved = authService.saveCustomer(account);
+            customerService.saveDefaultAddress(saved, addressStr);
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "customer/add-customer";
         }
 
-        return "redirect:/customer/list?statusFilter=all";
+        return "redirect:/customer/list";
     }
 
+    // ======================== EDIT ========================
     @GetMapping("/edit/{id}")
     public String editCustomerForm(@PathVariable int id, Model model) {
         model.addAttribute("account", customerService.getById(id));
@@ -79,24 +75,25 @@ public class CustomerController {
     @PostMapping("/edit")
     public String updateCustomer(@Valid @ModelAttribute("account") Account account,
                                  BindingResult result,
+                                 @RequestParam(name = "addressStr", required = false) String addressStr,
                                  Model model) {
-        if (result.hasErrors()) {
-            return "customer/edit-customer";
-        }
+        if (result.hasErrors()) return "customer/edit-customer";
 
         try {
-            authService.saveCustomer(account);
+            Account saved = authService.saveCustomer(account);
+            customerService.updateDefaultAddress(saved, addressStr);
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "customer/edit-customer";
         }
 
-        return "redirect:/customer/list?statusFilter=all";
+        return "redirect:/customer/list";
     }
 
+    // ======================== DELETE ========================
     @GetMapping("/delete/{id}")
     public String deactivateCustomer(@PathVariable int id) {
         customerService.deactivateCustomer(id);
-        return "redirect:/customer/list?statusFilter=all";
+        return "redirect:/customer/list";
     }
 }
