@@ -2,7 +2,7 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>Thêm sản phẩm</title>
+    <title>Product Form</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
         :root{
@@ -152,6 +152,7 @@
                 <option value="">-- Chọn danh mục --</option>
                 <option th:each="cat : ${categories}" th:value="${cat.categoryId}" th:text="${cat.categoryName}"></option>
             </select>
+
             <button type="button" class="btn" id="btnStart">Tiếp tục</button>
         </div>
         <p id="gateMsg" class="hint" style="margin:0">Chọn danh mục để mở form nhập chi tiết.</p>
@@ -165,13 +166,14 @@
 
 
 
-    <input type="hidden" id="chosenCategoryId" name="category.categoryId" value=""/>
+        <input type="hidden" id="chosenCategoryId" name="category.categoryId" value=""/>
 
         <label for="brand">Thương hiệu *</label>
         <select id="brand" name="brand.brandId" required>
             <option value="">-- Chọn thương hiệu --</option>
             <option th:each="b : ${brands}" th:value="${b.brandId}" th:text="${b.name}"></option>
         </select>
+        <div class="error" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></div>
         <div class="error" id="brandError"></div>
 
         <label for="name">Tên sản phẩm *</label>
@@ -269,52 +271,6 @@
             };
             reader.readAsDataURL(f);
         });
-    });
-
-    // ===== Validate trước khi submit =====
-    document.getElementById('productForm').addEventListener('submit', e => {
-        let valid = true;
-
-        const name = document.getElementById('name');
-        const price = document.getElementById('price');
-        const brand = document.getElementById('brand');
-        const nameError = document.getElementById('nameError');
-        const priceError = document.getElementById('priceError');
-        const brandError = document.getElementById('brandError');
-        const imageError = document.getElementById('imageError');
-
-        nameError.textContent = priceError.textContent = brandError.textContent = imageError.textContent = "";
-
-        if(name.value.trim().length < 3){
-            nameError.textContent = "Tên sản phẩm phải có ít nhất 3 ký tự.";
-            valid = false;
-        }
-        if(!brand.value){
-            brandError.textContent = "Vui lòng chọn thương hiệu.";
-            valid = false;
-        }
-        if(price.value === "" || parseFloat(price.value) <= 0){
-            priceError.textContent = "Giá phải lớn hơn 0.";
-            valid = false;
-        }
-
-        const files = imageInput.files;
-        for(let f of files){
-            const ext = f.name.split('.').pop().toLowerCase();
-            if(!['jpg','jpeg','png'].includes(ext)){
-                imageError.textContent = "Chỉ cho phép ảnh JPG hoặc PNG.";
-                valid = false; break;
-            }
-            if(f.size > 2 * 1024 * 1024){
-                imageError.textContent = "Ảnh không được vượt quá 2MB.";
-                valid = false; break;
-            }
-        }
-
-        if(!valid){
-            e.preventDefault();
-            window.scrollTo({top: productForm.offsetTop - 80, behavior:'smooth'});
-        }
     });
 </script>
 </body>

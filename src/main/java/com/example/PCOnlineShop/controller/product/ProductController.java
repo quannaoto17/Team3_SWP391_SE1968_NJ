@@ -42,6 +42,17 @@ public class ProductController {
     private final PowerSupplyRepository powerSupplyRepository;
     private final CoolingRepository coolingRepository;
 
+    @ModelAttribute("categories")
+    public List<Category> categories() {
+        return categoryRepository.findAll();
+    }
+
+    @ModelAttribute("brands")
+    public List<Brand> brands() {
+        return brandRepository.findAll();
+    }
+
+
     // ===== DANH SÁCH =====
     @GetMapping("/list")
     public String listProducts(Model model) {
@@ -116,21 +127,29 @@ public class ProductController {
     @Transactional
     public String saveProduct(@Valid @ModelAttribute("product") Product product,
                               BindingResult result,
-                              @RequestParam("category.categoryId") int categoryId,
-                              @RequestParam("brand.brandId") int brandId,
+                              @RequestParam("category.categoryId") Integer categoryId,
+                              @RequestParam("brand.brandId") Integer brandId,
                               @RequestParam Map<String, String> params,
-                              @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles
+                              @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
+                              Model model
 
     ) throws IOException {
 
         if(productService.existsByProductName(product.getProductName()))
             result.rejectValue("productName", "error.product", "Product name already exists.");
+        if (categoryId == null || !categoryRepository.findById(categoryId).isPresent())
+            result.rejectValue("category", "error.product", "Please select a valid category.");
+        if (brandId == null || !brandRepository.findById(brandId).isPresent())
+            result.rejectValue("brand", "error.product", "Please select a valid brand.");
 
         if (result.hasErrors()) {
-            Category category = categoryRepository.findById(categoryId).orElse(null);
-            Brand brand = brandRepository.findById(brandId).orElse(null);
-            product.setCategory(category);
-            product.setBrand(brand);
+            if (categoryId != null) {
+                product.setCategory(categoryRepository.findById(categoryId).orElse(null));
+            }
+            if (brandId != null) {
+                product.setBrand(brandRepository.findById(brandId).orElse(null));
+            }
+            model.addAttribute("isEdit", false);
             return "product/product-form";
         }
         Category category = categoryRepository.findById(categoryId).orElse(null);
