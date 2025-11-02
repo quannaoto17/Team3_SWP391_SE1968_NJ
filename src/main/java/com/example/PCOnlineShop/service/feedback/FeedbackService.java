@@ -2,13 +2,12 @@ package com.example.PCOnlineShop.service.feedback;
 
 import com.example.PCOnlineShop.model.feedback.Feedback;
 import org.springframework.data.domain.Page;
-
 import java.time.LocalDate;
 import java.util.Map;
 
 public interface FeedbackService {
 
-    Page<Feedback> search(String keyword, String status, Integer rating,
+    Page<Feedback> search(String status, Integer rating,
                           LocalDate from, LocalDate to,
                           int page, int size, String sortKey);
 
@@ -23,5 +22,4 @@ public interface FeedbackService {
     Page<Feedback> getAllowedByProduct(Integer productId, int page, int size);
 
     void createFeedback(Integer productId, Integer accountId, Integer rating, String comment);
-
 }
