@@ -2,7 +2,7 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>Product Form</title>
+    <title>Add Product</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
         :root{
@@ -15,20 +15,17 @@
             --radius:12px;
             --error:#dc2626;
         }
-
         body{
             margin:0;
             font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;
             background:var(--bg);
             color:var(--ink);
         }
-
         .container{
             max-width:820px;
             margin:0 auto;
             padding:calc(var(--header-h) + 10px) 16px 24px;
         }
-
         .card{
             background:var(--card);
             border:1px solid var(--border);
@@ -36,19 +33,16 @@
             padding:18px;
             box-shadow:0 2px 4px rgba(0,0,0,0.04);
         }
-
         h1.title{
             font-weight:700;
             font-size:22px;
             margin:0 0 14px;
         }
-
         label{
             display:block;
             font-weight:600;
             margin:12px 0 6px;
         }
-
         input,select,textarea{
             width:100%;
             padding:10px;
@@ -58,134 +52,71 @@
             font-size:14px;
             transition:border-color 0.2s, background 0.2s;
         }
-
         input:focus,select:focus,textarea:focus{
             outline:none;
             border-color:#3b82f6;
             background:#fff;
         }
-
         textarea{min-height:90px;resize:vertical}
-
+        .error{color:var(--error);font-size:13px;margin-top:4px}
         .hint{color:var(--muted);font-size:13px;margin-top:4px}
-
-        .error{
-            color:var(--error);
-            font-size:13px;
-            margin-top:4px;
-        }
-
-        .gate{
-            display:flex;
-            gap:8px;
-            align-items:center;
-            flex-wrap:wrap;
-            margin-bottom:14px;
-        }
-
-        .btn{
-            padding:10px 14px;
-            border:1px solid #cfd4dc;
-            background:#fff;
-            border-radius:8px;
-            cursor:pointer;
-            font-weight:600;
-        }
-
+        .gate{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+        .btn{padding:10px 14px;border:1px solid #cfd4dc;background:#fff;border-radius:8px;cursor:pointer;font-weight:600;}
         .btn:hover{background:#f3f4f6}
-
-        .preview{
-            display:flex;
-            gap:10px;
-            flex-wrap:wrap;
-            margin-top:10px;
-        }
-
-        .thumb{
-            width:110px;
-            height:88px;
-            border:1px dashed #cfd4dc;
-            border-radius:8px;
-            background:#f9fafb;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            overflow:hidden;
-        }
-
+        .preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+        .thumb{width:110px;height:88px;border:1px dashed #cfd4dc;border-radius:8px;background:#f9fafb;display:flex;align-items:center;justify:content: center;overflow:hidden}
         .thumb img{width:100%;height:100%;object-fit:cover}
-
-        .actions{
-            display:flex;
-            justify-content:flex-end;
-            margin-top:14px;
-        }
-
-        .primary{
-            background:#111827;
-            color:#fff;
-            border:none;
-            padding:12px 18px;
-            border-radius:10px;
-            font-weight:700;
-            cursor:pointer;
-            transition:background 0.2s;
-        }
-
+        .actions{display:flex;justify-content:flex-end;margin-top:14px}
+        .primary{background:#111827;color:#fff;border:none;padding:12px 18px;border-radius:10px;font-weight:700;cursor:pointer;}
         .primary:hover{background:#0b1220}
-
-        #productForm{display:none}
     </style>
 </head>
 <body>
 
-<!-- Header cố định -->
 <div th:replace="layout/header-staff :: header-staff"></div>
 
 <div class="container">
-    <h1 class="title" th:text="${isEdit} ? 'Edit Product' : 'Add Product'"></h1>
-    <!-- Bước 1: chọn danh mục -->
+    <h1 class="title">Add Product</h1>
+
     <div class="card">
         <div class="gate">
             <label for="categorySelect" style="margin:0">Danh mục</label>
             <select id="categorySelect" name="category.categoryId" style="min-width:240px" required>
                 <option value="">-- Chọn danh mục --</option>
-                <option th:each="cat : ${categories}" th:value="${cat.categoryId}" th:text="${cat.categoryName}"></option>
+                <option th:each="cat : ${categories}"
+                        th:value="${cat.categoryId}"
+                        th:text="${cat.categoryName}"></option>
             </select>
-
             <button type="button" class="btn" id="btnStart">Tiếp tục</button>
         </div>
         <p id="gateMsg" class="hint" style="margin:0">Chọn danh mục để mở form nhập chi tiết.</p>
+
+        <div class="error" th:if="${categoryError}" th:text="${categoryError}"></div>
     </div>
 
-    <!-- Form thêm sản phẩm -->
     <form id="productForm" class="card"
-          th:action="${isEdit} ? '/staff/products/edit' : '/staff/products/save'"
-          th:object="${product}" th:style="${isEdit} ? 'display:block' : 'display:none'"
+          th:action="@{/staff/products/save}"
+          th:object="${product}"
+          style="display:none"
           method="post" enctype="multipart/form-data">
 
-
-
-        <input type="hidden" id="chosenCategoryId" name="category.categoryId" value=""/>
+        <input type="hidden" id="chosenCategoryId" name="category.categoryId"/>
 
         <label for="brand">Thương hiệu *</label>
         <select id="brand" name="brand.brandId" required>
             <option value="">-- Chọn thương hiệu --</option>
             <option th:each="b : ${brands}" th:value="${b.brandId}" th:text="${b.name}"></option>
         </select>
-        <div class="error" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></div>
-        <div class="error" id="brandError"></div>
+        <div class="error" th:if="${brandError}" th:text="${brandError}"></div>
 
         <label for="name">Tên sản phẩm *</label>
         <input id="name" type="text" th:field="*{productName}" placeholder="VD: ASUS PRIME B550M-A"
                pattern="^[A-Za-zÀ-ỹ0-9\\s\\-_,\\.;:()]+$" minlength="3" maxlength="100" required/>
         <div class="error" th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}"></div>
-        <div class="error" id="nameError"></div>
 
         <label for="price">Giá ($) *</label>
         <input id="price" type="number" th:field="*{price}" min="0.01" step="0.01" placeholder="VD: 149.90" required/>
         <div class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
-        <div class="error" id="priceError"></div>
 
         <label for="desc">Mô tả</label>
         <textarea id="desc" th:field="*{description}" placeholder="Mô tả ngắn gọn..."></textarea>
@@ -197,21 +128,55 @@
 
         <label for="status">Trạng thái</label>
         <select id="status" th:field="*{status}">
-            <option th:value="true" selected>Còn hàng</option>
+            <option th:value="true">Còn hàng</option>
             <option th:value="false">Hết hàng</option>
         </select>
 
         <label>Ảnh sản phẩm</label>
         <input type="file" id="imageInput" name="imageFiles" accept="image/png, image/jpeg" multiple style="display:none"/>
         <button type="button" class="btn" onclick="document.getElementById('imageInput').click()">Chọn ảnh</button>
-        <div class="error" id="imageError"></div>
-        <div class="preview" id="imagePreview"><div class="thumb"><span class="hint">Chưa có ảnh</span></div></div>
+        <div class="preview" id="imagePreview">
+            <div class="thumb"><span class="hint">Chưa có ảnh</span></div>
+        </div>
 
         <div class="actions">
             <button type="submit" class="primary">Tạo mới</button>
         </div>
     </form>
 </div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    // 1. Lấy các giá trị đã submit (sẽ là 'null' nếu tải trang lần đầu)
+    // Controller phải gửi các giá trị này khi có lỗi
+    const submittedCatId = /*[[${submittedCategoryId}]]*/ null;
+    const submittedBrandId = /*[[${submittedBrandId}]]*/ null;
+
+    // 2. Lấy đối tượng select
+    const categorySelectForReload = document.getElementById('categorySelect');
+    const brandSelect = document.getElementById('brand');
+
+    // 3. Chạy khi trang tải xong
+    document.addEventListener('DOMContentLoaded', () => {
+        // Nếu có lỗi validation (submittedCatId sẽ không null)
+        if (submittedCatId) {
+
+            // 3.1. Đặt lại giá trị <select> về cái người dùng đã chọn
+            categorySelectForReload.value = submittedCatId;
+            if (submittedBrandId) {
+                brandSelect.value = submittedBrandId;
+            }
+
+            // 3.2. Tự động mở form và tải spec
+            // (Hàm openFormWithCategory() nằm trong script bên dưới)
+            openFormWithCategory(submittedCatId, false); // false = không cuộn
+        }
+    });
+
+    /*]]>*/
+</script>
+
 
 <script>
     const categorySelect = document.getElementById('categorySelect');
@@ -222,7 +187,8 @@
     const specContainer = document.getElementById('specFormContainer');
 
     // ===== Bật form sau khi chọn danh mục =====
-    function openFormWithCategory(cid){
+    // SỬA LỖI 5: Thêm 'shouldScroll' để tránh cuộn trang khi tải lại
+    function openFormWithCategory(cid, shouldScroll = true){
         if(!cid){
             productForm.style.display = 'none';
             gateMsg.textContent = 'Chọn danh mục trước để mở form nhập chi tiết.';
@@ -233,12 +199,20 @@
         productForm.style.display = 'block';
         gateMsg.textContent = 'Danh mục đã chọn, nhập thông tin sản phẩm.';
         loadSpec(cid);
-        productForm.scrollIntoView({behavior:'smooth', block:'start'});
+
+        if (shouldScroll) {
+            productForm.scrollIntoView({behavior:'smooth', block:'start'});
+        }
     }
 
-    btnStart.addEventListener('click', () => openFormWithCategory(categorySelect.value));
+    // Chỉ cuộn khi bấm nút
+    btnStart.addEventListener('click', () => openFormWithCategory(categorySelect.value, true));
+
+    // Không cuộn khi đang chọn lại
     categorySelect.addEventListener('change', () => {
-        if(productForm.style.display === 'block'){ openFormWithCategory(categorySelect.value); }
+        if(productForm.style.display === 'block'){
+            openFormWithCategory(categorySelect.value, true);
+        }
     });
 
     // ===== Load spec form =====
@@ -273,5 +247,6 @@
         });
     });
 </script>
+
 </body>
 </html>
