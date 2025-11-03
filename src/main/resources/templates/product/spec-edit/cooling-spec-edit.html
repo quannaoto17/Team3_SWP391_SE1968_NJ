@@ -11,10 +11,10 @@
     <input type="number" name="cl.fanSize"
            th:value="${cl != null} ? ${cl.fanSize} : ''" min="0"/>
 
-    <label>Kích thước radiator:</label>
-    <input type="text" name="cl.radiatorSize"
+    <label>Kích thước radiator (mm):</label>
+    <input type="number" name="cl.radiatorSize"
            th:value="${cl != null} ? ${cl.radiatorSize} : ''"
-           placeholder="VD: 240, 360"/>
+           placeholder="VD: 120, 240, 280, 360" min="0"/>
 
     <label>TDP tối đa (W):</label>
     <input type="number" name="cl.maxTdp"
