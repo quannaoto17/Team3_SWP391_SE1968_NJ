@@ -59,32 +59,33 @@ public class OrderController {
         return accountRepository.findByPhoneNumber(userDetails.getUsername()).orElse(null);
     }
 
+    // Trong OrderController.java
+
     // ======================================================
     @GetMapping("/list")
     public String viewOrderList(Model model,
-                                @AuthenticationPrincipal UserDetails currentUserDetails,
-                                @Valid OrderSearchRequest searchRequest,
-                                BindingResult bindingResult,
-                                @RequestParam(name = "page", required = false, defaultValue = "1") int page,
-                                @RequestParam(name = "sort", required = false, defaultValue = "createdDate") String sortField,
-                                @RequestParam(name = "dir", required = false, defaultValue = "desc") String sortDir,
-                                RedirectAttributes redirectAttributes) {
+                                @AuthenticationPrincipal UserDetails currentUserDetails
+                                // --- BỎ CÁC THAM SỐ PAGE, SORT, DIR, VALIDATION ---
+                                // @Valid OrderSearchRequest searchRequest,
+                                // BindingResult bindingResult,
+                                // @RequestParam(name = "page", ...
+                                // @RequestParam(name = "sort", ...
+                                // @RequestParam(name = "dir", ...
+    ) {
 
-        // 1. Xác định vai trò và lấy thông tin người dùng
+        // 1. Xác định vai trò (Giữ nguyên)
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isStaffOrAdmin = authentication.getAuthorities().stream()
                 .anyMatch(r -> r.getAuthority().equals("ROLE_STAFF") || r.getAuthority().equals("ROLE_ADMIN"));
         model.addAttribute("isStaffOrAdmin", isStaffOrAdmin);
 
+        // Lấy Account (Giữ nguyên)
         Account currentAccount = null;
         if (currentUserDetails instanceof Account) {
             currentAccount = (Account) currentUserDetails;
         } else if (currentUserDetails != null) {
-            // Fallback: Lấy Account từ DB bằng username (coi như là SĐT)
             String username = currentUserDetails.getUsername();
-            // Sử dụng accountRepository để tìm
             currentAccount = accountRepository.findByPhoneNumber(username).orElse(null);
-
             if (currentAccount == null) {
                 System.err.println("Cảnh báo: Không tìm thấy Account với SĐT (username): " + username);
             }
@@ -92,73 +93,24 @@ public class OrderController {
 
         // 2. Xử lý theo vai trò
         if (isStaffOrAdmin) {
-            // --- XỬ LÝ CHO STAFF/ADMIN ---
+            // --- LOGIC MỚI CHO STAFF/ADMIN (DÙNG DATATABLES) ---
             model.addAttribute("pageTitle", "Order Management");
 
-            String searchPhone = searchRequest.getSearchPhone();
-            Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
-                    ? Sort.by(sortField).ascending()
-                    : Sort.by(sortField).descending();
-            Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE, sort);
-            String reverseSortDir = sortDir.equals("asc") ? "desc" : "asc";
+            // Lấy TẤT CẢ đơn hàng thay vì phân trang
+            List<Order> adminOrderList = orderService.findAllOrdersForAdmin();
 
+            // Gửi List này sang view
+            model.addAttribute("adminOrderList", adminOrderList);
 
-            // --- Xử lý lỗi validation DTO (sai format) ---
-            if (bindingResult.hasErrors()) {
-                String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
-                model.addAttribute("error", errorMessage);
-
-                // Cung cấp model đầy đủ để trang không bị crash
-                model.addAttribute("ordersPage", Page.empty(pageable)); // Gửi trang rỗng
-                model.addAttribute("currentPage", page);
-                model.addAttribute("totalPages", 0);
-                model.addAttribute("sortField", sortField);
-                model.addAttribute("sortDir", sortDir);
-                model.addAttribute("reverseSortDir", reverseSortDir);
-                model.addAttribute("searchPhone", searchPhone); // Giữ lại SĐT sai
-
-                return "orders/order-list";
-            }
-
-            // --- Xử lý SĐT không tồn tại ---
-            if (StringUtils.hasText(searchPhone)) {
-                if (!orderService.customerAccountExistsByPhoneNumber(searchPhone)) {
-                    model.addAttribute("error", "No customer found with phone number: " + searchPhone);
-
-                    // Cung cấp model đầy đủ để trang không bị crash
-                    model.addAttribute("ordersPage", Page.empty(pageable)); // Gửi trang rỗng
-                    model.addAttribute("currentPage", page);
-                    model.addAttribute("totalPages", 0);
-                    model.addAttribute("sortField", sortField);
-                    model.addAttribute("sortDir", sortDir);
-                    model.addAttribute("reverseSortDir", reverseSortDir);
-                    model.addAttribute("searchPhone", searchPhone); // Giữ lại SĐT sai
-
-                    return "orders/order-list";
-                }
-            }
-
-            // --- Logic thành công ---
-            Page<Order> orderPage = orderService.findPaginated(pageable, searchPhone);
-
-            // Gửi dữ liệu Staff sang view
-            model.addAttribute("ordersPage", orderPage);
-            model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", orderPage.getTotalPages());
-            model.addAttribute("sortField", sortField);
-            model.addAttribute("sortDir", sortDir);
-            model.addAttribute("reverseSortDir", reverseSortDir);
-            model.addAttribute("searchPhone", searchPhone);
+            // --- BỎ TOÀN BỘ LOGIC PAGEABLE, SORT, SEARCH, ERROR CŨ ---
 
         } else if (currentAccount != null) {
-            // --- XỬ LÝ CHO CUSTOMER ---
-            // (Code sẽ vào đây khi currentAccount được tìm thấy)
-            model.addAttribute("pageTitle", "My Orders"); // Tiêu đề trang
+            // --- XỬ LÝ CHO CUSTOMER (Giữ nguyên) ---
+            model.addAttribute("pageTitle", "My Orders");
             List<Order> customerOrders = orderService.getOrdersByAccount(currentAccount);
-            model.addAttribute("customerOrders", customerOrders); // Đặt tên khác
+            model.addAttribute("customerOrders", customerOrders);
 
         } else {
-            // Chưa đăng nhập hoặc không lấy được Account -> Chuyển về login (Security nên xử lý trước)
             return "redirect:/auth/login";
         }
 
