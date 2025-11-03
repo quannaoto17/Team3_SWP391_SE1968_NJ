@@ -1,73 +1,65 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="en">
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Edit Customer</title>
     <link rel="stylesheet" href="/css/StaffStyle.css">
 </head>
 <body>
+
+<!-- Header layout -->
+<div sec:authorize="!isAuthenticated()" th:replace="layout/header-default :: header-default"></div>
+<div sec:authorize="hasRole('ADMIN')" th:replace="layout/header-admin :: header-admin"></div>
+<div sec:authorize="hasRole('STAFF')" th:replace="layout/header-staff :: header-staff"></div>
+<div sec:authorize="hasRole('CUSTOMER')" th:replace="layout/header-customer :: header-customer"></div>
+
 <div class="header"><h2>Edit Customer</h2></div>
 
 <div class="content">
 
-    <div th:if="${errorMessage}" class="error" style="margin-bottom:10px;">
+    <div th:if="${errorMessage}" class="error">
         <p th:text="${errorMessage}"></p>
     </div>
 
     <form th:action="@{/customer/edit}" th:object="${account}" method="post">
         <input type="hidden" th:field="*{accountId}">
         <table>
-            <tr>
-                <td>First Name:</td>
-                <td><input type="text" th:field="*{firstname}" required></td>
-            </tr>
-            <tr>
-                <td>Last Name:</td>
-                <td><input type="text" th:field="*{lastname}" required></td>
-            </tr>
-            <tr>
-                <td>Email:</td>
-                <td><input type="email" th:field="*{email}" required></td>
-            </tr>
-            <tr>
-                <td>Phone:</td>
-                <td><input type="text" th:field="*{phoneNumber}" pattern="[0-9]{9,15}" required></td>
-            </tr>
+            <tr><td>First Name:</td><td><input type="text" th:field="*{firstname}" required></td></tr>
+            <tr><td>Last Name:</td><td><input type="text" th:field="*{lastname}" required></td></tr>
+            <tr><td>Email:</td><td><input type="email" th:field="*{email}" required></td></tr>
+            <tr><td>Phone:</td><td><input type="text" th:field="*{phoneNumber}" pattern="[0-9]{9,15}" required></td></tr>
 
-            <!--  Địa chỉ (giống Staff) -->
             <tr>
                 <td>Address:</td>
                 <td>
-                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                        <select id="province" class="form-control" style="flex: 1;">
+                    <div class="address-group">
+                        <select id="province" class="form-control">
                             <option value="">-- Chọn Tỉnh/Thành phố --</option>
                         </select>
-                        <select id="district" class="form-control" style="flex: 1;">
-                            <option value="">-- Chọn Quận/Huyện --</option>
-                        </select>
-                        <select id="ward" class="form-control" style="flex: 1;">
-                            <option value="">-- Chọn Phường/Xã --</option>
-                        </select>
+                        <div class="address-sub">
+                            <select id="district" class="form-control">
+                                <option value="">-- Chọn Quận/Huyện --</option>
+                            </select>
+                            <select id="ward" class="form-control">
+                                <option value="">-- Chọn Phường/Xã --</option>
+                            </select>
+                        </div>
                     </div>
-
-                    <!-- ✅ Input ẩn gửi về backend -->
-                    <input type="hidden" id="address" th:field="*{address}">
+                    <input type="hidden" id="address" name="addressStr" th:value="${account.defaultAddress}">
                 </td>
             </tr>
 
-            <!-- 🔐 Password -->
             <tr>
                 <td>Password:</td>
                 <td>
                     <input type="text" id="password" th:field="*{password}" minlength="6"
-                           placeholder="Enter new password or keep old"
-                           required onkeyup="checkStrength()">
+                           placeholder="Enter new password or keep old" required onkeyup="checkStrength()">
                     <div id="strengthMessage"></div>
                 </td>
             </tr>
 
-            <!--  Trạng thái -->
             <tr>
                 <td>Status:</td>
                 <td>
@@ -77,15 +69,13 @@
             </tr>
         </table>
 
-        <button type="submit">Update</button>
+        <div class="button-group">
+            <a href="/customer/list" class="btn-back">← Back</a>
+            <button type="submit">Update</button>
+        </div>
     </form>
-
-    <div style="margin-top:15px;">
-        <a href="/customer/list">← Back</a>
-    </div>
 </div>
 
-<!--  Dùng lại JS của Staff (địa chỉ + password strength) -->
 <script src="/js/Staff.js"></script>
 </body>
 </html>

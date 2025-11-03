@@ -140,8 +140,8 @@ public class AuthService {
         return accountRepository.save(account);
     }
 
-    /** Dùng cho tạo/cập nhật Customer (không cần trả về). */
-    public void saveCustomer(Account account) {
+    /** Dùng cho tạo/cập nhật Customer. */
+    public Account saveCustomer(Account account) {
         accountRepository.findByEmail(account.getEmail()).ifPresent(existing -> {
             if (account.getAccountId() == 0 || existing.getAccountId() != account.getAccountId()) {
                 throw new IllegalArgumentException("Email đã tồn tại!");
@@ -171,8 +171,9 @@ public class AuthService {
         }
 
         account.setRole(RoleName.Customer);
-        accountRepository.save(account);
+        return accountRepository.save(account);
     }
+
 
     public void updatePassword(String email, String newPassword) {
         accountRepository.findByEmail(email).ifPresent(acc -> {

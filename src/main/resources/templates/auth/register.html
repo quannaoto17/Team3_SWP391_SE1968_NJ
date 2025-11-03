@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="vi">
 <head>
     <meta charset="UTF-8">
     <title>Đăng ký tài khoản</title>
@@ -73,6 +73,8 @@
     </style>
 </head>
 <body>
+<div th:replace="layout/header-default :: header-default"></div>
+
 <div class="register-container">
     <h2>Đăng ký tài khoản</h2>
     <form th:action="@{/auth/register}" th:object="${account}" method="post" onsubmit="return validatePassword()">

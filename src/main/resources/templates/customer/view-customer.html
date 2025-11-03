@@ -1,55 +1,38 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="en">
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      lang="en">
 <head>
     <meta charset="UTF-8">
     <title>View Customer</title>
     <link rel="stylesheet" href="/css/StaffStyle.css">
 </head>
 <body>
-<div>
-    <div class="header">
-        <h2>View Customer</h2>
-    </div>
 
-    <div class="content">
-        <form>
-            <table>
-                <tr>
-                    <td>ID:</td>
-                    <td><input type="text" th:value="${account.accountId}" readonly/></td>
-                </tr>
-                <tr>
-                    <td>First Name:</td>
-                    <td><input type="text" th:value="${account.firstname}" readonly/></td>
-                </tr>
-                <tr>
-                    <td>Last Name:</td>
-                    <td><input type="text" th:value="${account.lastname}" readonly/></td>
-                </tr>
-                <tr>
-                    <td>Email:</td>
-                    <td><input type="email" th:value="${account.email}" readonly/></td>
-                </tr>
-                <tr>
-                    <td>Phone:</td>
-                    <td><input type="text" th:value="${account.phoneNumber}" readonly/></td>
-                </tr>
-                <tr>
-                    <td>Address:</td>
-                    <td><input type="text" th:value="${account.address}" readonly/></td>
-                </tr>
-                <tr>
-                    <td>Status:</td>
-                    <td>
-                        <input type="text" th:value="${account.enabled ? 'Active' : 'Inactive'}" readonly/>
-                    </td>
-                </tr>
-            </table>
+<!-- Header đồng bộ -->
+<div sec:authorize="!isAuthenticated()" th:replace="layout/header-default :: header-default"></div>
+<div sec:authorize="hasRole('ADMIN')" th:replace="layout/header-admin :: header-admin"></div>
+<div sec:authorize="hasRole('STAFF')" th:replace="layout/header-staff :: header-staff"></div>
+<div sec:authorize="hasRole('CUSTOMER')" th:replace="layout/header-customer :: header-customer"></div>
 
-            <a href="/customer/list">← Back</a>
-        </form>
-    </div>
+<div class="header"><h2>View Customer</h2></div>
+
+<div class="content">
+    <form>
+        <table>
+            <tr><td>ID:</td><td><input type="text" th:value="${account.accountId}" readonly></td></tr>
+            <tr><td>First Name:</td><td><input type="text" th:value="${account.firstname}" readonly></td></tr>
+            <tr><td>Last Name:</td><td><input type="text" th:value="${account.lastname}" readonly></td></tr>
+            <tr><td>Email:</td><td><input type="email" th:value="${account.email}" readonly></td></tr>
+            <tr><td>Phone:</td><td><input type="text" th:value="${account.phoneNumber}" readonly></td></tr>
+            <tr><td>Address:</td><td><input type="text" th:value="${account.defaultAddress}" readonly></td></tr>
+            <tr><td>Status:</td><td><input type="text" th:value="${account.enabled ? 'Active' : 'Inactive'}" readonly></td></tr>
+        </table>
+
+        <div class="button-group" style="justify-content: center;">
+            <a href="/customer/list" class="btn-back">← Back</a>
+        </div>
+    </form>
 </div>
 </body>
 </html>

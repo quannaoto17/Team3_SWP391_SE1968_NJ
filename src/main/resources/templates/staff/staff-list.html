@@ -76,7 +76,7 @@
             <th>Tên</th>
             <th>Email</th>
             <th>Phone</th>
-            <th>Address</th> <!-- ✅ đã thêm -->
+            <th>Address</th> <!--  đã thêm -->
             <th>Status</th>
             <th style="min-width:200px;">Actions</th>
         </tr>
@@ -120,6 +120,7 @@
         });
 
         $('#staffTable').DataTable({
+            ordering: false,
             responsive: false,
             pageLength: 5,
             lengthMenu: [5, 10, 25, 50, 100],

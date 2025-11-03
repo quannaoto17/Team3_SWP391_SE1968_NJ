@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,11 +14,12 @@
             font-family: "Poppins", "Segoe UI", Arial, sans-serif;
             background: linear-gradient(135deg, #e0f7fa, #f8faff);
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            flex-direction: column; /* ⬅️ sắp xếp theo chiều dọc thay vì ngang */
+            align-items: center;     /* canh giữa theo chiều ngang */
+            min-height: 100vh;
             margin: 0;
         }
+
 
         .container {
             background: #fff;
@@ -28,6 +29,7 @@
             width: 380px;
             text-align: center;
             transition: all 0.3s ease;
+            margin-top: 50px;
         }
 
         .container:hover {
@@ -164,6 +166,8 @@
 </head>
 
 <body>
+<div th:replace="layout/header-default :: header-default"></div>
+
 <div class="container">
     <h2>Đăng nhập</h2>
 
