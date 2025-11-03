@@ -159,6 +159,11 @@ public class OrderService {
         return orderDetailRepository.findByOrder(order);
     }
 
+    public List<Order> findAllOrdersForAdmin() {
+        // Gọi repo mới, sắp xếp DESC (newest) theo default
+        return orderRepository.findAllByRole(RoleName.Customer);
+    }
+
     // ==================================================
     // == LOGIC CHO TRANG KIỂM TRA BẢO HÀNH
     // ==================================================
@@ -274,4 +279,6 @@ public class OrderService {
         order.setStatus(newStatus);
         orderRepository.save(order);
     }
+
+
 }
