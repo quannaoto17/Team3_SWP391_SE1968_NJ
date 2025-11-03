@@ -354,7 +354,7 @@ public class ProductController {
                 cl.setProduct(product);
                 cl.setType(params.get("cl.type"));
                 cl.setFanSize(getInt(params, "cl.fanSize"));
-                cl.setRadiatorSize(params.get("cl.radiatorSize"));
+                cl.setRadiatorSize(getInt(params, "cl.radiatorSize"));
                 cl.setTdp(getInt(params, "cl.maxTdp"));
                 coolingRepository.save(cl);
             }

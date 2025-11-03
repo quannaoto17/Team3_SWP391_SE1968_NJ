@@ -26,6 +26,14 @@ spring:
           auth: true
           starttls:
             enable: true
+  # OpenAI Configuration
+  ai:
+    openai:
+      api-key: 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
+      chat:
+        options:
+          model: gpt-4o-mini
+          temperature: 0.7
 #logging:
 #  level:
 #    org.springframework: DEBUG

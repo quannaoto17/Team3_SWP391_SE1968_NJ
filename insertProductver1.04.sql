@@ -1177,43 +1177,43 @@ INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor)
 
 -- 1. Cooler Master Hyper 212 Spectrum V3
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (8, 1, 'Cooler Master Hyper 212 Spectrum V3', 31.99, 'Tản nhiệt quốc dân, hiệu năng tốt trong tầm giá.', 'Tản khí, 4 ống đồng, quạt ARGB', 45);
-INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 180, 120, NULL);
+INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 180, 120, 0);
 
 -- 2. Noctua NH-D15
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (8, 7, 'Noctua NH-D15 chromax.black', 119.99, 'Vua tản nhiệt khí, hiệu năng đỉnh cao và cực kỳ yên tĩnh.', 'Tản khí, tháp đôi, 2 quạt 140mm', 20);
-INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 250, 140, NULL);
+INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 250, 140, 0);
 
 -- 3. Deepcool AK400
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (8, 10, 'Deepcool AK400 Performance', 27.99, 'Hiệu năng/giá thành xuất sắc, thiết kế gọn gàng.', 'Tản khí, 4 ống đồng, quạt 120mm FDB', 38);
-INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 220, 120, NULL);
+INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 220, 120, 0);
 
 -- 4. Thermalright Phantom Spirit 120 SE ARGB
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (8, 11, 'Thermalright Phantom Spirit 120 SE ARGB', 49.99, 'Hiệu năng cực mạnh với 7 ống đồng và 2 quạt.', 'Tản khí, tháp đôi, 2 quạt 120mm', 32);
-INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 280, 120, NULL);
+INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 280, 120, 0);
 
 -- 5. Deepcool AK620
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (8, 10, 'Deepcool AK620 Black', 64.99, 'Tản nhiệt tháp đôi hiệu năng cao, cạnh tranh trực tiếp với các tản cao cấp.', 'Tản khí, 6 ống đồng, 2 quạt 120mm', 28);
-INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 260, 120, NULL);
+INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 260, 120, 0);
 
 -- 6. Noctua NH-U12A
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (8, 7, 'Noctua NH-U12A', 115.99, 'Hiệu năng của tản 140mm trong hình hài 120mm, không cấn RAM.', 'Tản khí, 7 ống đồng, 2 quạt NF-A12x25', 22);
-INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 220, 120, NULL);
+INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 220, 120, 0);
 
 -- 7. Cooler Master MasterAir MA624 Stealth
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (8, 1, 'Cooler Master MasterAir MA624 Stealth', 109.99, 'Thiết kế đen tuyền, hiệu năng cao, đi kèm cả quạt 120mm và 140mm.', 'Tản khí, tháp đôi, 6 ống đồng', 24);
-INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 250, 140, NULL);
+INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 250, 140, 0);
 
 -- 8. Noctua NH-L9i-17xx
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (8, 7, 'Noctua NH-L9i-17xx', 56.99, 'Tản nhiệt low-profile cho các case ITX siêu nhỏ gọn, socket LGA1700.', 'Tản khí low-profile', 30);
-INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 95, 92, NULL);
+INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 95, 92, 0);
 
 -- 9. Thermalright Assassin X 120 Refined SE
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (8, 11, 'Thermalright Assassin X 120 Refined SE', 20.99, 'Tản nhiệt khí giá rẻ cho các CPU tầm trung.', 'Tản khí, 4 ống đồng', 42);
-INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 180, 120, NULL);
+INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 180, 120, 0);
 
 -- 10. be quiet! Dark Rock Pro 4
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (8, 12, 'be quiet! Dark Rock Pro 4', 99.99, 'Hiệu năng đỉnh cao đi kèm với sự tĩnh lặng tuyệt đối.', 'Tản khí, tháp đôi, quạt Silent Wings', 26);
-INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 250, 135, NULL);
+INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'Air', 250, 135, 0);
 
 
 -- -----------------------------------------------------------------
