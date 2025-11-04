@@ -10,7 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional; // <— dùng Spring Transactional
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -71,9 +71,24 @@ public class ProductController {
         return "product/product-form";
     }
 
-    // ===== SPEC FORM (ADD) — rỗng/mặc định =====
+    // ===== SPEC FORM (ADD) — ĐÃ SỬA ĐỂ GỘP =====
     @GetMapping("/spec-form")
-    public String getSpecForm(@RequestParam("categoryId") int categoryId) {
+    public String getSpecForm(@RequestParam("categoryId") int categoryId, Model model) {
+
+        switch (categoryId) {
+            case 1 -> model.addAttribute("mb", new Mainboard());
+            case 2 -> model.addAttribute("cpu", new CPU());
+            case 3 -> model.addAttribute("gpu", new GPU());
+            case 4 -> model.addAttribute("mem", new Memory());
+            case 5 -> model.addAttribute("storage", new Storage());
+            case 6 -> model.addAttribute("pcase", new Case());
+            case 7 -> model.addAttribute("psu", new PowerSupply());
+            case 8 -> model.addAttribute("cl", new Cooling());
+            // case 9 -> model.addAttribute("fan", new Fan());
+            default -> {}
+        }
+
+        // Trả về thư mục "specs" CHUẨN (đã gộp)
         return switch (categoryId) {
             case 1 -> "product/specs/mainboard-spec-form";
             case 2 -> "product/specs/cpu-spec-form";
@@ -84,43 +99,46 @@ public class ProductController {
             case 7 -> "product/specs/powersupply-spec-form";
             case 8 -> "product/specs/cooling-spec-form";
             case 9 -> "product/specs/fan-spec-form";
-            case 10 -> "product/specs/other-spec-form";
             default -> "product/specs/default-spec-form";
         };
     }
 
-    // ===== SPEC FORM (EDIT) — dùng folder spec-edit, có prefill =====
+    // ===== SPEC FORM (EDIT) — ĐÃ SỬA ĐỂ GỘP =====
     @GetMapping("/spec-form-edit")
     public String getSpecFormForEdit(@RequestParam("categoryId") int categoryId,
                                      @RequestParam("productId") int productId,
                                      Model model) {
 
+        // Dùng orElseGet để đảm bảo object không bao giờ null
         switch (categoryId) {
-            case 1 -> mainboardRepository.findByProduct_ProductId(productId).ifPresent(mb -> model.addAttribute("mb", mb));
-            case 2 -> cpuRepository.findByProduct_ProductId(productId).ifPresent(cpu -> model.addAttribute("cpu", cpu));
-            case 3 -> gpuRepository.findByProduct_ProductId(productId).ifPresent(gpu -> model.addAttribute("gpu", gpu));
-            case 4 -> memoryRepository.findByProduct_ProductId(productId).ifPresent(mem -> model.addAttribute("mem", mem));
-            case 5 -> storageRepository.findByProduct_ProductId(productId).ifPresent(st -> model.addAttribute("storage", st));
-            case 6 -> caseRepository.findByProduct_ProductId(productId).ifPresent(pc -> model.addAttribute("pcase", pc));
-            case 7 -> powerSupplyRepository.findByProduct_ProductId(productId).ifPresent(psu -> model.addAttribute("psu", psu));
-            case 8 -> coolingRepository.findByProduct_ProductId(productId).ifPresent(cl -> model.addAttribute("cl", cl));
+            case 1 -> model.addAttribute("mb", mainboardRepository.findByProduct_ProductId(productId).orElseGet(Mainboard::new));
+            case 2 -> model.addAttribute("cpu", cpuRepository.findByProduct_ProductId(productId).orElseGet(CPU::new));
+            case 3 -> model.addAttribute("gpu", gpuRepository.findByProduct_ProductId(productId).orElseGet(GPU::new));
+            case 4 -> model.addAttribute("mem", memoryRepository.findByProduct_ProductId(productId).orElseGet(Memory::new));
+            case 5 -> model.addAttribute("storage", storageRepository.findByProduct_ProductId(productId).orElseGet(Storage::new));
+            case 6 -> model.addAttribute("pcase", caseRepository.findByProduct_ProductId(productId).orElseGet(Case::new));
+            case 7 -> model.addAttribute("psu", powerSupplyRepository.findByProduct_ProductId(productId).orElseGet(PowerSupply::new));
+            case 8 -> model.addAttribute("cl", coolingRepository.findByProduct_ProductId(productId).orElseGet(Cooling::new));
+            // case 9 -> model.addAttribute("fan", fanRepository.findByProduct_ProductId(productId).orElseGet(Fan::new));
             default -> {}
         }
 
+        // Trả về thư mục "specs" CHUẨN (GIỐNG HỆT getSpecForm)
         return switch (categoryId) {
-            case 1 -> "product/spec-edit/mainboard-spec-edit";
-            case 2 -> "product/spec-edit/cpu-spec-edit";
-            case 3 -> "product/spec-edit/gpu-spec-edit";
-            case 4 -> "product/spec-edit/memory-spec-edit";
-            case 5 -> "product/spec-edit/storage-spec-edit";
-            case 6 -> "product/spec-edit/case-spec-edit";
-            case 7 -> "product/spec-edit/powersupply-spec-edit";
-            case 8 -> "product/spec-edit/cooling-spec-edit";
-            default -> "product/spec-edit/empty-spec-edit";
+            case 1 -> "product/specs/mainboard-spec-form";
+            case 2 -> "product/specs/cpu-spec-form";
+            case 3 -> "product/specs/gpu-spec-form";
+            case 4 -> "product/specs/memory-spec-form";
+            case 5 -> "product/specs/storage-spec-form";
+            case 6 -> "product/specs/case-specform";
+            case 7 -> "product/specs/powersupply-spec-form";
+            case 8 -> "product/specs/cooling-spec-form";
+            case 9 -> "product/specs/fan-spec-form";
+            default -> "product/specs/default-spec-form";
         };
     }
 
-    // ===== LƯU (THÊM MỚI) =====
+    // ===== LƯU (THÊM MỚI) - ĐÃ SỬA LỖI VALIDATION =====
     @PostMapping("/save")
     @Transactional
     public String saveProduct(@Valid @ModelAttribute("product") Product product,
@@ -131,18 +149,26 @@ public class ProductController {
                               @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
                               Model model) throws IOException {
 
+        // --- Validation tùy chỉnh ---
         if (productService.existsByProductName(product.getProductName())) {
             result.rejectValue("productName", "error.product", "Product name already exists.");
         }
-        if (brandId == null)
+        if (brandId == null) {
             model.addAttribute("brandError", "Please select brand");
+        }
+        if (categoryId == null) {
+            model.addAttribute("categoryError", "Please select category");
+        }
+        // --- Kết thúc Validation ---
 
 
-        if (result.hasErrors()) {
+        // SỬA LỖI: Gộp tất cả điều kiện lỗi
+        if (result.hasErrors() || brandId == null || categoryId == null) {
             model.addAttribute("isEdit", false);
+            // Gửi lại ID để JS tự động mở lại form
             model.addAttribute("submittedCategoryId", categoryId);
             model.addAttribute("submittedBrandId", brandId);
-            return "product/product-form";
+            return "product/product-form"; // Ở lại trang
         }
 
         Category category = categoryRepository.findById(categoryId).orElseThrow();
@@ -157,7 +183,7 @@ public class ProductController {
             List<Image> imgs = saveImagesToStatic(imageFiles, saved);
             imageRepository.saveAll(imgs);
             saved.setImages(imgs);
-            productService.updateProduct(saved);
+            productService.updateProduct(saved); // Lưu lại tham chiếu ảnh
         }
 
         // Save spec
@@ -176,15 +202,12 @@ public class ProductController {
         return "product/product-update";
     }
 
-    // ===== CẬP NHẬT =====
-    // ===== CẬP NHẬT (ĐÃ SỬA) =====
+    // ===== CẬP NHẬT (ĐÃ SỬA LỖI VALIDATION VÀ LOGIC) =====
     @PostMapping("/edit")
     @Transactional
     public String updateProduct(@Valid @ModelAttribute("product") Product incoming,
-                                BindingResult result, // <-- THÊM
-                                Model model,          // <-- THÊM
-                                @RequestParam("category.categoryId") int categoryId,
-                                @RequestParam("brand.brandId") int brandId,
+                                BindingResult result,
+                                Model model,
                                 @RequestParam Map<String, String> params,
                                 @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
                                 @RequestParam(value = "deleteImageIds", required = false) String deleteImageIds
@@ -193,30 +216,33 @@ public class ProductController {
         Product current = productService.getProductById(incoming.getProductId());
         if (current == null) return "redirect:/staff/products/list";
 
+        // Lấy categoryId hiện tại để dùng cho upsertSpec
+        int categoryId = current.getCategory().getCategoryId();
+
+        // --- Validation tùy chỉnh ---
         String newName = incoming.getProductName();
         if (!newName.equals(current.getProductName()) && productService.existsByProductName(newName)) {
             result.rejectValue("productName", "error.product", "Product name already exists.");
         }
+        // --- Kết thúc Validation ---
 
         if (result.hasErrors()) {
             model.addAttribute("isEdit", true);
 
+            // SỬA LỖI 2: Gắn lại các đối tượng
+            // (Vì 'incoming' mất chúng khi binding do form đã disabled các trường này)
             incoming.setImages(current.getImages());
+            incoming.setBrand(current.getBrand());
+            incoming.setCategory(current.getCategory());
 
             return "product/product-update"; // <-- Trả về view, KHÔNG redirect
         }
 
-
-
-
-        // Cập nhật thông tin cơ bản
+        // Cập nhật thông tin cơ bản (KHÔNG CẬP NHẬT CATEGORY/BRAND)
         current.setProductName(incoming.getProductName());
         current.setDescription(incoming.getDescription());
         current.setPrice(incoming.getPrice());
         current.setStatus(incoming.isStatus());
-
-        current.setCategory(categoryRepository.findById(categoryId).orElse(null));
-        current.setBrand(brandRepository.findById(brandId).orElse(null));
 
         Product updated = productService.updateProduct(current);
 
@@ -247,13 +273,15 @@ public class ProductController {
         if (params.keySet().stream().anyMatch(k -> k.startsWith("mainboard.") || k.startsWith("cpu.")
                 || k.startsWith("gpu.") || k.startsWith("memory.") || k.startsWith("storage.")
                 || k.startsWith("pcase.") || k.startsWith("psu.") || k.startsWith("cl."))) {
+
+            //Dùng categoryId đã lấy từ 'current'
             upsertSpec(updated, categoryId, params, false);
         }
 
         return "redirect:/staff/products/list";
     }
 
-    // ===== NEW FEATURE: XÓA ẢNH NGAY (AJAX) =====
+    // ===== XÓA ẢNH (AJAX) =====
     @DeleteMapping("/image/{imageId}")
     @ResponseBody
     @Transactional
@@ -272,6 +300,8 @@ public class ProductController {
     }
 
     // ========= HELPERS =========
+
+    // HÀM UPSERT
     private void upsertSpec(Product product, int categoryId, Map<String, String> params, boolean isCreate) {
         switch (categoryId) {
             case 1 -> {
@@ -358,6 +388,7 @@ public class ProductController {
                 cl.setTdp(getInt(params, "cl.maxTdp"));
                 coolingRepository.save(cl);
             }
+            // case 9 -> ... (Thêm logic cho Fan nếu cần)
             default -> { }
         }
     }
@@ -381,7 +412,9 @@ public class ProductController {
     }
     private Boolean getBool(Map<String,String> params, String key) {
         String v = params.get(key);
-        return (v == null || v.isBlank()) ? null : Boolean.parseBoolean(v);
+        // Sửa lại logic: "true" (từ checkbox) là true, mọi thứ khác (null, blank, "false") là false.
+        // Điều này là quan trọng vì hidden input gửi "false"
+        return "true".equalsIgnoreCase(v);
     }
 
     private List<Image> saveImagesToStatic(List<MultipartFile> imageFiles, Product product) throws IOException {

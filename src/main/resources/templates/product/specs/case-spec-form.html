@@ -1,12 +1,35 @@
-<div>
-    <h4>Case - Specification/h4>
+<div class="row g-3" th:if="${pcase != null}">
 
-    <label>Form Supported:</label>
-    <input type="text" name="pcase.formFactor" placeholder="VD: ATX, mATX, ITX" required>
+    <div class="col-md-6">
+        <label for="pcase-formfactor" class="form-label">Form Factor</label>
+        <input type="text" class="form-control form-control-sm" id="pcase-formfactor"
+               name="pcase.formFactor"
+               th:value="${pcase.formFactor}"
+               placeholder="e.g., ATX, mATX, ITX">
+    </div>
 
-    <label>GPU length (mm):</label>
-    <input type="number" name="pcase.gpu.maxLength" min="100" required>
+    <div class="col-md-6">
+        <label for="pcase-gpu-length" class="form-label">Max GPU Length (mm)</label>
+        <input type="number" class="form-control form-control-sm" id="pcase-gpu-length"
+               name="pcase.gpu.maxLength"
+               th:value="${pcase.gpuMaxLength}"
+               min="0">
+    </div>
 
-    <label>PSU length (mm):</label>
-    <input type="number" name="pcase.psu.maxLength" min="100">
+    <div class="col-md-6">
+        <label for="pcase-psu-formfactor" class="form-label">PSU Form Factor</label>
+        <input type="text" class="form-control form-control-sm" id="pcase-psu-formfactor"
+               name="pcase.psu.formFactor"
+               th:value="${pcase.psuFormFactor}"
+               placeholder="e.g., ATX, SFX">
+    </div>
+
+    <div class="col-md-6">
+        <label for="pcase-cpu-height" class="form-label">Max CPU Cooler Height (mm)</label>
+        <input type="number" class="form-control form-control-sm" id="pcase-cpu-height"
+               name="pcase.cpu.maxCoolerHeight"
+               th:value="${pcase.cpuMaxCoolerHeight}"
+               min="0">
+    </div>
+
 </div>
