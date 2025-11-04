@@ -10,11 +10,14 @@ import com.example.PCOnlineShop.service.address.AddressService;
 import com.example.PCOnlineShop.service.cart.CartService;
 import com.example.PCOnlineShop.service.order.OrderService;
 import com.example.PCOnlineShop.repository.account.AccountRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -167,42 +170,29 @@ public class OrderController {
         return "orders/order-detail"; // Trả về view chung
     }
 
-    // =============================================================
-    // Cập nhật hàng loạt trạng thái (POST /update-all-status) - Chỉ cho Staff/Admin
-    // =============================================================
-    @PostMapping("/update-all-status")
-    public String updateAllOrderStatuses(
-            @RequestParam Map<String, String> statusUpdates,
-            RedirectAttributes redirectAttributes) {
-
-        Map<Integer, String> parsedUpdates = new HashMap<>();
-        for (Map.Entry<String, String> entry : statusUpdates.entrySet()) {
-            if (entry.getKey().startsWith("statusUpdates[") && entry.getKey().endsWith("]")) {
-                try {
-                    String key = entry.getKey();
-                    int orderId = Integer.parseInt(key.substring(key.indexOf('[') + 1, key.indexOf(']')));
-                    String newStatus = entry.getValue();
-                    parsedUpdates.put(orderId, newStatus);
-                } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
-                    System.err.println("Lỗi phân tích key cập nhật trạng thái: " + entry.getKey());
-                }
-            }
-        }
-
-        // --- Gọi service và xử lý kết quả giữ nguyên như cũ ---
+    // === THÊM ENDPOINT MỚI CHO AJAX "SAVE ON CHANGE" ===
+    @PostMapping("/update-status")
+    @ResponseBody // Rất quan trọng: Báo Spring trả về JSON/Text, không phải tên View
+    public ResponseEntity<?> updateSingleOrderStatus(@RequestParam("orderId") int orderId,
+                                                     @RequestParam("newStatus") String newStatus) {
         try {
-            if (!parsedUpdates.isEmpty()) {
-                orderService.updateMultipleOrderStatuses(parsedUpdates);
-                redirectAttributes.addFlashAttribute("success", "Order statuses updated successfully.");
-            } else {
-                redirectAttributes.addFlashAttribute("info", "No status changes were submitted.");
-            }
+            // Gọi service mới
+            orderService.updateSingleOrderStatus(orderId, newStatus);
+
+            // Trả về 200 OK với một thông báo
+            return ResponseEntity.ok(Map.of("message", "Status updated successfully"));
+
+        } catch (EntityNotFoundException e) {
+            // Nếu không tìm thấy Order ID
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error updating statuses: " + e.getMessage());
+            // Các lỗi khác (lỗi server, v.v.)
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An unexpected error occurred."));
         }
-
-
-        return "redirect:/orders/list"; // Quay về list chung
     }
 
     // ======================================================
