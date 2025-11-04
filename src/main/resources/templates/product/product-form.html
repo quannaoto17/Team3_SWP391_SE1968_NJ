@@ -1,25 +1,38 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <title>Add Product</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
         :root{
-            --header-h:60px;
-            --ink:#111827;
-            --muted:#6b7280;
-            --bg:#f6f7fb;
-            --card:#fff;
-            --border:#e5e7eb;
-            --radius:12px;
-            --error:#dc2626;
+            --header-h: 60px;
+            /* 1. Bảng màu được tinh chỉnh */
+            --primary: #3b82f6;       /* Xanh lam 500 */
+            --primary-hover: #2563eb; /* Xanh lam 600 */
+            --ink: #1f2937;            /* Xám 800 (mềm hơn màu đen) */
+            --muted: #6b7280;          /* Xám 500 */
+            --bg: #f6f7fb;            /* Xám 50 */
+            --card: #ffffff;
+            --border: #e5e7eb;          /* Xám 200 */
+            --error: #dc2626;           /* Đỏ 600 */
+
+            /* 2. Bán kính và bóng đổ nhất quán */
+            --radius-md: 8px;           /* Cho input/button */
+            --radius-lg: 12px;          /* Cho card */
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
         }
+
+        *, *::before, *::after {
+            box-sizing: border-box; /* Giúp việc tính toán padding/border dễ đoán hơn */
+        }
+
         body{
             margin:0;
-            font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;
-            background:var(--bg);
-            color:var(--ink);
+            font-family: system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            line-height: 1.6; /* 3. Tăng khoảng cách dòng để dễ đọc */
         }
         .container{
             max-width:820px;
@@ -27,48 +40,125 @@
             padding:calc(var(--header-h) + 10px) 16px 24px;
         }
         .card{
-            background:var(--card);
-            border:1px solid var(--border);
-            border-radius:var(--radius);
-            padding:18px;
-            box-shadow:0 2px 4px rgba(0,0,0,0.04);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px; /* 3. Thêm không gian thở */
+            box-shadow: var(--shadow);
+            margin-bottom: 20px; /* Thêm khoảng cách giữa các card */
         }
         h1.title{
-            font-weight:700;
-            font-size:22px;
-            margin:0 0 14px;
+            font-weight: 700;
+            font-size: 24px; /* 3. To hơn một chút */
+            margin: 0 0 16px;
         }
         label{
-            display:block;
-            font-weight:600;
-            margin:12px 0 6px;
+            display: block;
+            font-weight: 600;
+            margin: 16px 0 6px; /* 3. Tăng khoảng cách trên */
+            font-size: 0.9rem; /* 14.4px */
+            color: var(--muted); /* 1. Màu label nhạt hơn */
         }
-        input,select,textarea{
-            width:100%;
-            padding:10px;
-            border:1px solid #cfd4dc;
-            border-radius:8px;
-            background:#fafafa;
-            font-size:14px;
-            transition:border-color 0.2s, background 0.2s;
+
+        /* 4. Cải thiện toàn bộ input, select, textarea */
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px; /* Tăng padding */
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: #ffffff; /* 4. Nền trắng sạch sẽ */
+            font-size: 1rem; /* 4. Cỡ chữ 16px dễ đọc */
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        input:focus,select:focus,textarea:focus{
-            outline:none;
-            border-color:#3b82f6;
-            background:#fff;
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary); /* 1. Viền xanh khi focus */
+            background: #fff;
+            /* 4. Thêm vòng sáng mờ (focus ring) */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
-        textarea{min-height:90px;resize:vertical}
-        .error{color:var(--error);font-size:13px;margin-top:4px}
-        .hint{color:var(--muted);font-size:13px;margin-top:4px}
-        .gate{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
-        .btn{padding:10px 14px;border:1px solid #cfd4dc;background:#fff;border-radius:8px;cursor:pointer;font-weight:600;}
-        .btn:hover{background:#f3f4f6}
-        .preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-        .thumb{width:110px;height:88px;border:1px dashed #cfd4dc;border-radius:8px;background:#f9fafb;display:flex;align-items:center;justify:content: center;overflow:hidden}
+
+        textarea{min-height:100px;resize:vertical}
+        .error{color:var(--error);font-size:0.875rem;margin-top:5px}
+        .hint{color:var(--muted);font-size:0.875rem;margin-top:5px}
+
+        /* 4. Cải thiện khu vực "Gate" */
+        .gate{
+            display:flex;
+            gap: 12px; /* Tăng khoảng cách */
+            align-items:center;
+            flex-wrap:wrap;
+            margin-bottom:14px;
+        }
+        .gate label {
+            margin: 0; /* Ghi đè margin mặc định của label */
+            color: var(--ink); /* 4. Làm cho label này rõ ràng hơn */
+        }
+
+        /* 5. Cải thiện các nút bấm */
+        .btn{
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn:hover{
+            background: #f9fafb; /* Xám 50 */
+        }
+        .btn:active {
+            transform: scale(0.98); /* 5. Hiệu ứng nhấn */
+        }
+
+        /* Nút "Chọn ảnh" */
+        input[type="file"] + .btn {
+            margin-top: 8px;
+        }
+
+        .primary{
+            background: var(--primary); /* 1. Nút chính màu xanh */
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .primary:hover{
+            background: var(--primary-hover); /* 1. Màu hover */
+        }
+        .primary:active {
+            transform: scale(0.98); /* 5. Hiệu ứng nhấn */
+        }
+
+        /* 6. Cải thiện khu vực xem trước ảnh */
+        .preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+        .thumb{
+            width: 110px;
+            height: 88px;
+            border: 1px solid var(--border); /* 6. Viền liền mạch, không đứt nét */
+            border-radius: var(--radius-md);
+            background: var(--bg); /* Nền xám nhạt */
+            display:flex;
+            align-items:center;
+            justify-content: center;
+            overflow:hidden;
+        }
         .thumb img{width:100%;height:100%;object-fit:cover}
-        .actions{display:flex;justify-content:flex-end;margin-top:14px}
-        .primary{background:#111827;color:#fff;border:none;padding:12px 18px;border-radius:10px;font-weight:700;cursor:pointer;}
-        .primary:hover{background:#0b1220}
+
+        .actions{display:flex;justify-content:flex-end;margin-top:20px}
     </style>
 </head>
 <body>
@@ -80,16 +170,16 @@
 
     <div class="card">
         <div class="gate">
-            <label for="categorySelect" style="margin:0">Danh mục</label>
+            <label for="categorySelect" style="margin:0">Category</label>
             <select id="categorySelect" name="category.categoryId" style="min-width:240px" required>
-                <option value="">-- Chọn danh mục --</option>
+                <option value="">-- Choose Category --</option>
                 <option th:each="cat : ${categories}"
                         th:value="${cat.categoryId}"
                         th:text="${cat.categoryName}"></option>
             </select>
-            <button type="button" class="btn" id="btnStart">Tiếp tục</button>
+            <button type="button" class="btn" id="btnStart">Continue</button>
         </div>
-        <p id="gateMsg" class="hint" style="margin:0">Chọn danh mục để mở form nhập chi tiết.</p>
+        <p id="gateMsg" class="hint" style="margin:0">Choose category to display the specification form.</p>
 
         <div class="error" th:if="${categoryError}" th:text="${categoryError}"></div>
     </div>
@@ -102,81 +192,71 @@
 
         <input type="hidden" id="chosenCategoryId" name="category.categoryId"/>
 
-        <label for="brand">Thương hiệu *</label>
+        <label for="brand">Brand *</label>
         <select id="brand" name="brand.brandId" required>
-            <option value="">-- Chọn thương hiệu --</option>
+            <option value="">-- Choose brand --</option>
             <option th:each="b : ${brands}" th:value="${b.brandId}" th:text="${b.name}"></option>
         </select>
         <div class="error" th:if="${brandError}" th:text="${brandError}"></div>
 
-        <label for="name">Tên sản phẩm *</label>
+        <label for="name">Product's Name *</label>
         <input id="name" type="text" th:field="*{productName}" placeholder="VD: ASUS PRIME B550M-A"
                pattern="^[A-Za-zÀ-ỹ0-9\\s\\-_,\\.;:()]+$" minlength="3" maxlength="100" required/>
         <div class="error" th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}"></div>
 
-        <label for="price">Giá ($) *</label>
+        <label for="price">Price ($) *</label>
         <input id="price" type="number" th:field="*{price}" min="0.01" step="0.01" placeholder="VD: 149.90" required/>
         <div class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
 
-        <label for="desc">Mô tả</label>
+        <label for="desc">Description</label>
         <textarea id="desc" th:field="*{description}" placeholder="Mô tả ngắn gọn..."></textarea>
 
-        <label>Thông số kỹ thuật</label>
-        <div id="specFormContainer" class="card" style="padding:12px">
-            <p class="hint" style="margin:0">Form thông số sẽ hiển thị sau khi chọn danh mục.</p>
+        <label for="inventory">Inventory *</label>
+        <input id="inventory" type="number" th:field="*{inventoryQuantity}" min="0" step="1" placeholder="VD: 100" required/>
+
+        <label>Specification</label>
+        <div id="specFormContainer" class="card" style="padding: 16px; box-shadow: none; background: var(--bg);">
+            <p class="hint" style="margin:0">Specification form will be displayed after choose category.</p>
         </div>
 
-        <label for="status">Trạng thái</label>
+        <label for="status">Status</label>
         <select id="status" th:field="*{status}">
-            <option th:value="true">Còn hàng</option>
-            <option th:value="false">Hết hàng</option>
+            <option th:value="true">Active</option>
+            <option th:value="false">Inactive</option>
         </select>
 
-        <label>Ảnh sản phẩm</label>
+        <label>Image</label>
         <input type="file" id="imageInput" name="imageFiles" accept="image/png, image/jpeg" multiple style="display:none"/>
         <button type="button" class="btn" onclick="document.getElementById('imageInput').click()">Chọn ảnh</button>
         <div class="preview" id="imagePreview">
-            <div class="thumb"><span class="hint">Chưa có ảnh</span></div>
+            <div class="thumb"><span class="hint">Image have not choosen</span></div>
         </div>
 
         <div class="actions">
-            <button type="submit" class="primary">Tạo mới</button>
+            <a th:href="@{/staff/products/list}" class="btn btn-secondary me-2">Cancel</a>
+            <button type="submit" class="primary">Create</button>
         </div>
     </form>
 </div>
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-
-    // 1. Lấy các giá trị đã submit (sẽ là 'null' nếu tải trang lần đầu)
-    // Controller phải gửi các giá trị này khi có lỗi
     const submittedCatId = /*[[${submittedCategoryId}]]*/ null;
     const submittedBrandId = /*[[${submittedBrandId}]]*/ null;
-
-    // 2. Lấy đối tượng select
     const categorySelectForReload = document.getElementById('categorySelect');
     const brandSelect = document.getElementById('brand');
 
-    // 3. Chạy khi trang tải xong
     document.addEventListener('DOMContentLoaded', () => {
-        // Nếu có lỗi validation (submittedCatId sẽ không null)
         if (submittedCatId) {
-
-            // 3.1. Đặt lại giá trị <select> về cái người dùng đã chọn
             categorySelectForReload.value = submittedCatId;
             if (submittedBrandId) {
                 brandSelect.value = submittedBrandId;
             }
-
-            // 3.2. Tự động mở form và tải spec
-            // (Hàm openFormWithCategory() nằm trong script bên dưới)
-            openFormWithCategory(submittedCatId, false); // false = không cuộn
+            openFormWithCategory(submittedCatId, false);
         }
     });
-
     /*]]>*/
 </script>
-
 
 <script>
     const categorySelect = document.getElementById('categorySelect');
@@ -186,8 +266,6 @@
     const chosenCategoryId = document.getElementById('chosenCategoryId');
     const specContainer = document.getElementById('specFormContainer');
 
-    // ===== Bật form sau khi chọn danh mục =====
-    // SỬA LỖI 5: Thêm 'shouldScroll' để tránh cuộn trang khi tải lại
     function openFormWithCategory(cid, shouldScroll = true){
         if(!cid){
             productForm.style.display = 'none';
@@ -205,27 +283,26 @@
         }
     }
 
-    // Chỉ cuộn khi bấm nút
     btnStart.addEventListener('click', () => openFormWithCategory(categorySelect.value, true));
 
-    // Không cuộn khi đang chọn lại
     categorySelect.addEventListener('change', () => {
         if(productForm.style.display === 'block'){
             openFormWithCategory(categorySelect.value, true);
         }
     });
 
-    // ===== Load spec form =====
     async function loadSpec(categoryId){
         try{
+            specContainer.innerHTML = '<p class="hint">Đang tải form...</p>';
             const res = await fetch(`/staff/products/spec-form?categoryId=${categoryId}`);
+            if (!res.ok) throw new Error('Network response was not ok');
             specContainer.innerHTML = await res.text();
         }catch(e){
+            console.error(e);
             specContainer.innerHTML = '<p class="error">Lỗi tải form thông số!</p>';
         }
     }
 
-    // ===== Preview ảnh =====
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
     imageInput.addEventListener('change', (e) => {

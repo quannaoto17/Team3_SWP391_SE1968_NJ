@@ -78,6 +78,12 @@
         .product-link:hover {
             text-decoration: underline;
         }
+
+        /* 🟢 Custom status colors */
+        .status-active { color: #16a34a; font-weight: bold; }      /* xanh */
+        .status-low { color: #facc15; font-weight: bold; }         /* vàng */
+        .status-out { color: #f97316; font-weight: bold; }         /* cam */
+        .status-inactive { color: #dc2626; font-weight: bold; }    /* đỏ */
     </style>
 </head>
 <body>
@@ -94,7 +100,7 @@
         </a>
     </h2>
 
-    <!-- ✅ Filter bar (Dropdown filters) -->
+    <!-- ✅ Filter bar -->
     <div class="filter-bar">
         <label>🔸 Filter by Category:</label>
         <select id="categoryFilter">
@@ -115,8 +121,10 @@
         <label>🔸 Filter by Status:</label>
         <select id="statusFilter">
             <option value="">All</option>
-            <option value="In Stock">In Stock</option>
-            <option value="Out of Stock">Out of Stock</option>
+            <option value="Active – In Stock">Active – In Stock</option>
+            <option value="Active – Low Stock">Active – Low Stock</option>
+            <option value="Active – Out of Stock">Active – Out of Stock</option>
+            <option value="Inactive">Inactive</option>
         </select>
     </div>
 
@@ -130,15 +138,16 @@
             <th>Brand</th>
             <th>Product Name</th>
             <th>Price ($)</th>
-            <th>Status</th>
             <th>Description</th>
             <th>Specification</th>
+            <th>Inventory</th>
+            <th>Status</th>
         </tr>
         </thead>
 
         <tbody>
         <tr th:if="${products == null or #lists.isEmpty(products)}">
-            <td colspan="9" style="text-align:center;color:#777">No results found</td>
+            <td colspan="10" style="text-align:center;color:#777">No results found</td>
         </tr>
 
         <tr th:each="product : ${products}">
@@ -163,9 +172,21 @@
             </td>
 
             <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}"></td>
-            <td th:text="${product.status ? 'In Stock' : 'Out of Stock'}"></td>
             <td th:text="${product.description}"></td>
             <td th:text="${product.specification}"></td>
+            <td th:text="${product.inventoryQuantity}"></td>
+            <td>
+    <span th:if="${product.status}">
+        <span th:if="${product.inventoryQuantity > 5}"
+              class="status-active">Active – In Stock</span>
+        <span th:if="${product.inventoryQuantity > 0 and product.inventoryQuantity <= 5}"
+              class="status-low">Active – Low Stock</span>
+        <span th:if="${product.inventoryQuantity == 0}"
+              class="status-out">Active – Out of Stock</span>
+    </span>
+
+                <span th:if="${!product.status}" class="status-inactive">Inactive</span>
+            </td>
         </tr>
         </tbody>
     </table>
@@ -178,7 +199,6 @@
 <!-- ✅ Initialize DataTables + Dropdown filters -->
 <script>
     $(document).ready(function() {
-        // Initialize DataTable
         var table = $('#productTable').DataTable({
             pageLength: 10,
             searching: true,
@@ -195,17 +215,17 @@
 
         // 🟡 Filter by Category
         $('#categoryFilter').on('change', function () {
-            table.column(2).search(this.value).draw(); // Category column (index 2)
+            table.column(2).search(this.value).draw();
         });
 
         // 🟡 Filter by Brand
         $('#brandFilter').on('change', function () {
-            table.column(3).search(this.value).draw(); // Brand column (index 3)
+            table.column(3).search(this.value).draw();
         });
 
-        // 🟡 Filter by Status
+        // 🟡 Filter by Status (column index 6)
         $('#statusFilter').on('change', function () {
-            table.column(6).search(this.value).draw(); // Status column (index 6)
+            table.column(6).search(this.value).draw();
         });
     });
 </script>

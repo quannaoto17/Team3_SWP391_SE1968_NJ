@@ -3,6 +3,7 @@ package com.example.PCOnlineShop.model.product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
 import java.util.List;
@@ -44,10 +45,12 @@ public class Product {
     @Column (name = "specification")
     private String specification;
 
-    @Column (name = "created_at")
+    @Column (name = "created_at", updatable = false)
+    @CreationTimestamp
     private Date createAt;
 
     @Column (name = "inventory_quantity")
+    @Min(value = 0, message = "Inventory must be positive")
     private Integer inventoryQuantity;
 
     @ManyToOne(fetch = FetchType.EAGER)

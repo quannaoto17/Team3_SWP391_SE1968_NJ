@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Category Management</title>
+
+    <!-- 🎨 CSS -->
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-color: #f5f6fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            margin: 40px auto;
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .top-bar a {
+            background-color: #2ecc71;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .top-bar a:hover {
+            background-color: #27ae60;
+        }
+
+        table.dataTable thead th {
+            background-color: #34495e;
+            color: white;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .btn-edit {
+            background-color: #3498db;
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+        }
+
+        .btn-edit:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+    </style>
+
+    <!-- 📦 JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+<div th:replace="layout/header-admin :: header-admin"></div>
+
+<div class="container">
+    <h2>📂 Category Management</h2>
+
+    <div class="top-bar">
+        <div>
+            <input id="searchBox" type="text" placeholder="🔍 Search Category..." style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+    </div>
+
+    <table id="categoryTable" class="display" style="width:100%">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Category Name</th>
+            <th>Description</th>
+            <th>Display Order</th>
+            <th>Created At</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${categories}">
+            <td th:text="${c.categoryId}"></td>
+            <td th:text="${c.categoryName}"></td>
+            <td th:text="${c.description}"></td>
+            <td th:text="${c.displayOrder}"></td>
+            <td th:text="${#dates.format(c.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+                <a th:href="@{'/admin/category/' + ${c.categoryId} + '/products'}" class="btn-edit">View Products</a>
+                <a th:href="@{'/admin/categories/delete/' + ${c.categoryId}}"
+                   class="action-btn btn-delete"
+                   onclick="return confirm('Are you sure to delete this category?')">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script th:inline="none">
+    $(document).ready(function() {
+        const table = $('#categoryTable').DataTable({
+            pageLength: 10,
+            order: [[0, 'asc']],
+            language: {
+                search: "Filter:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ categories",
+                paginate: {
+                    previous: "←",
+                    next: "→"
+                }
+            }
+        });
+
+        // Custom search box
+        $('#searchBox').keyup(function () {
+            table.search(this.value).draw();
+        });
+    });
+</script>
+
+
+</body>
+</html>

@@ -1,21 +1,48 @@
-<div>
-    <h4>GPU - Specification</h4>
+<div class="row g-3" th:if="${gpu != null}">
 
-    <label>VRAM (GB):</label>
-    <input type="number" name="gpu.vram" min="1" required>
+    <div class="col-md-6">
+        <label for="gpu-vram" class="form-label">VRAM (GB)</label>
+        <input type="number" class="form-control form-control-sm" id="gpu-vram"
+               name="gpu.vram"
+               th:value="${gpu.vram}" min="0">
+    </div>
 
-    <label>Memory Type:</label>
-    <input type="text" name="gpu.memoryType" placeholder="VD: GDDR6, HBM2" required>
+    <div class="col-md-6">
+        <label for="gpu-memtype" class="form-label">Memory Type</label>
+        <input type="text" class="form-control form-control-sm" id="gpu-memtype"
+               name="gpu.memoryType"
+               th:value="${gpu.memoryType}"
+               placeholder="e.g., GDDR6, GDDR6X">
+    </div>
 
-    <label>TDP (W):</label>
-    <input type="number" name="gpu.tdp" min="1" required>
+    <div class="col-md-6">
+        <label for="gpu-tdp" class="form-label">TDP (W)</label>
+        <input type="number" class="form-control form-control-sm" id="gpu-tdp"
+               name="gpu.tdp"
+               th:value="${gpu.tdp}" min="0">
+    </div>
 
-    <label>Length (mm):</label>
-    <input type="number" name="gpu.length" min="1">
+    <div class="col-md-6">
+        <label for="gpu-length" class="form-label">Length (mm)</label>
+        <input type="number" class="form-control form-control-sm" id="gpu-length"
+               name="gpu.length"
+               th:value="${gpu.length}" min="0">
+    </div>
 
-    <label>Interface:</label>
-    <input type="text" name="gpu.gpuInterface" placeholder="VD: PCIe 4.0 x16">
+    <div class="col-md-6">
+        <label for="gpu-interface" class="form-label">GPU Interface</label>
+        <input type="text" class="form-control form-control-sm" id="gpu-interface"
+               name="gpu.gpuInterface"
+               th:value="${gpu.gpuInterface}"
+               placeholder="e.g., PCIe x16">
+    </div>
 
-    <label>PCIe Version:</label>
-    <input type="text" name="gpu.pcieVersion" placeholder="VD: PCIe 4.0">
+    <div class="col-md-6">
+        <label for="gpu-pcie" class="form-label">PCIe Version</label>
+        <input type="text" class="form-control form-control-sm" id="gpu-pcie"
+               name="gpu.pcieVersion"
+               th:value="${gpu.pcieVersion}"
+               placeholder="e.g., 4.0, 5.0">
+    </div>
+
 </div>

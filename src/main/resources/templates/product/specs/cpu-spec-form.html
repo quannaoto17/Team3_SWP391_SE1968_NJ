@@ -1,24 +1,53 @@
-<div>
-    <h4>CPU - Specification</h4>
+<div class="row g-3" th:if="${cpu != null}">
 
-    <label>Socket:</label>
-    <input type="text" name="cpu.socket" placeholder="VD: LGA1700" required>
+    <div class="col-md-6">
+        <label for="cpu-socket" class="form-label">Socket</label>
+        <input type="text" class="form-control form-control-sm" id="cpu-socket"
+               name="cpu.socket"
+               th:value="${cpu.socket}"
+               placeholder="e.g., AM5, LGA1700">
+    </div>
 
-    <label>TDP (W):</label>
-    <input type="number" name="cpu.tdp" min="1" required>
+    <div class="col-md-6">
+        <label for="cpu-tdp" class="form-label">TDP (W)</label>
+        <input type="number" class="form-control form-control-sm" id="cpu-tdp"
+               name="cpu.tdp"
+               th:value="${cpu.tdp}" min="0">
+    </div>
 
-    <label>Speed Ram (MHz):</label>
-    <input type="number" name="cpu.maxMemorySpeed" min="800">
+    <div class="col-md-6">
+        <label for="cpu-memspeed" class="form-label">Max Memory Speed (MHz)</label>
+        <input type="number" class="form-control form-control-sm" id="cpu-memspeed"
+               name="cpu.maxMemorySpeed"
+               th:value="${cpu.maxMemorySpeed}" min="0">
+    </div>
 
-    <label>RAM's Channels:</label>
-    <input type="number" name="cpu.memoryChannels" min="1">
+    <div class="col-md-6">
+        <label for="cpu-memchannels" class="form-label">Memory Channels</label>
+        <input type="number" class="form-control form-control-sm" id="cpu-memchannels"
+               name="cpu.memoryChannels"
+               th:value="${cpu.memoryChannels}" min="0">
+    </div>
 
-    <label>Have iGPU:</label>
-    <select name="cpu.hasIGPU">
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-    </select>
+    <div class="col-md-6">
+        <label for="cpu-pcie" class="form-label">PCIe Version</label>
+        <input type="text" class="form-control form-control-sm" id="cpu-pcie"
+               name="cpu.pcieVersion"
+               th:value="${cpu.pcieVersion}"
+               placeholder="e.g., 4.0, 5.0">
+    </div>
 
-    <label>PCIe Version:</label>
-    <input type="text" name="cpu.pcieVersion" placeholder="VD: PCIe 5.0">
+    <div class="col-md-12 d-flex align-items-end">
+        <div class="form-check">
+            <input type="hidden" name="cpu.hasIGPU" value="false"/>
+
+            <input class="form-check-input" type="checkbox" id="cpu-hasIGPU"
+                   name="cpu.hasIGPU" value="true"
+                   th:checked="${cpu.hasIGPU}">
+            <label class="form-check-label" for="cpu-hasIGPU">
+                Has Integrated iGPU
+            </label>
+        </div>
+    </div>
+
 </div>

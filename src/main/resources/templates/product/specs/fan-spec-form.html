@@ -1,9 +1,19 @@
-<div>
-    <h4>Fan - Specification</h4>
+<div class="row g-3" th:if="${fan != null}"> <div class="col-md-6">
+    <label for="fan-size" class="form-label">Fan Size (mm)</label>
+    <input type="number" class="form-control form-control-sm" id="fan-size"
+           name="fan.size"
+           th:value="${fan.size}"
+           min="80"
+           placeholder="e.g., 120, 140"
+           required> </div>
 
-    <label>Size (mm):</label>
-    <input type="number" name="fan.size" min="80" required>
+    <div class="col-md-6">
+        <label for="fan-rpm" class="form-label">RPM (Round Per Minute)</label>
+        <input type="number" class="form-control form-control-sm" id="fan-rpm"
+               name="fan.rpm"
+               th:value="${fan.rpm}"
+               min="500"
+               placeholder="e.g., 1500, 2000">
+    </div>
 
-    <label>Round Per Minutes (RPM):</label>
-    <input type="number" name="fan.rpm" min="500">
 </div>

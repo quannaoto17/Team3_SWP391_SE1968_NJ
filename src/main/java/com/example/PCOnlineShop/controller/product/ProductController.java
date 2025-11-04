@@ -71,9 +71,27 @@ public class ProductController {
         return "product/product-form";
     }
 
-    // ===== SPEC FORM (ADD) — rỗng/mặc định =====
+    // ===== SPEC FORM (ADD) — ĐÃ SỬA ĐỂ GỘP =====
     @GetMapping("/spec-form")
-    public String getSpecForm(@RequestParam("categoryId") int categoryId) {
+    public String getSpecForm(@RequestParam("categoryId") int categoryId,
+                              Model model) { // <-- [1] Thêm Model
+
+        // [2] Thêm các đối tượng RỖNG vào model
+        switch (categoryId) {
+            case 1 -> model.addAttribute("mb", new Mainboard());
+            case 2 -> model.addAttribute("cpu", new CPU());
+            case 3 -> model.addAttribute("gpu", new GPU());
+            case 4 -> model.addAttribute("mem", new Memory());
+            case 5 -> model.addAttribute("storage", new Storage());
+            case 6 -> model.addAttribute("pcase", new Case()); // Đổi tên từ 'pc'
+            case 7 -> model.addAttribute("psu", new PowerSupply());
+            case 8 -> model.addAttribute("cl", new Cooling());
+            case 9 -> {} // model.addAttribute("fan", new Fan());
+            case 10 -> {} // model.addAttribute("other", new Other());
+            default -> {}
+        }
+
+        // [3] Trả về đường dẫn TSKT đã gộp
         return switch (categoryId) {
             case 1 -> "product/specs/mainboard-spec-form";
             case 2 -> "product/specs/cpu-spec-form";
@@ -84,8 +102,8 @@ public class ProductController {
             case 7 -> "product/specs/powersupply-spec-form";
             case 8 -> "product/specs/cooling-spec-form";
             case 9 -> "product/specs/fan-spec-form";
-            case 10 -> "product/specs/other-spec-form";
-            default -> "product/specs/default-spec-form";
+            //case 10 -> "product/specs/other-form";
+            default -> "product/specs/default-form";
         };
     }
 
@@ -133,6 +151,10 @@ public class ProductController {
 
         if (productService.existsByProductName(product.getProductName())) {
             result.rejectValue("productName", "error.product", "Product name already exists.");
+            model.addAttribute("isEdit", false);
+            model.addAttribute("submittedCategoryId", categoryId);
+            model.addAttribute("submittedBrandId", brandId);
+            return "product/product-form";
         }
         if (brandId == null)
             model.addAttribute("brandError", "Please select brand");
@@ -181,10 +203,8 @@ public class ProductController {
     @PostMapping("/edit")
     @Transactional
     public String updateProduct(@Valid @ModelAttribute("product") Product incoming,
-                                BindingResult result, // <-- THÊM
-                                Model model,          // <-- THÊM
-                                @RequestParam("category.categoryId") int categoryId,
-                                @RequestParam("brand.brandId") int brandId,
+                                BindingResult result,
+                                Model model,
                                 @RequestParam Map<String, String> params,
                                 @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
                                 @RequestParam(value = "deleteImageIds", required = false) String deleteImageIds
@@ -192,6 +212,8 @@ public class ProductController {
 
         Product current = productService.getProductById(incoming.getProductId());
         if (current == null) return "redirect:/staff/products/list";
+        int categoryId = current.getCategory().getCategoryId();
+        int brandId = current.getBrand().getBrandId();
 
         String newName = incoming.getProductName();
         if (!newName.equals(current.getProductName()) && productService.existsByProductName(newName)) {
@@ -202,6 +224,8 @@ public class ProductController {
             model.addAttribute("isEdit", true);
 
             incoming.setImages(current.getImages());
+            incoming.setBrand(current.getBrand());
+            incoming.setCategory(current.getCategory());
 
             return "product/product-update"; // <-- Trả về view, KHÔNG redirect
         }
@@ -214,9 +238,6 @@ public class ProductController {
         current.setDescription(incoming.getDescription());
         current.setPrice(incoming.getPrice());
         current.setStatus(incoming.isStatus());
-
-        current.setCategory(categoryRepository.findById(categoryId).orElse(null));
-        current.setBrand(brandRepository.findById(brandId).orElse(null));
 
         Product updated = productService.updateProduct(current);
 

@@ -6,9 +6,8 @@ import com.example.PCOnlineShop.repository.product.CategoryRepository;
 import com.example.PCOnlineShop.repository.product.ImageRepository;
 import com.example.PCOnlineShop.repository.product.ProductRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,55 +49,14 @@ public class ProductService {
         return productRepository.findAll(PageRequest.of(page, size));
     }
 
-    public Page<Product> getProductsByCategory(int categoryId, int page, int size) {
-        return productRepository.findByCategory_CategoryId(categoryId, PageRequest.of(page, size));
-    }
+   public List<Product> getByCategoryId(Integer categoryId){
+        return productRepository.findByCategory_CategoryId(categoryId);
+   }
 
-    // 🧩 Phân trang + Sắp xếp tổng quát
-    public Page<Product> getProducts(int page, int size, String sortField, String sortDir) {
-        Sort sort = sortDir.equalsIgnoreCase("asc")
-                ? Sort.by(sortField).ascending()
-                : Sort.by(sortField).descending();
-
-        Pageable pageable = PageRequest.of(page - 1, size, sort);
-        return productRepository.findAll(pageable);
-    }
-
-    // 🧩 Lọc theo Brand (kèm phân trang)
-    public Page<Product> getProductsByBrand(int brandId, int page, int size, String sortField, String sortDir) {
-        Sort sort = sortDir.equalsIgnoreCase("asc")
-                ? Sort.by(sortField).ascending()
-                : Sort.by(sortField).descending();
-
-        Pageable pageable = PageRequest.of(page - 1, size, sort);
-        return productRepository.findByBrand_BrandId(brandId, pageable);
-    }
-
-    // 🧩 Lọc theo Category (kèm phân trang)
-    public Page<Product> getProductsByCategory(int categoryId, int page, int size, String sortField, String sortDir) {
-        Sort sort = sortDir.equalsIgnoreCase("asc")
-                ? Sort.by(sortField).ascending()
-                : Sort.by(sortField).descending();
-
-        Pageable pageable = PageRequest.of(page - 1, size, sort);
+    public Page<Product> getProductsByCategory(Integer categoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         return productRepository.findByCategory_CategoryId(categoryId, pageable);
     }
-
-    // Search di dộng
-    public Page<Product> search(String keyword, Integer brandId, Integer categoryId,
-                                int page, int size, String sortField, String sortDir) {
-        String field = (sortField != null && List.of("productId","productName","price","createAt","status")
-                .contains(sortField)) ? sortField : "productId";
-
-        Sort sort = "desc".equalsIgnoreCase(sortDir)
-                ? Sort.by(field).descending()
-                : Sort.by(field).ascending();
-
-        Pageable pageable = PageRequest.of(page - 1, size, sort);
-        String kw = (keyword == null || keyword.isBlank()) ? null : keyword.trim();
-        return productRepository.search(kw, brandId, categoryId, pageable);
-    }
-
     public Page<Product> searchProducts(String keyword, int page, int size) {
         // Nếu người dùng nhập khoảng trắng hoặc để trống thì trả về tất cả sản phẩm
         if (keyword == null || keyword.trim().isEmpty()) {

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Product - ' + ${category.categoryName}"></title>
+
+    <!-- 🎨 Google Font & DataTables -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f6fa;
+            color: #333;
+            padding: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .datatable-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+
+        table.dataTable {
+            border-collapse: collapse !important;
+            width: 100% !important;
+        }
+
+        thead {
+            background: #2c3e50;
+            color: white;
+        }
+
+        th, td {
+            text-align: center;
+            padding: 10px;
+            vertical-align: middle;
+        }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .status-active { color: green; font-weight: 600; }
+        .status-low { color: orange; font-weight: 600; }
+        .status-out { color: red; font-weight: 600; }
+        .status-inactive { color: gray; font-weight: 600; }
+
+        a.product-link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        a.product-link:hover { text-decoration: underline; }
+
+        a.back {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #fff;
+            background: #3498db;
+            padding: 10px 18px;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+
+        a.back:hover {
+            background: #2980b9;
+        }
+
+        /* DataTables custom UI */
+        .dataTables_wrapper .dataTables_filter input,
+        .dataTables_wrapper .dataTables_length select {
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            padding: 5px 8px;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            border-radius: 6px;
+            border: none;
+            padding: 6px 12px;
+            margin: 0 2px;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #3498db !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+
+<h2 th:text="'📦 Product belonged to Category: ' + ${category.categoryName}"></h2>
+
+<div class="datatable-container">
+    <table id="productTable" class="display">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Category</th>
+            <th>Brand</th>
+            <th>Product Name</th>
+            <th>Price ($)</th>
+            <th>Description</th>
+            <th>Specification</th>
+            <th>Inventory</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:if="${products == null or #lists.isEmpty(products)}">
+            <td colspan="10" style="text-align:center;color:#777">No results found</td>
+        </tr>
+
+        <tr th:each="product : ${products}">
+            <td th:text="${product.productId}"></td>
+
+            <td>
+                <img th:if="${product.images != null and !product.images.isEmpty()}"
+                     th:src="@{${product.images[0].imageUrl}}"
+                     alt="Product Image" class="product-image"/>
+                <img th:if="${product.images == null or product.images.isEmpty()}"
+                     th:src="@{/image/default-product.png}"
+                     alt="No Image" class="product-image"/>
+            </td>
+
+            <td th:text="${product.category != null ? product.category.categoryName : 'N/A'}"></td>
+            <td th:text="${product.brand != null ? product.brand.name : 'N/A'}"></td>
+
+            <td>
+                <a class="product-link"
+                   th:href="@{/staff/products/edit/{id}(id=${product.productId})}"
+                   th:text="${product.productName}"></a>
+            </td>
+
+            <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}"></td>
+            <td th:text="${product.description}"></td>
+            <td th:text="${product.specification}"></td>
+            <td th:text="${product.inventoryQuantity}"></td>
+            <td>
+    <span th:if="${product.status}">
+        <span th:if="${product.inventoryQuantity > 5}"
+              class="status-active">Active – In Stock</span>
+        <span th:if="${product.inventoryQuantity > 0 and product.inventoryQuantity <= 5}"
+              class="status-low">Active – Low Stock</span>
+        <span th:if="${product.inventoryQuantity == 0}"
+              class="status-out">Active – Out of Stock</span>
+    </span>
+
+                <span th:if="${!product.status}" class="status-inactive">Inactive</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div style="text-align:center;">
+        <a th:href="@{/admin/category/list}" class="back">⬅ Back to Category List</a>
+    </div>
+</div>
+
+<!-- 📦 Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+<script th:inline="none">
+    $(document).ready(function() {
+        $('#productTable').DataTable({
+            responsive: false,
+            scrollX: true,
+            pageLength: 10,
+            order: [[0, 'asc']],
+            language: {
+                search: "🔍 Tìm kiếm:",
+                lengthMenu: "Display _MENU_ per page",
+                zeroRecords: "Can't not find the data",
+                info: "Page _PAGE_ / _PAGES_",
+                infoEmpty: "No data",
+                infoFiltered: "(Filter _MAX_ mục)",
+                paginate: { previous: "←", next: "→" }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

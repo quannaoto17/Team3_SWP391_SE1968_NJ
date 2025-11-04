@@ -22,6 +22,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     List<Product> findTop4ByCategory_CategoryIdAndProductIdNot(Integer categoryId, Integer currentProductId);
 
+    List<Product> findByCategory_CategoryId(Integer categoryId);
+
+
     @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.images")
     List<Product> findAllWithImages();
 
@@ -42,5 +45,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     boolean existsByProductName(String productName);
 
     Optional<Product> findWithDetailsByProductId(int productId);
+
+    @Query("SELECT p FROM Product p WHERE p.status = true ORDER BY p.createAt DESC")
+    List<Product> findTop8ByStatusTrue();
+
 
 }
