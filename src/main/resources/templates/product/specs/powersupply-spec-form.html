@@ -1,15 +1,38 @@
-<div>
-    <h4>Power Supply - Specification</h4>
+<div class="row g-3" th:if="${psu != null}">
 
-    <label>Wattage (W):</label>
-    <input type="number" name="psu.wattage" min="200" required>
+    <div class="col-md-6">
+        <label for="psu-wattage" class="form-label">Wattage (W)</label>
+        <input type="number" class="form-control form-control-sm" id="psu-wattage"
+               name="psu.wattage"
+               th:value="${psu.wattage}" min="0">
+    </div>
 
-    <label>Efficiency (80+):</label>
-    <input type="text" name="psu.efficiency" placeholder="VD: 80+ Gold, Platinum" required>
+    <div class="col-md-6">
+        <label for="psu-efficiency" class="form-label">Efficiency Rating</label>
+        <input type="text" class="form-control form-control-sm" id="psu-efficiency"
+               name="psu.efficiency"
+               th:value="${psu.efficiency}"
+               placeholder="e.g., 80+ Gold, 80+ Bronze">
+    </div>
 
-    <label>Modular:</label>
-    <select name="psu.modular">
-        <option value="true">Have</option>
-        <option value="false">Not have</option>
-    </select>
+    <div class="col-md-6">
+        <label for="psu-formfactor" class="form-label">Form Factor</label>
+        <input type="text" class="form-control form-control-sm" id="psu-formfactor"
+               name="psu.formFactor"
+               th:value="${psu.formFactor}"
+               placeholder="e.g., ATX, SFX">
+    </div>
+
+    <div class="col-md-12 d-flex align-items-end">
+        <div class="form-check">
+            <input type="hidden" name="psu.modular" value="false"/>
+            <input class="form-check-input" type="checkbox" id="psu-modular"
+                   name="psu.modular" value="true"
+                   th:checked="${psu.modular}">
+            <label class="form-check-label" for="psu-modular">
+                Modular
+            </label>
+        </div>
+    </div>
+
 </div>

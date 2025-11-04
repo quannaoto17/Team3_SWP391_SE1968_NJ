@@ -28,6 +28,12 @@
             right: -10px;
             z-index: 10;
         }
+        /* Thêm style cho lỗi validation */
+        .error-message {
+            color: #dc3545; /* Bootstrap's danger color */
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+        }
     </style>
 </head>
 <body>
@@ -56,12 +62,16 @@
                         <div class="mb-3">
                             <label for="productName" class="form-label">Product Name</label>
                             <input type="text" class="form-control" id="productName" th:field="*{productName}" required>
+
+                            <div class="error-message" th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}"></div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="price" class="form-label">Price</label>
                                 <input type="number" class="form-control" id="price" th:field="*{price}" required>
+
+                                <div class="error-message" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="status" class="form-label">Status</label>
@@ -73,10 +83,20 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="inventory" class="form-label">Inventory</label>
+                            <input type="number" class="form-control" id="inventory" th:field="*{inventoryQuantity}" min="0" required>
+                            <div class="error-message" th:if="${#fields.hasErrors('inventoryQuantity')}" th:errors="*{inventoryQuantity}"></div>
+                        </div>
+                        <div class="mb-3">
                             <label for="description" class="form-label">Detailed Description</label>
                             <textarea class="form-control" id="description" rows="8" th:field="*{description}"></textarea>
                         </div>
-
+                        <div class="mb-3" th:if="${product.createAt != null}">
+                            <label for="create_at" class="form-label">Date Created</label>
+                            <input type="text" class="form-control" id="create_at"
+                                   th:text="${#temporals.format(product.createAt.toLocalDateTime(), 'dd-MM-yyyy HH:mm:ss')}"
+                                   disabled>
+                        </div>
                         <hr class="mt-4 mb-4">
 
                         <h3>2. Image Management</h3>
@@ -110,26 +130,18 @@
 
                         <div class="mb-3">
                             <label for="brand" class="form-label">Brand</label>
-                            <select class="form-select" id="brand" name="brand.brandId">
-                                <option th:each="br : ${brands}"
-                                        th:value="${br.brandId}"
-                                        th:text="${br.name}"
-                                        th:selected="${br.brandId == product.brand.brandId}">
-                                </option>
-                            </select>
+                            <input type="text" class="form-control" id="brand"
+                                   th:value="${product.brand.name}"
+                                   disabled>
                         </div>
 
                         <div class="mb-3">
                             <label for="category" class="form-label">Category</label>
-                            <select class="form-select" id="category" name="category.categoryId">
-                                <option th:each="cat : ${categories}"
-                                        th:value="${cat.categoryId}"
-                                        th:text="${cat.categoryName}"
-                                        th:selected="${cat.categoryId == product.category.categoryId}">
-                                </option>
-                            </select>
-                            <div class="form-text text-danger">
-                                Note: Changing the category will require re-entering all specs.
+                            <input type="text" class="form-control" id="category"
+                                   th:value="${product.category.categoryName}"
+                                   disabled>
+                            <div class="form-text">
+                                Category cannot be changed. Please contact Admin if needed.
                             </div>
                         </div>
 
@@ -168,25 +180,8 @@
     const initialCategoryId = /*[[${product.category.categoryId}]]*/ 0;
 
     document.addEventListener('DOMContentLoaded', function() {
-
-        // 1. Load saved specs on page load
         loadSpecFormForEdit(initialCategoryId, productId);
-
-        // 2. Add listener for Category change
-        const categorySelect = document.getElementById('category');
-        categorySelect.addEventListener('change', function() {
-            const selectedCategoryId = this.value;
-
-            if (selectedCategoryId == initialCategoryId) {
-                // If changing back to the original category, reload the edit form
-                loadSpecFormForEdit(selectedCategoryId, productId);
-            } else {
-                // If changing to a new category, load a blank form
-                loadBlankSpecForm(selectedCategoryId);
-            }
-        });
-
-        // 3. Add listener for image deletion (AJAX)
+        // 3. Add listener for image deletion (Vẫn giữ nguyên)
         const imageContainer = document.getElementById('image-preview-container');
         imageContainer.addEventListener('click', function(event) {
             if (event.target.classList.contains('delete-image-btn')) {
@@ -202,12 +197,13 @@
 
     });
 
-    // Function to load pre-filled spec form (for edit)
+    // Function to load pre-filled spec form (Vẫn giữ nguyên)
     async function loadSpecFormForEdit(categoryId, prodId) {
         const container = document.getElementById('spec-form-container');
         container.innerHTML = '<div class="text-center spinner-border" role="status"></div>'; // Loading spinner
 
         try {
+            // URL này có thể cần sửa nếu bạn đã gộp 2 thư mục spec
             const url = `/staff/products/spec-form-edit?categoryId=${categoryId}&productId=${prodId}`;
             const response = await fetch(url);
             if (!response.ok) throw new Error('Network response was not ok');
@@ -220,7 +216,7 @@
         }
     }
 
-    // Function to load blank spec form (when category changes)
+    // Function to load blank spec form (Vẫn giữ nguyên, dù hiện tại không được gọi)
     async function loadBlankSpecForm(categoryId) {
         const container = document.getElementById('spec-form-container');
         container.innerHTML = '<div class="text-center spinner-border" role="status"></div>'; // Loading spinner
@@ -232,13 +228,14 @@
 
             const htmlFragment = await response.text();
             container.innerHTML = htmlFragment;
-        } catch (error) {
+        } catch (error)
+        {
             console.error('Error loading specs (blank):', error);
             container.innerHTML = '<div class="alert alert-danger">Could not load specifications.</div>';
         }
     }
 
-    // Function to delete image via AJAX
+    // Function to delete image via AJAX (Vẫn giữ nguyên)
     async function deleteImage(imageId, button) {
         try {
             const url = `/staff/products/image/${imageId}`;
