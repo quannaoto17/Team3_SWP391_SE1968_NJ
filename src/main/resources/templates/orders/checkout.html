@@ -330,6 +330,11 @@
         #shipping-details-block.hidden {
             display: none;
         }
+
+        /* (Thêm vào cùng các CSS khác) */
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -395,16 +400,19 @@
                     <input type="hidden" th:field="*{shippingMethod}" id="shippingMethodInput" />
 
                     <div id="shipping-details-block" th:classappend="*{shippingMethod != 'Giao hàng tận nơi'} ? 'hidden' : ''">
-                        <div th:if="${defaultAddress != null}">
+
+                        <div id="address-display-block" th:classappend="${defaultAddress == null} ? 'hidden' : ''">
                             <p>
                                 <strong id="display-name" th:text="*{shippingFullName}"></strong> -
                                 <span id="display-phone" th:text="*{shippingPhone}"></span>
                             </p>
                             <p id="display-address" class="shipping-address-text" th:text="*{shippingAddress}"></p>
                         </div>
-                        <div th:if="${defaultAddress == null}">
+
+                        <div id="no-address-block" th:classappend="${defaultAddress != null} ? 'hidden' : ''">
                             <p class="error">Bạn chưa có thông tin địa chỉ. Vui lòng thêm địa chỉ.</p>
                         </div>
+
                         <button type="button" id="btn-change-address" class="btn-change-address">
                             Thay đổi
                         </button>
@@ -437,22 +445,10 @@
                     <p class="vat-note">(Đã bao gồm VAT)</p>
                 </div>
 
-                <div class="checkout-card">
-                    <h4>Chọn phương thức thanh toán</h4>
-                    <label class="payment-method">
-                        <input type="radio" name="paymentMethod" value="COD" checked> Thanh toán khi nhận hàng
-                    </label>
-                    <label class="payment-method">
-                        <input type="radio" name="paymentMethod" value="BANK"> Thanh toán bằng chuyển khoản
-                    </label>
-                </div>
 
                 <div class="checkout-card">
                     <button type="submit" class="btn btn-primary">Đặt hàng</button>
-
-                    <button type="button" class="btn btn-secondary">Chọn thêm sản phẩm</button>
-                    <button type="button" class="btn btn-outline">Tải ảnh báo giá</button>
-                    <button type="button" class="btn btn-outline">In báo giá</button>
+                    <a th:href="@{/home}" class="btn btn-secondary">Chọn thêm sản phẩm</a>
                 </div>
 
             </div>
@@ -467,18 +463,41 @@
         <div id="address-radio-list">
             <th:block th:if="${allAddresses != null && !allAddresses.isEmpty()}">
                 <div th:each="addr : ${allAddresses}" class="address-item">
-                    <input type="radio" name="selectedAddress"
-                           th:id="'addr-' + ${addr.addressId}"
-                           th:value="${addr.addressId}"
-                           th:checked="${defaultAddress != null && addr.addressId == defaultAddress.addressId}"
-                           th:data-name="${addr.fullName}"
-                           th:data-phone="${addr.phone}"
-                           th:data-address="${addr.address}" />
-                    <label th:for="'addr-' + ${addr.addressId}">
-                        <strong th:text="${addr.fullName}"></strong> -
-                        <span th:text="${addr.phone}"></span><br>
-                        <span th:text="${addr.address}"></span>
-                    </label>
+                    <div>
+                        <input type="radio" name="selectedAddress"
+                               th:id="'addr-' + ${addr.addressId}"
+                               th:value="${addr.addressId}"
+                               th:checked="${addr.isDefault()}"
+                               th:data-name="${addr.fullName}"
+                               th:data-phone="${addr.phone}"
+                               th:data-address="${addr.address}" />
+                        <label th:for="'addr-' + ${addr.addressId}">
+                            <strong th:text="${addr.fullName}"></strong> -
+                            <span th:text="${addr.phone}"></span>
+
+                            <span th:if="${addr.isDefault()}" style="color: #d70018; font-weight: 600;">(Mặc định)</span>
+
+                            <br>
+                            <span th:text="${addr.address}"></span>
+                        </label>
+                    </div>
+
+                    <div class="address-item-actions" style="margin-left: 28px; margin-top: 8px; display: flex; gap: 15px;">
+
+                        <button type="button" class="btn-change-address btn-edit-address"
+                                th:data-id="${addr.addressId}"
+                                th:data-name="${addr.fullName}"
+                                th:data-phone="${addr.phone}"
+                                th:data-address="${addr.address}">
+                            Sửa
+                        </button>
+
+                        <button type="button" class="btn-change-address btn-set-default"
+                                th:if="${!addr.isDefault()}"
+                                th:data-id="${addr.addressId}">
+                            Đặt làm mặc định
+                        </button>
+                    </div>
                 </div>
             </th:block>
             <p id="no-address-msg" class="error" th:if="${allAddresses == null || allAddresses.isEmpty()}">
@@ -521,6 +540,34 @@
     </div>
 </div>
 
+<div id="edit-address-modal" class="modal">
+    <div class="modal-content">
+        <h4>Chỉnh Sửa Địa Chỉ</h4>
+        <div id="edit-address-error" class="error"></div>
+
+        <form id="edit-address-form">
+            <input type="hidden" id="edit-address-id" name="addressId">
+
+            <div class="form-group">
+                <label for="edit-name">Họ Và Tên:</label>
+                <input type="text" id="edit-name" name="fullName" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-phone">Số Điện Thoại:</label>
+                <input type="text" id="edit-phone" name="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-address">Địa Chỉ:</label>
+                <input type="text" id="edit-address" name="address" required>
+            </div>
+        </form>
+
+        <div class="modal-actions">
+            <button type="button" id="btn-cancel-edit" class="btn-modal btn-modal-cancel">Hủy</button>
+            <button type="button" id="btn-confirm-edit" class="btn-modal btn-modal-confirm">Cập Nhật</button>
+        </div>
+    </div>
+</div>
 
 <script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", function() {
@@ -547,7 +594,6 @@
 
         // --- 1. Logic chọn Phương thức Vận chuyển ---
         function updateShippingMethod() {
-            // Cập nhật style cho radio buttons
             shipHomeRadio.closest('.custom-radio').classList.toggle('selected', shipHomeRadio.checked);
             shipStoreRadio.closest('.custom-radio').classList.toggle('selected', shipStoreRadio.checked);
 
@@ -597,21 +643,36 @@
                 inputPhone.value = phone;
                 inputAddress.value = address;
 
+                document.getElementById("address-display-block").classList.remove("hidden");
+                document.getElementById("no-address-block").classList.add("hidden");
+
                 listModal.style.display = "none";
             } else {
                 alert("Bạn chưa chọn địa chỉ.");
             }
         });
 
-        // --- 5. Logic "Xác nhận" (Từ Pop-up 2 - AJAX) ---
+        // --- 5. Logic "Xác nhận" (Từ Pop-up 2 - AJAX THÊM MỚI) ---
         document.getElementById("btn-confirm-new-address").addEventListener("click", function() {
             const fullName = document.getElementById("new-name").value;
             const phone = document.getElementById("new-phone").value;
             const address = document.getElementById("new-address").value;
             const errorDiv = document.getElementById("new-address-error");
+            errorDiv.innerText = "";
+
+            const nameRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
+            const phoneRegex = /^(0[3|5|7|8|9])+([0-9]{8})\b$/;
 
             if (!fullName || !phone || !address) {
                 errorDiv.innerText = "Vui lòng nhập đầy đủ thông tin.";
+                return;
+            }
+            if (!nameRegex.test(fullName)) {
+                errorDiv.innerText = "Họ tên chỉ được chứa chữ cái và khoảng trắng.";
+                return;
+            }
+            if (!phoneRegex.test(phone)) {
+                errorDiv.innerText = "Số điện thoại không hợp lệ (gồm 10 số, bắt đầu bằng 03, 05, 07, 08, 09).";
                 return;
             }
 
@@ -623,65 +684,268 @@
             fetch('/address/add', {
                 method: 'POST',
                 body: formData,
-                // (Thêm CSRF token nếu cần)
             })
-                .then(response => response.json())
-                .then(newAddress => {
-                    if (newAddress.error) {
-                        errorDiv.innerText = newAddress.error;
-                    } else {
-                        addAddressToRadioList(newAddress);
-
-                        if(displayName) displayName.innerText = newAddress.fullName;
-                        if(displayPhone) displayPhone.innerText = newAddress.phone;
-                        if(displayAddress) displayAddress.innerText = newAddress.address;
-
-                        inputFullName.value = newAddress.fullName;
-                        inputPhone.value = newAddress.phone;
-                        inputAddress.value = newAddress.address;
-
-                        newModal.style.display = "none";
-                        // Không đóng modal list để user có thể thấy địa chỉ mới
-                        // listModal.style.display = "none";
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errData => {
+                            throw new Error(errData.error || 'Lỗi không xác định từ server.');
+                        });
                     }
+                    return response.json();
+                })
+                .then(newAddress => {
+                    // 1. Thêm vào danh sách Radio (dùng hàm helper đã sửa)
+                    addAddressToRadioList(newAddress);
+
+                    // 2. Cập nhật UI chính
+                    if(displayName) displayName.innerText = newAddress.fullName;
+                    if(displayPhone) displayPhone.innerText = newAddress.phone;
+                    if(displayAddress) displayAddress.innerText = newAddress.address;
+
+                    // 3. Cập nhật Input ẩn
+                    inputFullName.value = newAddress.fullName;
+                    inputPhone.value = newAddress.phone;
+                    inputAddress.value = newAddress.address;
+
+                    // 4. Hiển thị khối địa chỉ
+                    document.getElementById("address-display-block").classList.remove("hidden");
+                    document.getElementById("no-address-block").classList.add("hidden");
+
+                    // 5. Đóng modal thêm mới, quay lại modal list
+                    newModal.style.display = "none";
+                    listModal.style.display = "flex";
                 })
                 .catch(err => {
-                    errorDiv.innerText = "Lỗi hệ thống, không thể thêm địa chỉ.";
+                    errorDiv.innerText = err.message || "Lỗi hệ thống, không thể thêm địa chỉ.";
                 });
         });
 
-        // Hàm helper: Thêm địa chỉ mới (từ AJAX) vào danh sách radio
+        // --- HÀM HELPER: Thêm địa chỉ mới (từ AJAX) vào danh sách radio ---
+        // ✅ ĐÃ CẬP NHẬT: Thêm các nút Sửa/Đặt mặc định
         function addAddressToRadioList(addr) {
             const noAddressMsg = document.getElementById("no-address-msg");
             if (noAddressMsg) noAddressMsg.style.display = 'none';
 
+            // Bỏ check radio cũ
             const oldChecked = document.querySelector('input[name="selectedAddress"]:checked');
             if (oldChecked) oldChecked.checked = false;
 
             const listDiv = document.getElementById("address-radio-list");
             const newItem = document.createElement('div');
             newItem.className = 'address-item';
+
+            // Kiểm tra xem địa chỉ mới này có phải là mặc định không
+            // (Thường là true nếu đây là địa chỉ đầu tiên)
+            const isDefault = addr.default; // Lấy từ JSON trả về
+
             newItem.innerHTML = `
+                <div>
                     <input type="radio" name="selectedAddress"
                            id="addr-${addr.addressId}"
                            value="${addr.addressId}"
                            data-name="${addr.fullName}"
                            data-phone="${addr.phone}"
                            data-address="${addr.address}"
-                           checked>
-                    <label for="addr-${addr.addressId}">
+                           ${isDefault ? 'checked' : ''}> <label for="addr-${addr.addressId}">
                         <strong>${addr.fullName}</strong> -
-                        <span>${addr.phone}</span><br>
+                        <span>${addr.phone}</span>
+                        ${isDefault ? '<span style="color: #d70018; font-weight: 600;">(Mặc định)</span>' : ''}
+                        <br>
                         <span>${addr.address}</span>
                     </label>
-                `;
+                </div>
+                <div class="address-item-actions" style="margin-left: 28px; margin-top: 8px; display: flex; gap: 15px;">
+                    <button type="button" class="btn-change-address btn-edit-address"
+                            data-id="${addr.addressId}"
+                            data-name="${addr.fullName}"
+                            data-phone="${addr.phone}"
+                            data-address="${addr.address}">
+                        Sửa
+                    </button>
+                    ${!isDefault ? `
+                        <button type="button" class="btn-change-address btn-set-default"
+                                data-id="${addr.addressId}">
+                            Đặt làm mặc định
+                        </button>
+                    ` : ''}
+                </div>
+            `;
             listDiv.appendChild(newItem);
-
-            // Sau khi thêm xong, quay lại modal list
-            newModal.style.display = "none";
-            listModal.style.display = "flex";
         }
-    });
+
+        // ==========================================================
+        // ✅ TOÀN BỘ CODE MỚI ĐƯỢC DI CHUYỂN VÀO ĐÂY
+        // ==========================================================
+
+        // --- Lấy các Element của modal CHỈNH SỬA ---
+        const editModal = document.getElementById("edit-address-modal");
+        const listModalForEdit = document.getElementById("address-list-modal"); // Modal danh sách
+
+        const inputEditId = document.getElementById("edit-address-id");
+        const inputEditName = document.getElementById("edit-name");
+        const inputEditPhone = document.getElementById("edit-phone");
+        const inputEditAddress = document.getElementById("edit-address");
+        const errorEditDiv = document.getElementById("edit-address-error");
+
+        // --- 6. Xử lý "Hủy" (từ modal Sửa) ---
+        document.getElementById("btn-cancel-edit").addEventListener("click", function() {
+            editModal.style.display = "none";
+            listModalForEdit.style.display = "flex"; // Quay lại modal danh sách
+        });
+
+        // --- 7. Xử lý MỞ modal Sửa và ĐẶT MẶC ĐỊNH ---
+        // Dùng "Event Delegation"
+        const addressListContainer = document.getElementById("address-radio-list");
+
+        addressListContainer.addEventListener("click", function(event) {
+
+            const target = event.target; // Element được click
+
+            // --- 7a. Nếu click nút "Sửa" (.btn-edit-address) ---
+            if (target.classList.contains("btn-edit-address")) {
+                const id = target.getAttribute("data-id");
+                const name = target.getAttribute("data-name");
+                const phone = target.getAttribute("data-phone");
+                const address = target.getAttribute("data-address");
+
+                inputEditId.value = id;
+                inputEditName.value = name;
+                inputEditPhone.value = phone;
+                inputEditAddress.value = address;
+                errorEditDiv.innerText = "";
+
+                listModalForEdit.style.display = "none";
+                editModal.style.display = "flex";
+            }
+
+            // --- 7b. Nếu click nút "Đặt làm mặc định" (.btn-set-default) ---
+            if (target.classList.contains("btn-set-default")) {
+                const addressId = target.getAttribute("data-id");
+                if (!confirm("Bạn có chắc muốn đặt địa chỉ này làm mặc định?")) {
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('addressId', addressId);
+
+                fetch('/address/set-default', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            alert("Lỗi: " + data.error);
+                        } else {
+                            alert(data.message); // "Đặt làm mặc định thành công."
+
+                            // Tải lại trang là cách đơn giản và an toàn nhất
+                            // để cập nhật lại toàn bộ UI (nút, tag mặc định, v.v.)
+                            location.reload();
+                        }
+                    })
+                    .catch(err => {
+                        alert("Lỗi hệ thống khi đặt mặc định.");
+                    });
+            }
+        });
+
+        // --- 8. Xử lý "Cập Nhật" (Từ modal Sửa - AJAX) ---
+        document.getElementById("btn-confirm-edit").addEventListener("click", function() {
+
+            const id = inputEditId.value;
+            const name = inputEditName.value;
+            const phone = inputEditPhone.value;
+            const address = inputEditAddress.value;
+
+            errorEditDiv.innerText = "";
+
+            const nameRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
+            const phoneRegex = /^(0[3|5|7|8|9])+([0-9]{8})\b$/;
+
+            if (!name || !phone || !address) {
+                errorEditDiv.innerText = "Vui lòng nhập đầy đủ thông tin.";
+                return;
+            }
+            if (!nameRegex.test(name)) {
+                errorEditDiv.innerText = "Họ tên chỉ được chứa chữ cái và khoảng trắng.";
+                return;
+            }
+            if (!phoneRegex.test(phone)) {
+                errorEditDiv.innerText = "Số điện thoại không hợp lệ.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('addressId', id);
+            formData.append('fullName', name);
+            formData.append('phone', phone);
+            formData.append('address', address);
+
+            fetch('/address/update', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errData => {
+                            throw new Error(errData.error || 'Lỗi không xác định.');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(updatedAddress => {
+                    // ✅ Cập nhật thành công!
+
+                    // 1. Cập nhật item trong danh sách
+                    const radio = document.getElementById('addr-' + updatedAddress.addressId);
+                    const addressItem = radio.closest('.address-item'); // Lấy <div> cha
+                    const label = addressItem.querySelector('label');
+
+                    radio.setAttribute('data-name', updatedAddress.fullName);
+                    radio.setAttribute('data-phone', updatedAddress.phone);
+                    radio.setAttribute('data-address', updatedAddress.address);
+
+                    // Cập nhật text
+                    label.querySelector('strong').innerText = updatedAddress.fullName;
+                    label.querySelector('span').innerText = updatedAddress.phone;
+                    label.querySelector('span[th\\:text="${addr.address}"]').innerText = updatedAddress.address; // Cách tìm an toàn hơn
+
+                    // 2. Cập nhật nút Sửa
+                    const editButton = addressItem.querySelector('.btn-edit-address');
+                    if (editButton) {
+                        editButton.setAttribute('data-name', updatedAddress.fullName);
+                        editButton.setAttribute('data-phone', updatedAddress.phone);
+                        editButton.setAttribute('data-address', updatedAddress.address);
+                    }
+
+                    // 3. Nếu địa chỉ vừa sửa đang được chọn (checked)
+                    //    thì cập nhật luôn thông tin ngoài trang chính
+                    if (radio.checked) {
+                        if(displayName) displayName.innerText = updatedAddress.fullName;
+                        if(displayPhone) displayPhone.innerText = updatedAddress.phone;
+                        if(displayAddress) displayAddress.innerText = updatedAddress.address;
+
+                        inputFullName.value = updatedAddress.fullName;
+                        inputPhone.value = updatedAddress.phone;
+                        inputAddress.value = updatedAddress.address;
+                    }
+
+                    // 4. Đóng modal Sửa, mở lại modal Danh sách
+                    editModal.style.display = "none";
+                    listModalForEdit.style.display = "flex";
+
+                })
+                .catch(err => {
+                    // ❌ Xử lý lỗi (trùng SĐT, v.v.)
+                    errorEditDiv.innerText = err.message;
+                });
+        });
+
+    }); // <-- DẤU NGOẶC ĐÓNG CUỐI CÙNG CỦA DOMContentLoaded
 </script>
+
+</body>
+</html>
 </body>
 </html>
