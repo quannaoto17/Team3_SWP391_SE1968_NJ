@@ -1,15 +1,32 @@
-<div>
-    <h4>Memory (RAM) - Specification</h4>
+<div class="row g-3" th:if="${mem != null}">
 
-    <label>Capaccity (GB):</label>
-    <input type="number" name="mem.capacity" min="1" required>
+    <div class="col-md-6">
+        <label for="mem-capacity" class="form-label">Capacity (GB)</label>
+        <input type="number" class="form-control form-control-sm" id="mem-capacity"
+               name="mem.capacity"
+               th:value="${mem.capacity}" min="0">
+    </div>
 
-    <label>Type of RAM:</label>
-    <input type="text" name="mem.type" placeholder="VD: DDR4, DDR5" required>
+    <div class="col-md-6">
+        <label for="mem-type" class="form-label">Type</label>
+        <input type="text" class="form-control form-control-sm" id="mem-type"
+               name="mem.type"
+               th:value="${mem.type}"
+               placeholder="e.g., DDR4, DDR5">
+    </div>
 
-    <label>Speed (MHz):</label>
-    <input type="number" name="mem.speed" min="800" required>
+    <div class="col-md-6">
+        <label for="mem-speed" class="form-label">Speed (MHz)</label>
+        <input type="number" class="form-control form-control-sm" id="mem-speed"
+               name="mem.speed"
+               th:value="${mem.speed}" min="0">
+    </div>
 
-    <label>TDP (W):</label>
-    <input type="number" name="mem.tdp" min="1">
+    <div class="col-md-6">
+        <label for="mem-tdp" class="form-label">TDP (W)</label>
+        <input type="number" class="form-control form-control-sm" id="mem-tdp"
+               name="mem.tdp"
+               th:value="${mem.tdp}" min="0">
+    </div>
+
 </div>
