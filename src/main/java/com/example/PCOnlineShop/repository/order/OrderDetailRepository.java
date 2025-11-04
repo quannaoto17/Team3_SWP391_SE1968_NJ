@@ -21,4 +21,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Intege
             "WHERE o.orderId = :orderId")
     List<OrderDetail> findByOrder_OrderIdWithAssociations(int orderId);
 
+    //  Kiểm tra xem account đã mua sản phẩm cụ thể hay chưa (và đơn hàng đã hoàn tất)
+    boolean existsByOrder_Account_AccountIdAndProduct_ProductIdAndOrder_Status(
+            Integer accountId, Integer productId, String status);
 }
