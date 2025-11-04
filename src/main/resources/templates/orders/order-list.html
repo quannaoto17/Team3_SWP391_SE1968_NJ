@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title th:text="${pageTitle ?: 'Orders'}">Orders</title>
     <link rel="stylesheet" th:href="@{/css/OrderStyle.css}">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" th:if="${isStaffOrAdmin}">
 </head>
 <body>
 
@@ -21,21 +21,20 @@
     <div th:if="${success}" class="alert alert-success"><p th:text="${success}"></p></div>
     <div th:if="${info}" class="alert alert-info"><p th:text="${info}"></p></div>
 
-    <table id="orderTable" th:if="${isStaffOrAdmin}"> <thead>
-    <tr>
-
-        <th>Order ID</th>
-        <th>Phone Number</th>
-        <th>Customer Name</th>
-        <th>Created Date</th>
-        <th>Final Amount</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-    </thead>
+    <table id="orderTable" th:if="${isStaffOrAdmin}">
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Phone Number</th>
+            <th>Customer Name</th>
+            <th>Created Date</th>
+            <th>Final Amount</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
         <tbody>
         <tr th:each="order, stat : ${adminOrderList}">
-
             <td th:text="${order.orderId}"></td>
             <td th:text="${order.account?.phoneNumber}"></td>
             <td th:text="${order.account?.fullName}"></td>
@@ -58,63 +57,75 @@
             <td><a th:href="@{'/orders/detail/' + ${order.orderId}}" class="view-btn">View</a></td>
         </tr>
         <tr th:if="${isStaffOrAdmin and (adminOrderList == null or #lists.isEmpty(adminOrderList))}">
-            <td colspan="8" style="text-align: center;">No orders found matching your criteria.</td>
+            <td colspan="8" style="text-align: center;">No orders found.</td>
         </tr>
         </tbody>
     </table>
 
-    <table th:unless="${isStaffOrAdmin}">
+    <table class="customer-order-table" th:unless="${isStaffOrAdmin}">
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Created Date</th>
+            <th>Final Amount</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${customerOrders}">
+            <td th:text="${order.orderId}"></td>
+            <td th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy')}"></td>
+            <td th:text="${#numbers.formatInteger(order.finalAmount, 1, 'COMMA')} + ' ₫'"></td>
+            <td th:text="${order.status}"></td>
+            <td><a th:href="@{'/orders/detail/' + ${order.orderId}}" class="view-btn">View Details</a></td>
+        </tr>
+        <tr th:if="${!isStaffOrAdmin and (customerOrders == null or #lists.isEmpty(customerOrders))}">
+            <td colspan="5" style="text-align: center;">You have no orders.</td>
+        </tr>
+        </tbody>
     </table>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.js" th:if="${isStaffOrAdmin}"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" th:if="${isStaffOrAdmin}"></script>
 
-<script th:inline="none">
+<script th:if="${isStaffOrAdmin}" th:inline="none">
     $(document).ready(function() {
 
-        // 1. Khởi tạo DataTables VỚI PAGING
+        // 1. Khởi tạo DataTables
         var table = $('#orderTable').DataTable({
-            "paging": true,     // <-- BẬT LẠI PAGING
-            "info": true,       // <-- Bật lại thông tin "Showing 1 of X"
-            "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ], // Cho phép chọn số lượng entry
-            "order": [[ 4, "desc" ]] // Sắp xếp mặc định theo cột Created Date (index 4)
+            "paging": true,
+            "info": true,
+            "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+            "order": [[ 3, "desc" ]] // Sửa: Sắp xếp theo cột Created Date (index 3)
         });
 
-        // 2. Thêm "listener" cho sự kiện "change" trên các <select>
-        // Chúng ta dùng .on() trên 'tbody' để nó hoạt động với CẢ CÁC TRANG (paging)
+        // 2. Thêm "listener"
         $('#orderTable tbody').on('change', 'select.status-select', function() {
 
             var $select = $(this);
-            var orderId = $select.data('order-id'); // Lấy order-id từ data-attribute
-            var newStatus = $select.val(); // Lấy status mới
+            var orderId = $select.data('order-id');
+            var newStatus = $select.val();
 
-            // (Tùy chọn: bạn có thể thêm một icon loading nhỏ ở đây)
-            $select.prop('disabled', true); // Khóa select lại trong khi gửi
+            $select.prop('disabled', true);
 
             // 3. Gửi AJAX request
             $.ajax({
                 type: "POST",
-                url: "/orders/update-status", // Endpoint mới
+                url: "/orders/update-status", // Endpoint của bạn
                 data: {
                     orderId: orderId,
                     newStatus: newStatus
                 },
                 success: function(response) {
-                    // Thành công!
                     console.log("Updated order " + orderId + " to " + newStatus);
-                    $select.prop('disabled', false); // Mở khóa select
-                    // (Tùy chọn: Hiển thị 1 thông báo success nhỏ)
+                    $select.prop('disabled', false);
                 },
                 error: function(xhr, status, error) {
-                    // Thất bại!
                     console.error("Error updating order " + orderId);
-                    $select.prop('disabled', false); // Mở khóa select
-
-                    // Hiển thị lỗi
+                    $select.prop('disabled', false);
                     alert("Error: " + xhr.responseJSON.error);
-
-                    // (Tùy chọn: Hoàn trả <select> về giá trị cũ)
                 }
             });
         });

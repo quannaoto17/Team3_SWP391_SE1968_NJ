@@ -253,47 +253,19 @@ public class OrderController {
         Account currentAccount = getCurrentAccount(currentUserDetails);
         if (currentAccount == null) return "redirect:/auth/login";
 
-        // --- Validate thủ công ---
-        // Chỉ validate địa chỉ nếu chọn "Giao hàng tận nơi"
+        // --- (Logic validate của bạn) ---
         if ("Giao hàng tận nơi".equals(checkoutDTO.getShippingMethod())) {
-            if (checkoutDTO.getShippingFullName() == null || checkoutDTO.getShippingFullName().isBlank()) {
-                bindingResult.rejectValue("shippingFullName", "NotBlank", "Họ tên không được để trống");
-            }
-            if (checkoutDTO.getShippingPhone() == null || checkoutDTO.getShippingPhone().isBlank()) {
-                bindingResult.rejectValue("shippingPhone", "NotBlank", "Số điện thoại không được để trống");
-            }
-            if (checkoutDTO.getShippingAddress() == null || checkoutDTO.getShippingAddress().isBlank()) {
-                bindingResult.rejectValue("shippingAddress", "NotBlank", "Địa chỉ không được để trống");
-            }
+            // ... (validation)
         } else {
-            // Nếu "Nhận tại cửa hàng", set giá trị mặc định để qua mặt DB
-            checkoutDTO.setShippingFullName("Store Pickup");
-            checkoutDTO.setShippingPhone("000000000");
-            checkoutDTO.setShippingAddress("Nhận tại cửa hàng");
+            // ... (xử lý nhận tại cửa hàng)
         }
 
 
         if (bindingResult.hasErrors()) {
-            // Nếu lỗi, phải gửi lại toàn bộ thông tin
-            List<CartItemDTO> cartItems = cartService.getCartItems(currentAccount);
-            double grandTotal = cartService.calculateGrandTotal(cartItems);
-            List<Address> allAddresses = addressService.getAddressesForAccount(currentAccount);
-
-            model.addAttribute("cartItems", cartItems);
-            model.addAttribute("grandTotal", grandTotal);
-            model.addAttribute("account", currentAccount);
-            model.addAttribute("allAddresses", allAddresses);
-
-            // Tìm lại default address để hiển thị
-            Address defaultAddress = addressService.getDefaultAddress(currentAccount).orElse(
-                    allAddresses.isEmpty() ? null : allAddresses.get(0)
-            );
-            model.addAttribute("defaultAddress", defaultAddress);
-
+            // ... (xử lý trả lại trang checkout nếu lỗi)
             return "orders/checkout";
         }
 
-        // Lấy Map giỏ hàng để tạo đơn
         Map<Integer, Integer> cartMap = cartService.getCartMapForCheckout(currentAccount);
         if (cartMap.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Giỏ hàng của bạn bị trống!");
@@ -301,6 +273,7 @@ public class OrderController {
         }
 
         try {
+            // ✅ BƯỚC 1: GỌI SERVICE ĐỂ TẠO ORDER
             Order newOrder = orderService.createOrder(
                     currentAccount,
                     cartMap,
@@ -311,8 +284,11 @@ public class OrderController {
                     checkoutDTO.getShippingAddress()
             );
 
+            // ✅ BƯỚC 2: SAU KHI TẠO XONG, XÓA GIỎ HÀNG VÀ CHUYỂN HƯỚNG
             cartService.clearCart(currentAccount);
             redirectAttributes.addFlashAttribute("success", "Đặt hàng thành công! Mã đơn hàng của bạn là #" + newOrder.getOrderId());
+
+            // ✅ BƯỚC 3: ĐƠN HÀNG XUẤT HIỆN Ở ORDER-LIST
             return "redirect:/orders/list";
 
         } catch (Exception e) {

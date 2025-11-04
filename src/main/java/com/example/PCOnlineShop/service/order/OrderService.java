@@ -72,29 +72,33 @@ public class OrderService {
         Order order = new Order();
         order.setAccount(customerAccount);
         order.setCreatedDate(new Date());
-        order.setStatus("Pending Payment");
+        order.setStatus("Pending Payment"); // <-- Trạng thái chờ thanh toán (Hoàn hảo cho PayOS)
         order.setShippingMethod(shippingMethod);
         order.setNote(note);
         order.setShippingFullName(shippingFullName);
         order.setShippingPhone(shippingPhone);
         order.setShippingAddress(shippingAddress);
+
         List<OrderDetail> orderDetails = new ArrayList<>();
         double calculatedFinalAmount = 0.0;
+
         for (Map.Entry<Integer, Integer> entry : cartItems.entrySet()) {
-            int productId = entry.getKey();
-            int quantity = entry.getValue();
-            Product product = productRepository.findById(productId)
-                    .orElseThrow(() -> new EntityNotFoundException("No Existed Product: " + productId));
+            // ... (Logic lấy product và tạo OrderDetail)
+            Product product = productRepository.findById(entry.getKey())
+                    .orElseThrow(() -> new EntityNotFoundException("No Existed Product: " + entry.getKey()));
             OrderDetail detail = new OrderDetail();
             detail.setOrder(order);
             detail.setProduct(product);
-            detail.setQuantity(quantity);
+            detail.setQuantity(entry.getValue());
             detail.setPrice(product.getPrice());
             orderDetails.add(detail);
-            calculatedFinalAmount += (product.getPrice() * quantity);
+            calculatedFinalAmount += (product.getPrice() * entry.getValue());
         }
+
         order.setFinalAmount(calculatedFinalAmount);
         order.setOrderDetails(orderDetails);
+
+        // ✅ LƯU VÀO CSDL
         return orderRepository.save(order);
     }
 
