@@ -29,10 +29,9 @@ public class Cooling {
     private int fanSize; // in mm
 
     @Column(name = "radiator_size")
-    @NotBlank(message = "Radiator size is required")
-    @Size(min = 1, max = 100, message = "Radiator size must be between 1 and 100 characters")
-    @Pattern(regexp = "^[0-9a-zA-Z\\s-]+$", message = "Radiator size must not contain special characters")
-    private String radiatorSize; // e.g., 120mm, 240mm
+    @Min(value = 0, message = "Radiator size must be at least 0mm")
+    @Max(value = 480, message = "Radiator size must be at most 480mm")
+    private int radiatorSize; // in mm (e.g., 120, 240, 280, 360, 480)
 
     @Column(name = "max_tdp")
     @NotNull(message = "Max TDP is required")

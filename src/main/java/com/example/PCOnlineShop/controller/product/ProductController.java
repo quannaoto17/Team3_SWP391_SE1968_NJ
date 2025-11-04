@@ -42,6 +42,17 @@ public class ProductController {
     private final PowerSupplyRepository powerSupplyRepository;
     private final CoolingRepository coolingRepository;
 
+    @ModelAttribute("categories")
+    public List<Category> categories() {
+        return categoryRepository.findAll();
+    }
+
+    @ModelAttribute("brands")
+    public List<Brand> brands() {
+        return brandRepository.findAll();
+    }
+
+
     // ===== DANH SÁCH =====
     @GetMapping("/list")
     public String listProducts(Model model) {
@@ -56,8 +67,6 @@ public class ProductController {
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("product", new Product());
-        model.addAttribute("categories", categoryRepository.findAll());
-        model.addAttribute("brands", brandRepository.findAll());
         model.addAttribute("isEdit", false);
         return "product/product-form";
     }
@@ -116,60 +125,64 @@ public class ProductController {
     @Transactional
     public String saveProduct(@Valid @ModelAttribute("product") Product product,
                               BindingResult result,
-                              @RequestParam("category.categoryId") int categoryId,
-                              @RequestParam("brand.brandId") int brandId,
+                              @RequestParam("category.categoryId") Integer categoryId,
+                              @RequestParam("brand.brandId") Integer brandId,
                               @RequestParam Map<String, String> params,
-                              @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles
+                              @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
+                              Model model) throws IOException {
 
-    ) throws IOException {
-
-        if(productService.existsByProductName(product.getProductName()))
+        if (productService.existsByProductName(product.getProductName())) {
             result.rejectValue("productName", "error.product", "Product name already exists.");
+        }
+        if (brandId == null)
+            model.addAttribute("brandError", "Please select brand");
+
 
         if (result.hasErrors()) {
-            Category category = categoryRepository.findById(categoryId).orElse(null);
-            Brand brand = brandRepository.findById(brandId).orElse(null);
-            product.setCategory(category);
-            product.setBrand(brand);
+            model.addAttribute("isEdit", false);
+            model.addAttribute("submittedCategoryId", categoryId);
+            model.addAttribute("submittedBrandId", brandId);
             return "product/product-form";
         }
-        Category category = categoryRepository.findById(categoryId).orElse(null);
-        Brand brand = brandRepository.findById(brandId).orElse(null);
+
+        Category category = categoryRepository.findById(categoryId).orElseThrow();
+        Brand brand = brandRepository.findById(brandId).orElseThrow();
         product.setCategory(category);
         product.setBrand(brand);
 
-        Product savedProduct = productService.addProduct(product);
+        Product saved = productService.addProduct(product);
 
+        // Save images
         if (imageFiles != null && !imageFiles.isEmpty()) {
-            List<Image> images = saveImagesToStatic(imageFiles, savedProduct);
-            imageRepository.saveAll(images);
-            savedProduct.setImages(images);
-            productService.updateProduct(savedProduct);
+            List<Image> imgs = saveImagesToStatic(imageFiles, saved);
+            imageRepository.saveAll(imgs);
+            saved.setImages(imgs);
+            productService.updateProduct(saved);
         }
 
-        upsertSpec(savedProduct, categoryId, params, true);
+        // Save spec
+        upsertSpec(saved, categoryId, params, true);
 
         return "redirect:/staff/products/list";
     }
 
     // ===== FORM SỬA =====
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") int id, Model model) {
+    public String showEditForm(@PathVariable int id, Model model) {
         Product product = productService.getProductById(id);
         if (product == null) return "redirect:/staff/products/list";
-
         model.addAttribute("product", product);
-        model.addAttribute("categories", categoryRepository.findAll());
-        model.addAttribute("brands", brandRepository.findAll());
         model.addAttribute("isEdit", true);
-        return "product/product-form";
+        return "product/product-update";
     }
 
     // ===== CẬP NHẬT =====
+    // ===== CẬP NHẬT (ĐÃ SỬA) =====
     @PostMapping("/edit")
     @Transactional
     public String updateProduct(@Valid @ModelAttribute("product") Product incoming,
-                                BindingResult result,
+                                BindingResult result, // <-- THÊM
+                                Model model,          // <-- THÊM
                                 @RequestParam("category.categoryId") int categoryId,
                                 @RequestParam("brand.brandId") int brandId,
                                 @RequestParam Map<String, String> params,
@@ -177,70 +190,67 @@ public class ProductController {
                                 @RequestParam(value = "deleteImageIds", required = false) String deleteImageIds
     ) throws IOException {
 
-        if(productService.existsByProductName(incoming.getProductName()))
-            result.rejectValue("productName", "error.product", "Product name already exists.");
-        if (result.hasErrors()) {
-            Category category = categoryRepository.findById(categoryId).orElse(null);
-            Brand brand = brandRepository.findById(brandId).orElse(null);
-            return "product/product-update";
-        }
         Product current = productService.getProductById(incoming.getProductId());
         if (current == null) return "redirect:/staff/products/list";
 
-        Integer oldCatId = (current.getCategory() != null) ? current.getCategory().getCategoryId() : null;
+        String newName = incoming.getProductName();
+        if (!newName.equals(current.getProductName()) && productService.existsByProductName(newName)) {
+            result.rejectValue("productName", "error.product", "Product name already exists.");
+        }
 
+        if (result.hasErrors()) {
+            model.addAttribute("isEdit", true);
+
+            incoming.setImages(current.getImages());
+
+            return "product/product-update"; // <-- Trả về view, KHÔNG redirect
+        }
+
+
+
+
+        // Cập nhật thông tin cơ bản
         current.setProductName(incoming.getProductName());
         current.setDescription(incoming.getDescription());
-        current.setSpecification(incoming.getSpecification());
         current.setPrice(incoming.getPrice());
         current.setStatus(incoming.isStatus());
 
-        Category category = categoryRepository.findById(categoryId).orElse(null);
-        Brand brand = brandRepository.findById(brandId).orElse(null);
-        current.setCategory(category);
-        current.setBrand(brand);
+        current.setCategory(categoryRepository.findById(categoryId).orElse(null));
+        current.setBrand(brandRepository.findById(brandId).orElse(null));
 
         Product updated = productService.updateProduct(current);
 
-        // ===== NEW FEATURE: XÓA CÁC ẢNH ĐƯỢC CHỌN =====
+        // ===== Delete images (nếu có chọn) =====
         if (deleteImageIds != null && !deleteImageIds.isBlank()) {
             List<Integer> ids = Arrays.stream(deleteImageIds.split(","))
                     .filter(s -> !s.isBlank())
                     .map(Integer::parseInt)
                     .toList();
-
-            for (Integer imgId : ids) {
-                imageRepository.findById(imgId).ifPresent(img -> {
+            for (Integer id : ids) {
+                imageRepository.findById(id).ifPresent(img -> {
                     try {
                         Path path = Paths.get("uploads/images" + img.getImageUrl().replace("/image", ""));
                         Files.deleteIfExists(path);
                         imageRepository.delete(img);
-                        System.out.println(">>> Deleted selected image: " + path);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    } catch (IOException e) { e.printStackTrace(); }
                 });
             }
         }
 
-        // Thêm ảnh mới
+        // ===== Add new images =====
         if (imageFiles != null && !imageFiles.isEmpty()) {
-            List<Image> newImages = saveImagesToStatic(imageFiles, updated);
-            imageRepository.saveAll(newImages);
-            List<Image> merged = new ArrayList<>();
-            merged.addAll(newImages);
-            if (updated.getImages() != null) merged.addAll(updated.getImages());
-            updated.setImages(merged);
-            productService.updateProduct(updated);
+            List<Image> newImgs = saveImagesToStatic(imageFiles, updated);
+            imageRepository.saveAll(newImgs);
         }
 
-        if (oldCatId == null || !oldCatId.equals(categoryId)) {
-            cleanupOtherSpecs(updated.getProductId(), categoryId);
+        // ===== Cập nhật spec (nếu có form spec gửi lên) =====
+        if (params.keySet().stream().anyMatch(k -> k.startsWith("mainboard.") || k.startsWith("cpu.")
+                || k.startsWith("gpu.") || k.startsWith("memory.") || k.startsWith("storage.")
+                || k.startsWith("pcase.") || k.startsWith("psu.") || k.startsWith("cl."))) {
+            upsertSpec(updated, categoryId, params, false);
         }
 
-        upsertSpec(updated, categoryId, params, false);
-
-        return "redirect:/staff/products/list" ;
+        return "redirect:/staff/products/list";
     }
 
     // ===== NEW FEATURE: XÓA ẢNH NGAY (AJAX) =====
@@ -344,7 +354,7 @@ public class ProductController {
                 cl.setProduct(product);
                 cl.setType(params.get("cl.type"));
                 cl.setFanSize(getInt(params, "cl.fanSize"));
-                cl.setRadiatorSize(params.get("cl.radiatorSize"));
+                cl.setRadiatorSize(getInt(params, "cl.radiatorSize"));
                 cl.setTdp(getInt(params, "cl.maxTdp"));
                 coolingRepository.save(cl);
             }
