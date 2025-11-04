@@ -1,6 +1,7 @@
 package com.example.PCOnlineShop.model.account;
 
 import com.example.PCOnlineShop.constant.RoleName;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -51,6 +52,7 @@ public class Account {
     private Boolean gender;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Address> addresses;
 
     @Column(name = "enabled")

@@ -1,5 +1,6 @@
 package com.example.PCOnlineShop.model.account;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class Address {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false) // <-- Khớp tên cột
+    @JsonBackReference
     private Account account;
 
     @NotBlank
