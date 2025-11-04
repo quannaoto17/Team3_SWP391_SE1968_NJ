@@ -93,12 +93,16 @@
             <h4 class="related-title">Customer Feedback</h4>
 
             <!-- Hiển thị thông báo -->
-            <div th:if="${param.feedback_success}" class="alert alert-success mt-3">
+            <!-- Hiển thị alert khi gửi thành công -->
+            <div th:if="${feedback_success}" class="alert alert-success mt-3">
                 Gửi đánh giá thành công! Bình luận của bạn đang chờ duyệt.
             </div>
-            <div th:if="${param.feedback_error}" class="alert alert-danger mt-3">
-                Vui lòng chọn sao và nhập nội dung trước khi gửi.
+
+            <!-- Hiển thị alert khi chưa mua hàng hoặc lỗi khác -->
+            <div th:if="${feedback_error}" class="alert alert-danger mt-3" th:text="${feedback_error}">
+                <!-- nội dung lỗi được lấy trực tiếp từ controller -->
             </div>
+
 
             <!-- Danh sách feedback -->
             <div th:if="${feedbackPage != null and feedbackPage.totalElements > 0}">

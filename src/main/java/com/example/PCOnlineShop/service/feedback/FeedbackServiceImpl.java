@@ -6,6 +6,7 @@ import com.example.PCOnlineShop.model.product.Product;
 import com.example.PCOnlineShop.repository.account.AccountRepository;
 import com.example.PCOnlineShop.repository.feedback.FeedbackRepository;
 import com.example.PCOnlineShop.repository.feedback.FeedbackSpecs;
+import com.example.PCOnlineShop.repository.order.OrderDetailRepository;
 import com.example.PCOnlineShop.repository.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -23,11 +24,9 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final FeedbackRepository feedbackRepository;
     private final ProductRepository productRepository;
     private final AccountRepository accountRepository;
+    private final OrderDetailRepository orderDetailRepository;
 
-    /**
-     *  Lọc và phân trang feedback
-     * Chỉ hiển thị Pending theo mặc định nếu không chọn trạng thái khác
-     */
+    /**  Tìm kiếm và lọc feedback cho staff */
     @Override
     public Page<Feedback> search(String status, Integer rating,
                                  LocalDate from, LocalDate to,
@@ -35,22 +34,22 @@ public class FeedbackServiceImpl implements FeedbackService {
 
         Specification<Feedback> spec = (root, query, cb) -> cb.conjunction();
 
-        // 🟢 Lọc theo status
+        // Lọc theo status
         if (status != null && !"ALL".equalsIgnoreCase(status)) {
             spec = spec.and((root, query, cb) ->
                     cb.equal(root.get("commentStatus"), status));
         } else {
-            //  Mặc định chỉ hiển thị feedback chưa duyệt (chưa Allow)
+            // Mặc định chỉ hiển thị feedback chưa duyệt
             spec = spec.and((root, query, cb) ->
                     cb.notEqual(root.get("commentStatus"), "Allow"));
         }
 
-        //  Lọc theo rating
+        // Lọc theo rating
         if (rating != null && rating > 0) {
             spec = spec.and(FeedbackSpecs.rating(rating));
         }
 
-        //  Lọc theo ngày
+        // Lọc theo ngày
         if (from != null) spec = spec.and(FeedbackSpecs.dateFrom(from));
         if (to != null) spec = spec.and(FeedbackSpecs.dateTo(to));
 
@@ -79,7 +78,7 @@ public class FeedbackServiceImpl implements FeedbackService {
                 .orElseThrow(() -> new IllegalArgumentException("Feedback không tồn tại: " + id));
     }
 
-    /** Cập nhật hoặc thêm reply => tự động chuyển Allow */
+    /** ✉ Cập nhật hoặc thêm reply => tự động Allow */
     @Override
     @Transactional
     public void updateReply(Integer id, String reply) {
@@ -113,7 +112,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         });
     }
 
-    /** Lấy feedback Allow theo sản phẩm */
+    /**  Lấy feedback Allow theo sản phẩm */
     @Override
     public Page<Feedback> getAllowedByProduct(Integer productId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -122,15 +121,28 @@ public class FeedbackServiceImpl implements FeedbackService {
         );
     }
 
-    /**  Tạo mới feedback */
+    /**  Tạo mới feedback — chỉ cho phép nếu user đã mua hàng */
     @Override
     @Transactional
     public void createFeedback(Integer productId, Integer accountId, Integer rating, String comment) {
+
+        // Kiểm tra user đã mua sản phẩm chưa (đơn hàng Completed)
+        boolean hasPurchased = orderDetailRepository
+                .existsByOrder_Account_AccountIdAndProduct_ProductIdAndOrder_Status(
+                        accountId, productId, "Completed"
+                );
+
+        if (!hasPurchased) {
+            throw new IllegalArgumentException("Bạn chỉ có thể đánh giá sản phẩm đã mua!");
+        }
+
+        //  Lấy product & account
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Sản phẩm không tồn tại!"));
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Tài khoản không tồn tại!"));
 
+        // Tạo feedback
         Feedback feedback = new Feedback();
         feedback.setProduct(product);
         feedback.setAccount(account);
