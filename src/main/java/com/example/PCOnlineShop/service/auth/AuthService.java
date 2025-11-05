@@ -39,6 +39,10 @@ public class AuthService {
         account.setEnabled(true);
         accountRepository.save(account);
     }
+    public Account getByEmail(String email) {
+        return accountRepository.findByEmail(email).orElse(null);
+    }
+
 
     public void sendResetCode(String identifier) {
         // Tìm theo email trước, không có thì theo phone

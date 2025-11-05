@@ -1,150 +1,138 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Profile Khách hàng</title>
+    <meta charset="UTF-8">
+    <title>Hồ sơ cá nhân</title>
     <style>
-        :root{--bg:#f6f8fb;--card:#ffffff;--accent:#4f46e5;--muted:#6b7280}
-        *{box-sizing:border-box}
-        body{font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); margin:0; color:#111827}
-        .container{max-width:1000px;margin:40px auto;padding:24px}
-        .card{background:var(--card);border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,0.06);padding:24px}
-        .header{display:flex;gap:20px;align-items:center}
-        .avatar{width:110px;height:110px;border-radius:14px;overflow:hidden;flex:0 0 110px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
-        .avatar img{width:100%;height:100%;object-fit:cover;display:block}
-        .meta{flex:1}
-        .meta h1{font-size:20px;margin:0 0 6px}
-        .meta p{margin:0;color:var(--muted)}
-        .actions{display:flex;gap:8px}
-        .btn{padding:10px 14px;border-radius:8px;border:0;cursor:pointer;font-weight:600}
-        .btn-primary{background:var(--accent);color:white}
-        .btn-ghost{background:transparent;border:1px solid #e6e9f2;color:var(--muted)}
+        body {
+            background-color: #f9f9f9;
+            font-family: "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
-        .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
-        .field{background:#fbfdff;padding:14px;border-radius:10px}
-        .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-        .field .value{font-size:15px;color:#0f172a}
+        .profile-container {
+            width: 480px;
+            margin: 60px auto;
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
 
-        .section{margin-top:20px}
-        .section h2{margin:0 0 12px;font-size:16px}
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
 
-        .form-row{display:flex;gap:12px}
-        .input{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9f2}
-        .input[readonly]{background:#f8fafc}
+        .form-group {
+            margin-bottom: 18px;
+        }
 
-        .full{grid-column:1 / -1}
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+            color: #444;
+        }
 
-        @media (max-width:720px){
-            .grid{grid-template-columns:1fr}
-            .header{flex-direction:row}
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input[readonly] {
+            background-color: #f3f3f3;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .message {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="card">
-        <div class="header">
-            <div class="avatar">
-                <img id="avatarImg" src="https://via.placeholder.com/400x400.png?text=Avatar" alt="avatar" />
-            </div>
-            <div class="meta">
-                <h1 id="fullName">Nguyễn Văn A</h1>
-                <p id="email">nguyenvana@example.com</p>
-                <p style="margin-top:8px;color:var(--muted);font-size:13px">Khách hàng VIP - Đã tham gia: <strong id="joined">12/03/2022</strong></p>
-            </div>
-            <div class="actions">
-                <button id="editBtn" class="btn btn-ghost">Chỉnh sửa</button>
-                <button id="saveBtn" class="btn btn-primary" style="display:none">Lưu</button>
-            </div>
-        </div>
 
-        <div class="section">
-            <h2>Thông tin cơ bản</h2>
-            <div class="grid">
-                <div class="field">
-                    <label>Họ và tên</label>
-                    <div class="value"><input id="name" class="input" value="Nguyễn Văn A" readonly></div>
-                </div>
-                <div class="field">
-                    <label>Email</label>
-                    <div class="value"><input id="emailInput" class="input" value="nguyenvana@example.com" readonly></div>
-                </div>
-                <div class="field">
-                    <label>Số điện thoại</label>
-                    <div class="value"><input id="phone" class="input" value="+84 912 345 678" readonly></div>
-                </div>
-                <div class="field">
-                    <label>Ngày sinh</label>
-                    <div class="value"><input id="birthday" class="input" value="1990-05-21" readonly></div>
-                </div>
+<!-- Header -->
+<div th:replace="~{layout/header-customer :: header-customer}"></div>
 
-                <div class="field full">
-                    <label>Địa chỉ</label>
-                    <div class="value"><input id="address" class="input" value="123 Đường ABC, Quận 1, TP.HCM" readonly></div>
-                </div>
-            </div>
-        </div>
+<!-- Profile Form -->
+<div class="profile-container">
+    <h2>👤 Hồ sơ cá nhân</h2>
 
-        <div class="section">
-            <h2>Thanh toán & Đơn hàng</h2>
-            <div class="grid">
-                <div class="field">
-                    <label>Tổng đơn hàng</label>
-                    <div class="value">124 đơn</div>
-                </div>
-                <div class="field">
-                    <label>Tổng chi tiêu</label>
-                    <div class="value">₫45,200,000</div>
-                </div>
-                <div class="field">
-                    <label>Phương thức thanh toán mặc định</label>
-                    <div class="value">Thẻ tín dụng</div>
-                </div>
-                <div class="field">
-                    <label>Trạng thái ưu đãi</label>
-                    <div class="value">Đang áp dụng - Mã: VIP2025</div>
-                </div>
-            </div>
-        </div>
-
-        <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:8px">
-            <button class="btn btn-ghost" id="changePass">Đổi mật khẩu</button>
-            <button class="btn" id="logout">Đăng xuất</button>
-        </div>
+    <!-- Thông báo -->
+    <div class="message success" th:if="${success}">
+        ✅ <span th:text="${success}"></span>
     </div>
+    <div class="message error" th:if="${error}">
+        ❌ <span th:text="${error}"></span>
+    </div>
+
+    <!-- Form cập nhật -->
+    <form th:action="@{/profile/update}" method="post" th:object="${account}">
+        <div class="form-group">
+            <label>Họ:</label>
+            <input type="text" th:field="*{lastname}" placeholder="Nhập họ...">
+        </div>
+
+        <div class="form-group">
+            <label>Tên:</label>
+            <input type="text" th:field="*{firstname}" placeholder="Nhập tên...">
+        </div>
+
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" th:field="*{email}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label>Số điện thoại:</label>
+            <input type="text" th:field="*{phoneNumber}" placeholder="Nhập số điện thoại...">
+        </div>
+
+        <div class="form-group">
+            <label>Giới tính:</label>
+            <select th:field="*{gender}">
+                <option value="" disabled selected>-- Chọn giới tính --</option>
+                <option value="Nam" th:selected="${account.gender == 'Nam'}">Nam</option>
+                <option value="Nữ" th:selected="${account.gender == 'Nữ'}">Nữ</option>
+                <option value="Khác" th:selected="${account.gender == 'Khác'}">Khác</option>
+            </select>
+        </div>
+
+        <button type="submit">💾 Lưu thay đổi</button>
+    </form>
 </div>
 
-<script>
-    const editBtn = document.getElementById('editBtn')
-    const saveBtn = document.getElementById('saveBtn')
-    const inputs = ['name','emailInput','phone','birthday','address'].map(id=>document.getElementById(id))
-
-    editBtn.addEventListener('click', ()=>{
-        inputs.forEach(i=>i.removeAttribute('readonly'))
-        editBtn.style.display = 'none'
-        saveBtn.style.display = 'inline-block'
-    })
-
-    saveBtn.addEventListener('click', ()=>{
-        // ví dụ: validate & gửi ajax
-        inputs.forEach(i=>i.setAttribute('readonly',''))
-        editBtn.style.display = 'inline-block'
-        saveBtn.style.display = 'none'
-        // cập nhật tiêu đề/meta
-        document.getElementById('fullName').textContent = document.getElementById('name').value
-        document.getElementById('email').textContent = document.getElementById('emailInput').value
-        alert('Đã lưu (ví dụ). Tại thực tế bạn sẽ gửi dữ liệu lên server bằng fetch/api.')
-    })
-
-    document.getElementById('changePass').addEventListener('click', ()=>{
-        const url = '/account/change-password' // thay đổi theo project
-        window.location.href = url
-    })
-    document.getElementById('logout').addEventListener('click', ()=>{
-        // tuỳ app bạn có thể gọi API logout
-        window.location.href = '/logout'
-    })
-</script>
 </body>
 </html>
