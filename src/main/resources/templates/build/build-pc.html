@@ -28,7 +28,110 @@
         <div class="start-content">
             <h1>Auto Build PC</h1>
             <p>Quickly assemble your perfect PC with compatible components.</p>
-            <a th:href="@{/build/mainboard}" class="start-btn">Start</a>
+
+            <div class="build-options">
+                <a th:href="@{/build/mainboard}" class="start-btn manual-build">
+                    <span class="btn-icon">🛠️</span>
+                    <span class="btn-title">Manual Build</span>
+                    <span class="btn-desc">Choose each component yourself</span>
+                </a>
+
+                <div class="divider-or">OR</div>
+
+                <button id="btnShowAiAssistant" class="start-btn ai-build">
+                    <span class="btn-icon">🤖</span>
+                    <span class="btn-title">AI Assistant</span>
+                    <span class="btn-desc">Let AI suggest the perfect build</span>
+                </button>
+            </div>
+
+            <!-- AI Suggest Section (Hidden by default) -->
+            <div id="aiAssistantSection" class="ai-assistant-section" style="display: none;">
+                <h2>🤖 AI Build Assistant</h2>
+                <p class="ai-intro-text">Choose a build type or describe your custom requirements</p>
+
+                <!-- Quick Selection Options -->
+                <div class="quick-options">
+                    <h3>Quick Selection</h3>
+                    <div class="options-grid">
+                        <button class="option-card" data-type="gaming-high">
+                            <div class="option-icon">🎮</div>
+                            <div class="option-title">Gaming - High End</div>
+                            <div class="option-desc">4K gaming, max settings</div>
+                        </button>
+
+                        <button class="option-card" data-type="gaming-mid">
+                            <div class="option-icon">🎯</div>
+                            <div class="option-title">Gaming - Mid Range</div>
+                            <div class="option-desc">1080p/1440p gaming</div>
+                        </button>
+
+                        <button class="option-card" data-type="workstation">
+                            <div class="option-icon">💼</div>
+                            <div class="option-title">Workstation</div>
+                            <div class="option-desc">Content creation, editing</div>
+                        </button>
+
+                        <button class="option-card" data-type="office">
+                            <div class="option-icon">📊</div>
+                            <div class="option-title">Office</div>
+                            <div class="option-desc">Daily tasks, productivity</div>
+                        </button>
+
+                        <button class="option-card" data-type="budget">
+                            <div class="option-icon">💰</div>
+                            <div class="option-title">Budget Build</div>
+                            <div class="option-desc">Best value for money</div>
+                        </button>
+
+                        <button class="option-card" data-type="streaming">
+                            <div class="option-icon">📹</div>
+                            <div class="option-title">Streaming</div>
+                            <div class="option-desc">Gaming + streaming</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Custom Request -->
+                <div class="custom-request">
+                    <h3>Custom Requirements</h3>
+                    <div class="custom-input-wrapper">
+                        <textarea id="userRequest"
+                                  placeholder="Example: I need a PC for video editing and 3D rendering, budget around 30 million VND, prefer Intel CPU and NVIDIA GPU..."
+                                  rows="4"></textarea>
+
+                        <button id="btnAiSuggest" class="btn-ai-suggest">
+                            <span class="btn-text">✨ Get AI Suggestion</span>
+                            <span class="btn-loading" style="display: none;">⏳ Processing...</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI Results -->
+                <div id="aiResultSection" class="ai-result-section" style="display: none;">
+                    <h3>📋 Suggested Build Plan</h3>
+                    <div id="aiResultContent" class="ai-result-content">
+                        <!-- AI results will be displayed here -->
+                    </div>
+                    <div class="result-actions">
+                        <button id="btnApplyBuild" class="btn-apply-build">
+                            Apply This Build
+                        </button>
+                        <button id="btnNewSuggestion" class="btn-new-suggestion">
+                            Get Another Suggestion
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Error Section -->
+                <div id="aiErrorSection" class="ai-error-section" style="display: none;">
+                    <p class="error-message"></p>
+                </div>
+
+                <button id="btnBackToOptions" class="btn-back">
+                    ← Back to Options
+                </button>
+            </div>
         </div>
     </div>
 
@@ -40,5 +143,7 @@
         </div>
     </div>
 </div>
+
+<script th:src="@{/js/ai-suggest.js}"></script>
 </body>
 </html>
