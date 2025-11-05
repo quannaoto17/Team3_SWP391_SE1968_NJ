@@ -12,7 +12,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.Principal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,10 +23,9 @@ public class FeedbackController {
 
     private final FeedbackService feedbackService;
 
-    /** 📋 Danh sách feedback (mặc định chỉ hiển thị Pending) */
+    /**  Danh sách feedback (mặc định hiển thị Pending) */
     @GetMapping
     public String list(
-            @RequestParam(required = false) String keyword,
             @RequestParam(required = false, defaultValue = "Pending") String status,
             @RequestParam(required = false) Integer rating,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
@@ -37,27 +35,28 @@ public class FeedbackController {
             @RequestParam(defaultValue = "dateDesc") String sort,
             Model model
     ) {
-        Page<Feedback> data = feedbackService.search(keyword, status, rating, from, to, page, size, sort);
+        Page<Feedback> data = feedbackService.search(status, rating, from, to, page, size, sort);
 
         model.addAttribute("data", data);
-        model.addAttribute("keyword", keyword);
         model.addAttribute("status", status);
         model.addAttribute("rating", rating);
         model.addAttribute("from", from);
         model.addAttribute("to", to);
         model.addAttribute("size", size);
         model.addAttribute("sort", sort);
-        model.addAttribute("qs", buildQS(keyword, status, rating, from, to, size, sort));
+        model.addAttribute("qs", buildQS(status, rating, from, to, size, sort));
 
         return "feedback/feedback-list";
     }
 
-    /** ✅ Cập nhật Allow hàng loạt */
+    /**  Cập nhật hàng loạt */
     @PostMapping("/bulk-status")
-    public String bulkStatus(@RequestParam("id") Integer[] ids,
-                             @RequestParam("st") String[] statuses,
-                             @RequestParam("qs") String qs,
-                             RedirectAttributes ra) {
+    public String bulkStatus(
+            @RequestParam("id") Integer[] ids,
+            @RequestParam("st") String[] statuses,
+            @RequestParam("qs") String qs,
+            RedirectAttributes ra
+    ) {
         Map<Integer, String> payload = new HashMap<>();
         for (int i = 0; i < ids.length; i++) {
             payload.put(ids[i], statuses[i]);
@@ -66,11 +65,10 @@ public class FeedbackController {
         feedbackService.bulkUpdateStatus(payload);
         ra.addFlashAttribute("msg", "Đã duyệt phản hồi (Allow).");
 
-        // 🔄 Sau khi cập nhật xong, chỉ hiển thị lại feedback Pending
         return "redirect:/staff/feedback?status=Pending";
     }
 
-    /** 👁 Xem chi tiết feedback để reply */
+    /** 👁 Xem chi tiết feedback */
     @GetMapping("/{id}")
     public String detail(@PathVariable Integer id,
                          @RequestParam(required = false) String back,
@@ -81,26 +79,24 @@ public class FeedbackController {
         return "feedback/feedback-detail";
     }
 
-    /** ✉ Gửi hoặc cập nhật reply */
+    /** ✉ Staff phản hồi feedback */
     @PostMapping("/{id}/reply")
     public String reply(@PathVariable Integer id,
                         @RequestParam String reply,
                         @RequestParam(required = false) String back,
                         RedirectAttributes ra) {
         feedbackService.updateReply(id, reply);
-        feedbackService.updateStatus(id, "Allow"); // ✅ Tự động chuyển Allow sau khi reply
+        feedbackService.updateStatus(id, "Allow");
         ra.addFlashAttribute("msg", "Đã phản hồi và duyệt feedback.");
         return "redirect:/staff/feedback?status=Pending";
     }
 
-    /** 🧩 Build Query String giữ trạng thái filter */
-    private String buildQS(String keyword, String status, Integer rating,
+    /**  Build Query String giữ lại filter */
+    private String buildQS(String status, Integer rating,
                            LocalDate from, LocalDate to, int size, String sort) {
         StringBuilder sb = new StringBuilder();
-        if (keyword != null && !keyword.isBlank())
-            sb.append("keyword=").append(URLEncoder.encode(keyword, StandardCharsets.UTF_8)).append("&");
         if (status != null)
-            sb.append("status=").append(status).append("&");
+            sb.append("status=").append(URLEncoder.encode(status, StandardCharsets.UTF_8)).append("&");
         if (rating != null)
             sb.append("rating=").append(rating).append("&");
         if (from != null)
@@ -111,21 +107,4 @@ public class FeedbackController {
         sb.append("sort=").append(sort);
         return sb.toString();
     }
-    @PostMapping("/detail/{id}/feedback")
-    public String submitFeedback(
-            @PathVariable("id") Integer id,
-            @RequestParam("rating") Integer rating,
-            @RequestParam("comment") String comment,
-            Principal principal
-    ) {
-        // Lấy account hiện tại (ví dụ tạm accountId = 1)
-        Integer accountId = 1;
-
-        // Gọi service để lưu feedback
-        feedbackService.createFeedback(id, accountId, rating, comment);
-
-        return "redirect:/product/product-details/" + id + "?feedback_success=1";
-    }
-
-
 }

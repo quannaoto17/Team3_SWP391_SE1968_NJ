@@ -1,9 +1,9 @@
 package com.example.PCOnlineShop.controller.product;
 
 import com.example.PCOnlineShop.model.product.Product;
-import com.example.PCOnlineShop.model.product.Category;
-import com.example.PCOnlineShop.service.product.ProductService;
+import com.example.PCOnlineShop.service.feedback.FeedbackService;
 import com.example.PCOnlineShop.service.product.CategoryService;
+import com.example.PCOnlineShop.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,9 +18,14 @@ public class ProductDetailController {
 
     private final ProductService productService;
     private final CategoryService categoryService;
+    private final FeedbackService feedbackService;
 
+    /**
+     * Trang chi tiết sản phẩm — hiển thị sản phẩm, ảnh, sản phẩm liên quan, và toàn bộ feedback (Allow)
+     */
     @GetMapping("/detail/{id}")
     public String showProductDetail(@PathVariable("id") Integer id, Model model) {
+        //  Lấy sản phẩm
         Product product = productService.getProductById(id);
         if (product == null) return "redirect:/home";
 
@@ -28,11 +33,17 @@ public class ProductDetailController {
         model.addAttribute("categories", categoryService.getAllCategories());
         model.addAttribute("images", product.getImages());
 
+        //  Lấy sản phẩm liên quan
         if (product.getCategory() != null) {
-            List<Product> related = productService.getTopRelatedProducts(product.getCategory().getCategoryId(), id);
+            List<Product> related = productService.getTopRelatedProducts(
+                    product.getCategory().getCategoryId(), id);
             model.addAttribute("relatedProducts", related);
         }
 
-        return "product/product-details"; // tương ứng với templates/product/product-details.html
+        //  Lấy toàn bộ feedback đã được duyệt (Allow) — không phân trang
+        var feedbackPage = feedbackService.getAllowedByProduct(id, 0, Integer.MAX_VALUE);
+        model.addAttribute("feedbackPage", feedbackPage);
+
+        return "product/product-details";
     }
 }

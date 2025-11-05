@@ -3,15 +3,16 @@
 <head>
     <title>Feedback Detail</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/FeedBack.css}">
 </head>
 <body class="bg-light">
+
 <div class="container py-4" th:object="${fb}">
     <h4 class="mb-3">Feedback Detail</h4>
 
     <div class="card mb-3">
         <div class="card-body">
             <div class="d-flex align-items-center mb-2">
-                <!-- Hiển thị tên user đúng theo getter getFullName() -->
                 <strong class="me-2" th:text="${fb.account != null ? fb.account.fullName : 'User'}"></strong>
                 <span class="text-muted" th:text="${#temporals.format(fb.createdAt,'dd/MM/yyyy')}"></span>
             </div>
@@ -20,11 +21,10 @@
 
             <div class="mb-2">
                 <span th:each="i : ${#numbers.sequence(1,5)}"
-                      th:text="${i <= (fb.rating!=null?fb.rating:0) ? '★' : '☆'}"
-                      style="font-size:14px"></span>
+                      th:text="${i <= (fb.rating != null ? fb.rating : 0) ? '★' : '☆'}"
+                      class="star"></span>
             </div>
 
-            <!-- Badge status -->
             <div>
                 Status:
                 <span class="badge"
@@ -46,9 +46,12 @@
             <div class="card-body">
                 <textarea class="form-control" name="reply" rows="6"
                           placeholder="Type here..." th:text="${fb.reply}"></textarea>
-                <div class="text-end mt-3">
-                    <a class="btn btn-outline-secondary me-2" th:href="@{|/staff/feedback?${back}|}">Back</a>
-                    <button class="btn btn-primary" type="submit">Send</button>
+
+                <!-- ✅ Nút Back trái - Send phải -->
+                <div class="action-buttons mt-3">
+                    <a class="btn btn-outline-secondary btn-back"
+                       th:href="@{|/staff/feedback?${back}|}">← Back</a>
+                    <button class="btn btn-primary btn-send" type="submit">Send</button>
                 </div>
             </div>
         </div>

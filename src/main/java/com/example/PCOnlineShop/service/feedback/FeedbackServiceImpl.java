@@ -6,6 +6,7 @@ import com.example.PCOnlineShop.model.product.Product;
 import com.example.PCOnlineShop.repository.account.AccountRepository;
 import com.example.PCOnlineShop.repository.feedback.FeedbackRepository;
 import com.example.PCOnlineShop.repository.feedback.FeedbackSpecs;
+import com.example.PCOnlineShop.repository.order.OrderDetailRepository;
 import com.example.PCOnlineShop.repository.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -23,51 +23,44 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
     private final ProductRepository productRepository;
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
+    private final OrderDetailRepository orderDetailRepository;
 
-    /**
-     * ✅ Tìm kiếm + lọc feedback
-     * Mặc định: chỉ hiển thị feedback chưa xử lý (commentStatus != 'Allow')
-     */
+    /**  Tìm kiếm và lọc feedback cho staff */
     @Override
-    public Page<Feedback> search(String keyword, String status, Integer rating,
+    public Page<Feedback> search(String status, Integer rating,
                                  LocalDate from, LocalDate to,
                                  int page, int size, String sortKey) {
 
         Specification<Feedback> spec = (root, query, cb) -> cb.conjunction();
 
-        // 🔍 Tìm theo keyword
-        if (keyword != null && !keyword.isBlank()) {
-            spec = spec.and(FeedbackSpecs.keyword(keyword));
-        }
-
-        // 🟢 Lọc theo status
+        // Lọc theo status
         if (status != null && !"ALL".equalsIgnoreCase(status)) {
             spec = spec.and((root, query, cb) ->
                     cb.equal(root.get("commentStatus"), status));
         } else {
-            // ✅ Mặc định chỉ hiện feedback chưa xử lý (chưa Allow)
+            // Mặc định chỉ hiển thị feedback chưa duyệt
             spec = spec.and((root, query, cb) ->
                     cb.notEqual(root.get("commentStatus"), "Allow"));
         }
 
-        // ⭐ Lọc theo rating
+        // Lọc theo rating
         if (rating != null && rating > 0) {
             spec = spec.and(FeedbackSpecs.rating(rating));
         }
 
-        // 📅 Lọc theo ngày
+        // Lọc theo ngày
         if (from != null) spec = spec.and(FeedbackSpecs.dateFrom(from));
         if (to != null) spec = spec.and(FeedbackSpecs.dateTo(to));
 
-        // 🔽 Sắp xếp
+        // Sắp xếp
         Sort sort = toSort(sortKey);
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1), sort);
 
         return feedbackRepository.findAll(spec, pageable);
     }
 
-    /** 🔽 Sắp xếp linh hoạt */
+    /**  Hàm hỗ trợ sắp xếp linh hoạt */
     private Sort toSort(String key) {
         if (key == null) key = "dateDesc";
         return switch (key) {
@@ -78,7 +71,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         };
     }
 
-    /** 📦 Lấy feedback theo ID */
+    /**  Lấy feedback theo ID */
     @Override
     public Feedback get(Integer id) {
         return feedbackRepository.findById(id)
@@ -91,11 +84,11 @@ public class FeedbackServiceImpl implements FeedbackService {
     public void updateReply(Integer id, String reply) {
         Feedback fb = get(id);
         fb.setReply(reply == null ? null : reply.trim());
-        fb.setCommentStatus("Allow"); // sau khi reply thì duyệt luôn
+        fb.setCommentStatus("Allow");
         feedbackRepository.save(fb);
     }
 
-    /** 🔄 Cập nhật trạng thái riêng lẻ */
+    /**  Cập nhật trạng thái riêng lẻ */
     @Override
     @Transactional
     public void updateStatus(Integer id, String status) {
@@ -104,7 +97,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         feedbackRepository.save(fb);
     }
 
-    /** ✅ Cập nhật hàng loạt (bulk update) */
+    /**  Cập nhật hàng loạt (bulk update) */
     @Override
     @Transactional
     public void bulkUpdateStatus(Map<Integer, String> idToStatus) {
@@ -118,22 +111,38 @@ public class FeedbackServiceImpl implements FeedbackService {
             }
         });
     }
+
+    /**  Lấy feedback Allow theo sản phẩm */
     @Override
     public Page<Feedback> getAllowedByProduct(Integer productId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return feedbackRepository.findByProduct_ProductIdAndCommentStatusOrderByCreatedAtDesc(
-                productId,
-                "Allow",
-                pageable
+                productId, "Allow", pageable
         );
     }
 
+    /**  Tạo mới feedback — chỉ cho phép nếu user đã mua hàng */
     @Override
     @Transactional
     public void createFeedback(Integer productId, Integer accountId, Integer rating, String comment) {
-        Product product = productRepository.findById(productId).orElseThrow();
-        Account account = accountRepository.findById(accountId).orElseThrow();
 
+        // Kiểm tra user đã mua sản phẩm chưa (đơn hàng Completed)
+        boolean hasPurchased = orderDetailRepository
+                .existsByOrder_Account_AccountIdAndProduct_ProductIdAndOrder_Status(
+                        accountId, productId, "Completed"
+                );
+
+        if (!hasPurchased) {
+            throw new IllegalArgumentException("Bạn chỉ có thể đánh giá sản phẩm đã mua!");
+        }
+
+        //  Lấy product & account
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Sản phẩm không tồn tại!"));
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("Tài khoản không tồn tại!"));
+
+        // Tạo feedback
         Feedback feedback = new Feedback();
         feedback.setProduct(product);
         feedback.setAccount(account);

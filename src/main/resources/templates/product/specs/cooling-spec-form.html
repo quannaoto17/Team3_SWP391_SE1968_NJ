@@ -1,15 +1,35 @@
-<div>
-    <h4>Cooling - Specification</h4>
+<div class="row g-3" th:if="${cl != null}">
 
-    <label>Cooling Type:</label>
-    <input type="text" name="cl.type" placeholder="VD: Air, Liquid" required>
+    <div class="col-md-6">
+        <label for="cl-type" class="form-label">Type</label>
+        <input type="text" class="form-control form-control-sm" id="cl-type"
+               name="cl.type"
+               th:value="${cl.type}"
+               placeholder="e.g., Air, AIO">
+    </div>
 
-    <label>Cooling size (mm):</label>
-    <input type="number" name="cl.fanSize" min="80" required>
+    <div class="col-md-6">
+        <label for="cl-fansize" class="form-label">Fan Size (mm)</label>
+        <input type="number" class="form-control form-control-sm" id="cl-fansize"
+               name="cl.fanSize"
+               th:value="${cl.fanSize}"
+               min="0">
+    </div>
 
-    <label>Radiator Size (mm):</label>
-    <input type="number" name="cl.radiatorSize" placeholder="VD: 120, 240, 280, 360" min="0">
+    <div class="col-md-6">
+        <label for="cl-radsize" class="form-label">Radiator Size</label>
+        <input type="text" class="form-control form-control-sm" id="cl-radsize"
+               name="cl.radiatorSize"
+               th:value="${cl.radiatorSize}"
+               placeholder="e.g., 240, 360, N/A">
+    </div>
 
-    <label>TDP Supported:</label>
-    <input type="number" name="cl.maxTdp" min="50">
+    <div class="col-md-6">
+        <label for="cl-tdp" class="form-label">Max TDP (W)</label>
+        <input type="number" class="form-control form-control-sm" id="cl-tdp"
+               name="cl.maxTdp"
+               th:value="${cl.tdp}"
+               min="0">
+    </div>
+
 </div>
