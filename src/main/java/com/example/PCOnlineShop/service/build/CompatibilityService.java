@@ -152,8 +152,8 @@ public class CompatibilityService {
             }
 
             // Kiểm tra kích thước radiator cho tản nhiệt nước
-            if ("Liquid".equalsIgnoreCase(cooling.getType()) && cooling.getRadiatorSize() != null) {
-                int radiatorSize = parseRadiatorSize(cooling.getRadiatorSize());
+            if ("Liquid".equalsIgnoreCase(cooling.getType()) && cooling.getRadiatorSize() > 0) {
+                int radiatorSize = cooling.getRadiatorSize();
 
                 // Kiểm tra case có đủ không gian cho radiator không
                 if (pcCase.getFormFactor().toUpperCase().contains("MINI")) {
@@ -292,8 +292,8 @@ public class CompatibilityService {
         }
 
         // Kiểm tra tản nhiệt nước (Liquid cooling)
-        if ("Liquid".equalsIgnoreCase(cooling.getType()) && cooling.getRadiatorSize() != null) {
-            int radiatorSize = parseRadiatorSize(cooling.getRadiatorSize());
+        if ("Liquid".equalsIgnoreCase(cooling.getType()) && cooling.getRadiatorSize() > 0) {
+            int radiatorSize = cooling.getRadiatorSize();
 
             // Kiểm tra case có đủ không gian cho radiator không
             // Case nhỏ (Mini-ITX) thường chỉ hỗ trợ radiator 120-240mm
@@ -380,22 +380,6 @@ public class CompatibilityService {
         }
     }
 
-    /**
-     * Parse radiator size từ string sang số (mm)
-     * Ví dụ: "240mm" -> 240, "360 mm" -> 360
-     */
-    private int parseRadiatorSize(String radiatorSize) {
-        if (radiatorSize == null || radiatorSize.isEmpty()) {
-            return 0;
-        }
-        try {
-            // Loại bỏ "mm", khoảng trắng và các ký tự không phải số
-            String numericPart = radiatorSize.replaceAll("[^0-9]", "");
-            return Integer.parseInt(numericPart);
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
 
     /**
      * Kiểm tra tương thích PSU form factor với case

@@ -12,7 +12,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.Principal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class FeedbackController {
 
     private final FeedbackService feedbackService;
 
-    /** 📋 Danh sách feedback (mặc định hiển thị Pending) */
+    /**  Danh sách feedback (mặc định hiển thị Pending) */
     @GetMapping
     public String list(
             @RequestParam(required = false, defaultValue = "Pending") String status,
@@ -50,7 +49,7 @@ public class FeedbackController {
         return "feedback/feedback-list";
     }
 
-    /**  Cập nhật trạng thái hàng loạt (Allow) */
+    /**  Cập nhật hàng loạt */
     @PostMapping("/bulk-status")
     public String bulkStatus(
             @RequestParam("id") Integer[] ids,
@@ -66,11 +65,10 @@ public class FeedbackController {
         feedbackService.bulkUpdateStatus(payload);
         ra.addFlashAttribute("msg", "Đã duyệt phản hồi (Allow).");
 
-        // Sau khi cập nhật xong, chỉ hiển thị lại feedback Pending
         return "redirect:/staff/feedback?status=Pending";
     }
 
-    /**  Xem chi tiết feedback để phản hồi */
+    /** 👁 Xem chi tiết feedback */
     @GetMapping("/{id}")
     public String detail(@PathVariable Integer id,
                          @RequestParam(required = false) String back,
@@ -81,50 +79,32 @@ public class FeedbackController {
         return "feedback/feedback-detail";
     }
 
-    /** ✉ Gửi hoặc cập nhật phản hồi */
+    /** ✉ Staff phản hồi feedback */
     @PostMapping("/{id}/reply")
     public String reply(@PathVariable Integer id,
                         @RequestParam String reply,
                         @RequestParam(required = false) String back,
                         RedirectAttributes ra) {
         feedbackService.updateReply(id, reply);
-        feedbackService.updateStatus(id, "Allow"); // ✅ Sau khi phản hồi thì auto Allow
+        feedbackService.updateStatus(id, "Allow");
         ra.addFlashAttribute("msg", "Đã phản hồi và duyệt feedback.");
         return "redirect:/staff/feedback?status=Pending";
     }
 
-    /**  Xây dựng query string để giữ lại filter khi reload */
+    /**  Build Query String giữ lại filter */
     private String buildQS(String status, Integer rating,
                            LocalDate from, LocalDate to, int size, String sort) {
         StringBuilder sb = new StringBuilder();
-
         if (status != null)
-            sb.append("status=").append(status).append("&");
+            sb.append("status=").append(URLEncoder.encode(status, StandardCharsets.UTF_8)).append("&");
         if (rating != null)
             sb.append("rating=").append(rating).append("&");
         if (from != null)
             sb.append("from=").append(from).append("&");
         if (to != null)
             sb.append("to=").append(to).append("&");
-
         sb.append("size=").append(size).append("&");
         sb.append("sort=").append(sort);
         return sb.toString();
-    }
-
-    /**  Gửi feedback từ phía Customer */
-    @PostMapping("/detail/{id}/feedback")
-    public String submitFeedback(
-            @PathVariable("id") Integer id,
-            @RequestParam("rating") Integer rating,
-            @RequestParam("comment") String comment,
-            Principal principal
-    ) {
-        // ⚙️ (Tạm) Lấy account hiện tại (sau này thay bằng principal.getName())
-        Integer accountId = 1;
-
-        feedbackService.createFeedback(id, accountId, rating, comment);
-
-        return "redirect:/product/product-details/" + id + "?feedback_success=1";
     }
 }

@@ -72,78 +72,60 @@ public class OrderService {
         Order order = new Order();
         order.setAccount(customerAccount);
         order.setCreatedDate(new Date());
-        order.setStatus("Pending Payment");
+        order.setStatus("Pending Payment"); // <-- Trạng thái chờ thanh toán (Hoàn hảo cho PayOS)
         order.setShippingMethod(shippingMethod);
         order.setNote(note);
         order.setShippingFullName(shippingFullName);
         order.setShippingPhone(shippingPhone);
         order.setShippingAddress(shippingAddress);
+
         List<OrderDetail> orderDetails = new ArrayList<>();
         double calculatedFinalAmount = 0.0;
+
         for (Map.Entry<Integer, Integer> entry : cartItems.entrySet()) {
-            int productId = entry.getKey();
-            int quantity = entry.getValue();
-            Product product = productRepository.findById(productId)
-                    .orElseThrow(() -> new EntityNotFoundException("No Existed Product: " + productId));
+            // ... (Logic lấy product và tạo OrderDetail)
+            Product product = productRepository.findById(entry.getKey())
+                    .orElseThrow(() -> new EntityNotFoundException("No Existed Product: " + entry.getKey()));
             OrderDetail detail = new OrderDetail();
             detail.setOrder(order);
             detail.setProduct(product);
-            detail.setQuantity(quantity);
+            detail.setQuantity(entry.getValue());
             detail.setPrice(product.getPrice());
             orderDetails.add(detail);
-            calculatedFinalAmount += (product.getPrice() * quantity);
+            calculatedFinalAmount += (product.getPrice() * entry.getValue());
         }
+
         order.setFinalAmount(calculatedFinalAmount);
         order.setOrderDetails(orderDetails);
+
+        // ✅ LƯU VÀO CSDL
         return orderRepository.save(order);
     }
 
 
+    // === PHƯƠNG THỨC MỚI ĐỂ CẬP NHẬT 1 ĐƠN HÀNG ===
     @Transactional
-    public void updateMultipleOrderStatuses(Map<Integer, String> updates) {
-        if (updates == null || updates.isEmpty()) return;
+    public void updateSingleOrderStatus(int orderId, String newStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + orderId));
 
-        List<Integer> orderIds = new ArrayList<>(updates.keySet());
-        List<Order> ordersToUpdate = orderRepository.findAllById(orderIds);
-        Map<Integer, Order> orderMap = ordersToUpdate.stream().collect(Collectors.toMap(Order::getOrderId, o -> o));
-        boolean changed = false;
-        Date now = new Date(); // Get current time once
+        String oldStatus = order.getStatus();
 
-        for (Map.Entry<Integer, String> entry : updates.entrySet()) {
-            Order order = orderMap.get(entry.getKey());
-            String newStatus = entry.getValue();
+        // Chỉ cập nhật nếu status thực sự thay đổi
+        if (!oldStatus.equals(newStatus)) {
+            order.setStatus(newStatus);
 
-            if (order != null && !order.getStatus().equals(newStatus)) {
-                String oldStatus = order.getStatus(); // Store old status
-                order.setStatus(newStatus);
-                changed = true;
-
-                // --- SET readyToShipDate WHEN STATUS CHANGES TO "Ready to Ship" ---
-                if (!"Ready to Ship".equals(oldStatus) && "Ready to Ship".equals(newStatus)) {
-                    order.setReadyToShipDate(now);
-                }
-
-            } else if (order == null) {
-                System.err.println("Order not found for update: " + entry.getKey());
+            // --- SET readyToShipDate WHEN STATUS CHANGES TO "Ready to Ship" ---
+            // (Chúng ta sao chép logic từ hàm updateMultiple...)
+            if (!"Ready to Ship".equals(oldStatus) && "Ready to Ship".equals(newStatus)) {
+                order.setReadyToShipDate(new Date()); // Set thời gian hiện tại
             }
-        }
 
-        if (changed) {
-            orderRepository.saveAll(ordersToUpdate);
+            orderRepository.save(order);
         }
+        // Nếu status không đổi, không làm gì cả
     }
 
-    public Page<Order> findPaginated(Pageable pageable, String phoneNumber) {
-
-        if (phoneNumber != null && !phoneNumber.isEmpty()) {
-            return orderRepository.findByRoleAndPhoneNumber(RoleName.Customer, phoneNumber, pageable);
-        }
-        return orderRepository.findAllByRole(RoleName.Customer, pageable);
-    }
-
-    public boolean customerAccountExistsByPhoneNumber(String phoneNumber) {
-        return accountRepository.existsByPhoneNumberAndRole(phoneNumber, RoleName.Customer);
-    }
 
     public List<Order> getOrdersByAccount(Account account) {
         return orderRepository.findByAccount(account);
@@ -157,6 +139,11 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Đơn hàng không tồn tại: " + orderId));
         return orderDetailRepository.findByOrder(order);
+    }
+
+    public List<Order> findAllOrdersForAdmin() {
+        // Gọi repo mới, sắp xếp DESC (newest) theo default
+        return orderRepository.findAllByRole(RoleName.Customer);
     }
 
     // ==================================================
@@ -274,4 +261,6 @@ public class OrderService {
         order.setStatus(newStatus);
         orderRepository.save(order);
     }
+
+
 }

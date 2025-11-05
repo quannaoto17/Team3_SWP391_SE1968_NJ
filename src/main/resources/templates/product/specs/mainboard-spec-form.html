@@ -1,12 +1,27 @@
-<div>
-    <h4>Mainboard - Specification</h4>
+<div class="row g-3" th:if="${mb != null}">
 
-    <label>Socket:</label>
-    <input type="text" name="mainboard.socket" placeholder="VD: AM5, LGA1700" required>
+    <div class="col-md-6">
+        <label for="mb-socket" class="form-label">Socket</label>
+        <input type="text" class="form-control form-control-sm" id="mb-socket"
+               name="mainboard.socket"
+               th:value="${mb.socket}"
+               placeholder="e.g., AM5, LGA1700">
+    </div>
 
-    <label>Chipset:</label>
-    <input type="text" name="mainboard.chipset" placeholder="VD: B650, Z790" required>
+    <div class="col-md-6">
+        <label for="mb-chipset" class="form-label">Chipset</label>
+        <input type="text" class="form-control form-control-sm" id="mb-chipset"
+               name="mainboard.chipset"
+               th:value="${mb.chipset}"
+               placeholder="e.g., B650, Z790">
+    </div>
 
-    <label>Form Factor:</label>
-    <input type="text" name="mainboard.formFactor" placeholder="VD: ATX, mATX, ITX">
+    <div class="col-md-6">
+        <label for="mb-formfactor" class="form-label">Form Factor</label>
+        <input type="text" class="form-control form-control-sm" id="mb-formfactor"
+               name="mainboard.formFactor"
+               th:value="${mb.formFactor}"
+               placeholder="e.g., ATX, mATX, ITX">
+    </div>
+
 </div>

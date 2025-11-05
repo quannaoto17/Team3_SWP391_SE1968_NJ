@@ -35,4 +35,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     // Fetches Orders by a list of statuses, joins Account info
     @Query("SELECT o FROM Order o JOIN FETCH o.account cust WHERE o.status IN :statuses ORDER BY o.createdDate ASC")
     List<Order> findByStatusIn(@Param("statuses") List<String> statuses);
+
+    @Query(value = "SELECT o FROM Order o JOIN FETCH o.account a WHERE a.role = :role ORDER BY o.createdDate DESC")
+    List<Order> findAllByRole(@Param("role") RoleName role);
 }

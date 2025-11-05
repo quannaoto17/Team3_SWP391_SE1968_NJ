@@ -93,12 +93,16 @@
             <h4 class="related-title">Customer Feedback</h4>
 
             <!-- Hiển thị thông báo -->
-            <div th:if="${param.feedback_success}" class="alert alert-success mt-3">
+            <!-- Hiển thị alert khi gửi thành công -->
+            <div th:if="${feedback_success}" class="alert alert-success mt-3">
                 Gửi đánh giá thành công! Bình luận của bạn đang chờ duyệt.
             </div>
-            <div th:if="${param.feedback_error}" class="alert alert-danger mt-3">
-                Vui lòng chọn sao và nhập nội dung trước khi gửi.
+
+            <!-- Hiển thị alert khi chưa mua hàng hoặc lỗi khác -->
+            <div th:if="${feedback_error}" class="alert alert-danger mt-3" th:text="${feedback_error}">
+                <!-- nội dung lỗi được lấy trực tiếp từ controller -->
             </div>
+
 
             <!-- Danh sách feedback -->
             <div th:if="${feedbackPage != null and feedbackPage.totalElements > 0}">
@@ -112,6 +116,17 @@
                     </div>
                     <p th:text="${fb.comment}">Feedback content...</p>
                     <small class="text-muted" th:text="${#temporals.format(fb.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+
+                    <!--  Hiển thị phản hồi staff nếu có -->
+                    <div th:if="${fb.reply != null and !#strings.isEmpty(fb.reply)}"
+                         class="mt-2 p-2 rounded border-start border-3 border-primary bg-light shadow-sm"
+                         style="margin-left: 40px;">
+                        <strong class="text-primary"> Staff reply:</strong>
+                        <p class="mb-0" th:text="${fb.reply}"></p>
+                    </div>
+
+
+
                 </div>
             </div>
             <div th:if="${feedbackPage == null or feedbackPage.totalElements == 0}" class="text-muted">

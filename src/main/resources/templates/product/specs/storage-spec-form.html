@@ -1,18 +1,40 @@
-<div>
-    <h4>Storage - Specification</h4>
+<div class="row g-3" th:if="${storage != null}">
 
-    <label>Storage (GB):</label>
-    <input type="number" name="storage.capacity" min="1" required>
+    <div class="col-md-6">
+        <label for="st-capacity" class="form-label">Capacity (GB)</label>
+        <input type="number" class="form-control form-control-sm" id="st-capacity"
+               name="storage.capacity"
+               th:value="${storage.capacity}" min="0">
+    </div>
 
-    <label>Type:</label>
-    <input type="text" name="storage.type" placeholder="VD: SSD, HDD, NVMe" required>
+    <div class="col-md-6">
+        <label for="st-type" class="form-label">Type</label>
+        <input type="text" class="form-control form-control-sm" id="st-type"
+               name="storage.type"
+               th:value="${storage.type}"
+               placeholder="e.g., SSD, HDD, NVMe">
+    </div>
 
-    <label>Interface:</label>
-    <input type="text" name="storage.interfaceType" placeholder="VD: SATA, PCIe Gen4x4" required>
+    <div class="col-md-6">
+        <label for="st-interface" class="form-label">Interface</label>
+        <input type="text" class="form-control form-control-sm" id="st-interface"
+               name="storage.interfaceType"
+               th:value="${storage.interfaceType}"
+               placeholder="e.g., SATA, NVMe">
+    </div>
 
-    <label>Reading Speed (MB/s):</label>
-    <input type="number" name="storage.readSpeed" min="1">
+    <div class="col-md-6">
+        <label for="st-read" class="form-label">Read Speed (MB/s)</label>
+        <input type="number" class="form-control form-control-sm" id="st-read"
+               name="storage.readSpeed"
+               th:value="${storage.readSpeed}" min="0">
+    </div>
 
-    <label>Writing Speed (MB/s):</label>
-    <input type="number" name="storage.writeSpeed" min="1">
+    <div class="col-md-6">
+        <label for="st-write" class="form-label">Write Speed (MB/s)</label>
+        <input type="number" class="form-control form-control-sm" id="st-write"
+               name="storage.writeSpeed"
+               th:value="${storage.writeSpeed}" min="0">
+    </div>
+
 </div>
