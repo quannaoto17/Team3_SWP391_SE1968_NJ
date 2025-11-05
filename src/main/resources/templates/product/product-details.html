@@ -116,6 +116,17 @@
                     </div>
                     <p th:text="${fb.comment}">Feedback content...</p>
                     <small class="text-muted" th:text="${#temporals.format(fb.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+
+                    <!--  Hiển thị phản hồi staff nếu có -->
+                    <div th:if="${fb.reply != null and !#strings.isEmpty(fb.reply)}"
+                         class="mt-2 p-2 rounded border-start border-3 border-primary bg-light shadow-sm"
+                         style="margin-left: 40px;">
+                        <strong class="text-primary"> Staff reply:</strong>
+                        <p class="mb-0" th:text="${fb.reply}"></p>
+                    </div>
+
+
+
                 </div>
             </div>
             <div th:if="${feedbackPage == null or feedbackPage.totalElements == 0}" class="text-muted">
