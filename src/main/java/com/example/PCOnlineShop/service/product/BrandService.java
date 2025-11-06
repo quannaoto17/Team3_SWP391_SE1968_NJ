@@ -1,7 +1,9 @@
 package com.example.PCOnlineShop.service.product;
 
 import com.example.PCOnlineShop.model.product.Brand;
+import com.example.PCOnlineShop.model.product.Product;
 import com.example.PCOnlineShop.repository.product.BrandRepository;
+import com.example.PCOnlineShop.repository.product.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,9 +11,11 @@ import java.util.List;
 @Service
 public class BrandService {
     private final BrandRepository brandRepository;
+    private final ProductRepository productRepository;
 
-    public BrandService(BrandRepository brandRepository) {
+    public BrandService(BrandRepository brandRepository, ProductRepository productRepository) {
         this.brandRepository = brandRepository;
+        this.productRepository = productRepository;
     }
 
     // Lấy tất cả brand
@@ -29,16 +33,19 @@ public class BrandService {
         return brandRepository.save(brand);
     }
 
-    // Cập nhật brand
-    public Brand updateBrand(Brand brand) {
-        if (brandRepository.existsById(brand.getBrandId())) {
-            return brandRepository.save(brand);
-        }
-        return null;
+    //Kiểm tra trùng tên brand
+    public boolean existsBrandByName(String name) {
+        return brandRepository.existsBrandByNameIgnoreCase(name);
+    }
+    public long countProductsOfBrand(Integer brandId){
+        return productRepository.countByBrand_BrandId(brandId);
     }
 
-    // Xoá brand
-    public void deleteBrand(int id) {
-        brandRepository.deleteById(id);
+
+    public Brand updateBrand(Brand brand) {
+        return brandRepository.save(brand);
+    }
+    public void reassignProducts(Integer sourceId, Integer targetId) {
+        productRepository.reassignBrandByIds(sourceId, targetId);
     }
 }
