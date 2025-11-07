@@ -130,9 +130,10 @@
             <th>Brand</th>
             <th>Product Name</th>
             <th>Price ($)</th>
-            <th>Status</th>
+            <th>Inventory</th>
             <th>Description</th>
             <th>Specification</th>
+            <th>Action</th>
         </tr>
         </thead>
 
@@ -163,9 +164,11 @@
             </td>
 
             <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}"></td>
-            <td th:text="${product.status ? 'In Stock' : 'Out of Stock'}"></td>
+            <td th:text="${product.inventoryQuantity}"></td>
             <td th:text="${product.description}"></td>
             <td th:text="${product.specification}"></td>
+            <td th:text="${product.status ? 'Published' : 'Unpublished'}"></td>
+
         </tr>
         </tbody>
     </table>

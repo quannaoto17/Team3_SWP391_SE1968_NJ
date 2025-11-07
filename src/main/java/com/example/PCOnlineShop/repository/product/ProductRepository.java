@@ -43,4 +43,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Optional<Product> findWithDetailsByProductId(int productId);
 
+    public long countByBrand_BrandId(Integer brandId);
+
+    @Query("UPDATE Product p SET p.brand.brandId = :targetId WHERE p.brand.brandId = :sourceId")
+    void reassignBrandByIds(@Param("sourceId") Integer sourceId,
+                            @Param("targetId") Integer targetId);
+
 }

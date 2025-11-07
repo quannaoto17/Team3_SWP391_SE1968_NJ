@@ -4,6 +4,7 @@ import com.example.PCOnlineShop.model.account.Account;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -59,4 +60,12 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderDetail> orderDetails;
 
+    @Column(name = "payment_id")
+    private String paymentId;
+
+    @Column(name = "payment_status")
+    private String paymentStatus;
+
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
 }
