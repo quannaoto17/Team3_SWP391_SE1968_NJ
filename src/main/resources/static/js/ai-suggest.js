@@ -104,12 +104,12 @@
 
         // Auto-fill textarea with build type request
         const requestTexts = {
-            'gaming-high': 'Máy tính chơi game cao cấp, có thể chơi game 4K với cài đặt đồ họa tối đa, ngân sách khoảng 40-50 triệu VND',
-            'gaming-mid': 'Máy tính chơi game tầm trung, chơi được game 1080p/1440p mượt mà, ngân sách khoảng 20-30 triệu VND',
-            'workstation': 'Máy trạm làm việc chuyên nghiệp cho dựng video, render 3D, chỉnh sửa ảnh, ngân sách 30-40 triệu VND',
-            'office': 'Máy tính văn phòng cho công việc hàng ngày, lướt web, văn bản, ngân sách 10-15 triệu VND',
-            'budget': 'Máy tính giá rẻ, hiệu suất tốt nhất trong tầm giá, ngân sách dưới 15 triệu VND',
-            'streaming': 'Máy tính cho chơi game và livestream đồng thời, ngân sách khoảng 35-45 triệu VND'
+            'gaming-high': 'High-end gaming PC for 4K gaming with maximum graphics settings, budget around $2000-2500',
+            'gaming-mid': 'Mid-range gaming PC for smooth 1080p/1440p gaming, budget around $1000-1500',
+            'workstation': 'Professional workstation for video editing, 3D rendering, and photo editing, budget around $1500-2000',
+            'office': 'Office PC for daily work tasks, web browsing, and document processing, budget around $600-800',
+            'budget': 'Budget-friendly PC with best performance for the price, budget under $700',
+            'streaming': 'Gaming and streaming PC for simultaneous gaming and live broadcasting, budget around $1800-2200'
         };
 
         if (userRequestInput && requestTexts[buildType]) {
@@ -135,7 +135,7 @@
         const userRequest = userRequestInput.value.trim();
 
         if (!userRequest) {
-            showError('Vui lòng nhập yêu cầu của bạn hoặc chọn một loại máy tính.');
+            showError('Please enter your requirements or select a PC type.');
             return;
         }
 
@@ -170,7 +170,7 @@
 
         } catch (error) {
             console.error('Error getting AI suggestion:', error);
-            showError('Không thể lấy gợi ý từ AI. Vui lòng thử lại. Lỗi: ' + error.message);
+            showError('Failed to get AI suggestion. Please try again. Error: ' + error.message);
         } finally {
             setLoadingState(false);
         }
@@ -184,7 +184,7 @@
 
         // Motherboard
         if (buildPlan.planMotherboard) {
-            html += createComponentRuleHTML('🔌 Mainboard', buildPlan.planMotherboard);
+            html += createComponentRuleHTML('🔌 Motherboard', buildPlan.planMotherboard);
         }
 
         // CPU
@@ -223,7 +223,7 @@
         }
 
         if (!html) {
-            html = '<p>Không thể tạo kế hoạch build. Vui lòng thử lại với yêu cầu khác.</p>';
+            html = '<p>Could not generate build plan. Please try with different requirements.</p>';
         }
 
         aiResultContent.innerHTML = html;
@@ -236,8 +236,8 @@
         return `
             <div class="component-rule">
                 <h5>${componentName}</h5>
-                <p><strong>Ngân sách tối đa:</strong> ${formatCurrency(rule.budetMax)}</p>
-                <p><strong>Điểm hiệu năng:</strong> ${rule.scoreMin} - ${rule.scoreMax}</p>
+                <p><strong>Max Budget:</strong> ${formatCurrency(rule.budetMax)}</p>
+                <p><strong>Performance Score:</strong> ${rule.scoreMin} - ${rule.scoreMax}</p>
             </div>
         `;
     }
@@ -247,7 +247,7 @@
      */
     function handleApplyBuild() {
         if (!currentBuildPlan) {
-            showError('Không có kế hoạch build để áp dụng.');
+            showError('No build plan to apply.');
             return;
         }
 
@@ -273,13 +273,15 @@
     }
 
     /**
-     * Format currency (VND)
+     * Format currency (USD)
      */
     function formatCurrency(amount) {
         if (!amount) return 'N/A';
-        return new Intl.NumberFormat('vi-VN', {
+        return new Intl.NumberFormat('en-US', {
             style: 'currency',
-            currency: 'VND'
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
         }).format(amount);
     }
 

@@ -50,44 +50,16 @@ public class AiSuggestController {
 
             log.info("Received AI suggest request: {}", userRequest);
 
-            // TODO: Implement actual AI suggestion logic
-            // For now, return a mock response
-            BuildPlanDto mockPlan = createMockBuildPlan();
+            // Use actual AI service
+            BuildPlanDto buildPlan = aiSuggestService.suggestBuildPlan(userRequest);
 
-            return ResponseEntity.ok(mockPlan);
+            return ResponseEntity.ok(buildPlan);
 
         } catch (Exception e) {
             log.error("Error processing AI suggest request", e);
             return ResponseEntity.internalServerError()
                     .body(Map.of("error", "Failed to process request: " + e.getMessage()));
         }
-    }
-
-    /**
-     * Create a mock build plan for testing
-     * TODO: Replace with actual AI service call
-     */
-    private BuildPlanDto createMockBuildPlan() {
-        return BuildPlanDto.builder()
-                .planMotherboard(createComponentRule(5000000, 70, 90))
-                .planCpu(createComponentRule(8000000, 75, 95))
-                .planGpu(createComponentRule(15000000, 80, 100))
-                .planRam(createComponentRule(3000000, 60, 80))
-                .planStorage(createComponentRule(2000000, 70, 90))
-                .planPsu(createComponentRule(2500000, 75, 90))
-                .planCase(createComponentRule(1500000, 60, 80))
-                .planCooling(createComponentRule(1000000, 65, 85))
-                .build();
-    }
-
-    /**
-     * Helper method to create ComponentRule
-     */
-    private com.example.PCOnlineShop.dto.build.ComponentRule createComponentRule(
-            double budgetMax, int scoreMin, int scoreMax) {
-        return new com.example.PCOnlineShop.dto.build.ComponentRule(
-                budgetMax, scoreMin, scoreMax
-        );
     }
 }
 
