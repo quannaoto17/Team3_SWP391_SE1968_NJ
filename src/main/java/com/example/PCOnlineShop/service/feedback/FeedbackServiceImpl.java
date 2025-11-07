@@ -78,7 +78,7 @@ public class FeedbackServiceImpl implements FeedbackService {
                 .orElseThrow(() -> new IllegalArgumentException("Feedback không tồn tại: " + id));
     }
 
-    /** ✉ Cập nhật hoặc thêm reply => tự động Allow */
+    /**  Cập nhật hoặc thêm reply => tự động Allow */
     @Override
     @Transactional
     public void updateReply(Integer id, String reply) {

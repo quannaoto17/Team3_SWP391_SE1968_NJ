@@ -68,7 +68,7 @@ public class FeedbackController {
         return "redirect:/staff/feedback?status=Pending";
     }
 
-    /** 👁 Xem chi tiết feedback */
+    /**  Xem chi tiết feedback */
     @GetMapping("/{id}")
     public String detail(@PathVariable Integer id,
                          @RequestParam(required = false) String back,
@@ -79,7 +79,7 @@ public class FeedbackController {
         return "feedback/feedback-detail";
     }
 
-    /** ✉ Staff phản hồi feedback */
+    /**  Staff phản hồi feedback */
     @PostMapping("/{id}/reply")
     public String reply(@PathVariable Integer id,
                         @RequestParam String reply,
