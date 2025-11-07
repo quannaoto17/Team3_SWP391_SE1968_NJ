@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -149,7 +150,8 @@ public class FeedbackServiceImpl implements FeedbackService {
         feedback.setRating(rating);
         feedback.setComment(comment);
         feedback.setCommentStatus("Pending");
-        feedback.setCreatedAt(LocalDate.now());
+        feedback.setCreatedAt(LocalDateTime.now());
+
 
         feedbackRepository.save(feedback);
     }
