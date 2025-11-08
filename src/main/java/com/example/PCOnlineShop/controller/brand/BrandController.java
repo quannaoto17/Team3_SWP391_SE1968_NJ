@@ -119,6 +119,12 @@ public class BrandController {
         brandService.updateBrand(brand);
         return "redirect:/admin/brand/list";
     }
+    // 🔹 TRANG HỢP NHẤT (GET)
+    @GetMapping("/merge")
+    public String showMergePage(Model model) {
+        model.addAttribute("brand", brandService.getAllBrands());
+        return "brand/brand-merge";
+    }
 
     // 🔹 GỘP THƯƠNG HIỆU
     @PostMapping("/merge")

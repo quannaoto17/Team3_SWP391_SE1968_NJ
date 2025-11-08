@@ -24,4 +24,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Intege
     //  Kiểm tra xem account đã mua sản phẩm cụ thể hay chưa (và đơn hàng đã hoàn tất)
     boolean existsByOrder_Account_AccountIdAndProduct_ProductIdAndOrder_Status(
             Integer accountId, Integer productId, String status);
+
+    boolean existsByProduct_ProductIdAndOrder_StatusIn(Integer productId, List<String> statuses);
+
 }
