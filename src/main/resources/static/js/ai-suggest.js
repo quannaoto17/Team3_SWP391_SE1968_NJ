@@ -1,6 +1,6 @@
 /**
- * AI Suggest Feature for Build PC
- * Handles AI-powered build suggestions based on user requirements
+ * Rule-Based Build Preset System
+ * Handles build suggestions based on predefined presets
  */
 
 (function() {
@@ -12,8 +12,8 @@
     const aiAssistantSection = document.getElementById('aiAssistantSection');
     const buildOptions = document.querySelector('.build-options');
 
-    const btnAiSuggest = document.getElementById('btnAiSuggest');
-    const userRequestInput = document.getElementById('userRequest');
+    const btnGetSuggestions = document.getElementById('btnGetSuggestions');
+    const totalBudgetInput = document.getElementById('totalBudget');
     const aiResultSection = document.getElementById('aiResultSection');
     const aiResultContent = document.getElementById('aiResultContent');
     const aiErrorSection = document.getElementById('aiErrorSection');
@@ -24,7 +24,7 @@
 
     // State
     let currentBuildPlan = null;
-    let selectedBuildType = null;
+    let selectedPreset = null;
 
     /**
      * Initialize event listeners
@@ -38,8 +38,8 @@
             btnBackToOptions.addEventListener('click', hideAiAssistant);
         }
 
-        if (btnAiSuggest) {
-            btnAiSuggest.addEventListener('click', handleAiSuggest);
+        if (btnGetSuggestions) {
+            btnGetSuggestions.addEventListener('click', handleGetSuggestions);
         }
 
         if (btnApplyBuild) {
@@ -50,21 +50,16 @@
             btnNewSuggestion.addEventListener('click', handleNewSuggestion);
         }
 
-        // Quick option cards
+        // Preset option cards
         optionCards.forEach(card => {
             card.addEventListener('click', function() {
-                handleQuickOption(this);
+                handlePresetSelection(this);
             });
         });
 
-        // Allow Enter key to submit in textarea (with Ctrl/Cmd)
-        if (userRequestInput) {
-            userRequestInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                    e.preventDefault();
-                    handleAiSuggest();
-                }
-            });
+        // Budget input validation
+        if (totalBudgetInput) {
+            totalBudgetInput.addEventListener('input', validateBudget);
         }
     }
 
@@ -86,19 +81,273 @@
         // Reset state
         hideResults();
         hideError();
-        clearSelectedOption();
-        if (userRequestInput) userRequestInput.value = '';
+        clearSelectedPreset();
+        if (totalBudgetInput) totalBudgetInput.value = '1500';
         currentBuildPlan = null;
+        selectedPreset = null;
     }
 
     /**
-     * Handle quick option card selection
+     * Handle preset card selection
      */
-    function handleQuickOption(card) {
-        const buildType = card.getAttribute('data-type');
-        selectedBuildType = buildType;
+    function handlePresetSelection(card) {
+        const preset = card.getAttribute('data-preset');
+        const minBudget = parseInt(card.getAttribute('data-min-budget'));
+
+        selectedPreset = preset;
 
         // Update visual selection
+        optionCards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+
+        // Update budget if current value is less than recommended
+        if (totalBudgetInput) {
+            const currentBudget = parseInt(totalBudgetInput.value) || 0;
+            if (currentBudget < minBudget) {
+                totalBudgetInput.value = minBudget;
+            }
+        }
+
+        // Enable Get Suggestions button
+        if (btnGetSuggestions) {
+            btnGetSuggestions.disabled = false;
+        }
+
+        hideError();
+    }
+
+    /**
+     * Validate budget input
+     */
+    function validateBudget() {
+        const budget = parseInt(totalBudgetInput.value) || 0;
+        if (btnGetSuggestions) {
+            btnGetSuggestions.disabled = !selectedPreset || budget < 500;
+        }
+    }
+
+    /**
+     * Clear selected preset
+     */
+    function clearSelectedPreset() {
+        optionCards.forEach(c => c.classList.remove('selected'));
+        if (btnGetSuggestions) {
+            btnGetSuggestions.disabled = true;
+        }
+    }
+
+    /**
+     * Handle Get Suggestions button click
+     */
+    async function handleGetSuggestions() {
+        if (!selectedPreset) {
+            showError('Please select a build preset first!');
+            return;
+        }
+
+        const budget = parseFloat(totalBudgetInput.value);
+        if (!budget || budget < 500) {
+            showError('Please enter a valid budget (minimum $500)');
+            return;
+        }
+
+        // Show loading state
+        setLoadingState(true);
+        hideError();
+        hideResults();
+
+        try {
+            const response = await fetch('/api/build/suggest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    preset: selectedPreset,
+                    budget: budget
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to get build suggestions');
+            }
+
+            const buildPlan = await response.json();
+            currentBuildPlan = buildPlan;
+
+            displayBuildPlan(buildPlan);
+            showResults();
+
+        } catch (error) {
+            console.error('Error:', error);
+            showError('Failed to get build suggestions. Please try again.');
+        } finally {
+            setLoadingState(false);
+        }
+    }
+
+    /**
+     * Display build plan results
+     */
+    function displayBuildPlan(plan) {
+        if (!aiResultContent) return;
+
+        let html = '<div class="build-plan-summary">';
+        html += `<div class="plan-header">`;
+        html += `<h4>${plan.purpose}</h4>`;
+        html += `<div class="plan-budget">Total Budget: $${plan.totalBudget.toFixed(2)}</div>`;
+        html += `</div>`;
+
+        html += '<div class="component-list">';
+
+        // GPU
+        if (plan.planGpu) {
+            html += createComponentCard('🎮 GPU', plan.planGpu);
+        }
+
+        // CPU
+        if (plan.planCpu) {
+            html += createComponentCard('⚙️ CPU', plan.planCpu);
+        }
+
+        // Mainboard
+        if (plan.planMotherboard) {
+            html += createComponentCard('🔌 Mainboard', plan.planMotherboard);
+        }
+
+        // Memory
+        if (plan.planRam) {
+            html += createComponentCard('💾 Memory', plan.planRam);
+        }
+
+        // Storage
+        if (plan.planStorage) {
+            html += createComponentCard('💿 Storage', plan.planStorage);
+        }
+
+        // PSU
+        if (plan.planPsu) {
+            html += createComponentCard('⚡ Power Supply', plan.planPsu);
+        }
+
+        // Cooling
+        if (plan.planCooling) {
+            html += createComponentCard('❄️ Cooling', plan.planCooling);
+        }
+
+        // Case
+        if (plan.planCase) {
+            html += createComponentCard('🏠 Case', plan.planCase);
+        }
+
+        html += '</div>';
+        html += '</div>';
+
+        aiResultContent.innerHTML = html;
+    }
+
+    /**
+     * Create component card HTML
+     */
+    function createComponentCard(label, componentRule) {
+        return `
+            <div class="component-card">
+                <div class="component-label">${label}</div>
+                <div class="component-info">
+                    <div class="component-budget">Budget: $${componentRule.budgetMax.toFixed(2)}</div>
+                    <div class="component-score">Score: ${componentRule.scoreMin}-${componentRule.scoreMax}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Handle Apply Build button
+     */
+    function handleApplyBuild() {
+        if (!currentBuildPlan) {
+            showError('No build plan to apply');
+            return;
+        }
+
+        // Store build plan in sessionStorage for the build process
+        sessionStorage.setItem('buildPlan', JSON.stringify(currentBuildPlan));
+
+        // Redirect to mainboard selection (first step)
+        window.location.href = '/build/mainboard';
+    }
+
+    /**
+     * Handle New Suggestion button
+     */
+    function handleNewSuggestion() {
+        hideResults();
+        clearSelectedPreset();
+        if (totalBudgetInput) totalBudgetInput.value = '1500';
+        currentBuildPlan = null;
+        selectedPreset = null;
+    }
+
+    /**
+     * Show results section
+     */
+    function showResults() {
+        if (aiResultSection) aiResultSection.style.display = 'block';
+    }
+
+    /**
+     * Hide results section
+     */
+    function hideResults() {
+        if (aiResultSection) aiResultSection.style.display = 'none';
+    }
+
+    /**
+     * Show error message
+     */
+    function showError(message) {
+        if (aiErrorSection) {
+            const errorMsg = aiErrorSection.querySelector('.error-message');
+            if (errorMsg) errorMsg.textContent = message;
+            aiErrorSection.style.display = 'block';
+        }
+    }
+
+    /**
+     * Hide error message
+     */
+    function hideError() {
+        if (aiErrorSection) aiErrorSection.style.display = 'none';
+    }
+
+    /**
+     * Set loading state for Get Suggestions button
+     */
+    function setLoadingState(isLoading) {
+        if (!btnGetSuggestions) return;
+
+        const btnText = btnGetSuggestions.querySelector('.btn-text');
+        const btnLoading = btnGetSuggestions.querySelector('.btn-loading');
+
+        if (isLoading) {
+            btnGetSuggestions.disabled = true;
+            if (btnText) btnText.style.display = 'none';
+            if (btnLoading) btnLoading.style.display = 'inline';
+        } else {
+            btnGetSuggestions.disabled = false;
+            if (btnText) btnText.style.display = 'inline';
+            if (btnLoading) btnLoading.style.display = 'none';
+        }
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+})();
         optionCards.forEach(c => c.classList.remove('selected'));
         card.classList.add('selected');
 

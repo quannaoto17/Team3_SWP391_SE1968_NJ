@@ -50,6 +50,11 @@ public class Product {
     @Column (name = "inventory_quantity")
     private Integer inventoryQuantity;
 
+    @Column(name = "performance_score")
+    @Min(value = 0, message = "Performance score must be at least 0")
+    @Max(value = 100, message = "Performance score must be at most 100")
+    private Integer performanceScore = 50; // Default score
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;

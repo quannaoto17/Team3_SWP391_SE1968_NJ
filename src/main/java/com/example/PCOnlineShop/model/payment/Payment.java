@@ -25,7 +25,7 @@ public class Payment {
     @Column(length = 255)
     private String gatewayPaymentId;
 
-    @Column(precision = 10, scale = 2)
+    @Column(nullable = false)
     private Double amount;
 
     @Column(length = 10)

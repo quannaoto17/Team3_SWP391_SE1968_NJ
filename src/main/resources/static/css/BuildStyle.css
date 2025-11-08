@@ -507,7 +507,142 @@ body {
     opacity: 0.8;
 }
 
+.option-card .option-budget {
+    font-size: 11px;
+    font-weight: bold;
+    margin-top: 5px;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    display: inline-block;
+}
+
 .option-card.selected .option-title,
+.option-card.selected .option-desc,
+.option-card.selected .option-budget {
+    color: #fff;
+}
+
+/* Budget Input Section */
+.budget-input-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.budget-input-section h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+    text-align: center;
+}
+
+.budget-input-wrapper {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.budget-input-wrapper label {
+    font-weight: bold;
+    color: #333;
+    min-width: 140px;
+}
+
+.budget-input-wrapper input[type="number"] {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.budget-input-wrapper input[type="number"]:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* Component Cards in Results */
+.build-plan-summary {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.plan-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.plan-header h4 {
+    font-size: 20px;
+    margin: 0;
+}
+
+.plan-budget {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.component-list {
+    padding: 20px;
+}
+
+.component-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.component-card:hover {
+    background: #f8f9fa;
+}
+
+.component-card:last-child {
+    border-bottom: none;
+}
+
+.component-label {
+    font-weight: bold;
+    color: #667eea;
+    min-width: 180px;
+    font-size: 15px;
+}
+
+.component-info {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.component-budget {
+    font-weight: bold;
+    color: #28a745;
+    font-size: 16px;
+}
+
+.component-score {
+    background: #667eea;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
 .option-card.selected .option-desc {
     color: #fff;
 }

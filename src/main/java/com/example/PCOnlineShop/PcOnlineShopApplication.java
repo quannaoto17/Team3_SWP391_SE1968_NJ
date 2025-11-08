@@ -11,7 +11,27 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@SpringBootApplication
+@SpringBootApplication(excludeName = {
+    // Disable all Spring AI autoconfigurations (18 classes)
+    "org.springframework.ai.autoconfigure.openai.OpenAiAutoConfiguration",
+    "org.springframework.ai.autoconfigure.openai.OpenAiChatAutoConfiguration",
+    "org.springframework.ai.autoconfigure.openai.OpenAiEmbeddingAutoConfiguration",
+    "org.springframework.ai.autoconfigure.openai.OpenAiImageAutoConfiguration",
+    "org.springframework.ai.autoconfigure.openai.OpenAiAudioTranscriptionAutoConfiguration",
+    "org.springframework.ai.autoconfigure.openai.OpenAiAudioSpeechAutoConfiguration",
+    "org.springframework.ai.autoconfigure.openai.OpenAiModerationAutoConfiguration",
+    "org.springframework.ai.model.openai.autoconfigure.OpenAiAutoConfiguration",
+    "org.springframework.ai.model.openai.autoconfigure.OpenAiChatAutoConfiguration",
+    "org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration",
+    "org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration",
+    "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioTranscriptionAutoConfiguration",
+    "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration",
+    "org.springframework.ai.model.openai.autoconfigure.OpenAiModerationAutoConfiguration",
+    "org.springframework.ai.autoconfigure.ChatClientAutoConfiguration",
+    "org.springframework.ai.autoconfigure.ChatMemoryAutoConfiguration",
+    "org.springframework.ai.autoconfigure.VectorStoreAutoConfiguration",
+    "org.springframework.ai.autoconfigure.EmbeddingModelAutoConfiguration"
+})
 public class PcOnlineShopApplication {
 
     public static void main(String[] args) {
