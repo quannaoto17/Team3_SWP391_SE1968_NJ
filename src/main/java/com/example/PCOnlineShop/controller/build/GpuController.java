@@ -57,9 +57,14 @@ public class GpuController {
 
     // Chon GPU
     @PostMapping("/selectGpu")
-    public String selectGpu(@RequestParam int gpuId,
+    public String selectGpu(@RequestParam(required = false) Integer gpuId,
                             @ModelAttribute("buildItems") BuildItemDto buildItem) {
-        buildItem.setGpu(gpuService.getGpuById(gpuId));
+        // GPU is OPTIONAL - can proceed without it (using iGPU from CPU)
+        // Only update if user selected a GPU
+        if (gpuId != null) {
+            buildItem.setGpu(gpuService.getGpuById(gpuId));
+        }
+        // Allow proceeding even if GPU is null
         return "redirect:/build/case";
     }
 }

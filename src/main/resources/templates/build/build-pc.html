@@ -10,15 +10,15 @@
 
 <body>
 <div sec:authorize="!isAuthenticated()"
-     th:replace="layout/header-default :: header-default"></div>
+     th:replace="~{layout/header-default :: header-default}"></div>
 <div sec:authorize="hasRole('ADMIN')"
-     th:replace="layout/header-admin :: header-admin"></div>
+     th:replace="~{layout/header-admin :: header-admin}"></div>
 
 <div sec:authorize="hasRole('STAFF')"
-     th:replace="layout/header-staff :: header-staff"></div>
+     th:replace="~{layout/header-staff :: header-staff}"></div>
 
 <div sec:authorize="hasRole('CUSTOMER')"
-     th:replace="layout/header-customer :: header-customer"></div>
+     th:replace="~{layout/header-customer :: header-customer}"></div>
 <div class="container">
     <!-- Sidebar -->
     <div th:replace="~{layout/build-sidebar :: buildSidebar('mainboard')}"></div>
@@ -28,17 +28,75 @@
         <div class="start-content">
             <h1>Auto Build PC</h1>
             <p>Quickly assemble your perfect PC with compatible components.</p>
-            <a th:href="@{/build/mainboard}" class="start-btn">Start</a>
+
+            <div class="build-options">
+                <a th:href="@{/build/mainboard}" class="start-btn manual-build">
+                    <span class="btn-icon">🛠️</span>
+                    <span class="btn-title">Manual Build</span>
+                    <span class="btn-desc">Choose each component yourself</span>
+                </a>
+
+                <div class="divider-or">OR</div>
+
+                <button id="btnShowSuggest" class="start-btn ai-build">
+                    <span class="btn-icon">💡</span>
+                    <span class="btn-title">Suggest Build</span>
+                    <span class="btn-desc">Get preset build recommendations</span>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Detail panel -->
-    <div class="detail-panel">
-        <div class="detail-header">WELCOME</div>
-        <div class="detail-body">
-            <h3>Get ready to build your dream machine!</h3>
+    <!-- Detail panel - Suggest Section -->
+    <div class="detail-panel" id="detailPanel">
+        <div class="detail-header">💡 BUILD SUGGESTION</div>
+        <div class="detail-body" id="detailBody">
+            <div id="welcomeMessage" class="welcome-message">
+                <h3>Get ready to build your dream machine!</h3>
+                <p>Click "Suggest Build" to get started</p>
+            </div>
+
+            <!-- Suggest Form (Hidden by default) -->
+            <div id="suggestForm" style="display: none;">
+                <!-- Preset Selection -->
+                <div class="suggest-step">
+                    <h4>1️⃣ Choose Build Type</h4>
+                    <div id="presetList" class="preset-list">
+                        <!-- Presets will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Budget Input -->
+                <div id="budgetStep" class="suggest-step" style="display: none;">
+                    <h4>2️⃣ Set Your Budget</h4>
+                    <div class="budget-input-group">
+                        <label>Budget (USD):</label>
+                        <input type="number" id="budgetInput" min="500" step="50" placeholder="Enter budget">
+                        <span id="budgetHint" class="budget-hint"></span>
+                    </div>
+                    <button id="btnGenerateSuggest" class="btn-generate" disabled>
+                        <span class="btn-text">🔍 Generate</span>
+                        <span class="btn-loading" style="display: none;">⏳ Loading...</span>
+                    </button>
+                </div>
+
+                <!-- Result Section -->
+                <div id="resultStep" class="suggest-step" style="display: none;">
+                    <h4>📋 Suggested Build</h4>
+                    <div id="resultContent" class="result-content"></div>
+                    <div class="result-actions">
+                        <button id="btnApplySuggest" class="btn-apply">✅ Apply Build</button>
+                        <button id="btnResetSuggest" class="btn-reset">🔄 Reset</button>
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+            </div>
         </div>
     </div>
 </div>
+
+<script th:src="@{/js/suggest.js}"></script>
 </body>
 </html>

@@ -15,6 +15,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -26,14 +27,11 @@ spring:
           auth: true
           starttls:
             enable: true
-  # OpenAI Configuration
-  ai:
-    openai:
-      api-key: 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
-      chat:
-        options:
-          model: gpt-4o-mini
-          temperature: 0.7
-#logging:
-#  level:
-#    org.springframework: DEBUG
+
+  payos:
+    client-id: 965f76da-4caf-4a90-ae0c-518a1d58f78d
+    api-key: 92f220db-fae0-43ea-ab25-f18711431484
+    checksum-key: 38a678b6cb4d7ce9bda44a31e46aea99db667b6e648ead5dd0785807f1a66154
+    log-level: INFO
+    base-url: https://api.payos.vn
+

@@ -213,10 +213,10 @@ CREATE TABLE cart_item (
 CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
     account_id INT NOT NULL, -- ID của khách hàng
-    
+
     -- Chỉ giữ lại tổng tiền cuối cùng (đã bỏ total_amount, discount, voucher)
     final_amount DECIMAL(10,2),
-    
+
     -- Trạng thái (Pending, Processing, Ready to Ship, Delivering, Completed, Cancelled)
     status VARCHAR(50),
     created_date DATE DEFAULT (CURRENT_DATE),
@@ -224,12 +224,12 @@ CREATE TABLE orders (
     -- Dữ liệu từ trang checkout (Phương thức, Ghi chú, Email)
     shipping_method VARCHAR(50) NOT NULL, -- "Giao hàng tận nơi" hoặc "Nhận tại cửa hàng"
     note TEXT NULL,
-	
+
     -- Dữ liệu "Ảnh chụp" địa chỉ giao hàng tại thời điểm đặt
     shipping_full_name VARCHAR(100) NOT NULL,
     shipping_phone VARCHAR(20) NOT NULL,
     shipping_address VARCHAR(255) NOT NULL,
-    
+
     FOREIGN KEY (account_id) REFERENCES account(account_id)
 );
 
@@ -255,12 +255,13 @@ CREATE TABLE feedback (
     product_id INT NOT NULL,
     comment VARCHAR(500),
     rating INT CHECK (rating BETWEEN 1 AND 5),
-    comment_status VARCHAR(50),        -- Allow / Pending
-    reply VARCHAR(500) NULL,           -- Staff trả lời
-    created_at DATE DEFAULT (CURRENT_DATE),
+    comment_status VARCHAR(50),
+    reply VARCHAR(500) NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (account_id) REFERENCES account(account_id),
     FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
+
 
 ALTER TABLE orders
 ADD COLUMN ready_to_ship_date DATETIME NULL
@@ -272,3 +273,73 @@ COMMENT 'Thời điểm shipper chuyển trạng thái sang Delivering';
 
 alter table product
 add	column inventory_quantity int;
+
+-- Tạo bảng payments
+CREATE TABLE IF NOT EXISTS payments (
+  payment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT NOT NULL,
+  gateway_payment_id VARCHAR(255),
+  amount DECIMAL(10,2),
+  currency VARCHAR(10) DEFAULT 'VND',
+  status VARCHAR(50), -- PENDING, SUCCESS, FAILED, REFUNDED...
+  raw_payload TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_payments_order FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE
+);
+
+-- Thêm cột vào orders để liên kết payment và lưu trạng thái
+ALTER TABLE orders
+  ADD COLUMN payment_id VARCHAR(255) NULL,
+  ADD COLUMN payment_status VARCHAR(50) NULL,
+  ADD COLUMN paid_at DATETIME NULL;
+
+-- DỪNG KIỂM TRA KHÓA NGOẠI TẠM THỜI
+SET foreign_key_checks = 0;
+
+-- ======================================================
+-- BƯỚC 1: XÓA CÁC KHÓA NGOẠI CŨ ĐANG GÂY LỖI
+-- ======================================================
+
+-- Lỗi của bạn là ở đây:
+ALTER TABLE order_detail
+DROP FOREIGN KEY order_detail_ibfk_1;
+
+-- Sửa luôn cho bảng payments (nó cũng tham chiếu đến order_id)
+ALTER TABLE payments
+DROP FOREIGN KEY fk_payments_order;
+
+
+-- ======================================================
+-- BƯỚC 2: THAY ĐỔI KIỂU DỮ LIỆU CỦA CẢ 3 CỘT
+-- ======================================================
+
+-- Sửa bảng "cha" (orders)
+ALTER TABLE orders
+MODIFY COLUMN order_id BIGINT AUTO_INCREMENT;
+
+-- Sửa bảng "con" (order_detail)
+ALTER TABLE order_detail
+MODIFY COLUMN order_id BIGINT NOT NULL;
+
+-- Sửa bảng "con" (payments)
+ALTER TABLE payments
+MODIFY COLUMN order_id BIGINT NOT NULL;
+
+
+-- ======================================================
+-- BƯỚC 3: THÊM LẠI KHÓA NGOẠI VỚI KIỂU DỮ LIỆU ĐÚNG
+-- ======================================================
+
+ALTER TABLE order_detail
+ADD CONSTRAINT fk_order_detail_orders
+FOREIGN KEY (order_id) REFERENCES orders(order_id)
+ON DELETE CASCADE;
+
+ALTER TABLE payments
+ADD CONSTRAINT fk_payments_orders
+FOREIGN KEY (order_id) REFERENCES orders(order_id)
+ON DELETE CASCADE;
+
+-- BẬT LẠI KIỂM TRA KHÓA NGOẠI
+SET foreign_key_checks = 1;

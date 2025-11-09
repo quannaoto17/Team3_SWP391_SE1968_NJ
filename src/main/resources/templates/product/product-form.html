@@ -216,24 +216,25 @@
         <div class="error" th:if="${#fields.hasErrors('inventoryQuantity')}" th:errors="*{inventoryQuantity}"></div>
         <label>Specification</label>
         <div id="specFormContainer" class="card" style="padding: 16px; box-shadow: none; background: var(--bg);">
-            <p class="hint" style="margin:0">Form thông số sẽ hiển thị sau khi chọn danh mục.</p>
+            <p class="hint" style="margin:0"></p>
         </div>
 
-        <label for="status">Trạng thái</label>
+        <label for="status">Status</label>
         <select id="status" th:field="*{status}">
-            <option th:value="true">Còn hàng</option>
-            <option th:value="false">Hết hàng</option>
+            <option th:value="true">Publised</option>
+            <option th:value="false">Un-Publised</option>
         </select>
 
-        <label>Ảnh sản phẩm</label>
+        <label>Image</label>
         <input type="file" id="imageInput" name="imageFiles" accept="image/png, image/jpeg" multiple style="display:none"/>
-        <button type="button" class="btn" onclick="document.getElementById('imageInput').click()">Chọn ảnh</button>
+        <button type="button" class="btn" onclick="document.getElementById('imageInput').click()">Choose Image</button>
         <div class="preview" id="imagePreview">
-            <div class="thumb"><span class="hint">Chưa có ảnh</span></div>
+            <div class="thumb"><span class="hint"></span></div>
         </div>
 
         <div class="actions">
-            <button type="submit" class="primary">Tạo mới</button>
+            <a th:href="@{/staff/products/list}" class="btn btn-secondary me-2">Cancel</a>
+            <button type="submit" class="primary">Create</button>
         </div>
     </form>
 </div>

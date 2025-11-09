@@ -5,17 +5,18 @@ import com.example.PCOnlineShop.dto.warranty.WarrantyDetailDTO; // Import DTO đ
 import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.model.order.Order;
 import com.example.PCOnlineShop.model.order.OrderDetail;
+import com.example.PCOnlineShop.model.payment.Payment;
 import com.example.PCOnlineShop.model.product.Category;
 import com.example.PCOnlineShop.model.product.Product;
 import com.example.PCOnlineShop.repository.account.AccountRepository;
 import com.example.PCOnlineShop.repository.order.OrderDetailRepository;
 import com.example.PCOnlineShop.repository.order.OrderRepository;
 import com.example.PCOnlineShop.repository.product.ProductRepository;
+import com.example.PCOnlineShop.repository.payment.PaymentRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.payos.PayOS;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -32,6 +33,8 @@ public class OrderService {
     private final OrderDetailRepository orderDetailRepository;
     private final AccountRepository accountRepository;
     private final ProductRepository productRepository;
+    private final PaymentRepository paymentRepository;
+    private final PayOS payOS;
 
     // Định nghĩa thời hạn bảo hành theo Category ID
     private static final Map<Integer, Integer> WARRANTY_MONTHS_BY_CATEGORY;
@@ -54,11 +57,15 @@ public class OrderService {
     public OrderService(OrderRepository orderRepository,
                         OrderDetailRepository orderDetailRepository,
                         AccountRepository accountRepository,
-                        ProductRepository productRepository) {
+                        ProductRepository productRepository,
+                        PaymentRepository paymentRepository, // ✅ Thêm
+                        PayOS payOS) { // ✅ Thêm
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.accountRepository = accountRepository;
         this.productRepository = productRepository;
+        this.paymentRepository = paymentRepository; // ✅ Thêm
+        this.payOS = payOS; // ✅ Thêm
     }
 
     // ==================================================
@@ -72,7 +79,8 @@ public class OrderService {
         Order order = new Order();
         order.setAccount(customerAccount);
         order.setCreatedDate(new Date());
-        order.setStatus("Pending Payment"); // <-- Trạng thái chờ thanh toán (Hoàn hảo cho PayOS)
+        order.setStatus("Pending Payment");
+        // ... (set các trường shipping...)
         order.setShippingMethod(shippingMethod);
         order.setNote(note);
         order.setShippingFullName(shippingFullName);
@@ -82,48 +90,142 @@ public class OrderService {
         List<OrderDetail> orderDetails = new ArrayList<>();
         double calculatedFinalAmount = 0.0;
 
+        // ✅ BẮT ĐẦU KIỂM TRA VÀ TRỪ KHO (MÔ HÌNH 1)
         for (Map.Entry<Integer, Integer> entry : cartItems.entrySet()) {
-            // ... (Logic lấy product và tạo OrderDetail)
-            Product product = productRepository.findById(entry.getKey())
-                    .orElseThrow(() -> new EntityNotFoundException("No Existed Product: " + entry.getKey()));
+            int productId = entry.getKey();
+            int quantityToBuy = entry.getValue();
+
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Sản phẩm: " + productId));
+
+            int currentInventory = product.getInventoryQuantity(); //
+
+            // 1. Kiểm tra tồn kho
+            if (currentInventory < quantityToBuy) {
+                // Ném lỗi để OrderController bắt được
+                throw new IllegalStateException("Sản phẩm " + product.getProductName() + " không đủ số lượng trong kho.");
+            }
+
+            // 2. TRỪ KHO NGAY LẬP TỨC
+            product.setInventoryQuantity(currentInventory - quantityToBuy);
+            productRepository.save(product); // Lưu lại thông tin kho mới
+
+            // 3. (Logic tạo OrderDetail giữ nguyên...)
             OrderDetail detail = new OrderDetail();
             detail.setOrder(order);
             detail.setProduct(product);
-            detail.setQuantity(entry.getValue());
+            detail.setQuantity(quantityToBuy);
             detail.setPrice(product.getPrice());
             orderDetails.add(detail);
-            calculatedFinalAmount += (product.getPrice() * entry.getValue());
+            calculatedFinalAmount += (product.getPrice() * quantityToBuy);
         }
+        // ✅ KẾT THÚC TRỪ KHO
 
         order.setFinalAmount(calculatedFinalAmount);
         order.setOrderDetails(orderDetails);
 
-        // ✅ LƯU VÀO CSDL
         return orderRepository.save(order);
     }
 
+    /**
+     * MỚI: Hàm helper private để cộng trả lại kho
+     */
 
-    // === PHƯƠNG THỨC MỚI ĐỂ CẬP NHẬT 1 ĐƠN HÀNG ===
+    private void rollBackInventory(Order order) {
+        System.out.println("Bắt đầu hoàn kho cho Order ID: " + order.getOrderId());
+        // Lấy chi tiết đơn hàng (đảm bảo nó được fetch)
+        List<OrderDetail> details = orderDetailRepository.findByOrder(order);
+
+        for (OrderDetail detail : details) {
+            Product product = detail.getProduct();
+            int quantityToRollback = detail.getQuantity();
+
+            product.setInventoryQuantity(product.getInventoryQuantity() + quantityToRollback);
+            productRepository.save(product);
+        }
+    }
+
+    /**
+     * MỚI: Logic HỦY ĐƠN (dành cho Pending Payment)
+     * Được gọi bởi Scheduler, PaymentService (webhook fail), PaymentController (user cancel)
+     */
     @Transactional
-    public void updateSingleOrderStatus(int orderId, String newStatus) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + orderId));
+    public void cancelOrderFromPaymentId(long paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Payment: " + paymentId));
+        Order order = payment.getOrder();
 
-        String oldStatus = order.getStatus();
+        // Chỉ hủy nếu nó vẫn đang chờ
+        if ("Pending Payment".equals(order.getStatus()) && "PENDING".equals(payment.getStatus())) {
+            System.out.println("Hủy và Hoàn kho cho Order ID: " + order.getOrderId());
 
-        // Chỉ cập nhật nếu status thực sự thay đổi
-        if (!oldStatus.equals(newStatus)) {
-            order.setStatus(newStatus);
+            payment.setStatus("CANCELLED"); // (Hoặc EXPIRED, FAILED tùy)
+            order.setStatus("Cancelled");
+            order.setPaymentStatus("CANCELLED");
 
-            // --- SET readyToShipDate WHEN STATUS CHANGES TO "Ready to Ship" ---
-            // (Chúng ta sao chép logic từ hàm updateMultiple...)
-            if (!"Ready to Ship".equals(oldStatus) && "Ready to Ship".equals(newStatus)) {
-                order.setReadyToShipDate(new Date()); // Set thời gian hiện tại
+            // 1. HOÀN KHO
+            rollBackInventory(order);
+
+            // 2. Hủy link trên PayOS
+            try {
+                payOS.paymentRequests().cancel(paymentId, "Hủy do hết hạn hoặc người dùng yêu cầu");
+            } catch (Exception e) {
+                System.err.println("Lỗi khi hủy link PayOS: " + e.getMessage());
             }
 
+            paymentRepository.save(payment);
             orderRepository.save(order);
+        } else {
+            System.out.println("Bỏ qua hủy Order ID: " + order.getOrderId() + " (Trạng thái không hợp lệ)");
         }
-        // Nếu status không đổi, không làm gì cả
+    }
+
+    /**
+     * MỚI: Staff đánh dấu "Processing" -> "Ready to Ship"
+     */
+    @Transactional
+    public void markAsReadyToShip(long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy đơn hàng: " + orderId));
+
+        if (!"Processing".equals(order.getStatus())) {
+            throw new IllegalStateException("Chỉ có thể chuyển đơn 'Processing' sang 'Ready to Ship'.");
+        }
+        order.setStatus("Ready to Ship");
+        order.setReadyToShipDate(new Date());
+        orderRepository.save(order);
+    }
+
+    /**
+     * Cập nhật: Logic HỦY VÀ REFUND (dành cho Processing)
+     * Được gọi bởi OrderController (Staff/Customer)
+     */
+    @Transactional
+    public void refundOrderFromOrderId(long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy đơn hàng: " + orderId));
+
+        if (!"Processing".equals(order.getStatus())) {
+            throw new IllegalStateException("Chỉ có thể hủy và hoàn tiền cho đơn hàng 'Processing'.");
+        }
+
+        Payment payment = paymentRepository.findByOrder_OrderId(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy payment cho đơn hàng: " + orderId));
+
+        // 1. Cập nhật trạng thái
+        order.setStatus("Cancelled");
+        order.setPaymentStatus("REFUND_PENDING");
+        payment.setStatus("REFUND_PENDING");
+
+        // 2. HOÀN KHO
+        rollBackInventory(order);
+
+        orderRepository.save(order);
+        paymentRepository.save(payment);
+
+        // 3. GỌI API PAYOUT (Hoàn tiền)
+        System.out.println("Đã đánh dấu đơn " + orderId + " là Cancelled và REFUND_PENDING.");
+        System.out.println("BẠN CẦN KÍCH HOẠT LOGIC PAYOUT API (REFUND) TẠI ĐÂY.");
     }
 
 
@@ -131,12 +233,12 @@ public class OrderService {
         return orderRepository.findByAccount(account);
     }
 
-    public Order getOrderById(int id) {
-        return orderRepository.findById(id).orElse(null);
+    public Order getOrderById(long id) { // ✅ Đã đổi sang long
+        return orderRepository.findById(id).orElse(null); // ✅ Sẽ gọi findById(Long id)
     }
 
-    public List<OrderDetail> getOrderDetails(int orderId) {
-        Order order = orderRepository.findById(orderId)
+    public List<OrderDetail> getOrderDetails(long orderId) { // ✅ Đã đổi sang long
+        Order order = orderRepository.findById(orderId) // ✅ Sẽ gọi findById(Long id)
                 .orElseThrow(() -> new EntityNotFoundException("Đơn hàng không tồn tại: " + orderId));
         return orderDetailRepository.findByOrder(order);
     }
@@ -158,8 +260,8 @@ public class OrderService {
 
     // Lấy và tính toán chi tiết bảo hành của một Order ID
     @Transactional(readOnly = true)
-    public List<WarrantyDetailDTO> getWarrantyDetailsByOrderId(int orderId) {
-        List<OrderDetail> details = orderDetailRepository.findByOrder_OrderIdWithAssociations(orderId);
+    public List<WarrantyDetailDTO> getWarrantyDetailsByOrderId(long orderId) { // ✅ Đã đổi sang long
+        List<OrderDetail> details = orderDetailRepository.findByOrder_OrderIdWithAssociations(orderId); // ✅ Giả định repo này cũng đã cập nhật
         LocalDate today = LocalDate.now(); // Lấy ngày hiện tại
 
         return details.stream()
@@ -201,7 +303,7 @@ public class OrderService {
 
                     // Trả về DTO với 6 trường
                     return new WarrantyDetailDTO(
-                            order.getOrderId(),
+                            order.getOrderId(), // ✅ order.getOrderId() giờ sẽ trả về long
                             product.getProductName(),
                             createdDate,
                             warrantyMonths,
@@ -232,8 +334,8 @@ public class OrderService {
      * Handles transitions from Ready to Ship and Delivering.
      */
     @Transactional
-    public void updateShippingStatus(int orderId, String newStatus) {
-        Order order = orderRepository.findById(orderId)
+    public void updateShippingStatus(long orderId, String newStatus) { // ✅ Đã đổi sang long
+        Order order = orderRepository.findById(orderId) // ✅ Sẽ gọi findById(Long id)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found: " + orderId));
 
         String currentStatus = order.getStatus();
@@ -261,6 +363,4 @@ public class OrderService {
         order.setStatus(newStatus);
         orderRepository.save(order);
     }
-
-
 }

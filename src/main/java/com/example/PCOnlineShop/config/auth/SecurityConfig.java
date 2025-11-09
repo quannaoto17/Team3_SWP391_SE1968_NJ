@@ -33,8 +33,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/auth/**","/build/**").permitAll()
-                        .requestMatchers("/assets/**", "/css/**", "/js/**", "/image/**", "/static/**", "/webfonts/**").permitAll()
+                        .requestMatchers("/payment/**").permitAll()
+                        .requestMatchers("/", "/home", "/auth/**").permitAll()
+                        .requestMatchers("/build/**", "/api/build/**").permitAll() // Build PC feature for guests
+                        .requestMatchers("/assets/**", "/css/**", "/js/**", "/image/**", "/static/**", "/webfonts/**", "/uploads/**").permitAll()
+
+                        // Admin only
                         .requestMatchers("/staff/list/**", "/staff/add/**", "/staff/edit/**", "/staff/view/**", "/staff/delete/**").hasAnyRole("ADMIN")
                         .requestMatchers("/staff/products/**", "/staff/warranty/**",  "/staff/shipping/**").hasAnyRole("STAFF", "ADMIN")
                         .requestMatchers("/orders/list", "/orders/detail/**").hasAnyRole("CUSTOMER", "STAFF", "ADMIN")

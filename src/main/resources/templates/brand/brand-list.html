@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Brand Management</title>
+
+    <!-- ✅ Bootstrap + DataTables -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        h2 {
+            font-weight: 600;
+        }
+
+        table td, table th {
+            vertical-align: middle !important;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="layout/header-admin :: header-admin"></div>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Brand Management</h2>
+
+    <!-- ✅ Buttons -->
+    <div class="d-flex justify-content-between mb-3">
+        <a th:href="@{/admin/brand/add}" class="btn btn-success">
+            + Add Brand
+        </a>
+        <a th:href="@{/admin/brand/merge}" class="btn btn-secondary">
+            Merge Brands
+        </a>
+    </div>
+
+    <!-- ✅ Alert messages -->
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${merged}" class="alert alert-success">
+        <span th:text="'Merged ' + ${merged} + ' products successfully.'"></span>
+    </div>
+
+    <!-- ✅ Brand table -->
+    <div class="table-responsive">
+        <table id="brandTable" class="table table-bordered table-hover align-middle">
+            <thead class="table-dark text-center">
+            <tr>
+                <th>ID</th>
+                <th>Brand Name</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th style="width: 180px;">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="b : ${brand}">
+                <td th:text="${b.brandId}"></td>
+                <td th:text="${b.name}"></td>
+                <td th:text="${b.description}"></td>
+                <td class="text-center">
+                    <span th:text="${b.status ? 'Active' : 'Inactive'}"
+                          th:classappend="${b.status} ? 'text-success fw-semibold' : 'text-danger fw-semibold'"></span>
+                </td>
+                <td class="text-center">
+                    <!-- Edit -->
+                    <a th:href="@{'/admin/brand/update/' + ${b.brandId}}"
+                       class="btn btn-sm btn-primary me-1">Edit</a>
+
+                    <!-- Toggle status -->
+                    <form th:action="@{'/admin/brand/' + ${b.brandId} + '/status'}"
+                          method="post" class="d-inline">
+                        <input type="hidden" name="status" th:value="${!b.status}" />
+                        <button type="submit"
+                                th:text="${b.status ? 'Deactivate' : 'Activate'}"
+                                th:classappend="${b.status} ? 'btn-danger' : 'btn-success'"
+                                class="btn btn-sm"></button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ✅ Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script th:inline="none">
+    $(document).ready(function () {
+        $('#brandTable').DataTable({
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50],
+            order: [[0, 'asc']], // ✅ giữ nguyên cú pháp JS, không để Thymeleaf parse
+            columnDefs: [
+                { orderable: false, targets: [4] } // Disable sort for actions
+            ]
+        });
+    });
+</script>
+</body>
+</html>

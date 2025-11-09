@@ -1,17 +1,23 @@
 package com.example.PCOnlineShop.dto.build;
 
 import lombok.*;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class BuildPlanDto {
-    private ComponentRule planMotherboard;
-    private ComponentRule planCpu;
-    private ComponentRule planGpu;
-    private ComponentRule planRam;
-    private ComponentRule planStorage;
-    private ComponentRule planPsu;
-    private  ComponentRule planCase;
-    private   ComponentRule planCooling;
+    // Build metadata
+    private double totalBudget;
+    private String purpose;  // e.g., "Gaming - High End"
+
+    // Selected components (actual products)
+    private ComponentDto mainboard;
+    private ComponentDto cpu;
+    private ComponentDto gpu;
+    private ComponentDto memory;
+    private ComponentDto storage;
+    private ComponentDto powerSupply;
+    private ComponentDto pcCase;
+    private ComponentDto cooling;
 }

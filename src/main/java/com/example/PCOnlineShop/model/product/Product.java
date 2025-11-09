@@ -23,7 +23,7 @@ public class Product {
 
     @NotBlank(message = "Product name is required" )
     @Size(min = 5, max = 100, message = "Product name must be between 5 and 100 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "Product name must not contain special characters")
+    @Pattern(regexp = "^(?=.{3,100}$)(?!.* {2})(?!.*[_\\-.]{2})[ \\p{L}\\p{M}\\p{N}\\s\\-\\._/+&,:;'\"®™()\\[\\]°%×–—]+(?<![ \\-_/+&,:;'\"\\.])$")
     @Column (name = "product_name")
     private String productName;
 
@@ -49,6 +49,11 @@ public class Product {
 
     @Column (name = "inventory_quantity")
     private Integer inventoryQuantity;
+
+    @Column(name = "performance_score")
+    @Min(value = 0, message = "Performance score must be at least 0")
+    @Max(value = 100, message = "Performance score must be at most 100")
+    private Integer performanceScore = 50; // Default score
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", nullable = false)

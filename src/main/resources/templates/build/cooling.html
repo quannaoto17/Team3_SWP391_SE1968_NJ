@@ -63,7 +63,8 @@
 
         <!-- Product Grid -->
         <form th:action="@{/build/selectCooling}" method="post" id="coolingForm">
-            <input type="hidden" name="coolingId" id="selectedCoolingId"/>
+            <input type="hidden" name="coolingId" id="selectedCoolingId"
+                   th:value="${buildItems.cooling?.product?.productId ?: ''}"/>
             <div class="product-grid">
                 <div th:each="cl : ${coolings}"
                      class="product-card"
@@ -82,7 +83,7 @@
 
             <!-- Footer -->
             <div class="footer-bar">
-                <span>Total Price: <strong id="priceTotal" th:text="'$' + ${buildItems.calculateTotalPrice()}"></strong></span>
+                <span>Total Price: <strong id="priceTotal" th:text="'$' + ${buildItems.formattedTotalPrice}"></strong></span>
                 <button type="submit" class="next-btn">Next</button>
             </div>
         </form>

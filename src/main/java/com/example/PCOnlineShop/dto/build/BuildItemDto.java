@@ -34,6 +34,14 @@ public class BuildItemDto {
         if (pcCase != null) total += pcCase.getPrice();
         if (cooling != null) total += cooling.getPrice();
         if (other != null) total += other.getPrice(); // Other has direct price field
-        return total;
+        // Round to 2 decimal places
+        return Math.round(total * 100.0) / 100.0;
+    }
+
+    /**
+     * Get formatted total price string with 2 decimal places
+     */
+    public String getFormattedTotalPrice() {
+        return String.format("%.2f", calculateTotalPrice());
     }
 }

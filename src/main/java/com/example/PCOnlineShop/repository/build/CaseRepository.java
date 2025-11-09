@@ -17,6 +17,14 @@ public interface CaseRepository extends JpaRepository<Case, Integer> {
            "(:formFactor IS NULL OR c.formFactor = :formFactor)")
     List<Case> findWithFilters(@Param("formFactor") String formFactor);
 
-    Optional <Case> findByProduct_ProductId(int id);
+    Optional<Case> findByProduct_ProductId(int id);
 
+    @Query("SELECT c FROM Case c " +
+           "WHERE c.product.price <= :maxPrice " +
+           "AND (c.product.performanceScore IS NULL OR c.product.performanceScore >= :minScore) " +
+           "AND c.product.status = true " +
+           "AND (c.product.inventoryQuantity IS NULL OR c.product.inventoryQuantity > 0) " +
+           "ORDER BY COALESCE(c.product.performanceScore, 50) DESC, c.product.price ASC")
+    List<Case> findBestCasesByBudgetAndScore(@Param("maxPrice") double maxPrice,
+                                              @Param("minScore") int minScore);
 }

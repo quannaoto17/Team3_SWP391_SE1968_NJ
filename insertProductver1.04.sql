@@ -50,7 +50,18 @@ INSERT INTO brand (name, description, website) VALUES
 ('EVGA', 'Hãng sản xuất card đồ họa, mainboard và nguồn nổi tiếng.', 'https://www.evga.com'),
 ('FSP', 'Nhà sản xuất nguồn máy tính (PSU) lớn và uy tín.', 'https://www.fsplifestyle.com'),
 ('Antec', 'Thương hiệu lâu đời về case, nguồn và quạt.', 'https://www.antec.com'),
-('Hyte', 'Thương hiệu con của NZXT, chuyên về các vỏ case độc đáo như Y60.', 'https://hyte.com');
+('Hyte', 'Thương hiệu con của NZXT, chuyên về các vỏ case độc đáo như Y60.', 'https://hyte.com'),
+('Golden Field', 'Hãng sản xuất vỏ case và nguồn máy tính giá rẻ.', 'http://www.goldenfield.com.cn/'),
+('SAMA', 'Thương hiệu vỏ case, nguồn và tản nhiệt phổ biến ở phân khúc bình dân.', 'http://www.samachina.com/'),
+('KENOO', 'Nhà cung cấp linh kiện và phụ kiện máy tính giá rẻ.', 'https://kenoo.vn/'),
+('Vision', 'Thương hiệu chuyên về các linh kiện PC giá phải chăng.', 'https://vision.com/'),
+('Techware', 'Thương hiệu vỏ case và gaming gear giá rẻ đến tầm trung.', 'https://techwarepc.com/'),
+('Xigmatek', 'Thương hiệu Đài Loan chuyên về vỏ case, tản nhiệt và nguồn máy tính.', 'https://www.xigmatek.com/'),
+('VSP', 'Nhà cung cấp linh kiện máy tính, đặc biệt là vỏ case và phụ kiện với giá cạnh tranh.', 'https://vsp.vn/'),
+('GameMax', 'Thương hiệu gaming gear và vỏ case với thiết kế hiện đại, giá cả phải chăng.', 'https://www.gamemaxpc.com/'),
+('Montech', 'Chuyên các vỏ case và nguồn máy tính với giá trị tốt, tối ưu luồng khí.', 'https://montechpc.com/'),
+('Azza', 'Hãng sản xuất vỏ case PC với nhiều mẫu mã đa dạng và thiết kế độc đáo.', 'https://azza.com/'),
+('Cougar', 'Thương hiệu gaming chuyên về case, nguồn, ghế gaming và thiết bị ngoại vi.', 'https://cougargaming.com/');
 
 -- ==============================================
 --  PRODUCT + MAINBOARD SEED DATA (30 bản ghi)
@@ -58,13 +69,13 @@ INSERT INTO brand (name, description, website) VALUES
 
 -- 1
 INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
-VALUES (1, 1, 'ASUS PRIME B550M-A', 150.00, 1, 'Micro ATX AM4 mainboard', 'Chipset B550', 25);
+VALUES (1, 1, 'ASUS PRIME B550M-A', 150.00, 1, 'Micro ATX AM4 mainboard', 'Chipset B550', 1000);
 INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
 VALUES (LAST_INSERT_ID(), 'AM4', 'B550', 'Micro-ATX', 'DDR4', 4, 4733, '4.0', 2, 6);
 
 -- 2
 INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
-VALUES (1, 2, 'MSI MPG X670E CARBON', 390.00, 1, 'High-end AM5 mainboard', 'Chipset X670E', 15);
+VALUES (1, 2, 'MSI MPG X670E CARBON', 390.00, 1, 'High-end AM5 mainboard', 'Chipset X670E', 1000);
 INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
 VALUES (LAST_INSERT_ID(), 'AM5', 'X670E', 'ATX', 'DDR5', 4, 8000, '5.0', 3, 6);
 
@@ -235,6 +246,72 @@ INSERT INTO product (category_id, brand_id, product_name, price, status, descrip
 VALUES (1, 3, 'GIGABYTE B550I AORUS PRO AX', 220.00, 1, 'Mini ITX AM4 board with Wi-Fi', 'Chipset B550I', 22);
 INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
 VALUES (LAST_INSERT_ID(), 'AM4', 'B550I', 'Mini-ITX', 'DDR4', 2, 4733, '4.0', 2, 4);
+
+-- 31. ASUS Prime H310M-K R2.0 (Entry-level Intel H310, LGA1151)
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (1, 1, 'ASUS Prime H310M-K R2.0', 45.00, 1, 'Intel H310 basic mainboard for 8th/9th Gen CPUs', 'Chipset H310', 50);
+INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
+VALUES (LAST_INSERT_ID(), 'LGA1151', 'H310', 'Micro-ATX', 'DDR4', 2, 2666, '3.0', 0, 4);
+
+-- 32. MSI A320M-A Pro (Entry-level AMD A320, AM4)
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (1, 2, 'MSI A320M-A Pro', 48.00, 1, 'AMD A320 minimal mainboard for Ryzen CPUs', 'Chipset A320', 45);
+INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
+VALUES (LAST_INSERT_ID(), 'AM4', 'A320', 'Micro-ATX', 'DDR4', 2, 3200, '3.0', 1, 4);
+
+-- 33. Gigabyte H410M H (Entry Intel H410, LGA1200)
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (1, 3, 'Gigabyte H410M H', 55.00, 1, 'Intel H410 basic mainboard for 10th Gen CPUs', 'Chipset H410', 40);
+INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
+VALUES (LAST_INSERT_ID(), 'LGA1200', 'H410', 'Micro-ATX', 'DDR4', 2, 2933, '3.0', 1, 4);
+
+-- 34. ASRock H310CM-HDV (Ultra budget Intel H310, LGA1151)
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (1, 4, 'ASRock H310CM-HDV', 42.00, 1, 'Ultra budget Intel H310 for 8th/9th Gen CPUs', 'Chipset H310', 50);
+INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
+VALUES (LAST_INSERT_ID(), 'LGA1151', 'H310', 'Micro-ATX', 'DDR4', 2, 2666, '3.0', 0, 4);
+
+-- 35. MSI H310M PRO-VDH PLUS (Budget Intel H310, LGA1151)
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (1, 2, 'MSI H310M PRO-VDH PLUS', 46.00, 1, 'Budget Intel H310 with VGA output', 'Chipset H310', 48);
+INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
+VALUES (LAST_INSERT_ID(), 'LGA1151', 'H310', 'Micro-ATX', 'DDR4', 2, 2666, '3.0', 1, 4);
+
+-- 36. Gigabyte H310M S2H 2.0 (Budget Intel H310, LGA1151)
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (1, 3, 'Gigabyte H310M S2H 2.0', 49.00, 1, 'Intel H310 with HDMI and VGA support', 'Chipset H310', 42);
+INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
+VALUES (LAST_INSERT_ID(), 'LGA1151', 'H310', 'Micro-ATX', 'DDR4', 2, 2666, '3.0', 1, 4);
+
+-- 37. ASRock A320M-HDV R4.0 (Budget AMD A320, AM4)
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (1, 4, 'ASRock A320M-HDV R4.0', 45.00, 1, 'AMD A320 for Ryzen 1st-3rd Gen CPUs', 'Chipset A320', 46);
+INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
+VALUES (LAST_INSERT_ID(), 'AM4', 'A320', 'Micro-ATX', 'DDR4', 2, 3200, '3.0', 1, 4);
+
+-- 38. Biostar A320MH (Ultra budget AMD A320, AM4)
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (1, 3, 'Biostar A320MH', 40.00, 1, 'Ultra budget AMD A320 basic features', 'Chipset A320', 55);
+INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
+VALUES (LAST_INSERT_ID(), 'AM4', 'A320', 'Micro-ATX', 'DDR4', 2, 2933, '3.0', 0, 4);
+
+-- 39. ASUS PRIME H310M-E R2.0 (Budget Intel H310, LGA1151)
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (1, 1, 'ASUS PRIME H310M-E R2.0', 47.00, 1, 'ASUS budget Intel H310 with basic features', 'Chipset H310', 44);
+INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
+VALUES (LAST_INSERT_ID(), 'LGA1151', 'H310', 'Micro-ATX', 'DDR4', 2, 2666, '3.0', 0, 4);
+
+-- 40. MSI H310M PRO-M2 PLUS (Compact budget Intel H310, LGA1151)
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (1, 2, 'MSI H310M PRO-M2 PLUS', 44.00, 1, 'Compact Intel H310 with M.2 support', 'Chipset H310', 48);
+INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
+VALUES (LAST_INSERT_ID(), 'LGA1151', 'H310', 'Micro-ATX', 'DDR4', 2, 2666, '3.0', 1, 4);
+
+-- 41. Gigabyte H310M DS2 2.0 (Ultra compact budget Intel H310, LGA1151)
+INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (1, 3, 'Gigabyte H310M DS2 2.0', 41.00, 1, 'Ultra compact Intel H310 for office PCs', 'Chipset H310', 52);
+INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
+VALUES (LAST_INSERT_ID(), 'LGA1151', 'H310', 'Micro-ATX', 'DDR4', 2, 2400, '3.0', 0, 4);
 
 -- ==============================================
 --  PRODUCT + CPU SEED DATA (30 bản ghi)
@@ -738,6 +815,50 @@ INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAS
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 2, 'Corsair Vengeance 64GB (2x32GB) DDR5 5200MHz', 269.99, 'Kit 64GB không RGB, tập trung vào dung lượng và sự ổn định.', 'Kit 64GB, DDR5, 5200MHz, CL40', 22);
 INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR5', 64, 5200, 9, 2);
 
+-- -----------------------------------------------------------------
+-- Budget Memory (Giá rẻ dưới $50) - DDR4 cho build giá thấp
+-- -----------------------------------------------------------------
+
+-- 31. Crucial 8GB (1x8GB) DDR4 2666MHz
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 16, 'Crucial 8GB DDR4 2666MHz', 19.99, 'RAM DDR4 giá rẻ cho văn phòng và build tiết kiệm.', '8GB, DDR4, 2666MHz, CL19', 60);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 2666, 4, 1);
+
+-- 32. Kingston ValueRAM 8GB (1x8GB) DDR4 2400MHz
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 15, 'Kingston ValueRAM 8GB DDR4 2400MHz', 17.99, 'RAM DDR4 entry-level, ổn định cho máy văn phòng.', '8GB, DDR4, 2400MHz, CL17', 70);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 2400, 3, 1);
+
+-- 33. Corsair Vengeance LPX 8GB (1x8GB) DDR4 3000MHz
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 2, 'Corsair Vengeance LPX 8GB DDR4 3000MHz', 24.99, 'RAM gaming giá rẻ với tản nhiệt thấp, phù hợp cho budget gaming.', '8GB, DDR4, 3000MHz, CL16', 55);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3000, 4, 1);
+
+-- 34. G.Skill Aegis 16GB (2x8GB) DDR4 3200MHz
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 14, 'G.Skill Aegis 16GB (2x8GB) DDR4 3200MHz', 39.99, 'Kit 16GB DDR4 giá tốt cho gaming 1080p, không có tản nhiệt fancy.', 'Kit 16GB, DDR4, 3200MHz, CL16', 50);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 8, 2);
+
+-- 35. Crucial Ballistix 16GB (2x8GB) DDR4 3000MHz
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 16, 'Crucial Ballistix 16GB (2x8GB) DDR4 3000MHz', 42.99, 'RAM gaming với tản nhiệt đơn giản, ổn định cho gaming.', 'Kit 16GB, DDR4, 3000MHz, CL15', 45);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3000, 8, 2);
+
+-- 36. Kingston Fury Beast 16GB (2x8GB) DDR4 3200MHz
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 15, 'Kingston Fury Beast 16GB (2x8GB) DDR4 3200MHz', 44.99, 'RAM gaming DDR4 với tản nhiệt đen, phù hợp cho mọi build.', 'Kit 16GB, DDR4, 3200MHz, CL16', 48);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 8, 2);
+
+-- 37. Patriot Viper Steel 16GB (2x8GB) DDR4 3600MHz
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 3, 'Patriot Viper Steel 16GB (2x8GB) DDR4 3600MHz', 47.99, 'RAM DDR4 3600MHz giá tốt, hiệu năng cao cho gaming.', 'Kit 16GB, DDR4, 3600MHz, CL17', 40);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3600, 9, 2);
+
+-- 38. Team T-Force Vulcan Z 16GB (2x8GB) DDR4 3200MHz
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 17, 'Team T-Force Vulcan Z 16GB (2x8GB) DDR4 3200MHz', 38.99, 'RAM DDR4 giá rẻ với tản nhiệt màu xám, tốt cho budget build.', 'Kit 16GB, DDR4, 3200MHz, CL16', 52);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 3200, 8, 2);
+
+-- 39. Corsair Vengeance LPX 16GB (2x8GB) DDR4 2666MHz
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 2, 'Corsair Vengeance LPX 16GB (2x8GB) DDR4 2666MHz', 36.99, 'RAM DDR4 tốc độ cơ bản, giá rẻ nhất cho build 16GB.', 'Kit 16GB, DDR4, 2666MHz, CL16', 55);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 16, 2666, 7, 2);
+
+-- 40. Silicon Power 8GB (1x8GB) DDR4 3200MHz
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (4, 3, 'Silicon Power 8GB DDR4 3200MHz', 21.99, 'RAM DDR4 3200MHz giá rẻ, phù hợp cho nâng cấp hoặc build entry-level.', '8GB, DDR4, 3200MHz, CL16', 65);
+INSERT INTO memory (product_id, type, capacity, speed, tdp, modules) VALUES (LAST_INSERT_ID(), 'DDR4', 8, 3200, 4, 1);
+
 -- =================================================================
 -- SCRIPT INSERT 30 SẢN PHẨM LƯU TRỮ (STORAGE) - GIÁ ĐÃ SỬA SANG USD
 -- =================================================================
@@ -983,6 +1104,50 @@ INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_hei
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 8, 'Thermaltake The Tower 900 Black', 279.99, 'Thiết kế dạng tủ trưng bày độc đáo, tối ưu cho tản nhiệt nước custom.', 'Super-Tower, E-ATX', 9);
 INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'E-ATX', 400, 260, 'ATX');
 
+-- -----------------------------------------------------------------
+-- Budget Cases (Giá rẻ dưới $50) - Thêm cho build gaming giá thấp
+-- -----------------------------------------------------------------
+
+-- 23. Deepcool Matrexx 30 SI
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 8, 'Deepcool Matrexx 30 SI', 34.99, 'Case Micro-ATX giá rẻ với mặt kính cường lực, hỗ trợ GPU dài.', 'Micro-ATX, Mini-ITX', 40);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'Micro-ATX', 310, 155, 'ATX');
+
+-- 24. Cooler Master N200
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 1, 'Cooler Master N200', 39.99, 'Case Micro-ATX cổ điển, tốt cho budget build, nhiều khe mở rộng.', 'Micro-ATX, Mini-ITX', 35);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'Micro-ATX', 355, 160, 'ATX');
+
+-- 25. Thermaltake Versa H17
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 8, 'Thermaltake Versa H17', 32.99, 'Ultra budget Micro-ATX case với thiết kế đơn giản, đủ chức năng.', 'Micro-ATX, Mini-ITX', 45);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'Micro-ATX', 300, 150, 'ATX');
+
+-- 26. Corsair Spec-01
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 2, 'Corsair Spec-01', 44.99, 'Budget mid-tower với khả năng mở rộng tốt, hỗ trợ GPU dài.', 'ATX, Micro-ATX', 30);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 380, 162, 'ATX');
+
+-- 27. Aerocool Cylon
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 3, 'Aerocool Cylon', 37.99, 'Case ATX giá rẻ với LED RGB, hỗ trợ GPU 320mm.', 'ATX, Micro-ATX', 38);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 320, 158, 'ATX');
+
+-- 28. Deepcool Matrexx 50
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 8, 'Deepcool Matrexx 50', 42.99, 'Mid-tower với 4 mặt kính cường lực, hỗ trợ GPU 370mm.', 'ATX, Micro-ATX', 32);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 370, 165, 'ATX');
+
+-- 29. Cooler Master MB311L ARGB
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 1, 'Cooler Master MB311L ARGB', 47.99, 'Micro-ATX với mặt lưới ARGB, thông gió tốt, hỗ trợ GPU 340mm.', 'Micro-ATX, Mini-ITX', 28);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'Micro-ATX', 340, 158, 'ATX');
+
+-- 30. Thermaltake V200 TG
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 8, 'Thermaltake V200 Tempered Glass', 49.99, 'ATX mid-tower với mặt kính, hỗ trợ GPU 350mm, giá hợp lý.', 'ATX, Micro-ATX', 35);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 350, 160, 'ATX');
+
+-- 31. Cooler Master K501L
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 1, 'Cooler Master K501L', 45.99, 'Mid-tower RGB với không gian rộng rãi, hỗ trợ GPU 410mm.', 'ATX, Micro-ATX', 30);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 410, 163, 'ATX');
+
+-- 32. Golden Field N2
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 3, 'Golden Field N2', 29.99, 'Ultra budget Micro-ATX case nhỏ gọn, phù hợp cho văn phòng và gaming nhẹ.', 'Micro-ATX, Mini-ITX', 50);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'Micro-ATX', 250, 145, 'ATX');
+
 -- 23. Fractal Design Define 7 XL
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 5, 'Fractal Design Define 7 XL', 264.99, 'Không gian cực lớn, tối ưu cho sự im lặng và khả năng lưu trữ.', 'Full-Tower, E-ATX', 11);
 INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'E-ATX', 549, 185, 'ATX');
@@ -1023,6 +1188,65 @@ INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_hei
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (6, 30, 'Hyte Y60 Black', 209.99, 'Thiết kế bể cá 3 mặt kính độc đáo, tối ưu cho việc khoe linh kiện.', 'Mid-Tower, ATX', 15);
 INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES (LAST_INSERT_ID(), 'ATX', 375, 160, 'ATX');
 
+-- 1. Golden Field 1000B (Giá: ~15$)
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES
+    (6, 36, 'Golden Field 1000B', 15.00, 'Vỏ case văn phòng cơ bản, nhỏ gọn, không gian hạn chế cho các linh kiện.', 'Micro-ATX, Mini-ITX', 60);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES
+    (LAST_INSERT_ID(), 'Micro-ATX', 200, 140, 'ATX');
+
+-- 2. SAMA MT100 (Giá: ~18$)
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES
+    (6, 37, 'SAMA MT100', 18.00, 'Case Mid-Tower giá siêu rẻ, thiết kế tối giản, phù hợp cho lắp ráp PC cơ bản.', 'Mid-Tower, ATX', 55);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES
+    (LAST_INSERT_ID(), 'ATX', 280, 150, 'ATX');
+
+-- 3. KENOO M200 (Giá: ~20$)
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES
+    (6, 38, 'KENOO M200', 20.00, 'Vỏ case Micro-ATX với mặt nạ nhựa đơn giản, không gian hạn chế.', 'Micro-ATX, Mini-ITX', 50);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES
+    (LAST_INSERT_ID(), 'Micro-ATX', 240, 145, 'ATX');
+
+-- 4. Xigmatek Eros (Giá: ~25$)
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES
+    (6, 41, 'Xigmatek Eros', 25.00, 'Case Mid-Tower với 1 quạt LED cơ bản, thiết kế mặt trước đơn giản, tối ưu chi phí.', 'Mid-Tower, ATX', 48);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES
+    (LAST_INSERT_ID(), 'ATX', 290, 150, 'ATX');
+
+-- 5. Vision V1 (Giá: ~22$)
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES
+    (6, 39, 'Vision V1', 22.00, 'Vỏ case văn phòng với kiểu dáng truyền thống, không có kính cường lực.', 'Mid-Tower, ATX', 45);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES
+    (LAST_INSERT_ID(), 'ATX', 270, 148, 'ATX');
+
+-- 6. Sama Falcon (Giá: ~28$)
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES
+    (6, 37, 'SAMA Falcon', 28.00, 'Case Micro-ATX nhỏ gọn, có mặt lưới nhỏ phía trước, hỗ trợ tản nhiệt vừa phải.', 'Micro-ATX, Mini-ITX', 40);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES
+    (LAST_INSERT_ID(), 'Micro-ATX', 250, 150, 'ATX');
+
+-- 7. VSP V21 (Giá: ~29$)
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES
+    (6, 42, 'VSP V21', 29.00, 'Vỏ case Mid-Tower với thiết kế đơn giản nhưng đủ không gian cho các linh kiện phổ thông.', 'Mid-Tower, ATX', 35);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES
+    (LAST_INSERT_ID(), 'ATX', 300, 155, 'ATX');
+
+-- 8. Golden Field N1 (Giá: ~12$)
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES
+    (6, 36, 'Golden Field N1', 12.00, 'Case Micro-ATX siêu nhỏ gọn, lý tưởng cho các cấu hình HTPC hoặc văn phòng cơ bản.', 'Micro-ATX, Mini-ITX', 70);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES
+    (LAST_INSERT_ID(), 'Micro-ATX', 180, 130, 'SFX');
+
+-- 9. Techware Neo (Giá: ~24$)
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES
+    (6, 40, 'Techware Neo', 24.00, 'Vỏ case Mid-Tower cơ bản, đi kèm mặt kính acrylic bên hông, giá cả phải chăng.', 'Mid-Tower, ATX', 42);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height,  psu_form_factor) VALUES
+    (LAST_INSERT_ID(), 'ATX', 290, 150, 'ATX');
+
+-- 10. VSP KA-280 (Giá: ~19$)
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES
+    (6, 42, 'VSP KA-280', 19.00, 'Case Mid-Tower đơn giản, phù hợp cho các cấu hình PC không yêu cầu cao về thẩm mỹ và tản nhiệt.', 'Mid-Tower, ATX', 48);
+INSERT INTO pc_case (product_id, form_factor, gpu_max_length, cpu_max_cooler_height, psu_form_factor) VALUES
+    (LAST_INSERT_ID(), 'ATX', 270, 145, 'ATX');
 -- =================================================================
 -- SCRIPT INSERT 30 SẢN PHẨM NGUỒN (POWER SUPPLY) - GIÁ ĐÃ SỬA SANG USD
 -- =================================================================
@@ -1160,7 +1384,7 @@ INSERT INTO product (category_id, brand_id, product_name, price, description, sp
 INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 1000, '80+ Gold', 1, 'ATX');
 
 -- 29. MSI MPG A850G PCIE5
-INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 2, 'MSI MPG A850G 850W 80+ Gold PCIE5', 149.99, 'Nguồn 850W sẵn sàng cho chuẩn PCIe 5.0 (cáp 12VHPWR).', '850W, 80+ Gold, Full-Modular', 26);
+INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (7, 2, 'MSI MPG A850G 850W 80+ Gold PCIE5', 149.99, 'Nguồn 850W sẵn sàng cho chuẩn PCIe 5.0 (cáp 12VHP).', '850W, 80+ Gold, Full-Modular', 26);
 INSERT INTO power_supply (product_id, wattage, efficiency, modular, form_factor) VALUES (LAST_INSERT_ID(), 850, '80+ Gold', 1, 'ATX');
 
 -- 30. Antec NeoECO Gold Zen 700W
@@ -1259,3 +1483,6 @@ INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES 
 -- 20. Thermalright Frozen Notte 360
 INSERT INTO product (category_id, brand_id, product_name, price, description, specification, inventory_quantity) VALUES (8, 11, 'Thermalright Frozen Notte 360 Black ARGB', 89.99, 'AIO 360mm hiệu năng tốt với mức giá cực kỳ cạnh tranh.', 'AIO, Radiator 360mm, 3 quạt ARGB', 32);
 INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size) VALUES (LAST_INSERT_ID(), 'AIO', 300, 120, 360);
+
+
+

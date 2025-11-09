@@ -28,6 +28,11 @@ public class BuildController {
         return "/build/build-pc";
     }
 
+    @GetMapping("/preset-result")
+    public String showPresetResult() {
+        return "/build/preset-result";
+    }
+
     @GetMapping("/startover")
     public String startOver(SessionStatus sessionStatus, org.springframework.ui.Model model) {
         // Tell Spring to clear the session-managed `buildItems`
