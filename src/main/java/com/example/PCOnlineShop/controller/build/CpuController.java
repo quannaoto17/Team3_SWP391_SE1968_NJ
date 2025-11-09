@@ -56,9 +56,20 @@ public class CpuController {
     // Chọn CPU
     // Chọn CPU sẽ lưu vào buildItem và chuyển sang bước chọn linh kiện tiếp theo
     @PostMapping("/selectCpu")
-    public String selectCpu(@RequestParam int cpuId,
-                            @ModelAttribute("buildItems") BuildItemDto buildItem) {
-        buildItem.setCpu(cpuService.getCpuById(cpuId));
+    public String selectCpu(@RequestParam(required = false) Integer cpuId,
+                            @ModelAttribute("buildItems") BuildItemDto buildItem,
+                            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        // CPU is REQUIRED - must select one
+        if (cpuId == null && buildItem.getCpu() == null) {
+            redirectAttributes.addFlashAttribute("error", "Please select a CPU to continue.");
+            return "redirect:/build/cpu";
+        }
+
+        // Only update if user selected a new CPU
+        if (cpuId != null) {
+            buildItem.setCpu(cpuService.getCpuById(cpuId));
+        }
+        // If cpuId is null but buildItem.cpu exists, keep it
         return "redirect:/build/gpu";
     }
 }

@@ -28,11 +28,6 @@ public class BuildController {
         return "/build/build-pc";
     }
 
-    @GetMapping("/ai-suggest")
-    public String showPresetSelector() {
-        return "/build/ai-suggest";
-    }
-
     @GetMapping("/preset-result")
     public String showPresetResult() {
         return "/build/preset-result";

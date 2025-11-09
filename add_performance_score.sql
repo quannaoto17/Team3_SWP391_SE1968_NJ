@@ -210,63 +210,63 @@ WHERE p.product_name LIKE '%HDD%' AND p.product_name LIKE '%2TB%';
 
 -- PSU Examples
 UPDATE product p
-JOIN psu ps ON p.product_id = ps.product_id
+JOIN power_supply ps ON p.product_id = ps.product_id
 SET p.performance_score = 95
 WHERE p.product_name LIKE '%1000W%' AND p.product_name LIKE '%Platinum%';
 
 UPDATE product p
-JOIN psu ps ON p.product_id = ps.product_id
+JOIN power_supply ps ON p.product_id = ps.product_id
 SET p.performance_score = 90
 WHERE p.product_name LIKE '%1000W%' AND p.product_name LIKE '%Gold%';
 
 UPDATE product p
-JOIN psu ps ON p.product_id = ps.product_id
+JOIN power_supply ps ON p.product_id = ps.product_id
 SET p.performance_score = 85
 WHERE p.product_name LIKE '%850W%' AND p.product_name LIKE '%Gold%';
 
 UPDATE product p
-JOIN psu ps ON p.product_id = ps.product_id
+JOIN power_supply ps ON p.product_id = ps.product_id
 SET p.performance_score = 80
 WHERE p.product_name LIKE '%750W%' AND p.product_name LIKE '%Gold%';
 
 UPDATE product p
-JOIN psu ps ON p.product_id = ps.product_id
+JOIN power_supply ps ON p.product_id = ps.product_id
 SET p.performance_score = 75
 WHERE p.product_name LIKE '%750W%' AND p.product_name LIKE '%Bronze%';
 
 UPDATE product p
-JOIN psu ps ON p.product_id = ps.product_id
+JOIN power_supply ps ON p.product_id = ps.product_id
 SET p.performance_score = 70
 WHERE p.product_name LIKE '%650W%' AND p.product_name LIKE '%Gold%';
 
 UPDATE product p
-JOIN psu ps ON p.product_id = ps.product_id
+JOIN power_supply ps ON p.product_id = ps.product_id
 SET p.performance_score = 65
 WHERE p.product_name LIKE '%650W%' AND p.product_name LIKE '%Bronze%';
 
 UPDATE product p
-JOIN psu ps ON p.product_id = ps.product_id
+JOIN power_supply ps ON p.product_id = ps.product_id
 SET p.performance_score = 60
 WHERE p.product_name LIKE '%550W%';
 
 -- Case Examples (simpler, based on size)
 UPDATE product p
-JOIN pccase pc ON p.product_id = pc.product_id
+JOIN pc_case pc ON p.product_id = pc.product_id
 SET p.performance_score = 85
 WHERE p.product_name LIKE '%Full Tower%';
 
 UPDATE product p
-JOIN pccase pc ON p.product_id = pc.product_id
+JOIN pc_case pc ON p.product_id = pc.product_id
 SET p.performance_score = 75
 WHERE p.product_name LIKE '%Mid Tower%' OR p.product_name LIKE '%ATX%';
 
 UPDATE product p
-JOIN pccase pc ON p.product_id = pc.product_id
+JOIN pc_case pc ON p.product_id = pc.product_id
 SET p.performance_score = 65
 WHERE p.product_name LIKE '%Micro%';
 
 UPDATE product p
-JOIN pccase pc ON p.product_id = pc.product_id
+JOIN pc_case pc ON p.product_id = pc.product_id
 SET p.performance_score = 60
 WHERE p.product_name LIKE '%Mini%' OR p.product_name LIKE '%ITX%';
 
@@ -379,7 +379,7 @@ SELECT
     MIN(p.performance_score) as min_score,
     MAX(p.performance_score) as max_score
 FROM product p
-JOIN psu ps ON p.product_id = ps.product_id
+JOIN power_supply ps ON p.product_id = ps.product_id
 UNION ALL
 SELECT
     'Case' as component,
@@ -388,7 +388,7 @@ SELECT
     MIN(p.performance_score) as min_score,
     MAX(p.performance_score) as max_score
 FROM product p
-JOIN pccase pc ON p.product_id = pc.product_id
+JOIN pc_case pc ON p.product_id = pc.product_id
 UNION ALL
 SELECT
     'Cooling' as component,

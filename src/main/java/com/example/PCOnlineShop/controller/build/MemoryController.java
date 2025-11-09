@@ -53,10 +53,19 @@ public class MemoryController {
 
     @PostMapping("/selectMemory")
     public String selectMemory(@RequestParam(value = "memoryId", required = false) Integer memoryId,
-                               @ModelAttribute("buildItems") BuildItemDto buildItem) {
+                               @ModelAttribute("buildItems") BuildItemDto buildItem,
+                               org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        // Memory is REQUIRED - must select one
+        if (memoryId == null && buildItem.getMemory() == null) {
+            redirectAttributes.addFlashAttribute("error", "Please select memory to continue.");
+            return "redirect:/build/memory";
+        }
+
+        // Only update if user selected new memory
         if (memoryId != null) {
             buildItem.setMemory(memoryService.getMemoryById(memoryId));
         }
+        // If memoryId is null but buildItem.memory exists, keep it
         return "redirect:/build/storage";
     }
 }
