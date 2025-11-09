@@ -4,20 +4,26 @@
     <meta charset="UTF-8">
     <title>Đăng ký tài khoản</title>
     <style>
+
+        * {
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #eef2f3, #ffffff);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            margin: 0;
+            padding: 0;
+            height: 100%;
         }
+
         .register-container {
             background: #fff;
             padding: 40px 45px;
             border-radius: 14px;
             box-shadow: 0 4px 18px rgba(0,0,0,0.1);
             width: 430px;
+            max-width: 90%;
+            margin: 50px auto; /* căn giữa ngang, cách header 50px */
         }
         h2 {
             text-align: center;
