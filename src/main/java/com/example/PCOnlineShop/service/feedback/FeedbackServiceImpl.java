@@ -28,7 +28,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final AccountRepository accountRepository;
     private final OrderDetailRepository orderDetailRepository;
 
-    /**  Tìm kiếm và lọc feedback cho staff */
+    /**  Tìm kiếm feedback cho staff */
     @Override
     public Page<Feedback> search(String status, Integer rating,
                                  LocalDate from, LocalDate to,
@@ -36,18 +36,13 @@ public class FeedbackServiceImpl implements FeedbackService {
 
         Specification<Feedback> spec = (root, query, cb) -> cb.conjunction();
 
+        // Hiển thị tất cả hoặc lọc theo trạng thái
         if (status != null && !"ALL".equalsIgnoreCase(status)) {
             spec = spec.and((root, query, cb) ->
                     cb.equal(root.get("commentStatus"), status));
-        } else {
-            spec = spec.and((root, query, cb) ->
-                    cb.notEqual(root.get("commentStatus"), "Allow"));
         }
 
-        if (rating != null && rating > 0) {
-            spec = spec.and(FeedbackSpecs.rating(rating));
-        }
-
+        if (rating != null && rating > 0) spec = spec.and(FeedbackSpecs.rating(rating));
         if (from != null) spec = spec.and(FeedbackSpecs.dateFrom(from));
         if (to != null) spec = spec.and(FeedbackSpecs.dateTo(to));
 
@@ -78,9 +73,11 @@ public class FeedbackServiceImpl implements FeedbackService {
     public void updateReply(Integer id, String reply) {
         Feedback fb = get(id);
         fb.setReply(reply == null ? null : reply.trim());
-        fb.setCommentStatus("Allow");
+        fb.setCommentStatus("Allow"); //  đảm bảo vẫn được hiển thị
         feedbackRepository.save(fb);
     }
+
+
 
     @Override
     @Transactional
@@ -91,20 +88,6 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    @Transactional
-    public void bulkUpdateStatus(Map<Integer, String> idToStatus) {
-        if (idToStatus == null || idToStatus.isEmpty()) return;
-
-        idToStatus.forEach((id, st) -> {
-            if ("Allow".equalsIgnoreCase(st)) {
-                Feedback fb = get(id);
-                fb.setCommentStatus("Allow");
-                feedbackRepository.save(fb);
-            }
-        });
-    }
-
-    @Override
     public Page<Feedback> getAllowedByProduct(Integer productId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return feedbackRepository.findByProduct_ProductIdAndCommentStatusOrderByCreatedAtDesc(
@@ -112,12 +95,12 @@ public class FeedbackServiceImpl implements FeedbackService {
         );
     }
 
-    /**   Tạo mới feedback — có kiểm tra từ bậy và lọc trước khi lưu */
+    /**  Customer tạo feedback → hiển thị luôn */
     @Override
     @Transactional
     public void createFeedback(Integer productId, Integer accountId, Integer rating, String comment) {
 
-        // Kiểm tra user đã mua sản phẩm chưa (đơn hàng Completed)
+        // Kiểm tra user đã mua sản phẩm chưa
         boolean hasPurchased = orderDetailRepository
                 .existsByOrder_Account_AccountIdAndProduct_ProductIdAndOrder_Status(
                         accountId, productId, "Completed"
@@ -132,38 +115,25 @@ public class FeedbackServiceImpl implements FeedbackService {
                 "ngu", "điên", "vl", "cl", "dm", "chết", "mẹ", "đụ", "cặc", "fuck", "shit", "bitch"
         );
 
-        // Đếm số từ bậy
-        long badCount = bannedWords.stream()
-                .filter(w -> comment.toLowerCase().contains(w.toLowerCase()))
-                .count();
-
-        // Nếu có quá nhiều từ cấm thì chặn luôn
-        if (badCount >= 3) {
-            throw new IllegalArgumentException("Nội dung chứa quá nhiều từ ngữ không phù hợp!");
-        }
-
-        // Thay thế từ cấm bằng ***
+        // Lọc từ cấm
         String filteredComment = filterBadWords(comment, bannedWords);
 
-        //  Lấy product & account
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Sản phẩm không tồn tại!"));
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Tài khoản không tồn tại!"));
 
-        // Tạo feedback
         Feedback feedback = new Feedback();
         feedback.setProduct(product);
         feedback.setAccount(account);
         feedback.setRating(rating);
         feedback.setComment(filteredComment);
-        feedback.setCommentStatus("Pending");
+        feedback.setCommentStatus("Allow"); //  hiển thị ngay
         feedback.setCreatedAt(LocalDateTime.now());
 
         feedbackRepository.save(feedback);
     }
 
-    /** Hàm lọc từ cấm -> thay bằng *** */
     private String filterBadWords(String comment, List<String> bannedWords) {
         if (comment == null) return null;
         String filtered = comment;
@@ -172,4 +142,5 @@ public class FeedbackServiceImpl implements FeedbackService {
         }
         return filtered;
     }
+
 }
