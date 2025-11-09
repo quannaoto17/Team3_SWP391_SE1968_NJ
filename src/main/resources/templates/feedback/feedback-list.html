@@ -27,7 +27,7 @@
 <div class="container py-4">
     <h3 class="mb-3">Feedback List</h3>
 
-    <!-- Thông báo -->
+    <!-- ✅ Thông báo -->
     <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
 
     <!-- ================== BỘ LỌC ================== -->
@@ -54,95 +54,70 @@
     </form>
 
     <!-- ================== BẢNG FEEDBACK ================== -->
-    <form method="post" th:action="@{/staff/feedback/bulk-status}" onsubmit="return confirmSave();">
-        <input type="hidden" name="qs" th:value="${qs}">
-        <table id="feedbackTable" class="table table-hover bg-white">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>User</th>
-                <th>Product</th>
-                <th>Comment</th>
-                <th>Rating</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Change</th>
-                <th>Reply</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="fb : ${data.content}">
-                <td th:text="${fb.feedbackId}"></td>
-                <td>
-                    <div th:text="${fb.account != null ? fb.account.fullName : 'N/A'}"></div>
-                    <small class="text-muted" th:text="${fb.account != null ? fb.account.email : ''}"></small>
-                </td>
-                <td class="truncate" th:text="${fb.product != null ? fb.product.productName : 'N/A'}"></td>
-                <td class="truncate" th:text="${fb.comment}"></td>
-                <td>
-                    <span th:each="i : ${#numbers.sequence(1,5)}"
-                          th:text="${i <= (fb.rating != null ? fb.rating : 0) ? '★' : '☆'}"
-                          class="star"></span>
-                </td>
-                <td th:text="${#temporals.format(fb.createdAt, 'dd/MM/yyyy')}"></td>
-                <td>
-                    <span th:classappend="${fb.commentStatus == 'Allow' ? 'badge bg-success' : 'badge bg-secondary'}"
-                          th:text="${fb.commentStatus}"></span>
-                </td>
-                <td>
-                    <input type="hidden" name="id" th:value="${fb.feedbackId}">
-                    <select class="form-select form-select-sm" name="st">
-                        <option value="Pending" th:selected="${fb.commentStatus == 'Pending'}">Pending</option>
-                        <option value="Allow"   th:selected="${fb.commentStatus == 'Allow'}">Allow</option>
-                    </select>
-                </td>
-                <td>
-                    <a class="btn btn-sm btn-outline-primary"
-                       th:href="@{|/staff/feedback/${fb.feedbackId}?back=${qs}|}">
-                        <span th:text="${fb.reply == null || #strings.isEmpty(fb.reply) ? 'Add' : 'Edit'}"></span>
-                    </a>
-                </td>
-            </tr>
-            <tr th:if="${data.content.size() == 0}">
-                <td colspan="9" class="text-center text-muted">No data</td>
-            </tr>
-            </tbody>
-        </table>
+    <table id="feedbackTable" class="table table-hover bg-white">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Product</th>
+            <th>Comment</th>
+            <th>Rating</th>
+            <th>Date</th>
+            <th>Reply</th> <!-- ⚙️ ĐÃ GỠ CỘT STATUS -->
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="fb : ${data.content}">
+            <td th:text="${fb.feedbackId}"></td>
+            <td>
+                <div th:text="${fb.account != null ? fb.account.fullName : 'N/A'}"></div>
+                <small class="text-muted" th:text="${fb.account != null ? fb.account.email : ''}"></small>
+            </td>
+            <td class="truncate" th:text="${fb.product != null ? fb.product.productName : 'N/A'}"></td>
+            <td class="truncate" th:text="${fb.comment}"></td>
+            <td>
+                <span th:each="i : ${#numbers.sequence(1,5)}"
+                      th:text="${i <= (fb.rating != null ? fb.rating : 0) ? '★' : '☆'}"
+                      class="star"></span>
+            </td>
+            <td th:text="${#temporals.format(fb.createdAt, 'dd/MM/yyyy')}"></td>
+            <td>
+                <a class="btn btn-sm btn-outline-primary"
+                   th:href="@{|/staff/feedback/${fb.feedbackId}?back=${qs}|}">
+                    <span th:text="${fb.reply == null || #strings.isEmpty(fb.reply) ? 'Add' : 'Edit'}"></span>
+                </a>
+            </td>
+        </tr>
 
-        <div class="text-end mt-3">
-            <button class="btn btn-success" type="submit">Save Changes</button>
-        </div>
-    </form>
+        <tr th:if="${data.content.size() == 0}">
+            <td colspan="7" class="text-center text-muted">No data</td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
 <!-- ================== SCRIPT ================== -->
 <script>
-    function confirmSave() {
-        return confirm('Xác nhận duyệt các feedback (Allow)?');
-    }
-
     $(document).ready(function () {
         $('#feedbackTable').DataTable({
             ordering: false,
             responsive: true,
-            pageLength: 5,
+            pageLength: -1,
             lengthMenu: [
                 [5, 10, 25, 50, -1],
-                [5, 10, 25, 50, "Tất cả"]
+                [5, 10, 25, 50, "All"]
             ],
             language: {
-                search: "Tìm:",
-                lengthMenu: "Hiển thị _MENU_ dòng",
-                info: "Hiển thị _START_–_END_ / _TOTAL_ phản hồi",
-                paginate: { previous: "Trước", next: "Sau" },
-                zeroRecords: "Không có phản hồi phù hợp",
-                infoEmpty: "Không có phản hồi"
+                search: "Search:",
+                lengthMenu: "Show _MENU_ rows",
+                info: "Showing _START_–_END_ of _TOTAL_ feedbacks",
+                paginate: { previous: "Prev", next: "Next" },
+                zeroRecords: "No matching feedbacks found",
+                infoEmpty: "No feedbacks available"
             },
             columnDefs: [
                 { targets: -1, orderable: false, searchable: false },
-                { targets: -2, orderable: false },
                 { targets: 4, searchable: false }
-
             ]
         });
     });
