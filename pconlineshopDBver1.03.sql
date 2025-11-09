@@ -343,3 +343,7 @@ ON DELETE CASCADE;
 
 -- BẬT LẠI KIỂM TRA KHÓA NGOẠI
 SET foreign_key_checks = 1;
+
+ALTER TABLE brand
+    ADD COLUMN status TINYINT(1) NOT NULL DEFAULT 1
+COMMENT '1 = Active, 0 = Inactive';
