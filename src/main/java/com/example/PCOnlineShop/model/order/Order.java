@@ -16,7 +16,8 @@ import java.util.List;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int orderId;
+    @Column(name = "order_id")
+    private long orderId;
 
     @ManyToOne(fetch = FetchType.EAGER) // EAGER để dễ lấy thông tin hiển thị
     @JoinColumn(name = "account_id", nullable = false)
