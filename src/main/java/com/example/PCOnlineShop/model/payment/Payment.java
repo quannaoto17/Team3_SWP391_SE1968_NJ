@@ -1,53 +1,44 @@
 package com.example.PCOnlineShop.model.payment;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
+import com.example.PCOnlineShop.model.order.Order;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Entity
-@Table(name = "payments")
-@Getter
-@Setter
+@Table(name = "payments") //
+@Data
 @NoArgsConstructor
-@ToString
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long paymentId;
+    @Column(name = "payment_id") //
+    private long paymentId;
 
-    @Column(nullable = false)
-    private Integer orderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false) //
+    private Order order;
 
-    @Column(length = 255)
-    private String gatewayPaymentId;
+    @Column(name = "gateway_payment_id") //
+    private String gatewayPaymentId; // ID giao dịch của PayOS
 
-    @Column(nullable = false)
-    private Double amount;
+    @Column(name = "amount") //
+    private BigDecimal amount;
 
-    @Column(length = 10)
-    private String currency = "VND";
+    @Column(name = "status") //
+    private String status; // PENDING, SUCCESS, FAILED
 
-    @Column(length = 50)
-    private String status; // PENDING, SUCCESS, FAILED...
+    @Column(name = "raw_payload", columnDefinition = "TEXT") //
+    private String rawPayload; // Lưu trữ JSON webhook
 
-    @Lob
-    private String rawPayload;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", updatable = false) //
+    private Date createdAt;
 
     @PrePersist
-    public void prePersist() {
-        createdAt = LocalDateTime.now();
-        updatedAt = createdAt;
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = LocalDateTime.now();
+    protected void onCreate() {
+        createdAt = new Date();
     }
 }

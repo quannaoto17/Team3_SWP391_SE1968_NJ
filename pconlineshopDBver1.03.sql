@@ -274,5 +274,72 @@ COMMENT 'Thời điểm shipper chuyển trạng thái sang Delivering';
 alter table product
 add	column inventory_quantity int;
 
+-- Tạo bảng payments
+CREATE TABLE IF NOT EXISTS payments (
+  payment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT NOT NULL,
+  gateway_payment_id VARCHAR(255),
+  amount DECIMAL(10,2),
+  currency VARCHAR(10) DEFAULT 'VND',
+  status VARCHAR(50), -- PENDING, SUCCESS, FAILED, REFUNDED...
+  raw_payload TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_payments_order FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE
+);
+
+-- Thêm cột vào orders để liên kết payment và lưu trạng thái
+ALTER TABLE orders
+  ADD COLUMN payment_id VARCHAR(255) NULL,
+  ADD COLUMN payment_status VARCHAR(50) NULL,
+  ADD COLUMN paid_at DATETIME NULL;
+
+-- DỪNG KIỂM TRA KHÓA NGOẠI TẠM THỜI
+SET foreign_key_checks = 0;
+
+-- ======================================================
+-- BƯỚC 1: XÓA CÁC KHÓA NGOẠI CŨ ĐANG GÂY LỖI
+-- ======================================================
+
+-- Lỗi của bạn là ở đây:
+ALTER TABLE order_detail
+DROP FOREIGN KEY order_detail_ibfk_1;
+
+-- Sửa luôn cho bảng payments (nó cũng tham chiếu đến order_id)
+ALTER TABLE payments
+DROP FOREIGN KEY fk_payments_order;
 
 
+-- ======================================================
+-- BƯỚC 2: THAY ĐỔI KIỂU DỮ LIỆU CỦA CẢ 3 CỘT
+-- ======================================================
+
+-- Sửa bảng "cha" (orders)
+ALTER TABLE orders
+MODIFY COLUMN order_id BIGINT AUTO_INCREMENT;
+
+-- Sửa bảng "con" (order_detail)
+ALTER TABLE order_detail
+MODIFY COLUMN order_id BIGINT NOT NULL;
+
+-- Sửa bảng "con" (payments)
+ALTER TABLE payments
+MODIFY COLUMN order_id BIGINT NOT NULL;
+
+
+-- ======================================================
+-- BƯỚC 3: THÊM LẠI KHÓA NGOẠI VỚI KIỂU DỮ LIỆU ĐÚNG
+-- ======================================================
+
+ALTER TABLE order_detail
+ADD CONSTRAINT fk_order_detail_orders
+FOREIGN KEY (order_id) REFERENCES orders(order_id)
+ON DELETE CASCADE;
+
+ALTER TABLE payments
+ADD CONSTRAINT fk_payments_orders
+FOREIGN KEY (order_id) REFERENCES orders(order_id)
+ON DELETE CASCADE;
+
+-- BẬT LẠI KIỂM TRA KHÓA NGOẠI
+SET foreign_key_checks = 1;
