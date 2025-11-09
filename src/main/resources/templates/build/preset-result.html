@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build Suggestions</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .result-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        .result-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .result-header h2 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .result-header p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+        .build-info {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .build-info h3 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .info-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .info-item strong {
+            display: block;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        .build-components {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .build-components h3 {
+            margin-bottom: 25px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .component-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+        .component-item:hover {
+            background: #f8f9fa;
+        }
+        .component-item:last-child {
+            border-bottom: none;
+        }
+        .component-label {
+            font-weight: bold;
+            color: #667eea;
+            min-width: 180px;
+            font-size: 16px;
+        }
+        .component-specs {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .component-budget {
+            font-weight: bold;
+            color: #28a745;
+            font-size: 18px;
+            min-width: 150px;
+            text-align: right;
+        }
+        .component-range {
+            color: #666;
+            font-size: 14px;
+        }
+        .score-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .total-budget {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .total-budget h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .total-budget .budget-amount {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        .note-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: #014361;
+        }
+        .note-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div sec:authorize="hasRole('CUSTOMER')" th:replace="layout/header-customer :: header-customer"></div>
+    <div sec:authorize="hasRole('STAFF')" th:replace="layout/header-staff :: header-staff"></div>
+    <div sec:authorize="hasRole('ADMIN')" th:replace="layout/header-admin :: header-admin"></div>
+    <div sec:authorize="isAnonymous()" th:replace="layout/header-guest :: header-guest"></div>
+
+    <div class="result-container">
+        <!-- Header -->
+        <div class="result-header">
+            <h2>🎯 Your Build Suggestions</h2>
+            <p th:text="${buildPlan != null ? buildPlan.purpose : 'Custom Build'}">Gaming - High End</p>
+        </div>
+
+        <!-- Build Info -->
+        <div class="build-info" th:if="${buildPlan != null}">
+            <h3>📊 Build Information</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Build Type</strong>
+                    <span th:text="${buildPlan.purpose}">Gaming - High End</span>
+                </div>
+                <div class="info-item">
+                    <strong>Total Budget</strong>
+                    <span th:text="'$' + ${#numbers.formatDecimal(buildPlan.totalBudget, 0, 'COMMA', 2, 'POINT')}">$2500.00</span>
+                </div>
+                <div class="info-item">
+                    <strong>Components</strong>
+                    <span>8 Components Planned</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Note -->
+        <div class="note-box">
+            <strong>💡 Note:</strong>
+            Below are the budget allocations and performance requirements for each component.
+            Click "Proceed to Build" to select specific products matching these criteria.
+        </div>
+
+        <!-- Build Components -->
+        <div class="build-components" th:if="${buildPlan != null}">
+            <h3>🖥️ Component Budget & Requirements</h3>
+
+            <!-- GPU -->
+            <div class="component-item" th:if="${buildPlan.planGpu != null}">
+                <span class="component-label">🎮 GPU:</span>
+                <div class="component-specs">
+                    <span class="component-range">
+                        Performance Score: <span class="score-badge" th:text="${buildPlan.planGpu.scoreMin} + '-' + ${buildPlan.planGpu.scoreMax}">85-100</span>
+                    </span>
+                </div>
+                <span class="component-budget" th:text="'Budget: $' + ${#numbers.formatDecimal(buildPlan.planGpu.budgetMax, 0, 'COMMA', 2, 'POINT')}">$1000.00</span>
+            </div>
+
+            <!-- CPU -->
+            <div class="component-item" th:if="${buildPlan.planCpu != null}">
+                <span class="component-label">⚙️ CPU:</span>
+                <div class="component-specs">
+                    <span class="component-range">
+                        Performance Score: <span class="score-badge" th:text="${buildPlan.planCpu.scoreMin} + '-' + ${buildPlan.planCpu.scoreMax}">80-100</span>
+                    </span>
+                </div>
+                <span class="component-budget" th:text="'Budget: $' + ${#numbers.formatDecimal(buildPlan.planCpu.budgetMax, 0, 'COMMA', 2, 'POINT')}">$625.00</span>
+            </div>
+
+            <!-- Mainboard -->
+            <div class="component-item" th:if="${buildPlan.planMotherboard != null}">
+                <span class="component-label">🔌 Mainboard:</span>
+                <div class="component-specs">
+                    <span class="component-range">
+                        Performance Score: <span class="score-badge" th:text="${buildPlan.planMotherboard.scoreMin} + '-' + ${buildPlan.planMotherboard.scoreMax}">50-100</span>
+                    </span>
+                </div>
+                <span class="component-budget" th:text="'Budget: $' + ${#numbers.formatDecimal(buildPlan.planMotherboard.budgetMax, 0, 'COMMA', 2, 'POINT')}">$175.00</span>
+            </div>
+
+            <!-- Memory -->
+            <div class="component-item" th:if="${buildPlan.planRam != null}">
+                <span class="component-label">💾 Memory (RAM):</span>
+                <div class="component-specs">
+                    <span class="component-range">
+                        Performance Score: <span class="score-badge" th:text="${buildPlan.planRam.scoreMin} + '-' + ${buildPlan.planRam.scoreMax}">50-100</span>
+                    </span>
+                </div>
+                <span class="component-budget" th:text="'Budget: $' + ${#numbers.formatDecimal(buildPlan.planRam.budgetMax, 0, 'COMMA', 2, 'POINT')}">$250.00</span>
+            </div>
+
+            <!-- Storage -->
+            <div class="component-item" th:if="${buildPlan.planStorage != null}">
+                <span class="component-label">💿 Storage:</span>
+                <div class="component-specs">
+                    <span class="component-range">
+                        Performance Score: <span class="score-badge" th:text="${buildPlan.planStorage.scoreMin} + '-' + ${buildPlan.planStorage.scoreMax}">50-100</span>
+                    </span>
+                </div>
+                <span class="component-budget" th:text="'Budget: $' + ${#numbers.formatDecimal(buildPlan.planStorage.budgetMax, 0, 'COMMA', 2, 'POINT')}">$200.00</span>
+            </div>
+
+            <!-- PSU -->
+            <div class="component-item" th:if="${buildPlan.planPsu != null}">
+                <span class="component-label">⚡ Power Supply:</span>
+                <div class="component-specs">
+                    <span class="component-range">
+                        Performance Score: <span class="score-badge" th:text="${buildPlan.planPsu.scoreMin} + '-' + ${buildPlan.planPsu.scoreMax}">60-100</span>
+                    </span>
+                </div>
+                <span class="component-budget" th:text="'Budget: $' + ${#numbers.formatDecimal(buildPlan.planPsu.budgetMax, 0, 'COMMA', 2, 'POINT')}">$200.00</span>
+            </div>
+
+            <!-- Cooling -->
+            <div class="component-item" th:if="${buildPlan.planCooling != null}">
+                <span class="component-label">❄️ Cooling:</span>
+                <div class="component-specs">
+                    <span class="component-range">
+                        Performance Score: <span class="score-badge" th:text="${buildPlan.planCooling.scoreMin} + '-' + ${buildPlan.planCooling.scoreMax}">50-100</span>
+                    </span>
+                </div>
+                <span class="component-budget" th:text="'Budget: $' + ${#numbers.formatDecimal(buildPlan.planCooling.budgetMax, 0, 'COMMA', 2, 'POINT')}">$100.00</span>
+            </div>
+
+            <!-- Case -->
+            <div class="component-item" th:if="${buildPlan.planCase != null}">
+                <span class="component-label">🏠 Case:</span>
+                <div class="component-specs">
+                    <span class="component-range">
+                        Performance Score: <span class="score-badge" th:text="${buildPlan.planCase.scoreMin} + '-' + ${buildPlan.planCase.scoreMax}">50-100</span>
+                    </span>
+                </div>
+                <span class="component-budget" th:text="'Budget: $' + ${#numbers.formatDecimal(buildPlan.planCase.budgetMax, 0, 'COMMA', 2, 'POINT')}">$75.00</span>
+            </div>
+        </div>
+
+        <!-- Total Budget -->
+        <div class="total-budget" th:if="${buildPlan != null}">
+            <h3>💰 Total Budget Allocated</h3>
+            <div class="budget-amount" th:text="'$' + ${#numbers.formatDecimal(buildPlan.totalBudget, 0, 'COMMA', 2, 'POINT')}">$2,500.00</div>
+            <p>Budget has been distributed optimally for your build type</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="/build/start" class="btn btn-success">
+                ✅ Proceed to Build
+            </a>
+            <a href="/build/ai-suggest" class="btn btn-secondary">
+                🔄 Try Different Preset
+            </a>
+            <a href="/" class="btn btn-secondary">
+                🏠 Back to Home
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="layout/footer :: footer"></div>
+</body>
+</html>
+

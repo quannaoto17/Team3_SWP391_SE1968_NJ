@@ -1,6 +1,7 @@
 package com.example.PCOnlineShop.service.product;
 
 import com.example.PCOnlineShop.model.product.Product;
+import com.example.PCOnlineShop.repository.order.OrderDetailRepository;
 import com.example.PCOnlineShop.repository.product.BrandRepository;
 import com.example.PCOnlineShop.repository.product.CategoryRepository;
 import com.example.PCOnlineShop.repository.product.ImageRepository;
@@ -20,13 +21,15 @@ public class ProductService {
     private final BrandRepository brandRepository;
     private final CategoryRepository categoryRepository;
     private final ImageRepository imageRepository;
+    private final OrderDetailRepository orderDetailRepository;
 
     public ProductService(ProductRepository productRepository, BrandRepository brandRepository,
-                          CategoryRepository categoryRepository, ImageRepository imageRepository) {
+                          CategoryRepository categoryRepository, ImageRepository imageRepository, OrderDetailRepository orderDetailRepository) {
         this.productRepository = productRepository;
         this.brandRepository = brandRepository;
         this.categoryRepository = categoryRepository;
         this.imageRepository = imageRepository;
+        this.orderDetailRepository = orderDetailRepository;
     }
 
     public List<Product> getProducts() {
@@ -112,8 +115,13 @@ public class ProductService {
     public List<Product> getTopRelatedProducts(Integer categoryId, Integer currentProductId) {
         return productRepository.findTop4ByCategory_CategoryIdAndProductIdNot(categoryId, currentProductId);
     }
-    public boolean existsByProductName(String productName) {
+    public boolean existsActiveProductName(String productName) {
         return productRepository.existsByProductName(productName);
+    }
+
+    public boolean isProductInActiveOrders(int productId) {
+        List<String> activeStatuses = List.of("Pending", "Processing", "Delivering","Ready to Ship", "Completed","Cancel");
+        return orderDetailRepository.existsByProduct_ProductIdAndOrder_StatusIn(productId, activeStatuses);
     }
 
 }

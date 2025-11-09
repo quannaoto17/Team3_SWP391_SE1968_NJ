@@ -17,7 +17,7 @@ public class Brand {
     @Setter
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column (name = "brand_id")
-    private int brandId;
+    private Integer brandId;
 
     @Column (name = "name")
     @NotBlank(message = "Brand's name must not be null")

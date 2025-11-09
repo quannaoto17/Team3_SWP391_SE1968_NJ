@@ -1,6 +1,6 @@
 /**
- * AI Suggest Feature for Build PC
- * Handles AI-powered build suggestions based on user requirements
+ * Rule-Based Build Preset System
+ * Handles build suggestions based on predefined presets
  */
 
 (function() {
@@ -12,8 +12,8 @@
     const aiAssistantSection = document.getElementById('aiAssistantSection');
     const buildOptions = document.querySelector('.build-options');
 
-    const btnAiSuggest = document.getElementById('btnAiSuggest');
-    const userRequestInput = document.getElementById('userRequest');
+    const btnGetSuggestions = document.getElementById('btnGetSuggestions');
+    const totalBudgetInput = document.getElementById('totalBudget');
     const aiResultSection = document.getElementById('aiResultSection');
     const aiResultContent = document.getElementById('aiResultContent');
     const aiErrorSection = document.getElementById('aiErrorSection');
@@ -24,7 +24,7 @@
 
     // State
     let currentBuildPlan = null;
-    let selectedBuildType = null;
+    let selectedPreset = null;
 
     /**
      * Initialize event listeners
@@ -38,8 +38,8 @@
             btnBackToOptions.addEventListener('click', hideAiAssistant);
         }
 
-        if (btnAiSuggest) {
-            btnAiSuggest.addEventListener('click', handleAiSuggest);
+        if (btnGetSuggestions) {
+            btnGetSuggestions.addEventListener('click', handleGetSuggestions);
         }
 
         if (btnApplyBuild) {
@@ -50,21 +50,16 @@
             btnNewSuggestion.addEventListener('click', handleNewSuggestion);
         }
 
-        // Quick option cards
+        // Preset option cards
         optionCards.forEach(card => {
             card.addEventListener('click', function() {
-                handleQuickOption(this);
+                handlePresetSelection(this);
             });
         });
 
-        // Allow Enter key to submit in textarea (with Ctrl/Cmd)
-        if (userRequestInput) {
-            userRequestInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                    e.preventDefault();
-                    handleAiSuggest();
-                }
-            });
+        // Budget input validation
+        if (totalBudgetInput) {
+            totalBudgetInput.addEventListener('input', validateBudget);
         }
     }
 
@@ -86,30 +81,284 @@
         // Reset state
         hideResults();
         hideError();
-        clearSelectedOption();
-        if (userRequestInput) userRequestInput.value = '';
+        clearSelectedPreset();
+        if (totalBudgetInput) totalBudgetInput.value = '1500';
         currentBuildPlan = null;
+        selectedPreset = null;
     }
 
     /**
-     * Handle quick option card selection
+     * Handle preset card selection
      */
-    function handleQuickOption(card) {
-        const buildType = card.getAttribute('data-type');
-        selectedBuildType = buildType;
+    function handlePresetSelection(card) {
+        const preset = card.getAttribute('data-preset');
+        const minBudget = parseInt(card.getAttribute('data-min-budget'));
+
+        selectedPreset = preset;
 
         // Update visual selection
         optionCards.forEach(c => c.classList.remove('selected'));
         card.classList.add('selected');
 
+        // Update budget if current value is less than recommended
+        if (totalBudgetInput) {
+            const currentBudget = parseInt(totalBudgetInput.value) || 0;
+            if (currentBudget < minBudget) {
+                totalBudgetInput.value = minBudget;
+            }
+        }
+
+        // Enable Get Suggestions button
+        if (btnGetSuggestions) {
+            btnGetSuggestions.disabled = false;
+        }
+
+        hideError();
+    }
+
+    /**
+     * Validate budget input
+     */
+    function validateBudget() {
+        const budget = parseInt(totalBudgetInput.value) || 0;
+        if (btnGetSuggestions) {
+            btnGetSuggestions.disabled = !selectedPreset || budget < 500;
+        }
+    }
+
+    /**
+     * Clear selected preset
+     */
+    function clearSelectedPreset() {
+        optionCards.forEach(c => c.classList.remove('selected'));
+        if (btnGetSuggestions) {
+            btnGetSuggestions.disabled = true;
+        }
+    }
+
+    /**
+     * Handle Get Suggestions button click
+     */
+    async function handleGetSuggestions() {
+        if (!selectedPreset) {
+            showError('Please select a build preset first!');
+            return;
+        }
+
+        const budget = parseFloat(totalBudgetInput.value);
+        if (!budget || budget < 500) {
+            showError('Please enter a valid budget (minimum $500)');
+            return;
+        }
+
+        // Show loading state
+        setLoadingState(true);
+        hideError();
+        hideResults();
+
+        try {
+            const response = await fetch('/api/build/suggest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    preset: selectedPreset,
+                    budget: budget
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to get build suggestions');
+            }
+
+            const buildPlan = await response.json();
+            currentBuildPlan = buildPlan;
+
+            displayBuildPlan(buildPlan);
+            showResults();
+
+        } catch (error) {
+            console.error('Error:', error);
+            showError('Failed to get build suggestions. Please try again.');
+        } finally {
+            setLoadingState(false);
+        }
+    }
+
+    /**
+     * Display build plan results
+     */
+    function displayBuildPlan(plan) {
+        if (!aiResultContent) return;
+
+        let html = '<div class="build-plan-summary">';
+        html += `<div class="plan-header">`;
+        html += `<h4>${plan.purpose}</h4>`;
+        html += `<div class="plan-budget">Total Budget: $${plan.totalBudget.toFixed(2)}</div>`;
+        html += `</div>`;
+
+        html += '<div class="component-list">';
+
+        // GPU
+        if (plan.planGpu) {
+            html += createComponentCard('🎮 GPU', plan.planGpu);
+        }
+
+        // CPU
+        if (plan.planCpu) {
+            html += createComponentCard('⚙️ CPU', plan.planCpu);
+        }
+
+        // Mainboard
+        if (plan.planMotherboard) {
+            html += createComponentCard('🔌 Mainboard', plan.planMotherboard);
+        }
+
+        // Memory
+        if (plan.planRam) {
+            html += createComponentCard('💾 Memory', plan.planRam);
+        }
+
+        // Storage
+        if (plan.planStorage) {
+            html += createComponentCard('💿 Storage', plan.planStorage);
+        }
+
+        // PSU
+        if (plan.planPsu) {
+            html += createComponentCard('⚡ Power Supply', plan.planPsu);
+        }
+
+        // Cooling
+        if (plan.planCooling) {
+            html += createComponentCard('❄️ Cooling', plan.planCooling);
+        }
+
+        // Case
+        if (plan.planCase) {
+            html += createComponentCard('🏠 Case', plan.planCase);
+        }
+
+        html += '</div>';
+        html += '</div>';
+
+        aiResultContent.innerHTML = html;
+    }
+
+    /**
+     * Create component card HTML
+     */
+    function createComponentCard(label, componentRule) {
+        return `
+            <div class="component-card">
+                <div class="component-label">${label}</div>
+                <div class="component-info">
+                    <div class="component-budget">Budget: $${componentRule.budgetMax.toFixed(2)}</div>
+                    <div class="component-score">Score: ${componentRule.scoreMin}-${componentRule.scoreMax}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Handle Apply Build button
+     */
+    function handleApplyBuild() {
+        if (!currentBuildPlan) {
+            showError('No build plan to apply');
+            return;
+        }
+
+        // Store build plan in sessionStorage for the build process
+        sessionStorage.setItem('buildPlan', JSON.stringify(currentBuildPlan));
+
+        // Redirect to mainboard selection (first step)
+        window.location.href = '/build/mainboard';
+    }
+
+    /**
+     * Handle New Suggestion button
+     */
+    function handleNewSuggestion() {
+        hideResults();
+        clearSelectedPreset();
+        if (totalBudgetInput) totalBudgetInput.value = '1500';
+        currentBuildPlan = null;
+        selectedPreset = null;
+    }
+
+    /**
+     * Show results section
+     */
+    function showResults() {
+        if (aiResultSection) aiResultSection.style.display = 'block';
+    }
+
+    /**
+     * Hide results section
+     */
+    function hideResults() {
+        if (aiResultSection) aiResultSection.style.display = 'none';
+    }
+
+    /**
+     * Show error message
+     */
+    function showError(message) {
+        if (aiErrorSection) {
+            const errorMsg = aiErrorSection.querySelector('.error-message');
+            if (errorMsg) errorMsg.textContent = message;
+            aiErrorSection.style.display = 'block';
+        }
+    }
+
+    /**
+     * Hide error message
+     */
+    function hideError() {
+        if (aiErrorSection) aiErrorSection.style.display = 'none';
+    }
+
+    /**
+     * Set loading state for Get Suggestions button
+     */
+    function setLoadingState(isLoading) {
+        if (!btnGetSuggestions) return;
+
+        const btnText = btnGetSuggestions.querySelector('.btn-text');
+        const btnLoading = btnGetSuggestions.querySelector('.btn-loading');
+
+        if (isLoading) {
+            btnGetSuggestions.disabled = true;
+            if (btnText) btnText.style.display = 'none';
+            if (btnLoading) btnLoading.style.display = 'inline';
+        } else {
+            btnGetSuggestions.disabled = false;
+            if (btnText) btnText.style.display = 'inline';
+            if (btnLoading) btnLoading.style.display = 'none';
+        }
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+})();
+        optionCards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+
         // Auto-fill textarea with build type request
         const requestTexts = {
-            'gaming-high': 'Máy tính chơi game cao cấp, có thể chơi game 4K với cài đặt đồ họa tối đa, ngân sách khoảng 40-50 triệu VND',
-            'gaming-mid': 'Máy tính chơi game tầm trung, chơi được game 1080p/1440p mượt mà, ngân sách khoảng 20-30 triệu VND',
-            'workstation': 'Máy trạm làm việc chuyên nghiệp cho dựng video, render 3D, chỉnh sửa ảnh, ngân sách 30-40 triệu VND',
-            'office': 'Máy tính văn phòng cho công việc hàng ngày, lướt web, văn bản, ngân sách 10-15 triệu VND',
-            'budget': 'Máy tính giá rẻ, hiệu suất tốt nhất trong tầm giá, ngân sách dưới 15 triệu VND',
-            'streaming': 'Máy tính cho chơi game và livestream đồng thời, ngân sách khoảng 35-45 triệu VND'
+            'gaming-high': 'High-end gaming PC for 4K gaming with maximum graphics settings, budget around $2000-2500',
+            'gaming-mid': 'Mid-range gaming PC for smooth 1080p/1440p gaming, budget around $1000-1500',
+            'workstation': 'Professional workstation for video editing, 3D rendering, and photo editing, budget around $1500-2000',
+            'office': 'Office PC for daily work tasks, web browsing, and document processing, budget around $600-800',
+            'budget': 'Budget-friendly PC with best performance for the price, budget under $700',
+            'streaming': 'Gaming and streaming PC for simultaneous gaming and live broadcasting, budget around $1800-2200'
         };
 
         if (userRequestInput && requestTexts[buildType]) {
@@ -135,7 +384,7 @@
         const userRequest = userRequestInput.value.trim();
 
         if (!userRequest) {
-            showError('Vui lòng nhập yêu cầu của bạn hoặc chọn một loại máy tính.');
+            showError('Please enter your requirements or select a PC type.');
             return;
         }
 
@@ -170,7 +419,7 @@
 
         } catch (error) {
             console.error('Error getting AI suggestion:', error);
-            showError('Không thể lấy gợi ý từ AI. Vui lòng thử lại. Lỗi: ' + error.message);
+            showError('Failed to get AI suggestion. Please try again. Error: ' + error.message);
         } finally {
             setLoadingState(false);
         }
@@ -184,7 +433,7 @@
 
         // Motherboard
         if (buildPlan.planMotherboard) {
-            html += createComponentRuleHTML('🔌 Mainboard', buildPlan.planMotherboard);
+            html += createComponentRuleHTML('🔌 Motherboard', buildPlan.planMotherboard);
         }
 
         // CPU
@@ -223,7 +472,7 @@
         }
 
         if (!html) {
-            html = '<p>Không thể tạo kế hoạch build. Vui lòng thử lại với yêu cầu khác.</p>';
+            html = '<p>Could not generate build plan. Please try with different requirements.</p>';
         }
 
         aiResultContent.innerHTML = html;
@@ -236,8 +485,8 @@
         return `
             <div class="component-rule">
                 <h5>${componentName}</h5>
-                <p><strong>Ngân sách tối đa:</strong> ${formatCurrency(rule.budetMax)}</p>
-                <p><strong>Điểm hiệu năng:</strong> ${rule.scoreMin} - ${rule.scoreMax}</p>
+                <p><strong>Max Budget:</strong> ${formatCurrency(rule.budetMax)}</p>
+                <p><strong>Performance Score:</strong> ${rule.scoreMin} - ${rule.scoreMax}</p>
             </div>
         `;
     }
@@ -247,7 +496,7 @@
      */
     function handleApplyBuild() {
         if (!currentBuildPlan) {
-            showError('Không có kế hoạch build để áp dụng.');
+            showError('No build plan to apply.');
             return;
         }
 
@@ -273,13 +522,15 @@
     }
 
     /**
-     * Format currency (VND)
+     * Format currency (USD)
      */
     function formatCurrency(amount) {
         if (!amount) return 'N/A';
-        return new Intl.NumberFormat('vi-VN', {
+        return new Intl.NumberFormat('en-US', {
             style: 'currency',
-            currency: 'VND'
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
         }).format(amount);
     }
 

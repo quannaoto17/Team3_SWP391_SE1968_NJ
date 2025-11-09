@@ -213,10 +213,10 @@ CREATE TABLE cart_item (
 CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
     account_id INT NOT NULL, -- ID của khách hàng
-    
+
     -- Chỉ giữ lại tổng tiền cuối cùng (đã bỏ total_amount, discount, voucher)
     final_amount DECIMAL(10,2),
-    
+
     -- Trạng thái (Pending, Processing, Ready to Ship, Delivering, Completed, Cancelled)
     status VARCHAR(50),
     created_date DATE DEFAULT (CURRENT_DATE),
@@ -224,12 +224,12 @@ CREATE TABLE orders (
     -- Dữ liệu từ trang checkout (Phương thức, Ghi chú, Email)
     shipping_method VARCHAR(50) NOT NULL, -- "Giao hàng tận nơi" hoặc "Nhận tại cửa hàng"
     note TEXT NULL,
-	
+
     -- Dữ liệu "Ảnh chụp" địa chỉ giao hàng tại thời điểm đặt
     shipping_full_name VARCHAR(100) NOT NULL,
     shipping_phone VARCHAR(20) NOT NULL,
     shipping_address VARCHAR(255) NOT NULL,
-    
+
     FOREIGN KEY (account_id) REFERENCES account(account_id)
 );
 
@@ -255,12 +255,13 @@ CREATE TABLE feedback (
     product_id INT NOT NULL,
     comment VARCHAR(500),
     rating INT CHECK (rating BETWEEN 1 AND 5),
-    comment_status VARCHAR(50),        -- Allow / Pending
-    reply VARCHAR(500) NULL,           -- Staff trả lời
-    created_at DATE DEFAULT (CURRENT_DATE),
+    comment_status VARCHAR(50),
+    reply VARCHAR(500) NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (account_id) REFERENCES account(account_id),
     FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
+
 
 ALTER TABLE orders
 ADD COLUMN ready_to_ship_date DATETIME NULL

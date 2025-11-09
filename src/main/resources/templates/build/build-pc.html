@@ -47,61 +47,65 @@
 
             <!-- AI Suggest Section (Hidden by default) -->
             <div id="aiAssistantSection" class="ai-assistant-section" style="display: none;">
-                <h2>🤖 AI Build Assistant</h2>
-                <p class="ai-intro-text">Choose a build type or describe your custom requirements</p>
+                <h2>🚀 Build Preset Assistant</h2>
+                <p class="ai-intro-text">Choose a preset based on your needs and budget</p>
 
                 <!-- Quick Selection Options -->
                 <div class="quick-options">
-                    <h3>Quick Selection</h3>
+                    <h3>Choose Your Build Type</h3>
                     <div class="options-grid">
-                        <button class="option-card" data-type="gaming-high">
+                        <button class="option-card" data-preset="GAMING_HIGH" data-min-budget="2000">
                             <div class="option-icon">🎮</div>
                             <div class="option-title">Gaming - High End</div>
-                            <div class="option-desc">4K gaming, max settings</div>
+                            <div class="option-desc">AAA gaming at 1440p/4K</div>
+                            <div class="option-budget">Suggested: $2000+</div>
                         </button>
 
-                        <button class="option-card" data-type="gaming-mid">
+                        <button class="option-card" data-preset="GAMING_MID" data-min-budget="1200">
                             <div class="option-icon">🎯</div>
                             <div class="option-title">Gaming - Mid Range</div>
                             <div class="option-desc">1080p/1440p gaming</div>
+                            <div class="option-budget">Suggested: $1200+</div>
                         </button>
 
-                        <button class="option-card" data-type="workstation">
+                        <button class="option-card" data-preset="WORKSTATION" data-min-budget="1800">
                             <div class="option-icon">💼</div>
                             <div class="option-title">Workstation</div>
-                            <div class="option-desc">Content creation, editing</div>
+                            <div class="option-desc">3D, video editing, CAD</div>
+                            <div class="option-budget">Suggested: $1800+</div>
                         </button>
 
-                        <button class="option-card" data-type="office">
+                        <button class="option-card" data-preset="OFFICE" data-min-budget="600">
                             <div class="option-icon">📊</div>
                             <div class="option-title">Office</div>
-                            <div class="option-desc">Daily tasks, productivity</div>
+                            <div class="option-desc">Productivity & light tasks</div>
+                            <div class="option-budget">Suggested: $600+</div>
                         </button>
 
-                        <button class="option-card" data-type="budget">
+                        <button class="option-card" data-preset="BUDGET_GAMING" data-min-budget="700">
                             <div class="option-icon">💰</div>
-                            <div class="option-title">Budget Build</div>
-                            <div class="option-desc">Best value for money</div>
+                            <div class="option-title">Budget Gaming</div>
+                            <div class="option-desc">1080p at medium settings</div>
+                            <div class="option-budget">Suggested: $700+</div>
                         </button>
 
-                        <button class="option-card" data-type="streaming">
+                        <button class="option-card" data-preset="STREAMING" data-min-budget="1800">
                             <div class="option-icon">📹</div>
                             <div class="option-title">Streaming</div>
                             <div class="option-desc">Gaming + streaming</div>
+                            <div class="option-budget">Suggested: $1800+</div>
                         </button>
                     </div>
                 </div>
 
-                <!-- Custom Request -->
-                <div class="custom-request">
-                    <h3>Custom Requirements</h3>
-                    <div class="custom-input-wrapper">
-                        <textarea id="userRequest"
-                                  placeholder="Example: I need a PC for video editing and 3D rendering, budget around 30 million VND, prefer Intel CPU and NVIDIA GPU..."
-                                  rows="4"></textarea>
-
-                        <button id="btnAiSuggest" class="btn-ai-suggest">
-                            <span class="btn-text">✨ Get AI Suggestion</span>
+                <!-- Budget Input -->
+                <div class="budget-input-section">
+                    <h3>💵 Set Your Budget</h3>
+                    <div class="budget-input-wrapper">
+                        <label for="totalBudget">Total Budget ($):</label>
+                        <input type="number" id="totalBudget" min="500" step="50" value="1500" placeholder="Enter your budget">
+                        <button id="btnGetSuggestions" class="btn-ai-suggest" disabled>
+                            <span class="btn-text">🔍 Get Build Plan</span>
                             <span class="btn-loading" style="display: none;">⏳ Processing...</span>
                         </button>
                     </div>
@@ -109,16 +113,16 @@
 
                 <!-- AI Results -->
                 <div id="aiResultSection" class="ai-result-section" style="display: none;">
-                    <h3>📋 Suggested Build Plan</h3>
+                    <h3>📋 Your Build Plan</h3>
                     <div id="aiResultContent" class="ai-result-content">
-                        <!-- AI results will be displayed here -->
+                        <!-- Results will be displayed here -->
                     </div>
                     <div class="result-actions">
                         <button id="btnApplyBuild" class="btn-apply-build">
-                            Apply This Build
+                            ✅ Apply & Start Building
                         </button>
                         <button id="btnNewSuggestion" class="btn-new-suggestion">
-                            Get Another Suggestion
+                            🔄 Try Different Preset
                         </button>
                     </div>
                 </div>
@@ -129,7 +133,7 @@
                 </div>
 
                 <button id="btnBackToOptions" class="btn-back">
-                    ← Back to Options
+                    ← Back to Start
                 </button>
             </div>
         </div>

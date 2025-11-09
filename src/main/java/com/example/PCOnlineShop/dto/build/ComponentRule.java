@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ComponentRule {
-    private  double budetMax;
-    private  int scoreMin;
-    private  int scoreMax;
+    private double budgetMax;
+    private int scoreMin;
+    private int scoreMax;
 }

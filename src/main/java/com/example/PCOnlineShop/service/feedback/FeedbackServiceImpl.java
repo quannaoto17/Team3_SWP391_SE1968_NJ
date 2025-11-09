@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -34,33 +36,27 @@ public class FeedbackServiceImpl implements FeedbackService {
 
         Specification<Feedback> spec = (root, query, cb) -> cb.conjunction();
 
-        // Lọc theo status
         if (status != null && !"ALL".equalsIgnoreCase(status)) {
             spec = spec.and((root, query, cb) ->
                     cb.equal(root.get("commentStatus"), status));
         } else {
-            // Mặc định chỉ hiển thị feedback chưa duyệt
             spec = spec.and((root, query, cb) ->
                     cb.notEqual(root.get("commentStatus"), "Allow"));
         }
 
-        // Lọc theo rating
         if (rating != null && rating > 0) {
             spec = spec.and(FeedbackSpecs.rating(rating));
         }
 
-        // Lọc theo ngày
         if (from != null) spec = spec.and(FeedbackSpecs.dateFrom(from));
         if (to != null) spec = spec.and(FeedbackSpecs.dateTo(to));
 
-        // Sắp xếp
         Sort sort = toSort(sortKey);
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1), sort);
 
         return feedbackRepository.findAll(spec, pageable);
     }
 
-    /**  Hàm hỗ trợ sắp xếp linh hoạt */
     private Sort toSort(String key) {
         if (key == null) key = "dateDesc";
         return switch (key) {
@@ -71,14 +67,12 @@ public class FeedbackServiceImpl implements FeedbackService {
         };
     }
 
-    /**  Lấy feedback theo ID */
     @Override
     public Feedback get(Integer id) {
         return feedbackRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Feedback không tồn tại: " + id));
     }
 
-    /** ✉ Cập nhật hoặc thêm reply => tự động Allow */
     @Override
     @Transactional
     public void updateReply(Integer id, String reply) {
@@ -88,7 +82,6 @@ public class FeedbackServiceImpl implements FeedbackService {
         feedbackRepository.save(fb);
     }
 
-    /**  Cập nhật trạng thái riêng lẻ */
     @Override
     @Transactional
     public void updateStatus(Integer id, String status) {
@@ -97,7 +90,6 @@ public class FeedbackServiceImpl implements FeedbackService {
         feedbackRepository.save(fb);
     }
 
-    /**  Cập nhật hàng loạt (bulk update) */
     @Override
     @Transactional
     public void bulkUpdateStatus(Map<Integer, String> idToStatus) {
@@ -112,7 +104,6 @@ public class FeedbackServiceImpl implements FeedbackService {
         });
     }
 
-    /**  Lấy feedback Allow theo sản phẩm */
     @Override
     public Page<Feedback> getAllowedByProduct(Integer productId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -121,7 +112,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         );
     }
 
-    /**  Tạo mới feedback — chỉ cho phép nếu user đã mua hàng */
+    /**   Tạo mới feedback — có kiểm tra từ bậy và lọc trước khi lưu */
     @Override
     @Transactional
     public void createFeedback(Integer productId, Integer accountId, Integer rating, String comment) {
@@ -136,6 +127,24 @@ public class FeedbackServiceImpl implements FeedbackService {
             throw new IllegalArgumentException("Bạn chỉ có thể đánh giá sản phẩm đã mua!");
         }
 
+        // Danh sách từ cấm
+        List<String> bannedWords = List.of(
+                "ngu", "điên", "vl", "cl", "dm", "chết", "mẹ", "đụ", "cặc", "fuck", "shit", "bitch"
+        );
+
+        // Đếm số từ bậy
+        long badCount = bannedWords.stream()
+                .filter(w -> comment.toLowerCase().contains(w.toLowerCase()))
+                .count();
+
+        // Nếu có quá nhiều từ cấm thì chặn luôn
+        if (badCount >= 3) {
+            throw new IllegalArgumentException("Nội dung chứa quá nhiều từ ngữ không phù hợp!");
+        }
+
+        // Thay thế từ cấm bằng ***
+        String filteredComment = filterBadWords(comment, bannedWords);
+
         //  Lấy product & account
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Sản phẩm không tồn tại!"));
@@ -147,10 +156,20 @@ public class FeedbackServiceImpl implements FeedbackService {
         feedback.setProduct(product);
         feedback.setAccount(account);
         feedback.setRating(rating);
-        feedback.setComment(comment);
+        feedback.setComment(filteredComment);
         feedback.setCommentStatus("Pending");
-        feedback.setCreatedAt(LocalDate.now());
+        feedback.setCreatedAt(LocalDateTime.now());
 
         feedbackRepository.save(feedback);
+    }
+
+    /** Hàm lọc từ cấm -> thay bằng *** */
+    private String filterBadWords(String comment, List<String> bannedWords) {
+        if (comment == null) return null;
+        String filtered = comment;
+        for (String word : bannedWords) {
+            filtered = filtered.replaceAll("(?i)" + word, "***");
+        }
+        return filtered;
     }
 }
