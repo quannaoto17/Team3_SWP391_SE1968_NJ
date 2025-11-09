@@ -3,6 +3,7 @@ package com.example.PCOnlineShop.dto.cart;
 import com.example.PCOnlineShop.model.product.Product;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.Hibernate;
 
 @Data
 @NoArgsConstructor
@@ -24,10 +25,17 @@ public class CartItemDTO {
             // Lấy tồn kho từ model Product (bạn đã thêm cột inventory_quantity)
             this.inventoryQuantity = product.getInventoryQuantity();
             this.quantity = quantity;
-            // Lấy ảnh đầu tiên hoặc ảnh mặc định
-            this.imageUrl = (product.getImages() != null && !product.getImages().isEmpty())
-                    ? product.getImages().get(0).getImageUrl() // Giả sử Image có getImageUrl()
-                    : "/image/no-image.png"; // Đường dẫn tới ảnh mặc định
+
+            // Kiểm tra an toàn với Hibernate.isInitialized()
+            // Chỉ truy cập images nếu đã được load, tránh LazyInitializationException
+            if (Hibernate.isInitialized(product.getImages()) &&
+                product.getImages() != null &&
+                !product.getImages().isEmpty()) {
+                this.imageUrl = product.getImages().get(0).getImageUrl();
+            } else {
+                this.imageUrl = "/images/no-image.png"; // Ảnh mặc định
+            }
+
             calculateSubtotal(); // Tính thành tiền
         }
     }
