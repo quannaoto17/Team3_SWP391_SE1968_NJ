@@ -2,20 +2,18 @@ package com.example.PCOnlineShop.controller.order;
 
 import com.example.PCOnlineShop.dto.cart.CartItemDTO;
 import com.example.PCOnlineShop.dto.order.CheckoutDTO;
-import com.example.PCOnlineShop.dto.order.OrderSearchRequest;
+import com.example.PCOnlineShop.dto.payment.PaymentInfoDTO;
 import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.model.account.Address;
 import com.example.PCOnlineShop.model.order.Order;
+import com.example.PCOnlineShop.model.payment.Payment; // ✅ Import
 import com.example.PCOnlineShop.service.address.AddressService;
 import com.example.PCOnlineShop.service.cart.CartService;
 import com.example.PCOnlineShop.service.order.OrderService;
 import com.example.PCOnlineShop.repository.account.AccountRepository;
+import com.example.PCOnlineShop.service.payment.PaymentService; // ✅ Import
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,12 +22,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,19 +34,23 @@ import java.util.Optional;
 @RequestMapping("/orders")
 public class OrderController {
 
+    // (Bỏ PAGE_SIZE nếu không dùng)
+    // private final int PAGE_SIZE = 10;
     private final OrderService orderService;
-    private final int PAGE_SIZE = 10;
     private final CartService cartService;
     private final AccountRepository accountRepository;
     private final AddressService addressService;
+    private final PaymentService paymentService; // ✅ Tiêm PaymentService
 
-
+    // ✅ Cập nhật constructor để tiêm PaymentService
     public OrderController(OrderService orderService, AccountRepository accountRepository,
-                           CartService cartService, AddressService addressService) {
+                           CartService cartService, AddressService addressService,
+                           PaymentService paymentService) { // ✅
         this.addressService = addressService;
         this.orderService = orderService;
         this.accountRepository = accountRepository;
         this.cartService = cartService;
+        this.paymentService = paymentService; // ✅
     }
 
     // --- Lấy Account (Tách hàm helper) ---
@@ -62,19 +62,10 @@ public class OrderController {
         return accountRepository.findByPhoneNumber(userDetails.getUsername()).orElse(null);
     }
 
-    // Trong OrderController.java
-
     // ======================================================
     @GetMapping("/list")
     public String viewOrderList(Model model,
-                                @AuthenticationPrincipal UserDetails currentUserDetails
-                                // --- BỎ CÁC THAM SỐ PAGE, SORT, DIR, VALIDATION ---
-                                // @Valid OrderSearchRequest searchRequest,
-                                // BindingResult bindingResult,
-                                // @RequestParam(name = "page", ...
-                                // @RequestParam(name = "sort", ...
-                                // @RequestParam(name = "dir", ...
-    ) {
+                                @AuthenticationPrincipal UserDetails currentUserDetails) {
 
         // 1. Xác định vai trò (Giữ nguyên)
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -83,32 +74,15 @@ public class OrderController {
         model.addAttribute("isStaffOrAdmin", isStaffOrAdmin);
 
         // Lấy Account (Giữ nguyên)
-        Account currentAccount = null;
-        if (currentUserDetails instanceof Account) {
-            currentAccount = (Account) currentUserDetails;
-        } else if (currentUserDetails != null) {
-            String username = currentUserDetails.getUsername();
-            currentAccount = accountRepository.findByPhoneNumber(username).orElse(null);
-            if (currentAccount == null) {
-                System.err.println("Cảnh báo: Không tìm thấy Account với SĐT (username): " + username);
-            }
-        }
+        Account currentAccount = getCurrentAccount(currentUserDetails);
 
         // 2. Xử lý theo vai trò
         if (isStaffOrAdmin) {
-            // --- LOGIC MỚI CHO STAFF/ADMIN (DÙNG DATATABLES) ---
             model.addAttribute("pageTitle", "Order Management");
-
-            // Lấy TẤT CẢ đơn hàng thay vì phân trang
             List<Order> adminOrderList = orderService.findAllOrdersForAdmin();
-
-            // Gửi List này sang view
             model.addAttribute("adminOrderList", adminOrderList);
 
-            // --- BỎ TOÀN BỘ LOGIC PAGEABLE, SORT, SEARCH, ERROR CŨ ---
-
         } else if (currentAccount != null) {
-            // --- XỬ LÝ CHO CUSTOMER (Giữ nguyên) ---
             model.addAttribute("pageTitle", "My Orders");
             List<Order> customerOrders = orderService.getOrdersByAccount(currentAccount);
             model.addAttribute("customerOrders", customerOrders);
@@ -124,7 +98,7 @@ public class OrderController {
     //  Hiển thị Chi tiết đơn hàng
     // ======================================================
     @GetMapping("/detail/{id}")
-    public String viewOrderDetail(@PathVariable int id, Model model,
+    public String viewOrderDetail(@PathVariable long id, Model model, // ✅ Đổi sang long
                                   @AuthenticationPrincipal UserDetails currentUserDetails,
                                   RedirectAttributes redirectAttributes) {
 
@@ -134,64 +108,68 @@ public class OrderController {
                 .anyMatch(r -> r.getAuthority().equals("ROLE_STAFF") || r.getAuthority().equals("ROLE_ADMIN"));
         model.addAttribute("isStaffOrAdmin", isStaffOrAdmin);
 
-        Account currentAccount = null;
-        if (currentUserDetails instanceof Account) {
-            currentAccount = (Account) currentUserDetails;
-        } else if (currentUserDetails != null) {
-            // Fallback: Lấy Account từ DB
-            String username = currentUserDetails.getUsername();
-            // Sử dụng accountRepository để tìm
-            currentAccount = accountRepository.findByPhoneNumber(username).orElse(null);
-            if (currentAccount == null) {
-                System.err.println("Cảnh báo: Không tìm thấy Account với SĐT (username): " + username + " khi xem chi tiết.");
-            }
-        }
+        Account currentAccount = getCurrentAccount(currentUserDetails);
 
-        // 2. Lấy thông tin đơn hàng
+        // 2. Lấy thông tin đơn hàng (dùng long)
         Order order = orderService.getOrderById(id);
         if (order == null) {
             redirectAttributes.addFlashAttribute("error", "Order not found.");
-            return isStaffOrAdmin ? "redirect:/orders/list?page=1" : "redirect:/orders/list"; // Quay về list tương ứng
+            return "redirect:/orders/list";
         }
 
         // 3. KIỂM TRA QUYỀN TRUY CẬP CHO CUSTOMER
         if (!isStaffOrAdmin) {
             if (currentAccount == null || order.getAccount() == null || order.getAccount().getAccountId() != currentAccount.getAccountId()) {
                 redirectAttributes.addFlashAttribute("error", "You are not authorized to view this order.");
-                return "redirect:/orders/list"; // Customer chỉ về list của họ
+                return "redirect:/orders/list";
             }
         }
 
-        // 4. Lấy chi tiết sản phẩm và gửi sang view
+        // 4. Lấy chi tiết sản phẩm và gửi sang view (dùng long)
         model.addAttribute("order", order);
         model.addAttribute("details", orderService.getOrderDetails(id));
-        model.addAttribute("pageTitle", "Order Detail #" + order.getOrderId()); // Tiêu đề trang
+        model.addAttribute("pageTitle", "Order Detail #" + order.getOrderId());
 
-        return "orders/order-detail"; // Trả về view chung
+        // 5.  MỚI: LẤY THÔNG TIN THANH TOÁN
+        try {
+            PaymentInfoDTO paymentInfo = paymentService.getPaymentInfoByOrderId(id);
+            model.addAttribute("paymentInfo", paymentInfo);
+        } catch (EntityNotFoundException e) {
+            // Không tìm thấy payment (ví dụ: đơn hàng cũ), không làm gì cả
+            model.addAttribute("paymentInfo", null);
+        }
+        return "orders/order-detail";
     }
 
-    // === THÊM ENDPOINT MỚI CHO AJAX "SAVE ON CHANGE" ===
-    @PostMapping("/update-status")
-    @ResponseBody // Rất quan trọng: Báo Spring trả về JSON/Text, không phải tên View
-    public ResponseEntity<?> updateSingleOrderStatus(@RequestParam("orderId") int orderId,
-                                                     @RequestParam("newStatus") String newStatus) {
+    /**
+     * MỚI: Endpoint cho Staff: Processing -> Ready to Ship
+     */
+    @PostMapping("/mark-ready-to-ship")
+    @ResponseBody
+    public ResponseEntity<?> markReadyToShip(@RequestParam("orderId") long orderId) {
         try {
-            // Gọi service mới
-            orderService.updateSingleOrderStatus(orderId, newStatus);
-
-            // Trả về 200 OK với một thông báo
-            return ResponseEntity.ok(Map.of("message", "Status updated successfully"));
-
-        } catch (EntityNotFoundException e) {
-            // Nếu không tìm thấy Order ID
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
+            orderService.markAsReadyToShip(orderId);
+            return ResponseEntity.ok(Map.of("message", "Đã cập nhật sang Ready to Ship"));
         } catch (Exception e) {
-            // Các lỗi khác (lỗi server, v.v.)
             return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "An unexpected error occurred."));
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * MỚI: Endpoint cho Staff: Processing -> Cancelled (Refund)
+     */
+    @PostMapping("/staff-cancel")
+    @ResponseBody
+    public ResponseEntity<?> staffCancelOrder(@RequestParam("orderId") long orderId) {
+        try {
+            orderService.refundOrderFromOrderId(orderId);
+            return ResponseEntity.ok(Map.of("message", "Đơn hàng đã được hủy. Hoàn tiền đang chờ xử lý."));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -214,13 +192,12 @@ public class OrderController {
         List<Address> allAddresses = addressService.getAddressesForAccount(currentAccount);
         Optional<Address> defaultAddressOpt = addressService.getDefaultAddress(currentAccount);
 
-        // Nếu không có địa chỉ mặc định, lấy cái đầu tiên (nếu có)
         Address defaultAddress = defaultAddressOpt.orElse(
                 allAddresses.isEmpty() ? null : allAddresses.get(0)
         );
 
         CheckoutDTO checkoutDTO = new CheckoutDTO();
-        checkoutDTO.setShippingMethod("Giao hàng tận nơi"); // Mặc định
+        checkoutDTO.setShippingMethod("Giao hàng tận nơi");
 
         if (defaultAddress != null) {
             checkoutDTO.setShippingFullName(defaultAddress.getFullName());
@@ -228,20 +205,19 @@ public class OrderController {
             checkoutDTO.setShippingAddress(defaultAddress.getAddress());
         }
 
-        // Gửi thông tin sang view
         model.addAttribute("checkoutDTO", checkoutDTO);
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("grandTotal", grandTotal);
-        model.addAttribute("account", currentAccount); // Gửi thông tin người đặt hàng
-        model.addAttribute("defaultAddress", defaultAddress); // Địa chỉ mặc định để hiển thị
-        model.addAttribute("allAddresses", allAddresses); // Gửi DANH SÁCH địa chỉ cho pop-up
+        model.addAttribute("account", currentAccount);
+        model.addAttribute("defaultAddress", defaultAddress);
+        model.addAttribute("allAddresses", allAddresses);
         model.addAttribute("pageTitle", "Checkout");
 
-        return "orders/checkout"; // Trả về file checkout
+        return "orders/checkout";
     }
 
     // ======================================================
-    // == PHẦN MỚI: XỬ LÝ ĐẶT HÀNG (POST)
+    // == PHẦN MỚI: XỬ LÝ ĐẶT HÀNG (POST) VÀ CHUYỂN SANG PAYOS
     // ======================================================
     @PostMapping("/checkout")
     public String processCheckout(@Valid @ModelAttribute("checkoutDTO") CheckoutDTO checkoutDTO,
@@ -253,16 +229,40 @@ public class OrderController {
         Account currentAccount = getCurrentAccount(currentUserDetails);
         if (currentAccount == null) return "redirect:/auth/login";
 
-        // --- (Logic validate của bạn) ---
+        // --- Validate thủ công ---
         if ("Giao hàng tận nơi".equals(checkoutDTO.getShippingMethod())) {
-            // ... (validation)
+            if (checkoutDTO.getShippingFullName() == null || checkoutDTO.getShippingFullName().isBlank()) {
+                bindingResult.rejectValue("shippingFullName", "NotBlank", "Họ tên không được để trống");
+            }
+            if (checkoutDTO.getShippingPhone() == null || checkoutDTO.getShippingPhone().isBlank()) {
+                bindingResult.rejectValue("shippingPhone", "NotBlank", "Số điện thoại không được để trống");
+            }
+            if (checkoutDTO.getShippingAddress() == null || checkoutDTO.getShippingAddress().isBlank()) {
+                bindingResult.rejectValue("shippingAddress", "NotBlank", "Địa chỉ không được để trống");
+            }
         } else {
-            // ... (xử lý nhận tại cửa hàng)
+            // Nếu "Nhận tại cửa hàng", set giá trị mặc định để qua mặt DB
+            checkoutDTO.setShippingFullName("Store Pickup");
+            checkoutDTO.setShippingPhone("000000000");
+            checkoutDTO.setShippingAddress("Nhận tại cửa hàng");
         }
 
 
         if (bindingResult.hasErrors()) {
-            // ... (xử lý trả lại trang checkout nếu lỗi)
+            // (Trả lại toàn bộ thông tin giỏ hàng/địa chỉ nếu lỗi)
+            List<CartItemDTO> cartItems = cartService.getCartItems(currentAccount);
+            double grandTotal = cartService.calculateGrandTotal(cartItems);
+            List<Address> allAddresses = addressService.getAddressesForAccount(currentAccount);
+
+            model.addAttribute("cartItems", cartItems);
+            model.addAttribute("grandTotal", grandTotal);
+            model.addAttribute("account", currentAccount);
+            model.addAttribute("allAddresses", allAddresses);
+            Address defaultAddress = addressService.getDefaultAddress(currentAccount).orElse(
+                    allAddresses.isEmpty() ? null : allAddresses.get(0)
+            );
+            model.addAttribute("defaultAddress", defaultAddress);
+
             return "orders/checkout";
         }
 
@@ -272,9 +272,10 @@ public class OrderController {
             return "redirect:/cart";
         }
 
+        Order newOrder = null;
         try {
-            // ✅ BƯỚC 1: GỌI SERVICE ĐỂ TẠO ORDER
-            Order newOrder = orderService.createOrder(
+            // BƯỚC 1: TẠO ORDER (Status: "Pending Payment")
+            newOrder = orderService.createOrder(
                     currentAccount,
                     cartMap,
                     checkoutDTO.getShippingMethod(),
@@ -284,17 +285,30 @@ public class OrderController {
                     checkoutDTO.getShippingAddress()
             );
 
-            // ✅ BƯỚC 2: SAU KHI TẠO XONG, XÓA GIỎ HÀNG VÀ CHUYỂN HƯỚNG
-            cartService.clearCart(currentAccount);
-            redirectAttributes.addFlashAttribute("success", "Đặt hàng thành công! Mã đơn hàng của bạn là #" + newOrder.getOrderId());
+            // BƯỚC 2: TẠO BẢN GHI THANH TOÁN (Status: "PENDING")
+            //
+            Payment newPayment = paymentService.createPaymentRecord(newOrder);
 
-            // ✅ BƯỚC 3: ĐƠN HÀNG XUẤT HIỆN Ở ORDER-LIST
-            return "redirect:/orders/list";
+            // BƯỚC 3: TẠO LINK PAYOS TỪ BẢN GHI THANH TOÁN
+            //
+            String payosCheckoutUrl = paymentService.createPayOSLink(newPayment);
+
+            // BƯỚC 4: XÓA GIỎ HÀNG
+            cartService.clearCart(currentAccount);
+
+            // BƯỚC 5: CHUYỂN HƯỚNG SANG TRANG THANH TOÁN PAYOS
+            return "redirect:" + payosCheckoutUrl;
 
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi đặt hàng: " + e.getMessage());
+            e.printStackTrace(); // In lỗi ra console để debug
+            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi tạo thanh toán: " + e.getMessage());
+
+            // Nếu đã lỡ tạo đơn hàng nhưng lỗi PayOS, chuyển về list
+            if (newOrder != null) {
+                return "redirect:/orders/list";
+            }
+            // Nếu lỗi ngay cả khi tạo đơn, về lại checkout
             return "redirect:/checkout";
         }
     }
-
 }
