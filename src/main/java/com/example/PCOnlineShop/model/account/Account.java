@@ -55,6 +55,9 @@ public class Account {
     @JsonManagedReference
     private List<Address> addresses;
 
+    @Transient // không lưu vào DB
+    private String address;
+
     @Column(name = "enabled")
     private Boolean enabled = true;
 

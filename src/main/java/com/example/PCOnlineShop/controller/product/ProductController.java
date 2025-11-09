@@ -304,13 +304,13 @@ public class ProductController {
         }
 
         // ✅ Kiểm tra ràng buộc: không được ẩn nếu sản phẩm đang nằm trong đơn hàng hoạt động
-        boolean inActiveOrders = productService.isProductInActiveOrders(id);
+//        boolean inActiveOrders = productService.isProductInActiveOrders(id);
 
-        if (inActiveOrders) {
-            model.addAttribute("error",
-                    "This product is currently in active orders and cannot be hidden.");
-            return "redirect:/staff/products/list";
-        }
+//        if (inActiveOrders) {
+//            model.addAttribute("error",
+//                    "This product is currently in active orders and cannot be hidden.");
+//            return "redirect:/staff/products/list";
+//        }
 
         // ✅ Ẩn sản phẩm (soft hide)
         product.setStatus(false);
