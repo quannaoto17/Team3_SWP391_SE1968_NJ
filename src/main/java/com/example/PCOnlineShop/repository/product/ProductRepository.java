@@ -1,5 +1,7 @@
 package com.example.PCOnlineShop.repository.product;
 
+import com.example.PCOnlineShop.model.product.Brand;
+import com.example.PCOnlineShop.model.product.Category;
 import com.example.PCOnlineShop.model.product.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +39,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
                          @Param("brandId") Integer brandId,
                          @Param("categoryId") Integer categoryId,
                          Pageable pageable);
+
     Page<Product> findByProductNameContainingIgnoreCase(String keyword, Pageable pageable);
+
+    boolean existsByProductNameAndStatusTrue(String productName);
 
     boolean existsByProductName(String productName);
 
@@ -48,5 +53,57 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("UPDATE Product p SET p.brand.brandId = :targetId WHERE p.brand.brandId = :sourceId")
     void reassignBrandByIds(@Param("sourceId") Integer sourceId,
                             @Param("targetId") Integer targetId);
+
+    List<Product> findTop8ByStatusTrue();
+
+    List<Product> findByCategoryAndStatusTrue(Category category);
+
+    List<Product> findByBrandAndStatusTrue(Brand brand);
+
+    List<Product> findByStatusTrue();
+
+    @Query("""
+        SELECT p FROM Product p
+        WHERE p.status = true
+          AND (:categoryId IS NULL OR p.category.categoryId = :categoryId)
+          AND (:brandId IS NULL OR p.brand.brandId = :brandId)
+        """)
+    Page<Product> searchProducts(
+            @Param("categoryId") Integer categoryId,
+            @Param("brandId") Integer brandId,
+            Pageable pageable
+    );
+
+    List<Product> findTop8ByCategoryAndStatusTrue(Category category);
+    Page<Product> findByCategory_CategoryId(Integer categoryId, Pageable pageable);
+    Page<Product> findByBrand_BrandId(Integer brandId, Pageable pageable);
+
+    @Query(value = """
+            SELECT * FROM product p
+            WHERE (:categoryId IS NULL OR p.category_id = :categoryId)
+              AND (:brandId IS NULL OR p.brand_id = :brandId)
+              AND (:keyword IS NULL OR LOWER(p.product_name) LIKE LOWER(CONCAT('%', :keyword, '%')))
+              AND (:minPrice IS NULL OR p.price >= :minPrice)
+              AND (:maxPrice IS NULL OR p.price <= :maxPrice)
+              AND p.status = TRUE
+            """,
+            countQuery = """
+            SELECT COUNT(*) FROM product p
+            WHERE (:categoryId IS NULL OR p.category_id = :categoryId)
+              AND (:brandId IS NULL OR p.brand_id = :brandId)
+              AND (:keyword IS NULL OR LOWER(p.product_name) LIKE LOWER(CONCAT('%', :keyword, '%')))
+              AND (:minPrice IS NULL OR p.price >= :minPrice)
+              AND (:maxPrice IS NULL OR p.price <= :maxPrice)
+              AND p.status = TRUE
+            """,
+            nativeQuery = true)
+    Page<Product> searchProducts(
+            @Param("categoryId") Integer categoryId,
+            @Param("brandId") Integer brandId,
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice,
+            @Param("keyword") String keyword,
+            Pageable pageable
+    );
 
 }

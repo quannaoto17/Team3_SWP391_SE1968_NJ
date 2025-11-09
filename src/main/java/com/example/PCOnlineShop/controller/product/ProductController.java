@@ -9,6 +9,9 @@ import com.example.PCOnlineShop.service.product.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -21,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
+import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/staff/products")
@@ -150,7 +154,7 @@ public class ProductController {
                               Model model) throws IOException {
 
         // --- Validation tùy chỉnh ---
-        if (productService.existsByProductName(product.getProductName())) {
+        if (productService.existsActiveProductName(product.getProductName())) {
             result.rejectValue("productName", "error.product", "Product name already exists.");
         }
         if (brandId == null) {
@@ -159,6 +163,7 @@ public class ProductController {
         if (categoryId == null) {
             model.addAttribute("categoryError", "Please select category");
         }
+
         // --- Kết thúc Validation ---
 
 
@@ -216,37 +221,44 @@ public class ProductController {
         Product current = productService.getProductById(incoming.getProductId());
         if (current == null) return "redirect:/staff/products/list";
 
-        // Lấy categoryId hiện tại để dùng cho upsertSpec
-        int categoryId = current.getCategory().getCategoryId();
+        int currentCategoryId = current.getCategory().getCategoryId();
+        int incomingCategoryId = (incoming.getCategory() != null)
+                ? incoming.getCategory().getCategoryId()
+                : currentCategoryId;
 
         // --- Validation tùy chỉnh ---
         String newName = incoming.getProductName();
-        if (!newName.equals(current.getProductName()) && productService.existsByProductName(newName)) {
+        if (!newName.equals(current.getProductName()) && productService.existsActiveProductName(newName)) {
             result.rejectValue("productName", "error.product", "Product name already exists.");
         }
-        // --- Kết thúc Validation ---
 
         if (result.hasErrors()) {
             model.addAttribute("isEdit", true);
-
-            // SỬA LỖI 2: Gắn lại các đối tượng
-            // (Vì 'incoming' mất chúng khi binding do form đã disabled các trường này)
             incoming.setImages(current.getImages());
             incoming.setBrand(current.getBrand());
             incoming.setCategory(current.getCategory());
-
-            return "product/product-update"; // <-- Trả về view, KHÔNG redirect
+            return "product/product-update";
         }
 
-        // Cập nhật thông tin cơ bản (KHÔNG CẬP NHẬT CATEGORY/BRAND)
+        // --- Ngăn đổi category ---
+        if (incomingCategoryId != currentCategoryId) {
+            model.addAttribute("error", "Cannot change category of an existing product. Specs will not be updated.");
+            model.addAttribute("isEdit", true);
+            incoming.setCategory(current.getCategory());
+            // Vẫn cho phép update các thông tin cơ bản, nhưng bỏ qua phần spec
+            // Không return ngay, để cho phép cập nhật các trường khác
+        }
+
+        // ===== Cập nhật thông tin cơ bản =====
         current.setProductName(incoming.getProductName());
         current.setDescription(incoming.getDescription());
         current.setPrice(incoming.getPrice());
         current.setStatus(incoming.isStatus());
+        current.setInventoryQuantity(incoming.getInventoryQuantity());
 
         Product updated = productService.updateProduct(current);
 
-        // ===== Delete images (nếu có chọn) =====
+        // ===== Xử lý ảnh =====
         if (deleteImageIds != null && !deleteImageIds.isBlank()) {
             List<Integer> ids = Arrays.stream(deleteImageIds.split(","))
                     .filter(s -> !s.isBlank())
@@ -258,26 +270,55 @@ public class ProductController {
                         Path path = Paths.get("uploads/images" + img.getImageUrl().replace("/image", ""));
                         Files.deleteIfExists(path);
                         imageRepository.delete(img);
-                    } catch (IOException e) { e.printStackTrace(); }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 });
             }
         }
 
-        // ===== Add new images =====
         if (imageFiles != null && !imageFiles.isEmpty()) {
             List<Image> newImgs = saveImagesToStatic(imageFiles, updated);
             imageRepository.saveAll(newImgs);
         }
 
-        // ===== Cập nhật spec (nếu có form spec gửi lên) =====
-        if (params.keySet().stream().anyMatch(k -> k.startsWith("mainboard.") || k.startsWith("cpu.")
-                || k.startsWith("gpu.") || k.startsWith("memory.") || k.startsWith("storage.")
-                || k.startsWith("pcase.") || k.startsWith("psu.") || k.startsWith("cl."))) {
-
-            //Dùng categoryId đã lấy từ 'current'
-            upsertSpec(updated, categoryId, params, false);
+        // ===== Chỉ cập nhật SPEC nếu category không bị đổi =====
+        if (incomingCategoryId == currentCategoryId &&
+                params.keySet().stream().anyMatch(k -> k.matches("^(mainboard|cpu|gpu|memory|storage|pcase|psu|cl)\\..*"))) {
+            upsertSpec(updated, currentCategoryId, params, false);
+        } else {
+            System.out.println("⚠️ Category changed or invalid → Spec update skipped.");
         }
 
+        return "redirect:/staff/products/list";
+    }
+
+    // ===== HIDE PRODUCT  =====
+    @PostMapping("/{id}/hide")
+    @Transactional
+    public String hideProduct(@PathVariable Integer id, Model model) {
+        Product product = productService.getProductById(id);
+        if (product == null) {
+            model.addAttribute("error", "Product not found.");
+            return "redirect:/staff/products/list";
+        }
+
+        // ✅ Kiểm tra ràng buộc: không được ẩn nếu sản phẩm đang nằm trong đơn hàng hoạt động
+        boolean inActiveOrders = productService.isProductInActiveOrders(id);
+
+        if (inActiveOrders) {
+            model.addAttribute("error",
+                    "This product is currently in active orders and cannot be hidden.");
+            return "redirect:/staff/products/list";
+        }
+
+        // ✅ Ẩn sản phẩm (soft hide)
+        product.setStatus(false);
+        // ✅ Đổi tên để tránh trùng validate (theo tài liệu: [archived-id])
+        product.setProductName(product.getProductName() + " [archived-" + id + "]");
+        productService.updateProduct(product);
+
+        model.addAttribute("message", "Product has been hidden successfully.");
         return "redirect:/staff/products/list";
     }
 

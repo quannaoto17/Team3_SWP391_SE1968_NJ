@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCOnlineShop – Products</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- Header -->
+<div th:replace="~{layout/header-default :: header-default}"></div>
+
+<section class="container mx-auto px-6 py-12">
+    <h1 class="text-3xl font-bold mb-6">All Products</h1>
+
+    <!-- 🔍 Filter & Search -->
+    <form th:action="@{/products}" method="get"
+          class="flex flex-wrap items-end gap-4 mb-10 bg-white p-5 rounded-xl shadow border">
+
+        <!-- Category -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <select name="category"
+                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:outline-none">
+                <option value="">All</option>
+                <option th:each="c : ${categories}"
+                        th:value="${c.categoryId}"
+                        th:text="${c.categoryName}"
+                        th:selected="${selectedCategory == c.categoryId}">
+                </option>
+            </select>
+        </div>
+
+        <!-- Brand -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+            <select name="brand"
+                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:outline-none">
+                <option value="">All</option>
+                <option th:each="b : ${brands}"
+                        th:value="${b.brandId}"
+                        th:text="${b.name}"
+                        th:selected="${selectedBrand == b.brandId}">
+                </option>
+            </select>
+        </div>
+
+        <!-- Price Range -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Price Range ($)</label>
+            <div class="flex items-center gap-2">
+                <input type="number" name="minPrice" th:value="${minPrice}" placeholder="Min"
+                       class="w-24 border border-gray-300 rounded-lg px-2 py-1 text-sm focus:ring-blue-500 focus:outline-none">
+                <span class="text-gray-500">–</span>
+                <input type="number" name="maxPrice" th:value="${maxPrice}" placeholder="Max"
+                       class="w-24 border border-gray-300 rounded-lg px-2 py-1 text-sm focus:ring-blue-500 focus:outline-none">
+            </div>
+        </div>
+
+        <!-- Sort -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Sort by Price</label>
+            <select name="sortDir"
+                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:outline-none">
+                <option value="asc" th:selected="${sortDir == 'asc'}">Low → High</option>
+                <option value="desc" th:selected="${sortDir == 'desc'}">High → Low</option>
+            </select>
+            <input type="hidden" name="sortField" value="price"/>
+        </div>
+
+        <!-- Keyword -->
+        <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <input type="text" name="keyword" th:value="${keyword}"
+                   placeholder="Search products..."
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <!-- Submit -->
+        <div>
+            <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition">
+                Apply Filters
+            </button>
+        </div>
+    </form>
+
+    <!-- 🧱 Grid of products -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div th:each="p : ${products}"
+             class="bg-white border rounded-xl shadow-sm hover:shadow-md transition flex flex-col">
+
+            <!-- Product Image -->
+            <img th:if="${p != null and p.images != null and !p.images.isEmpty()}"
+                 th:src="@{${p.images[0].imageUrl}}"
+                 alt="Product image"
+                 class="rounded-t-xl w-full h-48 object-cover">
+            <img th:if="${p == null or p.images == null or p.images.isEmpty()}"
+                 src="/images/no-image.png"
+                 alt="No image"
+                 class="rounded-t-xl w-full h-48 object-cover">
+
+            <!-- Product Info -->
+            <div class="p-4 flex-1 flex flex-col">
+                <h3 class="font-medium mb-1 truncate" th:text="${p.productName}">Product Name</h3>
+                <p class="text-gray-600 mb-3" th:text="'$' + ${p.price}">0.00</p>
+
+                <a th:href="@{'/products/' + ${p.productId}}"
+                   class="mt-auto bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-md text-sm">
+                    View Details
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-10 flex justify-center" th:if="${pageNumbers != null}">
+        <ul class="flex space-x-2">
+            <li th:each="i : ${pageNumbers}">
+                <a th:text="${i + 1}"
+                   th:href="@{'/products?page=' + ${i}
+                        + (${selectedCategory} != null ? '&category=' + ${selectedCategory} : '')
+                        + (${selectedBrand} != null ? '&brand=' + ${selectedBrand} : '')
+                        + (${minPrice} != null ? '&minPrice=' + ${minPrice} : '')
+                        + (${maxPrice} != null ? '&maxPrice=' + ${maxPrice} : '')
+                        + (${keyword} != null ? '&keyword=' + ${keyword} : '')
+                        + '&sortDir=' + ${sortDir}}"
+                   class="px-3 py-1 border rounded text-sm hover:bg-blue-50 transition"
+                   th:classappend="${i == currentPage} ? ' bg-blue-600 text-white border-blue-600' : ''"></a>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- Footer -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+</body>
+</html>

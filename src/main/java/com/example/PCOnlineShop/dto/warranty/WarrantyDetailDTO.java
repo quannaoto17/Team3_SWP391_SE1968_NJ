@@ -10,7 +10,7 @@ import java.util.Date; // Thêm Date cho orderDate
 @AllArgsConstructor
 @NoArgsConstructor
 public class WarrantyDetailDTO {
-    private int orderId;
+    private long orderId;
     private String productName;
     private Date orderDate;
     private int warrantyMonths;

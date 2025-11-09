@@ -33,7 +33,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // Public pages and resources
+                        .requestMatchers("/payment/**").permitAll()
                         .requestMatchers("/", "/home", "/auth/**").permitAll()
                         .requestMatchers("/build/**", "/api/build/**").permitAll() // Build PC feature for guests
                         .requestMatchers("/assets/**", "/css/**", "/js/**", "/image/**", "/static/**", "/webfonts/**", "/uploads/**").permitAll()

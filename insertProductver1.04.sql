@@ -69,13 +69,13 @@ INSERT INTO brand (name, description, website) VALUES
 
 -- 1
 INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
-VALUES (1, 1, 'ASUS PRIME B550M-A', 150.00, 1, 'Micro ATX AM4 mainboard', 'Chipset B550', 25);
+VALUES (1, 1, 'ASUS PRIME B550M-A', 150.00, 1, 'Micro ATX AM4 mainboard', 'Chipset B550', 1000);
 INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
 VALUES (LAST_INSERT_ID(), 'AM4', 'B550', 'Micro-ATX', 'DDR4', 4, 4733, '4.0', 2, 6);
 
 -- 2
 INSERT INTO product (category_id, brand_id, product_name, price, status, description, specification, inventory_quantity)
-VALUES (1, 2, 'MSI MPG X670E CARBON', 390.00, 1, 'High-end AM5 mainboard', 'Chipset X670E', 15);
+VALUES (1, 2, 'MSI MPG X670E CARBON', 390.00, 1, 'High-end AM5 mainboard', 'Chipset X670E', 1000);
 INSERT INTO mainboard (product_id, socket, chipset, form_factor, memory_type, memory_slots, max_memory_speed, pcie_version, m2_slots, sata_ports)
 VALUES (LAST_INSERT_ID(), 'AM5', 'X670E', 'ATX', 'DDR5', 4, 8000, '5.0', 3, 6);
 
