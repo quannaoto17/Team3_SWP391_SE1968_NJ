@@ -1,5 +1,7 @@
 package com.example.PCOnlineShop.service.product;
 
+import com.example.PCOnlineShop.model.product.Brand;
+import com.example.PCOnlineShop.model.product.Category;
 import com.example.PCOnlineShop.model.product.Product;
 import com.example.PCOnlineShop.repository.order.OrderDetailRepository;
 import com.example.PCOnlineShop.repository.product.BrandRepository;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -87,19 +90,21 @@ public class ProductService {
         return productRepository.findByCategory_CategoryId(categoryId, pageable);
     }
 
-    // Search di dộng
-    public Page<Product> search(String keyword, Integer brandId, Integer categoryId,
-                                int page, int size, String sortField, String sortDir) {
-        String field = (sortField != null && List.of("productId","productName","price","createAt","status")
-                .contains(sortField)) ? sortField : "productId";
+    public List<Product> getFeaturedProducts() {
+        return productRepository.findTop8ByStatusTrue();
+    }
+    public List<Product> getProductsByCategory(Integer categoryId) {
+        Optional<Category> category = categoryRepository.findById(categoryId);
+        return category.map(productRepository::findByCategoryAndStatusTrue).orElse(List.of());
+    }
 
-        Sort sort = "desc".equalsIgnoreCase(sortDir)
-                ? Sort.by(field).descending()
-                : Sort.by(field).ascending();
+    public List<Product> getProductsByBrand(Integer brandId) {
+        Optional<Brand> brand = brandRepository.findById(brandId);
+        return brand.map(productRepository::findByBrandAndStatusTrue).orElse(List.of());
+    }
 
-        Pageable pageable = PageRequest.of(page - 1, size, sort);
-        String kw = (keyword == null || keyword.isBlank()) ? null : keyword.trim();
-        return productRepository.search(kw, brandId, categoryId, pageable);
+    public List<Product> getAllActiveProducts() {
+        return productRepository.findByStatusTrue();
     }
 
     public Page<Product> searchProducts(String keyword, int page, int size) {
@@ -120,8 +125,22 @@ public class ProductService {
     }
 
     public boolean isProductInActiveOrders(int productId) {
-        List<String> activeStatuses = List.of("Pending", "Processing", "Delivering","Ready to Ship", "Completed","Cancel");
+        List<String> activeStatuses = List.of("Pending", "Processing", "Delivering","Ready to Ship");
         return orderDetailRepository.existsByProduct_ProductIdAndOrder_StatusIn(productId, activeStatuses);
     }
+    public Page<Product> search(Integer categoryId, Integer brandId, Pageable pageable) {
+        return productRepository.searchProducts(categoryId, brandId, pageable);
+    }
+
+    public Product findById(Integer id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+    }
+
+    public List<Product> getRelatedProducts(Product product) {
+        if (product.getCategory() == null) return List.of();
+        return productRepository.findTop8ByCategoryAndStatusTrue(product.getCategory());
+    }
+
 
 }
