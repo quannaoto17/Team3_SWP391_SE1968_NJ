@@ -23,7 +23,7 @@ public class Product {
 
     @NotBlank(message = "Product name is required" )
     @Size(min = 5, max = 100, message = "Product name must be between 5 and 100 characters")
-//    @Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "Product name must not contain special characters")
+    @Pattern(regexp = "^(?=.{3,100}$)(?!.* {2})(?!.*[_\\-.]{2})[ \\p{L}\\p{M}\\p{N}\\s\\-\\._/+&,:;'\"®™()\\[\\]°%×–—]+(?<![ \\-_/+&,:;'\"\\.])$")
     @Column (name = "product_name")
     private String productName;
 
