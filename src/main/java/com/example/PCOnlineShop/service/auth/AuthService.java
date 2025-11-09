@@ -39,8 +39,8 @@ public class AuthService {
         account.setEnabled(true);
         accountRepository.save(account);
     }
-    public Account getByEmail(String email) {
-        return accountRepository.findByEmail(email).orElse(null);
+    public Account getByPhoneNumber(String phoneNumber) {
+        return accountRepository.findByPhoneNumber(phoneNumber).orElse(null);
     }
 
 
@@ -88,6 +88,25 @@ public class AuthService {
         // Xoá mã sau khi dùng
         resetCodeMap.remove(identifier);
     }
+    public boolean changePassword(String phoneNumber, String currentPassword, String newPassword) {
+        Optional<Account> optionalAccount = accountRepository.findByPhoneNumber(phoneNumber);
+        if (optionalAccount.isEmpty()) {
+            return false; // không tìm thấy user
+        }
+
+        Account account = optionalAccount.get();
+
+        // Kiểm tra mật khẩu hiện tại
+        if (!passwordEncoder.matches(currentPassword, account.getPassword())) {
+            return false; // mật khẩu hiện tại không đúng
+        }
+
+        // Encode mật khẩu mới và lưu
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+        return true;
+    }
+
 
     /* ===================== MAIL HELPER ===================== */
 
@@ -99,9 +118,11 @@ public class AuthService {
             message.setText(text);
             mailSender.send(message);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Không thể gửi email!");
+            e.printStackTrace(); // Thêm dòng này để xem lỗi thật
+            throw new IllegalArgumentException("Không thể gửi email! " + e.getMessage());
         }
     }
+
 
     /* ===================== STAFF / CUSTOMER MGMT ===================== */
 

@@ -179,7 +179,8 @@
     <form th:action="@{/auth/login}" method="post">
         <div class="form-group">
             <label for="phoneNumber">📱 Số điện thoại</label>
-            <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Nhập số điện thoại" required>
+            <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Nhập số điện thoại" required
+                   th:value="${phoneNumber != null} ? ${phoneNumber} : ''"/>
         </div>
 
         <div class="form-group">
