@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,7 +27,7 @@ public class AuthController {
     // 🔹 Xử lý đăng ký
     @PostMapping("/register")
     public String register(@ModelAttribute("account") Account account,
-                           @RequestParam("confirmPassword") String confirmPassword,
+                           @RequestParam("confirmPassword") String confirmPassword, RedirectAttributes redirectAttributes,
                            Model model) {
 
         // ✅ Kiểm tra xác nhận mật khẩu
@@ -35,6 +38,8 @@ public class AuthController {
 
         try {
             authService.register(account);  // 🔹 Gọi service để lưu vào DB
+            redirectAttributes.addFlashAttribute("phoneNumber", account.getPhoneNumber());
+            redirectAttributes.addFlashAttribute("password", account.getPassword());
             return "redirect:/auth/login?success";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
@@ -116,4 +121,31 @@ public class AuthController {
             return "auth/reset-password";
         }
     }
+    @PostMapping("/profile/change-password")
+    public String changePassword(@RequestParam("currentPassword") String currentPassword,
+                                 @RequestParam("newPassword") String newPassword,
+                                 @RequestParam("confirmPassword") String confirmPassword,
+                                 Model model,
+                                 Principal principal) {
+        String phoneNumber = principal.getName();
+
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("pwdError", "⚠️ Mật khẩu mới không khớp!");
+            model.addAttribute("account", authService.getByPhoneNumber(phoneNumber));
+            return "profile/view-profile";
+        }
+
+        boolean success = authService.changePassword(phoneNumber, currentPassword, newPassword);
+
+        if (success) {
+            model.addAttribute("pwdSuccess", "✅ Đổi mật khẩu thành công!");
+        } else {
+            model.addAttribute("pwdError", "⚠️ Mật khẩu hiện tại không đúng!");
+        }
+
+        // Load lại thông tin account để hiển thị
+        model.addAttribute("account", authService.getByPhoneNumber(phoneNumber));
+        return "profile/view-profile";
+    }
+
 }

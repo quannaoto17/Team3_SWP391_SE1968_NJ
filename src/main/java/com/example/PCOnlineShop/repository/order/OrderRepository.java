@@ -38,4 +38,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query(value = "SELECT o FROM Order o JOIN FETCH o.account a WHERE a.role = :role ORDER BY o.createdDate DESC")
     List<Order> findAllByRole(@Param("role") RoleName role);
+
+    long countByStatus(String status);
 }
