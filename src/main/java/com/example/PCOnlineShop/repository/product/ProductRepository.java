@@ -27,6 +27,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.images")
     List<Product> findAllWithImages();
 
+    @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.images WHERE p.productId = :productId")
+    Product findByIdWithImages(@Param("productId") Integer productId);
+
     @Query("""
         SELECT p FROM Product p
         LEFT JOIN p.brand b

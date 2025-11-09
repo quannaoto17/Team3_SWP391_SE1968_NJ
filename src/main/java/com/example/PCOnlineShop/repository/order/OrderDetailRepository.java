@@ -29,4 +29,6 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Intege
     // (Giả sử accountId và productId vẫn là Integer)
     boolean existsByOrder_Account_AccountIdAndProduct_ProductIdAndOrder_Status(
             Integer accountId, Integer productId, String status);
+
+    boolean existsByProduct_ProductIdAndOrder_StatusIn(Integer productId, List<String> statuses);
 }

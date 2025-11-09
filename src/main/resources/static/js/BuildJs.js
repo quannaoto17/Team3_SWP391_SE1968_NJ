@@ -199,17 +199,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Validate forms that require a selection before submit
+    // Form submission - allow submit even without new selection
+    // (Data may already exist in session DTO, so user can skip selection and just click Next)
     document.querySelectorAll('form[data-require-selection="true"]').forEach(form => {
         form.addEventListener('submit', function (e) {
-            // find hidden selected input inside the form
-            const hidden = form.querySelector("input[type=hidden][id^='selected']") || form.querySelector('input[type=hidden]');
-            const val = hidden ? (hidden.value || '') : '';
-            if (!val || val.trim() === '') {
-                e.preventDefault();
-                alert('Please select a component before continuing.');
-                return false;
-            }
+            // No validation needed - allow submit
+            // User can either:
+            // 1. Select a new component (hidden input will have value)
+            // 2. Skip selection and continue with existing DTO data
             return true;
         });
     });
@@ -286,45 +283,56 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Tạm ẩn các nút trong footer để không chụp vào ảnh
+            // Tạm ẩn các nút trong footer và close button để không chụp vào ảnh
             const footer = overviewContent.querySelector(".overview-footer");
-            const originalDisplay = footer ? footer.style.display : null;
+            const closeBtn = overviewContent.querySelector(".close-overview");
+
             if (footer) footer.style.display = "none";
+            if (closeBtn) closeBtn.style.display = "none";
 
-            // Sử dụng html2canvas để chụp
-            html2canvas(overviewContent, {
-                backgroundColor: '#ffffff',
-                scale: 2,
-                logging: false,
-                useCORS: true,
-                allowTaint: true
-            }).then(function(canvas) {
-                // Khôi phục footer
-                if (footer && originalDisplay !== null) {
-                    footer.style.display = originalDisplay;
-                } else if (footer) {
-                    footer.style.display = "";
-                }
+            // Add class để apply CSS đặc biệt cho việc chụp ảnh
+            overviewContent.classList.add("capturing-image");
 
-                // Tạo link download
-                const link = document.createElement('a');
-                const timestamp = new Date().getTime();
-                link.download = 'my-pc-build-' + timestamp + '.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+            // Đợi một chút để browser render lại
+            setTimeout(() => {
+                // Sử dụng html2canvas để chụp với quality cao
+                html2canvas(overviewContent, {
+                    backgroundColor: '#ffffff',
+                    scale: 3, // High DPI for crisp image (3x resolution)
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                    scrollY: 0,
+                    scrollX: 0,
+                    windowHeight: overviewContent.scrollHeight,
+                    height: overviewContent.scrollHeight,
+                    width: 1000,
+                    imageTimeout: 0,
+                    removeContainer: true
+                }).then(function(canvas) {
+                    // Khôi phục tất cả style
+                    if (footer) footer.style.display = "";
+                    if (closeBtn) closeBtn.style.display = "";
+                    overviewContent.classList.remove("capturing-image");
 
-                console.log("✅ Build image saved successfully!");
-            }).catch(function(error) {
-                // Khôi phục footer nếu có lỗi
-                if (footer && originalDisplay !== null) {
-                    footer.style.display = originalDisplay;
-                } else if (footer) {
-                    footer.style.display = "";
-                }
+                    // Tạo link download với quality cao
+                    const link = document.createElement('a');
+                    const timestamp = new Date().toISOString().slice(0,10);
+                    link.download = 'PC-Build-Overview-' + timestamp + '.png';
+                    link.href = canvas.toDataURL('image/png', 1.0); // Quality = 1.0 (max)
+                    link.click();
 
-                console.error('❌ Error generating image:', error);
-                alert('Failed to save image. Please try again.');
-            });
+                    console.log("✅ Build image saved successfully! Resolution: " + canvas.width + "x" + canvas.height);
+                }).catch(function(error) {
+                    // Khôi phục style nếu có lỗi
+                    if (footer) footer.style.display = "";
+                    if (closeBtn) closeBtn.style.display = "";
+                    overviewContent.classList.remove("capturing-image");
+
+                    console.error("❌ Error saving image:", error);
+                    alert("⚠️ Error saving image. Please try again.");
+                });
+            }, 100); // Đợi 100ms để CSS apply xong
         });
     }
 

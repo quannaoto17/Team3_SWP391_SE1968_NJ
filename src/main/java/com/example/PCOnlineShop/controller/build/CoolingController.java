@@ -54,9 +54,12 @@ public class CoolingController {
     @PostMapping("/selectCooling")
     public String selectCooling(@RequestParam(value = "coolingId", required = false) Integer coolingId,
                                 @ModelAttribute("buildItems") BuildItemDto buildItem) {
+        // Cooling is OPTIONAL - can use stock cooler from CPU
+        // Only update if user selected a cooling
         if (coolingId != null) {
             buildItem.setCooling(coolingService.getCoolingById(coolingId));
         }
+        // Allow proceeding even if cooling is null
         return "redirect:/build/memory";
     }
 }

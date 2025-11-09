@@ -26,6 +26,11 @@
 
     <!-- Main content -->
     <div class="main-content">
+        <!-- Error message -->
+        <div th:if="${error}" style="background-color: #f44336; color: white; padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+            <strong>⚠️ Error:</strong> <span th:text="${error}"></span>
+        </div>
+
         <!-- Filter -->
         <div class="filter-bar">
             <input type="text" placeholder="Search..." id="searchBox"/>
@@ -65,7 +70,8 @@
 
         <!-- Product Grid -->
         <form th:action="@{/build/selectCpu}" method="post" id="cpuForm" data-require-selection="true">
-            <input type="hidden" name="cpuId" id="selectedCpuId"/>
+            <input type="hidden" name="cpuId" id="selectedCpuId"
+                   th:value="${buildItems.cpu?.product?.productId ?: ''}"/>
             <div class="product-grid">
                 <div th:each="cpu : ${cpus}"
                      class="product-card"
@@ -83,7 +89,7 @@
 
             <!-- Footer -->
             <div class="footer-bar">
-                <span>Total Price: <strong id="priceTotal" th:text="'$' + ${buildItems.calculateTotalPrice()}"></strong></span>
+                <span>Total Price: <strong id="priceTotal" th:text="'$' + ${buildItems.formattedTotalPrice}"></strong></span>
                 <button type="submit" class="next-btn">Next</button>
             </div>
         </form>

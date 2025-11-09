@@ -53,10 +53,19 @@ public class StorageController {
 
     @PostMapping("/selectStorage")
     public String selectStorage(@RequestParam(value = "storageId", required = false) Integer storageId,
-                                @ModelAttribute("buildItems") BuildItemDto buildItem) {
+                                @ModelAttribute("buildItems") BuildItemDto buildItem,
+                                org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        // Storage is REQUIRED - must select one
+        if (storageId == null && buildItem.getStorage() == null) {
+            redirectAttributes.addFlashAttribute("error", "Please select storage to continue.");
+            return "redirect:/build/storage";
+        }
+
+        // Only update if user selected new storage
         if (storageId != null) {
             buildItem.setStorage(storageService.getStorageById(storageId));
         }
+        // If storageId is null but buildItem.storage exists, keep it
         return "redirect:/build/psu";
     }
 }

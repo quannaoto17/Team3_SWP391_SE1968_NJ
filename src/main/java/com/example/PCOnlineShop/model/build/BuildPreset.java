@@ -10,14 +10,14 @@ public enum BuildPreset {
         "For AAA gaming at 1440p/4K with max settings",
         2000,
         Map.of(
-            "gpu", 0.40,
-            "cpu", 0.25,
-            "memory", 0.10,
-            "storage", 0.08,
-            "psu", 0.08,
-            "mainboard", 0.07,
-            "cooling", 0.04,
-            "case", 0.03
+            "gpu", 0.36,        // $740
+            "cpu", 0.23,        // $500
+            "memory", 0.10,     // $200
+            "storage", 0.08,    // $160
+            "psu", 0.08,        // $160
+            "mainboard", 0.1,  // $140
+            "case", 0.05,       // $100 (was $80) - INCREASED for better case
+            "cooling", 0.04     // $80
         ),
         Map.of(
             "gpu_score_min", 85,
@@ -34,14 +34,14 @@ public enum BuildPreset {
         "For 1080p/1440p gaming at high settings",
         1200,
         Map.of(
-            "gpu", 0.38,
-            "cpu", 0.22,
-            "memory", 0.12,
-            "storage", 0.10,
-            "psu", 0.08,
-            "mainboard", 0.07,
-            "cooling", 0.03,
-            "case", 0.03
+            "gpu", 0.35,        // $420
+            "cpu", 0.22,        // $264
+            "memory", 0.12,     // $144
+            "storage", 0.10,    // $120
+            "psu", 0.08,        // $96
+            "mainboard", 0.07,  // $84
+            "case", 0.06,       // $72 (was $48) - INCREASED for better case
+            "cooling", 0.03     // $36
         ),
         Map.of(
             "gpu_score_min", 70,
@@ -64,8 +64,8 @@ public enum BuildPreset {
             "storage", 0.15,
             "psu", 0.05,
             "mainboard", 0.03,
-            "cooling", 0.01,
-            "case", 0.01
+            "case", 0.03,       // $54 (was $18) - INCREASED
+            "cooling", 0.01
         ),
         Map.of(
             "cpu_score_min", 85,
@@ -88,8 +88,8 @@ public enum BuildPreset {
             "mainboard", 0.15,
             "psu", 0.10,
             "gpu", 0.05,
-            "cooling", 0.03,
-            "case", 0.02
+            "case", 0.05,       // $30 (was $12) - INCREASED
+            "cooling", 0.03
         ),
         Map.of(
             "cpu_score_min", 50,
@@ -105,14 +105,14 @@ public enum BuildPreset {
         "For 1080p gaming at medium settings",
         700,
         Map.of(
-            "gpu", 0.35,
-            "cpu", 0.25,
-            "memory", 0.15,
-            "storage", 0.10,
-            "psu", 0.07,
-            "mainboard", 0.05,
-            "cooling", 0.02,
-            "case", 0.01
+            "gpu", 0.32,        // $224
+            "cpu", 0.25,        // $175
+            "memory", 0.15,     // $105
+            "storage", 0.10,    // $70
+            "psu", 0.07,        // $49
+            "mainboard", 0.05,  // $35
+            "case", 0.04,       // $28 (was $14) - INCREASED for GPU fit
+            "cooling", 0.02     // $14
         ),
         Map.of(
             "gpu_score_min", 50,
@@ -130,13 +130,13 @@ public enum BuildPreset {
         1800,
         Map.of(
             "cpu", 0.30,
-            "gpu", 0.30,
+            "gpu", 0.28,
             "memory", 0.15,
             "storage", 0.12,
             "psu", 0.08,
+            "case", 0.04,       // $72 (was $18) - INCREASED
             "mainboard", 0.03,
-            "cooling", 0.01,
-            "case", 0.01
+            "cooling", 0.01
         ),
         Map.of(
             "cpu_score_min", 80,

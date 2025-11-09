@@ -63,9 +63,20 @@ public class MainboardController {
 
     //Chọn motherboard
     @PostMapping("/selectMainboard")
-    public String selectMainboard(@RequestParam int mainboardId,
-                                  @ModelAttribute("buildItems") BuildItemDto buildItem) {
-        buildItem.setMainboard(mainboardService.getMainboardById(mainboardId));
+    public String selectMainboard(@RequestParam(required = false) Integer mainboardId,
+                                  @ModelAttribute("buildItems") BuildItemDto buildItem,
+                                  org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        // Mainboard is REQUIRED - must select one
+        if (mainboardId == null && buildItem.getMainboard() == null) {
+            redirectAttributes.addFlashAttribute("error", "Please select a mainboard to continue.");
+            return "redirect:/build/mainboard";
+        }
+
+        // Only update if user selected a new mainboard
+        if (mainboardId != null) {
+            buildItem.setMainboard(mainboardService.getMainboardById(mainboardId));
+        }
+        // If mainboardId is null but buildItem.mainboard exists, keep it
         return "redirect:/build/cpu";
     }
     // Thêm, sửa, xóa motherboard sẽ do admin thực hiện qua trang admin

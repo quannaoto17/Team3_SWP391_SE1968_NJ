@@ -127,6 +127,7 @@ public class CompatibilityService {
         // Kiểm tra tương thích form factor với mainboard
         if (mainboard != null) {
             if (!isCaseFormFactorCompatible(pcCase.getFormFactor(), mainboard.getFormFactor())) {
+                System.out.println("❌ Case " + pcCase.getProduct().getProductName() + " rejected: Form factor mismatch (Case: " + pcCase.getFormFactor() + ", MB: " + mainboard.getFormFactor() + ")");
                 return false;
             }
         }
@@ -134,6 +135,7 @@ public class CompatibilityService {
         // Kiểm tra độ dài GPU có phù hợp với case
         if (gpu != null && pcCase.getGpuMaxLength() > 0) {
             if (pcCase.getGpuMaxLength() < gpu.getLength()) {
+                System.out.println("❌ Case " + pcCase.getProduct().getProductName() + " rejected: GPU too long (Case max: " + pcCase.getGpuMaxLength() + "mm, GPU: " + gpu.getLength() + "mm)");
                 return false; // GPU quá dài cho case
             }
         }
@@ -146,6 +148,7 @@ public class CompatibilityService {
                     // FanSize có thể dùng để ước lượng chiều cao (fan lớn thường cao hơn)
                     int estimatedHeight = cooling.getFanSize() + 30; // Ước tính chiều cao
                     if (estimatedHeight > pcCase.getCpuMaxCoolerHeight()) {
+                        System.out.println("❌ Case " + pcCase.getProduct().getProductName() + " rejected: Cooler too tall (Case max: " + pcCase.getCpuMaxCoolerHeight() + "mm, Cooler est: " + estimatedHeight + "mm)");
                         return false; // Tản nhiệt quá cao cho case
                     }
                 }
@@ -158,10 +161,12 @@ public class CompatibilityService {
                 // Kiểm tra case có đủ không gian cho radiator không
                 if (pcCase.getFormFactor().toUpperCase().contains("MINI")) {
                     if (radiatorSize > 240) {
+                        System.out.println("❌ Case " + pcCase.getProduct().getProductName() + " rejected: Radiator too large for Mini case (Radiator: " + radiatorSize + "mm, Max: 240mm)");
                         return false; // Radiator quá lớn cho case nhỏ
                     }
                 } else if (pcCase.getFormFactor().toUpperCase().contains("MICRO")) {
                     if (radiatorSize > 280) {
+                        System.out.println("❌ Case " + pcCase.getProduct().getProductName() + " rejected: Radiator too large for Micro-ATX case (Radiator: " + radiatorSize + "mm, Max: 280mm)");
                         return false; // Radiator quá lớn cho case Micro-ATX
                     }
                 }
@@ -173,11 +178,13 @@ public class CompatibilityService {
             // Kiểm tra tương thích PSU form factor với case
             if (pcCase.getPsuFormFactor() != null && powerSupply.getFormFactor() != null) {
                 if (!isPsuFormFactorCompatible(pcCase.getPsuFormFactor(), powerSupply.getFormFactor())) {
+                    System.out.println("❌ Case " + pcCase.getProduct().getProductName() + " rejected: PSU form factor mismatch (Case supports: " + pcCase.getPsuFormFactor() + ", PSU is: " + powerSupply.getFormFactor() + ")");
                     return false; // PSU form factor không tương thích với case
                 }
             }
         }
 
+        System.out.println("✅ Case " + pcCase.getProduct().getProductName() + " compatible!");
         return true;
     }
 

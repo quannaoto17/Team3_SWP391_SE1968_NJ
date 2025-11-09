@@ -56,10 +56,19 @@ public class CaseController {
 
     @PostMapping("/selectCase")
     public String selectCase(@RequestParam(value = "caseId", required = false) Integer caseId,
-                           @ModelAttribute("buildItems") BuildItemDto buildItem) {
+                           @ModelAttribute("buildItems") BuildItemDto buildItem,
+                           org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        // Case is REQUIRED - must select one
+        if (caseId == null && buildItem.getPcCase() == null) {
+            redirectAttributes.addFlashAttribute("error", "Please select a case to continue.");
+            return "redirect:/build/case";
+        }
+
+        // Only update if user selected a new case
         if (caseId != null) {
             buildItem.setPcCase(caseService.getCaseById(caseId));
         }
+        // If caseId is null but buildItem.pcCase exists, keep it
         return "redirect:/build/cooling";
     }
 }

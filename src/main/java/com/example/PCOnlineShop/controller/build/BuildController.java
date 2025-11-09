@@ -1,6 +1,9 @@
 package com.example.PCOnlineShop.controller.build;
 
 import com.example.PCOnlineShop.dto.build.BuildItemDto;
+import com.example.PCOnlineShop.dto.cart.CartItemDTO;
+import com.example.PCOnlineShop.model.product.Product;
+import com.example.PCOnlineShop.repository.product.ProductRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,6 +21,13 @@ import java.util.List;
 @SessionAttributes({"buildItems"})
 @RequestMapping("/build")
 public class BuildController {
+
+    private final ProductRepository productRepository;
+
+    public BuildController(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
     @ModelAttribute("buildItems")
     public BuildItemDto buildItem() {
         return new BuildItemDto();
@@ -26,11 +36,6 @@ public class BuildController {
     @GetMapping("/start" )
     public String startBuild() {
         return "/build/build-pc";
-    }
-
-    @GetMapping("/ai-suggest")
-    public String showPresetSelector() {
-        return "/build/ai-suggest";
     }
 
     @GetMapping("/preset-result")
@@ -57,30 +62,50 @@ public class BuildController {
                               SessionStatus sessionStatus,
                               RedirectAttributes redirectAttributes) {
         // prepare session cartBuilds
-        List<BuildItemDto> cartBuilds = (List<BuildItemDto>) session.getAttribute("cartBuilds");
-        if (cartBuilds == null) cartBuilds = new ArrayList<>();
 
-        // copy to avoid later mutation of component objects in the cart
-        BuildItemDto toAdd = new BuildItemDto(
-                buildItems.getMainboard(),
-                buildItems.getCpu(),
-                buildItems.getMemory(),
-                buildItems.getGpu(),
-                buildItems.getStorage(),
-                buildItems.getPowerSupply(),
-                buildItems.getPcCase(),
-                buildItems.getCooling(),
-                buildItems.getOther()
-        );
+        List<CartItemDTO> cartItems = new ArrayList<>();
 
-        cartBuilds.add(toAdd);
-        session.setAttribute("cartBuilds", cartBuilds);
+        //Fetch LazyInitializationException
+        if (buildItems.getMainboard() != null) {
+            Product product = productRepository.findByIdWithImages(buildItems.getMainboard().getProduct().getProductId());
+            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getMainboard().getProduct(), 1));
+        }
+        if (buildItems.getCpu() != null) {
+            Product product = productRepository.findByIdWithImages(buildItems.getCpu().getProduct().getProductId());
+            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getCpu().getProduct(), 1));
+        }
+        if (buildItems.getMemory() != null) {
+            Product product = productRepository.findByIdWithImages(buildItems.getMemory().getProduct().getProductId());
+            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getMemory().getProduct(), 1));
+        }
+        if (buildItems.getGpu() != null) {
+            Product product = productRepository.findByIdWithImages(buildItems.getGpu().getProduct().getProductId());
+            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getGpu().getProduct(), 1));
+        }
+        if (buildItems.getStorage() != null) {
+            Product product = productRepository.findByIdWithImages(buildItems.getStorage().getProduct().getProductId());
+            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getStorage().getProduct(), 1));
+        }
+        if (buildItems.getPowerSupply() != null) {
+            Product product = productRepository.findByIdWithImages(buildItems.getPowerSupply().getProduct().getProductId());
+            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getPowerSupply().getProduct(), 1));
+        }
+        if (buildItems.getPcCase() != null) {
+            Product product = productRepository.findByIdWithImages(buildItems.getPcCase().getProduct().getProductId());
+            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getPcCase().getProduct(), 1));
+        }
+        if (buildItems.getCooling() != null) {
+            Product product = productRepository.findByIdWithImages(buildItems.getCooling().getProduct().getProductId());
+            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getCooling().getProduct(), 1));
+        }
+
+        session.setAttribute("cartBuilds", cartItems);
 
         // Clear only the session-managed buildItems using SessionStatus
         sessionStatus.setComplete();
 
         redirectAttributes.addFlashAttribute("message", "Build added to prepared cart.");
         // redirect to cart preview (placeholder)
-        return "redirect:/cart";
+        return "redirect:/orders/build-checkout";
     }
 }

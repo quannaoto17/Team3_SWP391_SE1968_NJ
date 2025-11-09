@@ -48,8 +48,7 @@
 
             <!-- Footer -->
             <div class="footer-bar">
-                <span>Total Price: <strong id="priceTotal" th:text="'$' + ${buildItems.calculateTotalPrice()}"></strong></span>
-                <button type="submit" class="next-btn">Finish</button>
+                <span>Total Price: <strong id="priceTotal" th:text="'$' + ${buildItems.formattedTotalPrice}"></strong></span>
             </div>
         </form>
     </div>

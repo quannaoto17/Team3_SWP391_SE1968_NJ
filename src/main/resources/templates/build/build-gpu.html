@@ -65,7 +65,8 @@
 
         <!-- Product Grid -->
         <form th:action="@{/build/selectGpu}" method="post" id="gpuForm" data-require-selection="true">
-            <input type="hidden" name="gpuId" id="selectedGpuId"/>
+            <input type="hidden" name="gpuId" id="selectedGpuId"
+                   th:value="${buildItems.gpu?.product?.productId ?: ''}"/>
             <div class="product-grid">
                 <div th:each="gpu : ${gpus}"
                      class="product-card"
@@ -84,7 +85,7 @@
 
             <!-- Footer -->
             <div class="footer-bar">
-                <span>Total Price: <strong id="priceTotal" th:text="'$' + ${buildItems.calculateTotalPrice()}"></strong></span>
+                <span>Total Price: <strong id="priceTotal" th:text="'$' + ${buildItems.formattedTotalPrice}"></strong></span>
                 <button type="submit" class="next-btn">Next</button>
             </div>
         </form>

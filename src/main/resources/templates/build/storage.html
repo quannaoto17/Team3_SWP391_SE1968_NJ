@@ -26,6 +26,11 @@
 
     <!-- Main content -->
     <div class="main-content">
+        <!-- Error message -->
+        <div th:if="${error}" style="background-color: #f44336; color: white; padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+            <strong>⚠️ Error:</strong> <span th:text="${error}"></span>
+        </div>
+
         <!-- Filter -->
         <div class="filter-bar">
             <input type="text" placeholder="Search..." id="searchBox"/>
@@ -65,7 +70,8 @@
 
         <!-- Product Grid -->
         <form th:action="@{/build/selectStorage}" method="post" id="storageForm">
-            <input type="hidden" name="storageId" id="selectedStorageId"/>
+            <input type="hidden" name="storageId" id="selectedStorageId"
+                   th:value="${buildItems.storage?.product?.productId ?: ''}"/>
             <div class="product-grid">
                 <div th:each="storage : ${storages}"
                      class="product-card"
@@ -83,7 +89,7 @@
 
             <!-- Footer -->
             <div class="footer-bar">
-                <span>Total Price: <strong id="priceTotal" th:text="'$' + ${buildItems.calculateTotalPrice()}"></strong></span>
+                <span>Total Price: <strong id="priceTotal" th:text="'$' + ${buildItems.formattedTotalPrice}"></strong></span>
                 <button type="submit" class="next-btn">Next</button>
             </div>
         </form>
