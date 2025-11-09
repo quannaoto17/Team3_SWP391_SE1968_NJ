@@ -124,10 +124,10 @@ public class ProductService {
         return productRepository.existsByProductName(productName);
     }
 
-    public boolean isProductInActiveOrders(int productId) {
-        List<String> activeStatuses = List.of("Pending", "Processing", "Delivering","Ready to Ship");
-        return orderDetailRepository.existsByProduct_ProductIdAndOrder_StatusIn(productId, activeStatuses);
-    }
+//    public boolean isProductInActiveOrders(int productId) {
+//        List<String> activeStatuses = List.of("Pending", "Processing", "Delivering","Ready to Ship");
+//        return orderDetailRepository.existsByProduct_ProductIdAndOrder_StatusIn(productId, activeStatuses);
+//    }
     public Page<Product> search(Integer categoryId, Integer brandId, Pageable pageable) {
         return productRepository.searchProducts(categoryId, brandId, pageable);
     }
