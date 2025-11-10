@@ -12,14 +12,14 @@ import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/product")
+@RequestMapping("/products")
 public class ProductFeedbackController {
 
     private final FeedbackService feedbackService;
     private final AccountRepository accountRepository;
 
     /**  Customer gửi feedback ở trang chi tiết sản phẩm */
-    @PostMapping("/detail/{id}/feedback")
+    @PostMapping("/{id}")
     public String submitFeedback(
             @PathVariable("id") Integer id,
             @RequestParam(value = "rating", required = false) Integer rating,
@@ -33,10 +33,9 @@ public class ProductFeedbackController {
             return "redirect:/auth/login";
         }
 
-        //  Lấy số điện thoại của người dùng đang đăng nhập
+        // Lấy account hiện tại
         String phoneNumber = principal.getName();
-        Account account = accountRepository.findByPhoneNumber(phoneNumber)
-                .orElse(null);
+        Account account = accountRepository.findByPhoneNumber(phoneNumber).orElse(null);
 
         if (account == null) {
             ra.addFlashAttribute("feedback_error", "Không tìm thấy tài khoản hợp lệ.");
@@ -45,16 +44,16 @@ public class ProductFeedbackController {
 
         Integer accountId = account.getAccountId();
 
-        //  Kiểm tra dữ liệu form
+        // Kiểm tra dữ liệu form
         if (rating == null || comment == null || comment.trim().isEmpty()) {
             ra.addFlashAttribute("feedback_error", "Vui lòng chọn sao và nhập nội dung trước khi gửi.");
             return "redirect:/product/detail/" + id;
         }
 
-        //  Gửi feedback
+        // Gửi feedback
         try {
             feedbackService.createFeedback(id, accountId, rating, comment);
-            ra.addFlashAttribute("feedback_success", "Gửi đánh giá thành công! Bình luận của bạn đang chờ duyệt.");
+            ra.addFlashAttribute("feedback_success", "Gửi đánh giá thành công! Cảm ơn bạn đã phản hồi ❤️");
         } catch (IllegalArgumentException e) {
             ra.addFlashAttribute("feedback_error", e.getMessage());
         }

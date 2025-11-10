@@ -5,7 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${product.productName} + ' – PCOnlineShop'">Product Details</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style> body { font-family: 'Inter', system-ui, sans-serif; } </style>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+
+        /* Hiệu ứng mờ dần cho thông báo */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        /* Style cho sao */
+        .rating span {
+            transition: color 0.2s ease;
+        }
+
+        .rating span.hovered,
+        .rating span.active {
+            color: #facc15; /* vàng sáng */
+        }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
@@ -46,6 +64,7 @@
                 <p class="font-medium" th:text="${product.brand.name}">Brand</p>
             </div>
         </div>
+
         <div class="mb-6">
             <p class="text-sm text-gray-500">Status</p>
             <p th:if="${product.inventoryQuantity != null and product.inventoryQuantity > 0}"
@@ -59,7 +78,6 @@
         </div>
 
         <div class="flex items-center gap-4 mt-6">
-            <!-- ✅ Add to Cart Form -->
             <form th:action="@{'/cart/add/' + ${product.productId}}" method="post" class="flex items-center gap-3">
                 <label for="quantity" class="font-medium text-gray-700">Quantity:</label>
                 <input type="number" id="quantity" name="quantity" value="1" min="1"
@@ -75,50 +93,27 @@
                     <span>Add to Cart</span>
                 </button>
 
-                <!-- ✅ Thông báo hết hàng -->
                 <span th:if="${product.inventoryQuantity == null or product.inventoryQuantity <= 0}"
                       class="text-red-600 text-sm font-medium ml-2">
-            Out of stock
-        </span>
+                    Out of stock
+                </span>
             </form>
 
-            <!-- ✅ Back to Products button -->
             <a th:href="@{/products}"
                class="border border-blue-600 text-blue-700 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition">
                 ← Back to Products
             </a>
         </div>
-
     </div>
 </section>
 
-<section class="container mx-auto px-6 pb-16" th:if="${relatedProducts != null and !relatedProducts.isEmpty()}">
-    <h2 class="text-2xl font-semibold mb-6">You may also like</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div th:each="p : ${relatedProducts}" class="bg-white border rounded-lg shadow-sm hover:shadow-md transition flex flex-col">
-            <img th:if="${p.images != null and !p.images.isEmpty()}"
-                 th:src="@{${p.images[0].imageUrl}}"
-                 alt="Related product" class="w-full h-44 object-cover rounded-t-lg">
-            <img th:if="${p.images == null or p.images.isEmpty()}"
-                 src="/images/no-image.png"
-                 alt="No image" class="w-full h-44 object-cover rounded-t-lg">
-            <div class="p-4 flex-1 flex flex-col">
-                <h3 class="font-medium mb-1 truncate" th:text="${p.productName}">Related Name</h3>
-                <p class="text-gray-600 mb-3" th:text="'$' + ${p.price}">0.00</p>
-                <a th:href="@{'/products/' + ${p.productId}}"
-                   class="mt-auto bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-md text-sm">View</a>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- 🧩 Feedback Section -->
+<!-- Feedback Section -->
 <section class="container mx-auto px-6 pb-16 mt-10">
     <h2 class="text-2xl font-semibold mb-6 text-gray-800">💬 Customer Feedback</h2>
 
-    <!-- ✅ Alert messages -->
     <div th:if="${feedback_success}"
          class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded mb-5">
-        ✅ Gửi đánh giá thành công! Bình luận của bạn đang chờ duyệt.
+        ✅ Gửi đánh giá thành công!
     </div>
 
     <div th:if="${feedback_error}"
@@ -126,17 +121,17 @@
          th:text="${feedback_error}">
     </div>
 
-    <!-- ✅ Feedback list -->
     <div th:if="${feedbackPage != null and feedbackPage.totalElements > 0}">
         <div th:each="fb : ${feedbackPage.content}"
              class="bg-white border border-gray-200 rounded-xl shadow-sm p-5 mb-4 hover:shadow-md transition">
-
             <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center gap-2">
-                    <div class="w-10 h-10 bg-blue-100 text-blue-700 font-bold rounded-full flex items-center justify-center uppercase"
-                         th:text="${#strings.substring(fb.account != null ? fb.account.fullName : 'U', 0, 1)}">
-                        U
+                    <div class="w-10 h-10 bg-blue-100 text-blue-700 font-bold rounded-full flex items-center justify-center uppercase">
+                        <span th:if="${fb.account != null}"
+                              th:text="${#strings.substring(fb.account.fullName, 0, 1)}">U</span>
+                        <span th:unless="${fb.account != null}">U</span>
                     </div>
+
                     <div>
                         <p class="font-semibold text-gray-800"
                            th:text="${fb.account != null ? fb.account.fullName : 'Người dùng'}">User</p>
@@ -144,8 +139,6 @@
                            th:text="${#temporals.format(fb.createdAt, 'dd/MM/yyyy HH:mm:ss')}">12/11/2025</p>
                     </div>
                 </div>
-
-                <!-- ⭐ Rating -->
                 <div class="flex">
                     <span th:each="i : ${#numbers.sequence(1,5)}"
                           th:classappend="${i <= fb.rating} ? 'text-yellow-400' : 'text-gray-300'"
@@ -153,12 +146,8 @@
                 </div>
             </div>
 
-            <!-- Comment -->
-            <p class="text-gray-700 leading-relaxed" th:text="${fb.comment}">
-                Feedback content here...
-            </p>
+            <p class="text-gray-700 leading-relaxed" th:text="${fb.comment}">Feedback content here...</p>
 
-            <!-- Staff reply -->
             <div th:if="${fb.reply != null and !#strings.isEmpty(fb.reply)}"
                  class="mt-4 border-l-4 border-blue-500 bg-blue-50 p-3 rounded">
                 <p class="font-medium text-blue-700">Staff reply:</p>
@@ -167,42 +156,35 @@
         </div>
     </div>
 
-    <!-- ✅ No feedback message -->
     <div th:if="${feedbackPage == null or feedbackPage.totalElements == 0}"
          class="text-gray-500 italic bg-white border border-gray-200 rounded-lg p-5 text-center shadow-sm">
         This product does not have any feedback yet.
     </div>
 
-    <!-- Divider -->
     <hr class="my-10 border-gray-300"/>
 
-    <!-- ✅ Feedback Form -->
     <h3 class="text-xl font-semibold mb-4 text-gray-800">✍️ Leave Your Feedback</h3>
-    <form th:action="@{/product/detail/{id}/feedback(id=${product.productId})}" method="post"
+
+    <form th:action="@{/products/{id}(id=${product.productId})}"
+          method="post" onsubmit="return validateFeedbackForm()"
           class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-6">
 
-        <!-- Rating -->
+        <!-- Thông báo lỗi -->
+        <p id="feedbackErrorMsg" class="text-red-600 font-medium mb-3 hidden"></p>
+
+        <!-- ⭐ Rating -->
         <div>
             <label class="block text-gray-700 font-medium mb-2">Rating</label>
-            <div class="flex flex-row-reverse justify-end gap-1 text-yellow-400 text-2xl">
-                <input type="radio" id="star5" name="rating" value="5" class="hidden peer" required>
-                <label for="star5" class="cursor-pointer peer-checked:text-yellow-500">&#9733;</label>
-
-                <input type="radio" id="star4" name="rating" value="4" class="hidden peer">
-                <label for="star4" class="cursor-pointer peer-checked:text-yellow-500">&#9733;</label>
-
-                <input type="radio" id="star3" name="rating" value="3" class="hidden peer">
-                <label for="star3" class="cursor-pointer peer-checked:text-yellow-500">&#9733;</label>
-
-                <input type="radio" id="star2" name="rating" value="2" class="hidden peer">
-                <label for="star2" class="cursor-pointer peer-checked:text-yellow-500">&#9733;</label>
-
-                <input type="radio" id="star1" name="rating" value="1" class="hidden peer">
-                <label for="star1" class="cursor-pointer peer-checked:text-yellow-500">&#9733;</label>
+            <div class="rating flex flex-row gap-1 text-3xl text-gray-300 cursor-pointer select-none">
+                <input type="hidden" name="rating" id="ratingValue" value="">
+                <span data-value="1">★</span>
+                <span data-value="2">★</span>
+                <span data-value="3">★</span>
+                <span data-value="4">★</span>
+                <span data-value="5">★</span>
             </div>
         </div>
 
-        <!-- Comment -->
         <div>
             <label class="block text-gray-700 font-medium mb-2">Your Comment</label>
             <textarea name="comment" rows="5"
@@ -210,7 +192,6 @@
                       class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
         </div>
 
-        <!-- Submit -->
         <div class="flex justify-end">
             <button type="submit"
                     class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition flex items-center gap-2">
@@ -221,8 +202,67 @@
     </form>
 </section>
 
+<!-- ✅ Script -->
+<script>
+    // ⭐ JS cho rating
+    document.addEventListener('DOMContentLoaded', () => {
+        const stars = document.querySelectorAll('.rating span');
+        const ratingInput = document.getElementById('ratingValue');
 
-<!-- Footer -->
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const val = parseInt(star.getAttribute('data-value'));
+                ratingInput.value = val;
+
+                stars.forEach(s => {
+                    s.classList.toggle('active', parseInt(s.getAttribute('data-value')) <= val);
+                    s.classList.remove('hovered');
+                });
+            });
+
+            star.addEventListener('mouseover', () => {
+                const val = parseInt(star.getAttribute('data-value'));
+                stars.forEach(s => {
+                    s.classList.toggle('hovered', parseInt(s.getAttribute('data-value')) <= val);
+                });
+            });
+
+            star.addEventListener('mouseout', () => {
+                stars.forEach(s => s.classList.remove('hovered'));
+            });
+        });
+    });
+
+    // ✅ Validate form
+    function validateFeedbackForm() {
+        const rating = document.getElementById('ratingValue').value;
+        const comment = document.querySelector('textarea[name="comment"]').value.trim();
+        const errorMsg = document.getElementById('feedbackErrorMsg');
+
+        errorMsg.classList.add('hidden');
+        errorMsg.textContent = '';
+
+        if (!rating) {
+            showInlineError("⚠️ Bạn cần chọn số sao trước khi gửi đánh giá!");
+            return false;
+        }
+
+        if (comment.length === 0) {
+            showInlineError("⚠️ Vui lòng nhập nội dung bình luận!");
+            return false;
+        }
+
+        return true;
+    }
+
+    function showInlineError(message) {
+        const errorMsg = document.getElementById('feedbackErrorMsg');
+        errorMsg.textContent = message;
+        errorMsg.classList.remove('hidden');
+    }
+
+</script>
+
 <div th:replace="~{layout/footer :: footer}"></div>
 
 </body>

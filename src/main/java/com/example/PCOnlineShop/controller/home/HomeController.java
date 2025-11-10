@@ -8,6 +8,7 @@ import com.example.PCOnlineShop.repository.account.AccountRepository;
 import com.example.PCOnlineShop.repository.product.BrandRepository;
 import com.example.PCOnlineShop.repository.product.CategoryRepository;
 import com.example.PCOnlineShop.repository.product.ProductRepository;
+import com.example.PCOnlineShop.service.feedback.FeedbackService;
 import com.example.PCOnlineShop.service.product.CategoryService;
 import com.example.PCOnlineShop.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class HomeController {
     private final BrandRepository brandRepository;
     private final ProductRepository productRepository;
     private final AccountRepository accountRepository;
+    private final FeedbackService feedbackService;
     /**
      * ✅ Trang landing (trang chủ đầu tiên)
      */
@@ -128,13 +130,26 @@ public class HomeController {
     /**
      * ✅ Trang chi tiết sản phẩm
      */
-    @GetMapping("/products/{id}")
-    public String productDetails(@PathVariable Integer id, Model model) {
-        Product product = productService.findById(id);
-        List<Product> related = productService.getRelatedProducts(product);
+    @GetMapping("products/{id}")
+    public String showProductDetail(@PathVariable("id") Integer id, Model model) {
+        //  Lấy sản phẩm
+        Product product = productService.getProductById(id);
+        if (product == null) return "redirect:/home";
 
         model.addAttribute("product", product);
-        model.addAttribute("relatedProducts", related);
+        model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("images", product.getImages());
+
+        //  Lấy sản phẩm liên quan
+        if (product.getCategory() != null) {
+            List<Product> related = productService.getTopRelatedProducts(
+                    product.getCategory().getCategoryId(), id);
+            model.addAttribute("relatedProducts", related);
+        }
+
+        //  Lấy toàn bộ feedback đã được duyệt (Allow) — không phân trang
+        var feedbackPage = feedbackService.getAllowedByProduct(id, 0, Integer.MAX_VALUE);
+        model.addAttribute("feedbackPage", feedbackPage);
 
         return "product/product-details";
     }

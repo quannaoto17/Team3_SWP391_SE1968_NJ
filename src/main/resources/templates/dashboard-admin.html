@@ -5,89 +5,169 @@
     <meta charset="UTF-8">
     <title>Admin Dashboard | PC Online Shop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            background-color: #f5f6fa;
+            background-color: #f4f7fc;
+            font-family: 'Segoe UI', sans-serif;
         }
+        /* Sidebar cố định bên trái */
         .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
             height: 100vh;
-            background-color: #2f3640;
-            color: white;
+            width: 220px;
+            background-color: #2d3436;
+            color: #dfe6e9;
             padding-top: 20px;
         }
         .sidebar a {
-            color: #dcdde1;
+            color: #dfe6e9;
             text-decoration: none;
             display: block;
-            padding: 10px 20px;
+            padding: 12px 25px;
+            border-radius: 5px;
+            margin: 5px 10px;
+            transition: 0.3s;
         }
         .sidebar a:hover {
-            background-color: #353b48;
+            background-color: #636e72;
             color: #fff;
         }
+        /* Main content cách sidebar */
+        .main-content {
+            margin-left: 220px;
+            padding: 20px 30px;
+        }
+        /* Card thống kê */
         .card {
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
         }
         .card h5 {
             font-weight: 600;
+            font-size: 1rem;
+        }
+        .card h2 {
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+        .card .icon {
+            font-size: 2rem;
+            opacity: 0.7;
+        }
+        /* Chart container */
+        .chart-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
     </style>
 </head>
 <body>
-<div sec:authorize="!isAuthenticated()"
-     th:replace="layout/header-default :: header-default"></div>
+
+<!-- Header trôi -->
 <div sec:authorize="hasRole('ADMIN')"
      th:replace="layout/header-admin :: header-admin"></div>
 
-<div sec:authorize="hasRole('STAFF')"
-     th:replace="layout/header-staff :: header-staff"></div>
+<!-- Sidebar -->
+<div class="sidebar">
+    <h4 class="text-center mb-4">Admin Panel</h4>
+    <a href="#" class="d-flex align-items-center"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+    <a href="#" class="d-flex align-items-center"><i class="bi bi-people-fill me-2"></i> Users</a>
+    <a href="#" class="d-flex align-items-center"><i class="bi bi-building me-2"></i> Brands</a>
+    <a href="#" class="d-flex align-items-center"><i class="bi bi-person-badge me-2"></i> Staff</a>
+    <a href="#" class="d-flex align-items-center"><i class="bi bi-cart-fill me-2"></i> Orders</a>
+    <a href="#" class="d-flex align-items-center"><i class="bi bi-box-seam me-2"></i> Products</a>
+</div>
 
-<div sec:authorize="hasRole('CUSTOMER')"
-     th:replace="layout/header-customer :: header-customer"></div>
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
+<!-- Main Content -->
+<div class="main-content">
+    <h2 class="mb-4">Tổng quan hệ thống</h2>
 
-
-        <!-- Main content -->
-        <div class="col-md-10 p-4">
-            <h2 class="mb-4"> Tổng quan hệ thống</h2>
-
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <div class="card bg-primary text-white text-center p-3">
-                        <h5>Tổng người dùng</h5>
-                        <h2 th:text="${totalUsers}">0</h2>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card bg-success text-white text-center p-3">
-                        <h5>Tổng đơn hàng</h5>
-                        <h2 th:text="${totalOrders}">0</h2>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card bg-warning text-dark text-center p-3">
-                        <h5>Doanh thu</h5>
-                        <h2 th:text="${#numbers.formatInteger(revenue, 0)} + ' ₫'">0</h2>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card bg-info text-white text-center p-3">
-                        <h5>Tổng sản phẩm</h5>
-                        <h2 th:text="${totalProducts}">0</h2>
-                    </div>
-                </div>
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-2">
+            <div class="card bg-primary text-white text-center p-3">
+                <i class="bi bi-people-fill icon"></i>
+                <h5>Tổng người dùng</h5>
+                <h2 th:text="${totalUsers}">0</h2>
             </div>
-
-            <hr class="my-4">
-
-            <h4>📅 Báo cáo gần đây</h4>
-            <p>Hiển thị biểu đồ hoặc danh sách đơn hàng gần đây ở đây (bạn có thể thêm Chart.js hoặc DataTable sau).</p>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-secondary text-white text-center p-3">
+                <i class="bi bi-person-badge icon"></i>
+                <h5>Tổng staff</h5>
+                <h2 th:text="${totalStaff}">0</h2>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-success text-white text-center p-3">
+                <i class="bi bi-cart-fill icon"></i>
+                <h5>Tổng đơn hàng</h5>
+                <h2 th:text="${totalOrders}">0</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark text-center p-3">
+                <i class="bi bi-currency-dollar icon"></i>
+                <h5>Doanh thu</h5>
+                <h2 th:text="${#numbers.formatInteger(revenue, 0)} + ' ₫'">0</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white text-center p-3">
+                <i class="bi bi-box-seam icon"></i>
+                <h5>Tổng sản phẩm</h5>
+                <h2 th:text="${totalProducts}">0</h2>
+            </div>
         </div>
     </div>
+
+    <hr class="my-4">
+
+    <!-- Recent Orders Chart -->
+    <h4 class="mb-3"><i class="bi bi-graph-up"></i> Báo cáo đơn hàng gần đây</h4>
+    <div class="chart-container">
+        <canvas id="ordersChart" height="100"></canvas>
+    </div>
 </div>
+
+<script>
+    const ctx = document.getElementById('ordersChart').getContext('2d');
+    const ordersChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+            datasets: [{
+                label: 'Đơn hàng',
+                data: [12, 19, 9, 17, 25, 22], // dữ liệu mẫu, thay bằng dữ liệu thật từ controller
+                fill: true,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
 
 </body>
 </html>
