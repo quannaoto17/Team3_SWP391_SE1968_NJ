@@ -1,8 +1,10 @@
 package com.example.PCOnlineShop.controller.home;
 
+import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.model.product.Brand;
 import com.example.PCOnlineShop.model.product.Category;
 import com.example.PCOnlineShop.model.product.Product;
+import com.example.PCOnlineShop.repository.account.AccountRepository;
 import com.example.PCOnlineShop.repository.product.BrandRepository;
 import com.example.PCOnlineShop.repository.product.CategoryRepository;
 import com.example.PCOnlineShop.repository.product.ProductRepository;
@@ -13,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +33,11 @@ public class HomeController {
     private final CategoryRepository categoryRepository;
     private final BrandRepository brandRepository;
     private final ProductRepository productRepository;
+    private final AccountRepository accountRepository;
     /**
      * ✅ Trang landing (trang chủ đầu tiên)
      */
+
    @GetMapping("/")
     public String landing() {
         return "landing";
@@ -44,8 +50,15 @@ public class HomeController {
     public String home(
             @RequestParam(required = false) Integer category,
             @RequestParam(required = false) Integer brand,
+            Authentication authentication,
             Model model
     ) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            String email = authentication.getName();
+            Account user = accountRepository.findByEmail(email).orElse(null);
+            model.addAttribute("currentUser", user);
+        }
+
         List<Category> categories = categoryRepository.findAll();
         List<Brand> brands = brandRepository.findAll();
         List<Product> products;
