@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Shipping Management</title>
     <link rel="stylesheet" th:href="@{/css/OrderStyle.css}">
-    <link rel="stylesheet" th:href="@{/css/ShippingStyle.css}">
 </head>
 <body>
 
@@ -38,13 +37,22 @@
                          ${#dates.format(order.shipmentReceivedDate, 'dd/MM/yyyy HH:mm')} :
                          (${order.readyToShipDate != null} ? ${#dates.format(order.readyToShipDate, 'dd/MM/yyyy HH:mm')} : '-')">
             </td>
-            <td th:text="${order.status}"></td>
+            <td>
+                 <span class="status-badge"
+                       th:classappend="${order.status == 'Ready to Ship' ? 'status-ready' : 'status-delivering'}"
+                       th:text="${order.status}"></span>
+            </td>
             <td>
                 <form th:action="@{'/staff/shipping/update-status/' + ${order.orderId}}" method="post" class="status-form" style="display:inline-flex; align-items: center;">
                     <select name="newStatus">
                         <option th:value="${order.status}" th:text="${order.status}" selected disabled>Current Status</option>
+
                         <option th:if="${order.status == 'Ready to Ship'}" value="Delivering">Mark as Delivering</option>
+
                         <option th:if="${order.status == 'Delivering'}" value="Completed">Mark as Completed</option>
+
+                        <option th:if="${order.status == 'Delivering'}" value="Delivery Failed">Mark as Delivery Failed</option>
+
                         <option th:if="${order.status == 'Ready to Ship' or order.status == 'Delivering'}" value="Cancelled">Mark as Cancelled</option>
                     </select>
                     <button type="submit" class="save-btn">Update</button>
