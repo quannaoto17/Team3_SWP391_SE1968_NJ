@@ -18,4 +18,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findPendingPaymentsOlderThan(@Param("timeLimit") LocalDateTime timeLimit);
 
      Optional<Payment> findByOrder_OrderId(long orderId);
+
+    Optional<Payment> findByOrderCode(long orderCode);
 }
