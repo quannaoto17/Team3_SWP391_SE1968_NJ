@@ -40,10 +40,33 @@ public class AuthController {
             authService.register(account);  // 🔹 Gọi service để lưu vào DB
             redirectAttributes.addFlashAttribute("phoneNumber", account.getPhoneNumber());
             redirectAttributes.addFlashAttribute("password", account.getPassword());
-            return "redirect:/auth/login?success";
+            return "redirect:/auth/verify?email=" + account.getEmail();
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
             return "auth/register";
+        }
+    }
+
+    @GetMapping("verify")
+    public String verify(@RequestParam("email") String email, Model model) {
+       try {
+        this.authService.sendVerifyCode(email);
+        return "auth/verify";
+    } catch (IllegalArgumentException e) {
+        model.addAttribute("error", e.getMessage());
+        return "auth/register";
+    }
+    }
+
+    @PostMapping("verify")
+    public String verify(@RequestParam("email") String email, String code, Model model) {
+        try {
+            this.authService.verifyAccount(email, code);
+            return "redirect:/auth/login?success";
+        } catch (Exception ex){
+            model.addAttribute("error", "⚠️ Mã xác nhận không đúng hoặc đã hết hạn!");
+            model.addAttribute("email", email);
+            return "auth/verify";
         }
     }
 
