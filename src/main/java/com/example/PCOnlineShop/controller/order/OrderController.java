@@ -216,6 +216,47 @@ public class OrderController {
         return "orders/checkout";
     }
 
+    @GetMapping("/build-checkout")
+    public String showBuildCheckoutPage(Model model,
+                                   @SessionAttribute("cartBuilds") List<CartItemDTO> cartBuilds,
+                                   @AuthenticationPrincipal UserDetails currentUserDetails) {
+
+        Account currentAccount = getCurrentAccount(currentUserDetails);
+        if (currentAccount == null) return "redirect:/auth/login";
+
+        List<CartItemDTO> cartItems = cartBuilds;
+        if (cartItems.isEmpty()) return "redirect:/cart";
+
+        double grandTotal = cartService.calculateGrandTotal(cartItems);
+
+        // --- Logic lấy địa chỉ ---
+        List<Address> allAddresses = addressService.getAddressesForAccount(currentAccount);
+        Optional<Address> defaultAddressOpt = addressService.getDefaultAddress(currentAccount);
+
+        Address defaultAddress = defaultAddressOpt.orElse(
+                allAddresses.isEmpty() ? null : allAddresses.get(0)
+        );
+
+        CheckoutDTO checkoutDTO = new CheckoutDTO();
+        checkoutDTO.setShippingMethod("Giao hàng tận nơi");
+
+        if (defaultAddress != null) {
+            checkoutDTO.setShippingFullName(defaultAddress.getFullName());
+            checkoutDTO.setShippingPhone(defaultAddress.getPhone());
+            checkoutDTO.setShippingAddress(defaultAddress.getAddress());
+        }
+
+        model.addAttribute("checkoutDTO", checkoutDTO);
+        model.addAttribute("cartItems", cartItems);
+        model.addAttribute("grandTotal", grandTotal);
+        model.addAttribute("account", currentAccount);
+        model.addAttribute("defaultAddress", defaultAddress);
+        model.addAttribute("allAddresses", allAddresses);
+        model.addAttribute("pageTitle", "Checkout");
+
+        return "orders/checkout";
+    }
+
     // ======================================================
     // == PHẦN MỚI: XỬ LÝ ĐẶT HÀNG (POST) VÀ CHUYỂN SANG PAYOS
     // ======================================================

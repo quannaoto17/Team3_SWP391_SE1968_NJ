@@ -54,36 +54,34 @@ public class PaymentService {
     }
 
     /**
-     * Bước 2: Tạo link thanh toán PayOS (Viết lại theo API v2)
+     * Bước 2: Tạo link thanh toán PayOS (SỬA LẠI LOGIC orderCode)
      */
     @Transactional
     public String createPayOSLink(Payment payment) throws Exception {
 
-        final long paymentIdAsOrderCode = payment.getPaymentId();
+        // ✅ SỬA LỖI: Tạo orderCode duy nhất bằng timestamp (giống code mẫu)
+        final long uniqueOrderCode = System.currentTimeMillis();
+
+        // ✅ Lưu orderCode này vào CSDL
+        payment.setOrderCode(uniqueOrderCode);
+        paymentRepository.save(payment); // Lưu trước khi gửi
+
         final String description = "Thanh toan don hang #" + payment.getOrder().getOrderId();
-        final String basePublic = "https://kyoko-tunable-pivotally.ngrok-free.dev";
-        final String returnUrl = "http://localhost:8081/payment/callback/success"; //
-        final String cancelUrl = "http://localhost:8081/payment/callback/failed"; //
+        final String returnUrl = "http://localhost:8081/payment/callback/success";
+        final String cancelUrl = "http://localhost:8081/payment/callback/failed";
 
         List<PaymentLinkItem> items = new ArrayList<>();
-
-        // QUAN TRỌNG: Đảm bảo file OrderDetail.java của bạn có
-        // 1. @Data (Lombok)
-        // 2. private List<OrderDetail> orderDetails; trong file Order.java
-
+        // ... (logic thêm items)
         for (OrderDetail detail : payment.getOrder().getOrderDetails()) {
             items.add(PaymentLinkItem.builder()
                     .name(detail.getProduct().getProductName())
                     .quantity(detail.getQuantity())
-
-                    // ✅ SỬA LỖI 1: Ép kiểu 'double' sang 'long'
                     .price((long) detail.getPrice())
-
                     .build());
         }
 
         CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
-                .orderCode(paymentIdAsOrderCode)
+                .orderCode(uniqueOrderCode) // ✅ Gửi orderCode duy nhất này
                 .amount(payment.getAmount().longValue())
                 .description(description)
                 .items(items)
@@ -94,49 +92,46 @@ public class PaymentService {
         CreatePaymentLinkResponse payosResponse = payOS.paymentRequests().create(paymentData);
 
         String checkoutUrl = payosResponse.getCheckoutUrl();
-
         payment.setGatewayPaymentId(payosResponse.getPaymentLinkId());
-        paymentRepository.save(payment);
+        paymentRepository.save(payment); // Lưu lại paymentLinkId
 
         return checkoutUrl;
     }
 
     /**
-     * Bước 3: Xử lý Webhook (Cập nhật logic thất bại)
+     * Bước 3: Xử lý Webhook (SỬA LẠI LOGIC TÌM KIẾM)
      */
     @Transactional
     public void handleWebhook(Object body) throws Exception {
 
         WebhookData webhookData = payOS.webhooks().verify(body);
-        long paymentId = webhookData.getOrderCode();
 
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Payment: " + paymentId));
+        // ✅ SỬA LỖI: Lấy orderCode (timestamp) từ webhook
+        long orderCode = webhookData.getOrderCode();
+
+        // ✅ SỬA LỖI: Tìm Payment bằng orderCode, không phải paymentId
+        Payment payment = paymentRepository.findByOrderCode(orderCode)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Payment với orderCode: " + orderCode));
+
         Order order = payment.getOrder();
+        String webhookType = webhookData.getCode();
 
-        String webhookType = webhookData.getCode(); // "00" là thành công
-
-        if ("00".equals(webhookType)) { // Thanh toán thành công
+        if ("00".equals(webhookType)) {
+            // ... (logic SUCCESS)
             payment.setStatus("SUCCESS");
             payment.setGatewayPaymentId(webhookData.getPaymentLinkId());
             payment.setRawPayload(webhookData.toString());
-
             order.setPaymentStatus("PAID");
             order.setStatus("Processing");
             order.setPaidAt(LocalDateTime.now());
 
-            paymentRepository.save(payment);
-            orderRepository.save(order);
-
-        } else { // Thanh toán thất bại (Hủy, Hết hạn, v.v.)
-            // ✅ SỬA LỖI: Gọi OrderService để hủy và hoàn kho
+        } else {
             if ("PENDING".equals(payment.getStatus())) {
-                orderService.cancelOrderFromPaymentId(paymentId);
+                // ... (logic FAILED)
+                orderService.cancelOrderFromPaymentId(payment.getPaymentId()); // Gọi hàm cancel đã có
             }
         }
-        // (Không cần save ở đây nữa, vì service đã save)
     }
-
     /**
      * MỚI: Lấy thông tin thanh toán cho View
      */
@@ -151,10 +146,10 @@ public class PaymentService {
      * ✅ BƯỚC 4: TRUY VẤN GIAO DỊCH (PHƯƠNG THỨC BỊ THIẾU)
      * (Dùng cho trang callback)
      */
-    public PaymentLink queryTransaction(long paymentId) throws Exception {
+    public PaymentLink queryTransaction(long orderCode) throws Exception {
         try {
             // Dùng API v2 để truy vấn thông tin link thanh toán
-            return payOS.paymentRequests().get(paymentId);
+            return payOS.paymentRequests().get(orderCode);
         } catch (Exception e) {
             System.err.println("Lỗi khi truy vấn PayOS: " + e.getMessage());
             return null;

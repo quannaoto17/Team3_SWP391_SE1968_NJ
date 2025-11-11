@@ -45,17 +45,16 @@
             </td>
 
             <td>
-                <div th:if="${order.status == 'Pending Payment'}">
-                    <span class="status-badge status-pending">Pending Payment</span>
+                <div th:if="${order.status == 'Pending Payment' or order.status == 'Pending'}">
+                    <span class="status-badge status-pending" th:text="${order.status}"></span>
                 </div>
 
-                <div th:if="${order.status == 'Processing'}" class="state-processing-buttons">
-                    <button class="btn-action btn-process" th:data-order-id="${order.orderId}">
-                        Mark Ready to Ship
-                    </button>
-                    <button class="btn-action btn-cancel" th:data-order-id="${order.orderId}">
-                        Hủy (Refund)
-                    </button>
+                <div th:if="${order.status == 'Processing'}">
+                    <select class="status-select-processing" th:data-order-id="${order.orderId}">
+                        <option value="Processing" selected>Processing</option>
+                        <option value="Ready to Ship">Mark Ready to Ship</option>
+                        <option value="Cancelled">Hủy (Refund)</option>
+                    </select>
                 </div>
 
                 <div th:if="${order.status == 'Ready to Ship'}">
@@ -73,8 +72,12 @@
                 <div th:if="${order.status == 'Cancelled'}">
                     <span class="status-badge status-cancelled">Cancelled</span>
                     <span th:if="${order.paymentStatus == 'REFUND_PENDING'}" class="status-refund-pending">
-                    (Refund Pending)
-                </span>
+                        (Refund Pending)
+                    </span>
+                </div>
+
+                <div th:if="${order.status != 'Pending Payment' and order.status != 'Pending' and order.status != 'Processing' and order.status != 'Ready to Ship' and order.status != 'Delivering' and order.status != 'Completed' and order.status != 'Cancelled'}">
+                    <span class="status-badge" th:text="${order.status}"></span>
                 </div>
             </td>
 
@@ -107,15 +110,14 @@
             <td>
                 <span class="status-badge"
                       th:classappend="${
-                        order.status == 'Pending Payment' ? 'status-pending' :
+                        (order.status == 'Pending Payment' or order.status == 'Pending') ? 'status-pending' :
                         order.status == 'Processing' ? 'status-processing' :
                         order.status == 'Ready to Ship' ? 'status-ready' :
                         order.status == 'Delivering' ? 'status-delivering' :
                         order.status == 'Completed' ? 'status-completed' :
                         order.status == 'Cancelled' ? 'status-cancelled' : ''
                       }"
-                      th:text="${order.status}">
-                </span>
+                      th:text="${order.status ?: 'N/A'}"> </span>
             </td>
             <td class="action-buttons">
                 <a th:href="@{'/orders/detail/' + ${order.orderId}}" class="view-btn">View Details</a>
@@ -130,34 +132,6 @@
 </div>
 
 <div id="payment-info-modal" class="modal">
-    <div class="modal-content">
-        <h4>Chi Tiết Thanh Toán</h4>
-
-        <div id="payment-info-error" class="alert alert-danger" style="display: none;"></div>
-
-        <div id="payment-info-body">
-            <div class="info-row">
-                <strong>Mã giao dịch (PayOS):</strong>
-                <span id="payment-gateway-id"></span>
-            </div>
-            <div class="info-row">
-                <strong>Số tiền:</strong>
-                <span id="payment-amount"></span>
-            </div>
-            <div class="info-row">
-                <strong>Trạng thái:</strong>
-                <span id="payment-status-text" class="status-badge"></span>
-            </div>
-            <div class="info-row">
-                <strong>Thời gian tạo:</strong>
-                <span id="payment-created-at"></span>
-            </div>
-        </div>
-
-        <div class="modal-actions">
-            <button type="button" id="btn-close-payment-modal" class="btn-modal btn-modal-cancel">Đóng</button>
-        </div>
-    </div>
 </div>
 
 
@@ -180,40 +154,32 @@
             });
         }
 
-        // --- 2. LOGIC STATE MACHINE (Nút .btn-process) ---
-        $('#orderTable tbody').on('click', '.btn-process', function() {
-            var $button = $(this);
-            var orderId = $button.data('order-id');
-            if (!confirm('Xác nhận đơn hàng #' + orderId + ' và chuyển sang "Ready to Ship"?')) return;
+        // --- 2. LOGIC MỚI CHO DROPDOWN <select> ---
+        $('#orderTable tbody').on('change', '.status-select-processing', function() {
+            var $select = $(this);
+            var orderId = $select.data('order-id');
+            var newStatus = $select.val();
 
-            $button.prop('disabled', true).text('Đang xử lý...');
-            $.ajax({
-                type: "POST",
-                url: "/orders/mark-ready-to-ship",
-                data: { orderId: orderId },
-                success: function(response) {
-                    alert(response.message);
-                    location.reload();
-                },
-                error: function(xhr) {
-                    alert("Lỗi: " + (xhr.responseJSON ? xhr.responseJSON.error : "Unknown error"));
-                    $button.prop('disabled', false).text('Mark Ready to Ship');
-                }
-            });
-        });
+            if (newStatus === "Processing") return; // Không thay đổi
 
-        // --- 3. ✅ MỚI: LOGIC NÚT HỦY (REFUND) ---
-        $('#orderTable tbody').on('click', '.btn-cancel', function() {
-            var $button = $(this);
-            var orderId = $button.data('order-id');
-            if (!confirm('BẠN CÓ CHẮC MUỐN HỦY ĐƠN HÀNG #' + orderId + '? \n\nCẢNH BÁO: Hành động này sẽ kích hoạt quy trình hoàn tiền cho khách.')) {
+            var url = (newStatus === "Ready to Ship")
+                ? "/orders/mark-ready-to-ship"
+                : "/orders/staff-cancel";
+
+            var confirmMsg = (newStatus === "Ready to Ship")
+                ? "Chuyển đơn hàng #" + orderId + " sang Ready to Ship?"
+                : "BẠN CÓ CHẮC MUỐN HỦY ĐƠN HÀNG #" + orderId + "? \n\nHÀNH ĐỘNG NÀY SẼ KÍCH HOẠT QUY TRÌNH HOÀN TIỀN.";
+
+            if (!confirm(confirmMsg)) {
+                $select.val("Processing"); // Reset dropdown
                 return;
             }
 
-            $button.prop('disabled', true).text('Đang hủy...');
+            $select.prop('disabled', true).css('opacity', 0.5);
+
             $.ajax({
                 type: "POST",
-                url: "/orders/staff-cancel", // Endpoint mới
+                url: url,
                 data: { orderId: orderId },
                 success: function(response) {
                     alert(response.message);
@@ -221,18 +187,60 @@
                 },
                 error: function(xhr) {
                     alert("Lỗi: " + (xhr.responseJSON ? xhr.responseJSON.error : "Unknown error"));
-                    $button.prop('disabled', false).text('Hủy (Refund)');
+                    $select.prop('disabled', false).css('opacity', 1);
+                    $select.val("Processing"); // Reset
                 }
             });
         });
 
-        // --- 4. LOGIC VIEW PAYMENT INFO (Giữ nguyên) ---
+        // --- 3. LOGIC VIEW PAYMENT INFO (Giữ nguyên) ---
         const paymentModal = $('#payment-info-modal');
         const paymentInfoBody = $('#payment-info-body');
         const paymentInfoError = $('#payment-info-error');
         $('body').on('click', '.view-btn-payment', function() {
-            // ... (Code của bạn từ lượt trước) ...
+            const orderId = $(this).data('order-id');
+
+            paymentInfoBody.show();
+            paymentInfoError.hide();
+            paymentInfoBody.find('span').text('');
+            $('#payment-status-text').attr('class', 'status-badge');
+
+            paymentInfoBody.html('<p>Loading...</p>');
+            paymentModal.css('display', 'flex');
+
+            fetch('/payment/info/' + orderId)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.error); });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    paymentInfoBody.html($('#payment-info-modal .modal-content #payment-info-body').html().replace('<p>Loading...</p>', ''));
+
+                    const amount = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.amount);
+                    const createdAt = new Date(data.createdAt).toLocaleString('vi-VN');
+
+                    $('#payment-gateway-id').text(data.gatewayPaymentId || 'N/A');
+                    $('#payment-amount').text(amount);
+                    $('#payment-status-text').text(data.status);
+                    $('#payment-created-at').text(createdAt);
+
+                    if (data.status === 'SUCCESS') {
+                        $('#payment-status-text').addClass('status-completed');
+                    } else if (data.status === 'PENDING') {
+                        $('#payment-status-text').addClass('status-pending');
+                    } else {
+                        $('#payment-status-text').addClass('status-cancelled');
+                    }
+                })
+                .catch(err => {
+                    paymentInfoBody.hide();
+                    paymentInfoError.text(err.message || 'Không thể tải dữ liệu.').show();
+                });
         });
+
+        // Đóng Modal
         $('#btn-close-payment-modal').on('click', function() {
             paymentModal.css('display', 'none');
         });

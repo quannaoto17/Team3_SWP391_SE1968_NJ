@@ -136,11 +136,22 @@ public class BrandController {
             model.addAttribute("brand", brandService.getAllBrands());
             return "brand/brand-list";
         }
-
+        Brand source =  brandService.getBrandById(sourceId);
+        Brand target =  brandService.getBrandById(targetId);
+        if (source == null || target == null) {
+            model.addAttribute("error", "Brand not found");
+            model.addAttribute("brand", brandService.getAllBrands());
+            return "brand/brand-merge";
+        }
+        if (!brandService.areSimilarBrand(source.getName(), target.getName())){
+            model.addAttribute("error", "Cannot merge brands that are not similar");
+            model.addAttribute("brand", brandService.getAllBrands());
+            return "brand/brand-merge";
+        }
         long count = brandService.countProductsOfBrand(sourceId);
         brandService.reassignProducts(sourceId, targetId);
 
-        Brand source = brandService.getBrandById(sourceId);
+        source = brandService.getBrandById(sourceId);
         if (source == null) {
             model.addAttribute("error", "Brand does not exist");
             model.addAttribute("brand", brandService.getAllBrands());

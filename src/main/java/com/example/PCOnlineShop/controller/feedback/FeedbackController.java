@@ -13,8 +13,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,15 +21,15 @@ public class FeedbackController {
 
     private final FeedbackService feedbackService;
 
-    /**  Danh sách feedback (mặc định hiển thị Pending) */
+    /**  Danh sách feedback */
     @GetMapping
     public String list(
-            @RequestParam(required = false, defaultValue = "Pending") String status,
+            @RequestParam(required = false, defaultValue = "Allow") String status,
             @RequestParam(required = false) Integer rating,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "9999") int size,
             @RequestParam(defaultValue = "dateDesc") String sort,
             Model model
     ) {
@@ -47,25 +45,6 @@ public class FeedbackController {
         model.addAttribute("qs", buildQS(status, rating, from, to, size, sort));
 
         return "feedback/feedback-list";
-    }
-
-    /**  Cập nhật hàng loạt */
-    @PostMapping("/bulk-status")
-    public String bulkStatus(
-            @RequestParam("id") Integer[] ids,
-            @RequestParam("st") String[] statuses,
-            @RequestParam("qs") String qs,
-            RedirectAttributes ra
-    ) {
-        Map<Integer, String> payload = new HashMap<>();
-        for (int i = 0; i < ids.length; i++) {
-            payload.put(ids[i], statuses[i]);
-        }
-
-        feedbackService.bulkUpdateStatus(payload);
-        ra.addFlashAttribute("msg", "Đã duyệt phản hồi (Allow).");
-
-        return "redirect:/staff/feedback?status=Pending";
     }
 
     /**  Xem chi tiết feedback */
@@ -86,12 +65,11 @@ public class FeedbackController {
                         @RequestParam(required = false) String back,
                         RedirectAttributes ra) {
         feedbackService.updateReply(id, reply);
-        feedbackService.updateStatus(id, "Allow");
-        ra.addFlashAttribute("msg", "Đã phản hồi và duyệt feedback.");
-        return "redirect:/staff/feedback?status=Pending";
+        ra.addFlashAttribute("msg", "Đã phản hồi feedback thành công.");
+        return "redirect:/staff/feedback?status=Allow";
     }
 
-    /**  Build Query String giữ lại filter */
+
     private String buildQS(String status, Integer rating,
                            LocalDate from, LocalDate to, int size, String sort) {
         StringBuilder sb = new StringBuilder();

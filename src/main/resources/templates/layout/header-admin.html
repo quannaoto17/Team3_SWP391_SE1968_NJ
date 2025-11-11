@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="header-admin">
 
 <head>
     <meta charset="UTF-8">
@@ -225,7 +226,6 @@
         </div>
         <nav>
             <a th:href="@{/admin/brand/list}" class="nav-btn">Brand Management</a>
-            <a th:href="@{/staff/products/list}" class="nav-btn">Product Management</a>
             <a th:href="@{/staff/list}" class="nav-btn">Staff Management</a>
             <a th:href="@{/customer/list}" class="nav-btn">Customer Management</a>
         </nav>
@@ -233,10 +233,7 @@
 
     <div class="overlay" id="overlay"></div>
 
-    <main id="main">
-        <h1>Welcome, Admin 👋</h1>
-        <p>Manage products, users, and system settings easily here.</p>
-    </main>
+
 
     <script>
         const menuBtn = document.getElementById('menu-btn');

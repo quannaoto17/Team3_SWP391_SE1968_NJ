@@ -46,4 +46,5 @@ public class ProductDetailController {
 
         return "product/product-details";
     }
+
 }

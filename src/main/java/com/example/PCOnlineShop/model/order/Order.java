@@ -69,4 +69,13 @@ public class Order {
 
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
+
+
+    public double getTotalAmount() {
+        if (orderDetails == null) return 0.0;
+        return orderDetails.stream()
+                .mapToDouble(od -> od.getPrice() * od.getQuantity())
+                .sum();
+    }
+
 }

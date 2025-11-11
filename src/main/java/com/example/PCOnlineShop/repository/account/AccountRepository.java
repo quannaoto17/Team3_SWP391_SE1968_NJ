@@ -20,6 +20,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     boolean existsByPhoneNumberAndRole(String phoneNumber, RoleName role);
 
     /* ==================== Dùng cho DataTable (trả ALL) ==================== */
+    long countByRole(RoleName role);
 
     // Không fetch address → dùng khi không cần hiển thị address
     List<Account> findAllByRole(RoleName role);

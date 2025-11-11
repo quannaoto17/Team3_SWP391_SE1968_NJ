@@ -37,6 +37,9 @@ public class Payment {
     @Column(name = "created_at", updatable = false) //
     private Date createdAt;
 
+    @Column(name = "order_code", unique = true) //
+    private Long orderCode;
+
     @PrePersist
     protected void onCreate() {
         createdAt = new Date();
