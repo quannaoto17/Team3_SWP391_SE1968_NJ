@@ -20,9 +20,12 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Page<Product> findByBrand_BrandId(int brandId, Pageable pageable);
 
-    Page<Product> findByCategory_CategoryId(int categoryId, Pageable pageable);
+    // ManyToMany: Tìm product có chứa category_id trong danh sách categories
+    @Query("SELECT DISTINCT p FROM Product p JOIN p.categories c WHERE c.categoryId = :categoryId")
+    Page<Product> findByCategory_CategoryId(@Param("categoryId") int categoryId, Pageable pageable);
 
-    List<Product> findTop4ByCategory_CategoryIdAndProductIdNot(Integer categoryId, Integer currentProductId);
+    @Query("SELECT DISTINCT p FROM Product p JOIN p.categories c WHERE c.categoryId = :categoryId AND p.productId != :currentProductId ORDER BY RAND()")
+    List<Product> findTop4ByCategory_CategoryIdAndProductIdNot(@Param("categoryId") Integer categoryId, @Param("currentProductId") Integer currentProductId);
 
     @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.images")
     List<Product> findAllWithImages();
@@ -31,9 +34,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Product findByIdWithImages(@Param("productId") Integer productId);
 
     @Query("""
-        SELECT p FROM Product p
+        SELECT DISTINCT p FROM Product p
         LEFT JOIN p.brand b
-        LEFT JOIN p.category c
+        LEFT JOIN p.categories c
         WHERE (:keyword IS NULL OR :keyword = '' OR LOWER(p.productName) LIKE LOWER(CONCAT('%', :keyword, '%')))
           AND (:brandId IS NULL OR b.brandId = :brandId)
           AND (:categoryId IS NULL OR c.categoryId = :categoryId)
@@ -59,16 +62,19 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     List<Product> findTop8ByStatusTrue();
 
-    List<Product> findByCategoryAndStatusTrue(Category category);
+    // Tìm products có category cụ thể và đang active
+    @Query("SELECT DISTINCT p FROM Product p JOIN p.categories c WHERE c = :category AND p.status = true")
+    List<Product> findByCategoryAndStatusTrue(@Param("category") Category category);
 
     List<Product> findByBrandAndStatusTrue(Brand brand);
 
     List<Product> findByStatusTrue();
 
     @Query("""
-        SELECT p FROM Product p
+        SELECT DISTINCT p FROM Product p
+        LEFT JOIN p.categories c
         WHERE p.status = true
-          AND (:categoryId IS NULL OR p.category.categoryId = :categoryId)
+          AND (:categoryId IS NULL OR c.categoryId = :categoryId)
           AND (:brandId IS NULL OR p.brand.brandId = :brandId)
         """)
     Page<Product> searchProducts(
@@ -77,13 +83,17 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             Pageable pageable
     );
 
-    List<Product> findTop8ByCategoryAndStatusTrue(Category category);
-    Page<Product> findByCategory_CategoryId(Integer categoryId, Pageable pageable);
+    @Query("SELECT DISTINCT p FROM Product p JOIN p.categories c WHERE c = :category AND p.status = true ORDER BY RAND()")
+    List<Product> findTop8ByCategoryAndStatusTrue(@Param("category") Category category);
+
+    @Query("SELECT DISTINCT p FROM Product p JOIN p.categories c WHERE c.categoryId = :categoryId")
+    Page<Product> findByCategory_CategoryId(@Param("categoryId") Integer categoryId, Pageable pageable);
     Page<Product> findByBrand_BrandId(Integer brandId, Pageable pageable);
 
     @Query(value = """
-            SELECT * FROM product p
-            WHERE (:categoryId IS NULL OR p.category_id = :categoryId)
+            SELECT DISTINCT p.* FROM product p
+            LEFT JOIN product_category pc ON p.product_id = pc.product_id
+            WHERE (:categoryId IS NULL OR pc.category_id = :categoryId)
               AND (:brandId IS NULL OR p.brand_id = :brandId)
               AND (:keyword IS NULL OR LOWER(p.product_name) LIKE LOWER(CONCAT('%', :keyword, '%')))
               AND (:minPrice IS NULL OR p.price >= :minPrice)
@@ -91,8 +101,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
               AND p.status = TRUE
             """,
             countQuery = """
-            SELECT COUNT(*) FROM product p
-            WHERE (:categoryId IS NULL OR p.category_id = :categoryId)
+            SELECT COUNT(DISTINCT p.product_id) FROM product p
+            LEFT JOIN product_category pc ON p.product_id = pc.product_id
+            WHERE (:categoryId IS NULL OR pc.category_id = :categoryId)
               AND (:brandId IS NULL OR p.brand_id = :brandId)
               AND (:keyword IS NULL OR LOWER(p.product_name) LIKE LOWER(CONCAT('%', :keyword, '%')))
               AND (:minPrice IS NULL OR p.price >= :minPrice)

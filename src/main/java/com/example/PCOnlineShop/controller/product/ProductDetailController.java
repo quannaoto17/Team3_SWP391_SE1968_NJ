@@ -1,5 +1,6 @@
 package com.example.PCOnlineShop.controller.product;
 
+import com.example.PCOnlineShop.model.product.Category;
 import com.example.PCOnlineShop.model.product.Product;
 import com.example.PCOnlineShop.service.feedback.FeedbackService;
 import com.example.PCOnlineShop.service.product.CategoryService;
@@ -34,9 +35,12 @@ public class ProductDetailController {
         model.addAttribute("images", product.getImages());
 
         //  Lấy sản phẩm liên quan
-        if (product.getCategory() != null) {
+        List<Category> productCategories = product.getCategories();
+        if (productCategories != null && !productCategories.isEmpty()) {
+            // Use primary category (first one) for related products
+            Category primaryCategory = productCategories.getFirst();
             List<Product> related = productService.getTopRelatedProducts(
-                    product.getCategory().getCategoryId(), id);
+                    primaryCategory.getCategoryId(), id);
             model.addAttribute("relatedProducts", related);
         }
 

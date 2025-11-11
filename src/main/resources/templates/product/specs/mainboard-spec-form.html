@@ -2,26 +2,102 @@
 
     <div class="col-md-6">
         <label for="mb-socket" class="form-label">Socket</label>
-        <input type="text" class="form-control form-control-sm" id="mb-socket"
-               name="mainboard.socket"
-               th:value="${mb.socket}"
-               placeholder="e.g., AM5, LGA1700">
+        <select class="form-control form-control-sm" id="mb-socket"
+                name="mainboard.socket" th:value="${mb.socket}">
+            <option value="">-- Select Socket --</option>
+            <option value="AM4" th:selected="${mb.socket == 'AM4'}">AM4</option>
+            <option value="AM5" th:selected="${mb.socket == 'AM5'}">AM5</option>
+            <option value="LGA1700" th:selected="${mb.socket == 'LGA1700'}">LGA1700</option>
+            <option value="LGA1200" th:selected="${mb.socket == 'LGA1200'}">LGA1200</option>
+            <option value="LGA1151" th:selected="${mb.socket == 'LGA1151'}">LGA1151</option>
+            <option value="TR4" th:selected="${mb.socket == 'TR4'}">TR4 (Threadripper)</option>
+        </select>
     </div>
 
     <div class="col-md-6">
         <label for="mb-chipset" class="form-label">Chipset</label>
-        <input type="text" class="form-control form-control-sm" id="mb-chipset"
-               name="mainboard.chipset"
-               th:value="${mb.chipset}"
-               placeholder="e.g., B650, Z790">
+        <select class="form-control form-control-sm" id="mb-chipset"
+                name="mainboard.chipset" th:value="${mb.chipset}">
+            <option value="">-- Select Chipset --</option>
+            <optgroup label="AMD">
+                <option value="A620" th:selected="${mb.chipset == 'A620'}">A620</option>
+                <option value="B550" th:selected="${mb.chipset == 'B550'}">B550</option>
+                <option value="B650" th:selected="${mb.chipset == 'B650'}">B650</option>
+                <option value="X570" th:selected="${mb.chipset == 'X570'}">X570</option>
+                <option value="X670" th:selected="${mb.chipset == 'X670'}">X670</option>
+                <option value="X670E" th:selected="${mb.chipset == 'X670E'}">X670E</option>
+                <option value="X399" th:selected="${mb.chipset == 'X399'}">X399</option>
+            </optgroup>
+            <optgroup label="Intel">
+                <option value="H510" th:selected="${mb.chipset == 'H510'}">H510</option>
+                <option value="H610" th:selected="${mb.chipset == 'H610'}">H610</option>
+                <option value="B660" th:selected="${mb.chipset == 'B660'}">B660</option>
+                <option value="B760" th:selected="${mb.chipset == 'B760'}">B760</option>
+                <option value="Z690" th:selected="${mb.chipset == 'Z690'}">Z690</option>
+                <option value="Z790" th:selected="${mb.chipset == 'Z790'}">Z790</option>
+            </optgroup>
+        </select>
     </div>
 
     <div class="col-md-6">
         <label for="mb-formfactor" class="form-label">Form Factor</label>
-        <input type="text" class="form-control form-control-sm" id="mb-formfactor"
-               name="mainboard.formFactor"
-               th:value="${mb.formFactor}"
-               placeholder="e.g., ATX, mATX, ITX">
+        <select class="form-control form-control-sm" id="mb-formfactor"
+                name="mainboard.formFactor" th:value="${mb.formFactor}">
+            <option value="">-- Select Form Factor --</option>
+            <option value="Mini-ITX" th:selected="${mb.formFactor == 'Mini-ITX'}">Mini-ITX</option>
+            <option value="Micro-ATX" th:selected="${mb.formFactor == 'Micro-ATX'}">Micro-ATX</option>
+            <option value="ATX" th:selected="${mb.formFactor == 'ATX'}">ATX</option>
+            <option value="E-ATX" th:selected="${mb.formFactor == 'E-ATX'}">E-ATX</option>
+        </select>
+    </div>
+
+    <div class="col-md-6">
+        <label for="mb-memtype" class="form-label">Memory Type</label>
+        <select class="form-control form-control-sm" id="mb-memtype"
+                name="mainboard.memoryType" th:value="${mb.memoryType}">
+            <option value="">-- Select Memory Type --</option>
+            <option value="DDR4" th:selected="${mb.memoryType == 'DDR4'}">DDR4</option>
+            <option value="DDR5" th:selected="${mb.memoryType == 'DDR5'}">DDR5</option>
+        </select>
+    </div>
+
+    <div class="col-md-6">
+        <label for="mb-memslots" class="form-label">Memory Slots</label>
+        <input type="number" class="form-control form-control-sm" id="mb-memslots"
+               name="mainboard.memorySlots"
+               th:value="${mb.memorySlots}" min="0">
+    </div>
+
+    <div class="col-md-6">
+        <label for="mb-maxmemspeed" class="form-label">Max Memory Speed (MHz)</label>
+        <input type="number" class="form-control form-control-sm" id="mb-maxmemspeed"
+               name="mainboard.maxMemorySpeed"
+               th:value="${mb.maxMemorySpeed}" min="0">
+    </div>
+
+    <div class="col-md-6">
+        <label for="mb-pcie" class="form-label">PCIe Version</label>
+        <select class="form-control form-control-sm" id="mb-pcie"
+                name="mainboard.pcieVersion" th:value="${mb.pcieVersion}">
+            <option value="">-- Select PCIe Version --</option>
+            <option value="3.0" th:selected="${mb.pcieVersion == '3.0'}">PCIe 3.0</option>
+            <option value="4.0" th:selected="${mb.pcieVersion == '4.0'}">PCIe 4.0</option>
+            <option value="5.0" th:selected="${mb.pcieVersion == '5.0'}">PCIe 5.0</option>
+        </select>
+    </div>
+
+    <div class="col-md-6">
+        <label for="mb-m2slots" class="form-label">M.2 Slots</label>
+        <input type="number" class="form-control form-control-sm" id="mb-m2slots"
+               name="mainboard.m2Slots"
+               th:value="${mb.m2Slots}" min="0">
+    </div>
+
+    <div class="col-md-6">
+        <label for="mb-sataports" class="form-label">SATA Ports</label>
+        <input type="number" class="form-control form-control-sm" id="mb-sataports"
+               name="mainboard.sataPorts"
+               th:value="${mb.sataPorts}" min="0">
     </div>
 
 </div>

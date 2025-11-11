@@ -13,6 +13,7 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
+
     public void sendVerificationCode(String to, String code) {
         try {
             MimeMessage message = mailSender.createMimeMessage();

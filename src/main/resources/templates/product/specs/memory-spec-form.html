@@ -9,10 +9,12 @@
 
     <div class="col-md-6">
         <label for="mem-type" class="form-label">Type</label>
-        <input type="text" class="form-control form-control-sm" id="mem-type"
-               name="mem.type"
-               th:value="${mem.type}"
-               placeholder="e.g., DDR4, DDR5">
+        <select class="form-control form-control-sm" id="mem-type"
+                name="mem.type" th:value="${mem.type}">
+            <option value="">-- Select Type --</option>
+            <option value="DDR4" th:selected="${mem.type == 'DDR4'}">DDR4</option>
+            <option value="DDR5" th:selected="${mem.type == 'DDR5'}">DDR5</option>
+        </select>
     </div>
 
     <div class="col-md-6">
@@ -27,6 +29,16 @@
         <input type="number" class="form-control form-control-sm" id="mem-tdp"
                name="mem.tdp"
                th:value="${mem.tdp}" min="0">
+    </div>
+
+    <div class="col-md-6">
+        <label for="mem-modules" class="form-label">Modules</label>
+        <select class="form-control form-control-sm" id="mem-modules"
+                name="mem.modules" th:value="${mem.modules}">
+            <option value="1" th:selected="${mem.modules == 1}">1 (Single)</option>
+            <option value="2" th:selected="${mem.modules == 2}">2 (Dual Kit)</option>
+            <option value="4" th:selected="${mem.modules == 4}">4 (Quad Kit)</option>
+        </select>
     </div>
 
 </div>

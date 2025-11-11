@@ -9,18 +9,24 @@
 
     <div class="col-md-6">
         <label for="st-type" class="form-label">Type</label>
-        <input type="text" class="form-control form-control-sm" id="st-type"
-               name="storage.type"
-               th:value="${storage.type}"
-               placeholder="e.g., SSD, HDD, NVMe">
+        <select class="form-control form-control-sm" id="st-type"
+                name="storage.type" th:value="${storage.type}">
+            <option value="">-- Select Type --</option>
+            <option value="SSD" th:selected="${storage.type == 'SSD'}">SSD</option>
+            <option value="HDD" th:selected="${storage.type == 'HDD'}">HDD</option>
+            <option value="NVMe" th:selected="${storage.type == 'NVMe'}">NVMe</option>
+        </select>
     </div>
 
     <div class="col-md-6">
         <label for="st-interface" class="form-label">Interface</label>
-        <input type="text" class="form-control form-control-sm" id="st-interface"
-               name="storage.interfaceType"
-               th:value="${storage.interfaceType}"
-               placeholder="e.g., SATA, NVMe">
+        <select class="form-control form-control-sm" id="st-interface"
+                name="storage.interfaceType" th:value="${storage.interfaceType}">
+            <option value="">-- Select Interface --</option>
+            <option value="SATA" th:selected="${storage.interfaceType == 'SATA'}">SATA</option>
+            <option value="NVMe" th:selected="${storage.interfaceType == 'NVMe'}">NVMe</option>
+            <option value="M.2" th:selected="${storage.interfaceType == 'M.2'}">M.2</option>
+        </select>
     </div>
 
     <div class="col-md-6">

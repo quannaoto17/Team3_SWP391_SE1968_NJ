@@ -17,12 +17,11 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Intege
 
     // --- Phương thức cho Warranty Check ---
     // Lấy chi tiết theo Order ID, JOIN FETCH các association cần thiết
-    @Query("SELECT od FROM OrderDetail od " +
+    @Query("SELECT DISTINCT od FROM OrderDetail od " +
             "JOIN FETCH od.order o " +
             "JOIN FETCH od.product p " +
-            "JOIN FETCH p.category c " +
+            "LEFT JOIN FETCH p.categories " +
             "WHERE o.orderId = :orderId")
-    // ✅ SỬA LỖI: Thay int orderId thành long orderId
     List<OrderDetail> findByOrder_OrderIdWithAssociations(@Param("orderId") long orderId);
 
     //  Kiểm tra xem account đã mua sản phẩm cụ thể hay chưa (và đơn hàng đã hoàn tất)

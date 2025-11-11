@@ -52,7 +52,6 @@
                   enctype="multipart/form-data">
 
                 <input type="hidden" th:field="*{productId}" />
-                <input type="hidden" th:name="category.categoryId" th:value="${product.category.categoryId}" />
 
                 <!-- ✅ Hiển thị thông báo lỗi tổng -->
                 <div th:if="${error}" class="alert alert-warning" th:text="${error}"></div>
@@ -145,7 +144,7 @@
                         <div class="mb-3">
                             <label for="category" class="form-label">Category</label>
                             <input type="text" class="form-control" id="category"
-                                   th:value="${product.category.categoryName}" readonly>
+                                   th:value="${!product.categories.isEmpty() ? product.categories[0].categoryName : 'N/A'}" readonly>
                             <div class="form-text text-muted">
                                 Category cannot be changed. Please contact Admin if needed.
                             </div>
@@ -184,7 +183,7 @@
     /*<![CDATA[*/
 
     const productId = /*[[${product.productId}]]*/ 0;
-    const initialCategoryId = /*[[${product.category.categoryId}]]*/ 0;
+    const initialCategoryId = /*[[${!product.categories.isEmpty() ? product.categories[0].categoryId : 0}]]*/ 0;
 
     document.addEventListener('DOMContentLoaded', function() {
         loadSpecFormForEdit(initialCategoryId, productId);

@@ -2,10 +2,14 @@
 
     <div class="col-md-6">
         <label for="pcase-formfactor" class="form-label">Form Factor</label>
-        <input type="text" class="form-control form-control-sm" id="pcase-formfactor"
-               name="pcase.formFactor"
-               th:value="${pcase.formFactor}"
-               placeholder="e.g., ATX, mATX, ITX">
+        <select class="form-control form-control-sm" id="pcase-formfactor"
+                name="pcase.formFactor" th:value="${pcase.formFactor}">
+            <option value="">-- Select Form Factor --</option>
+            <option value="Mini-ITX" th:selected="${pcase.formFactor == 'Mini-ITX'}">Mini-ITX</option>
+            <option value="Micro-ATX" th:selected="${pcase.formFactor == 'Micro-ATX'}">Micro-ATX</option>
+            <option value="ATX" th:selected="${pcase.formFactor == 'ATX'}">ATX</option>
+            <option value="E-ATX" th:selected="${pcase.formFactor == 'E-ATX'}">E-ATX</option>
+        </select>
     </div>
 
     <div class="col-md-6">
@@ -18,10 +22,13 @@
 
     <div class="col-md-6">
         <label for="pcase-psu-formfactor" class="form-label">PSU Form Factor</label>
-        <input type="text" class="form-control form-control-sm" id="pcase-psu-formfactor"
-               name="pcase.psu.formFactor"
-               th:value="${pcase.psuFormFactor}"
-               placeholder="e.g., ATX, SFX">
+        <select class="form-control form-control-sm" id="pcase-psu-formfactor"
+                name="pcase.psuFormFactor" th:value="${pcase.psuFormFactor}">
+            <option value="">-- Select PSU Form Factor --</option>
+            <option value="ATX" th:selected="${pcase.psuFormFactor == 'ATX'}">ATX</option>
+            <option value="SFX" th:selected="${pcase.psuFormFactor == 'SFX'}">SFX</option>
+            <option value="SFX-L" th:selected="${pcase.psuFormFactor == 'SFX-L'}">SFX-L</option>
+        </select>
     </div>
 
     <div class="col-md-6">

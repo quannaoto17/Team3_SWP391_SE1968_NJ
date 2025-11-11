@@ -138,8 +138,12 @@ public class ProductService {
     }
 
     public List<Product> getRelatedProducts(Product product) {
-        if (product.getCategory() == null) return List.of();
-        return productRepository.findTop8ByCategoryAndStatusTrue(product.getCategory());
+        List<Category> categories = product.getCategories();
+        if (categories == null || categories.isEmpty()) return List.of();
+
+        // Use primary category (first one) for related products
+        Category primaryCategory = categories.getFirst();
+        return productRepository.findTop8ByCategoryAndStatusTrue(primaryCategory);
     }
 
 

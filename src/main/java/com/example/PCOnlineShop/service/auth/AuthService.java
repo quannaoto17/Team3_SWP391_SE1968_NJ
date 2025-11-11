@@ -6,6 +6,7 @@ import com.example.PCOnlineShop.repository.account.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,7 @@ public class AuthService {
         }
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         account.setRole(RoleName.Customer);
-        account.setEnabled(true);
+        account.setEnabled(false);
         accountRepository.save(account);
     }
     public Account getByPhoneNumber(String phoneNumber) {
@@ -44,6 +45,7 @@ public class AuthService {
     }
 
 
+    @Async
     public void sendResetCode(String identifier) {
         // Tìm theo email trước, không có thì theo phone
         Optional<Account> optionalAccount = accountRepository.findByEmail(identifier);
@@ -206,4 +208,45 @@ public class AuthService {
             accountRepository.save(acc);
         });
     }
+
+    @Async
+    public void sendVerifyCode(String email) {
+        Optional<Account> optionalAccount = accountRepository.findByEmail(email);
+        if (optionalAccount.isEmpty()) {
+            throw new IllegalArgumentException("Không tìm thấy tài khoản với email đã nhập!");
+        }
+
+        String code = String.format("%06d", new Random().nextInt(999999));
+        resetCodeMap.put(email, code);
+
+        Account acc = optionalAccount.get();
+        String content =
+                "Xin chào " + acc.getFullName() + ",\n\n" +
+                        "Cảm ơn bạn đã đăng ký tài khoản tại PC Online Shop.\n\n" +
+                        "Mã xác thực tài khoản của bạn là: " + code + "\n\n" +
+                        "Vui lòng nhập mã này trong vòng 5 phút để kích hoạt tài khoản.\n\n" +
+                        "Trân trọng,\nPC Online Shop";
+
+        sendEmail(acc.getEmail(), "Xác thực tài khoản PC Online Shop", content);
+    }
+
+    public void verifyAccount(String email, String code) {
+        String storedCode = resetCodeMap.get(email);
+        if (storedCode == null || !storedCode.equals(code)) {
+            throw new IllegalArgumentException("Mã xác thực không hợp lệ hoặc đã hết hạn!");
+        }
+
+        Optional<Account> optionalAccount = accountRepository.findByEmail(email);
+        if (optionalAccount.isEmpty()) {
+            throw new IllegalArgumentException("Không tìm thấy tài khoản!");
+        }
+
+        Account acc = optionalAccount.get();
+        acc.setEnabled(true);
+        accountRepository.save(acc);
+
+        // Xóa mã sau khi xác thực thành công
+        resetCodeMap.remove(email);
+    }
+
 }

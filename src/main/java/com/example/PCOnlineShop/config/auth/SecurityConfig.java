@@ -1,9 +1,13 @@
 package com.example.PCOnlineShop.config.auth;
 
+import com.example.PCOnlineShop.model.account.Account;
+import com.example.PCOnlineShop.repository.account.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,6 +23,7 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final AccountRepository  accountRepository;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -58,6 +63,20 @@ public class SecurityConfig {
                         .passwordParameter("password")
                         .defaultSuccessUrl("/home", false)
                         .failureUrl("/auth/login?error=true")
+                        .failureHandler((request, response, exception) -> {
+                            if(exception instanceof DisabledException){
+                                String phoneNumber = request.getParameter("phoneNumber");
+                                Account account = this.accountRepository.findByPhoneNumber(phoneNumber).orElse(null);
+                                if(account == null) response.sendRedirect("/auth/login?error=true");
+                                else{
+                                    String email = account.getEmail();
+                                    response.sendRedirect("/auth/verify?email=" + email);
+                                }
+
+                            } else {
+                                response.sendRedirect("/auth/login?error=true");
+                            }
+                        })
                         .successHandler((request, response, authentication) -> {
 
                             var successHandler = new SavedRequestAwareAuthenticationSuccessHandler();

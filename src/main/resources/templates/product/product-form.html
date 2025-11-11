@@ -170,16 +170,19 @@
 
     <div class="card">
         <div class="gate">
-            <label for="categorySelect" style="margin:0">Category</label>
-            <select id="categorySelect" name="category.categoryId" style="min-width:240px" required>
-                <option value="">-- Choose Category --</option>
+            <label for="categorySelect" style="margin:0">Primary Category *</label>
+            <select id="categorySelect" style="min-width:240px" required>
+                <option value="">-- Choose Primary Category --</option>
                 <option th:each="cat : ${categories}"
+                        th:if="${cat.displayOrder <= 10}"
                         th:value="${cat.categoryId}"
                         th:text="${cat.categoryName}"></option>
             </select>
             <button type="button" class="btn" id="btnStart">Continue</button>
         </div>
-        <p id="gateMsg" class="hint" style="margin:0">Choose category to display the specification form.</p>
+
+
+        <p id="gateMsg" class="hint" style="margin:16px 0 0">Choose primary category to display the specification form.</p>
 
         <div class="error" th:if="${categoryError}" th:text="${categoryError}"></div>
     </div>
@@ -190,7 +193,8 @@
           style="display:none"
           method="post" enctype="multipart/form-data">
 
-        <input type="hidden" id="chosenCategoryId" name="category.categoryId"/>
+        <input type="hidden" id="primaryCategoryId" name="categoryIds" />
+        <!-- Additional categories will be added dynamically via JS -->
 
         <label for="brand">Brand *</label>
         <select id="brand" name="brand.brandId" required>
@@ -263,19 +267,19 @@
     const btnStart = document.getElementById('btnStart');
     const gateMsg = document.getElementById('gateMsg');
     const productForm = document.getElementById('productForm');
-    const chosenCategoryId = document.getElementById('chosenCategoryId');
+    const primaryCategoryId = document.getElementById('primaryCategoryId');
     const specContainer = document.getElementById('specFormContainer');
 
     function openFormWithCategory(cid, shouldScroll = true){
         if(!cid){
             productForm.style.display = 'none';
-            gateMsg.textContent = 'Chọn danh mục trước để mở form nhập chi tiết.';
-            specContainer.innerHTML = '<p class="hint">Chưa có — sẽ hiển thị sau khi chọn danh mục.</p>';
+            gateMsg.textContent = 'Choose primary category to display the specification form.';
+            specContainer.innerHTML = '<p class="hint">No spec form yet — will appear after selecting category.</p>';
             return;
         }
-        chosenCategoryId.value = cid;
+        primaryCategoryId.value = cid;
         productForm.style.display = 'block';
-        gateMsg.textContent = 'Danh mục đã chọn, nhập thông tin sản phẩm.';
+        gateMsg.textContent = 'Category selected. Fill in product details.';
         loadSpec(cid);
 
         if (shouldScroll) {
@@ -291,15 +295,16 @@
         }
     });
 
+
     async function loadSpec(categoryId){
         try{
-            specContainer.innerHTML = '<p class="hint">Đang tải form...</p>';
+            specContainer.innerHTML = '<p class="hint">Loading specification form...</p>';
             const res = await fetch(`/staff/products/spec-form?categoryId=${categoryId}`);
             if (!res.ok) throw new Error('Network response was not ok');
             specContainer.innerHTML = await res.text();
         }catch(e){
             console.error(e);
-            specContainer.innerHTML = '<p class="error">Lỗi tải form thông số!</p>';
+            specContainer.innerHTML = '<p class="error">Error loading specification form!</p>';
         }
     }
 
@@ -309,7 +314,7 @@
         imagePreview.innerHTML = '';
         const files = Array.from(e.target.files);
         if(files.length === 0){
-            imagePreview.innerHTML = '<div class="thumb"><span class="hint">Chưa có ảnh</span></div>';
+            imagePreview.innerHTML = '<div class="thumb"><span class="hint">No image yet</span></div>';
             return;
         }
         files.forEach(f => {

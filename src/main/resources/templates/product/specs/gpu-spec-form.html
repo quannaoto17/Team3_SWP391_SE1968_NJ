@@ -9,10 +9,13 @@
 
     <div class="col-md-6">
         <label for="gpu-memtype" class="form-label">Memory Type</label>
-        <input type="text" class="form-control form-control-sm" id="gpu-memtype"
-               name="gpu.memoryType"
-               th:value="${gpu.memoryType}"
-               placeholder="e.g., GDDR6, GDDR6X">
+        <select class="form-control form-control-sm" id="gpu-memtype"
+                name="gpu.memoryType" th:value="${gpu.memoryType}">
+            <option value="">-- Select Memory Type --</option>
+            <option value="GDDR5" th:selected="${gpu.memoryType == 'GDDR5'}">GDDR5</option>
+            <option value="GDDR6" th:selected="${gpu.memoryType == 'GDDR6'}">GDDR6</option>
+            <option value="GDDR6X" th:selected="${gpu.memoryType == 'GDDR6X'}">GDDR6X</option>
+        </select>
     </div>
 
     <div class="col-md-6">
@@ -31,18 +34,23 @@
 
     <div class="col-md-6">
         <label for="gpu-interface" class="form-label">GPU Interface</label>
-        <input type="text" class="form-control form-control-sm" id="gpu-interface"
-               name="gpu.gpuInterface"
-               th:value="${gpu.gpuInterface}"
-               placeholder="e.g., PCIe x16">
+        <select class="form-control form-control-sm" id="gpu-interface"
+                name="gpu.gpuInterface" th:value="${gpu.gpuInterface}">
+            <option value="">-- Select Interface --</option>
+            <option value="PCIe x16" th:selected="${gpu.gpuInterface == 'PCIe x16'}">PCIe x16</option>
+            <option value="PCIe x8" th:selected="${gpu.gpuInterface == 'PCIe x8'}">PCIe x8</option>
+        </select>
     </div>
 
     <div class="col-md-6">
         <label for="gpu-pcie" class="form-label">PCIe Version</label>
-        <input type="text" class="form-control form-control-sm" id="gpu-pcie"
-               name="gpu.pcieVersion"
-               th:value="${gpu.pcieVersion}"
-               placeholder="e.g., 4.0, 5.0">
+        <select class="form-control form-control-sm" id="gpu-pcie"
+                name="gpu.pcieVersion" th:value="${gpu.pcieVersion}">
+            <option value="">-- Select PCIe Version --</option>
+            <option value="3.0" th:selected="${gpu.pcieVersion == '3.0'}">PCIe 3.0</option>
+            <option value="4.0" th:selected="${gpu.pcieVersion == '4.0'}">PCIe 4.0</option>
+            <option value="5.0" th:selected="${gpu.pcieVersion == '5.0'}">PCIe 5.0</option>
+        </select>
     </div>
 
 </div>
