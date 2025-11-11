@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác thực Email</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 380px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { background: #0056b3; }
+        .message {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>🔒 Xác thực Email</h2>
+
+    <p style="text-align:center; color:#555;">
+        Một mã xác nhận đã được gửi đến <strong th:text="${param.email}">example@gmail.com</strong>.
+        <br>Vui lòng nhập mã để tiếp tục.
+    </p>
+
+    <form th:action="@{/auth/verify}" method="post">
+        <label for="code">Nhập mã xác nhận:</label>
+        <input type="hidden" name="email" th:value="${param.email}">
+        <input type="text" id="code" name="code" placeholder="Nhập mã 6 chữ số" required>
+        <button type="submit">Xác nhận</button>
+    </form>
+
+    <div class="message">
+        <p class="success" th:text="${success}"></p>
+        <p class="error" th:text="${error}"></p>
+    </div>
+
+    <p class="message" style="margin-top:15px;">
+        <a th:href="@{/auth/verify(email=${param.email})}">Gửi lại mã</a> |
+        <a th:href="@{/auth/login}">Đăng nhập khác</a>
+    </p>
+</div>
+</body>
+</html>
