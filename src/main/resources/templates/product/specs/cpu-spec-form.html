@@ -2,10 +2,16 @@
 
     <div class="col-md-6">
         <label for="cpu-socket" class="form-label">Socket</label>
-        <input type="text" class="form-control form-control-sm" id="cpu-socket"
-               name="cpu.socket"
-               th:value="${cpu.socket}"
-               placeholder="e.g., AM5, LGA1700">
+        <select class="form-control form-control-sm" id="cpu-socket"
+                name="cpu.socket" th:value="${cpu.socket}">
+            <option value="">-- Select Socket --</option>
+            <option value="AM4" th:selected="${cpu.socket == 'AM4'}">AM4</option>
+            <option value="AM5" th:selected="${cpu.socket == 'AM5'}">AM5</option>
+            <option value="LGA1700" th:selected="${cpu.socket == 'LGA1700'}">LGA1700</option>
+            <option value="LGA1200" th:selected="${cpu.socket == 'LGA1200'}">LGA1200</option>
+            <option value="LGA1151" th:selected="${cpu.socket == 'LGA1151'}">LGA1151</option>
+            <option value="TR4" th:selected="${cpu.socket == 'TR4'}">TR4 (Threadripper)</option>
+        </select>
     </div>
 
     <div class="col-md-6">
@@ -31,10 +37,13 @@
 
     <div class="col-md-6">
         <label for="cpu-pcie" class="form-label">PCIe Version</label>
-        <input type="text" class="form-control form-control-sm" id="cpu-pcie"
-               name="cpu.pcieVersion"
-               th:value="${cpu.pcieVersion}"
-               placeholder="e.g., 4.0, 5.0">
+        <select class="form-control form-control-sm" id="cpu-pcie"
+                name="cpu.pcieVersion" th:value="${cpu.pcieVersion}">
+            <option value="">-- Select PCIe Version --</option>
+            <option value="3.0" th:selected="${cpu.pcieVersion == '3.0'}">PCIe 3.0</option>
+            <option value="4.0" th:selected="${cpu.pcieVersion == '4.0'}">PCIe 4.0</option>
+            <option value="5.0" th:selected="${cpu.pcieVersion == '5.0'}">PCIe 5.0</option>
+        </select>
     </div>
 
     <div class="col-md-12 d-flex align-items-end">

@@ -24,8 +24,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.springframework.data.jpa.domain.AbstractAuditable_.createdDate;
-
 @Service
 public class OrderService {
 
@@ -260,24 +258,32 @@ public class OrderService {
 
     // Lấy và tính toán chi tiết bảo hành của một Order ID
     @Transactional(readOnly = true)
-    public List<WarrantyDetailDTO> getWarrantyDetailsByOrderId(long orderId) { // ✅ Đã đổi sang long
-        List<OrderDetail> details = orderDetailRepository.findByOrder_OrderIdWithAssociations(orderId); // ✅ Giả định repo này cũng đã cập nhật
-        LocalDate today = LocalDate.now(); // Lấy ngày hiện tại
+    public List<WarrantyDetailDTO> getWarrantyDetailsByOrderId(long orderId) {
+        List<OrderDetail> details = orderDetailRepository.findByOrder_OrderIdWithAssociations(orderId);
+        LocalDate today = LocalDate.now();
 
         return details.stream()
                 .map(detail -> {
-                    // ... (Lấy order, product, category, warrantyMonths như cũ)
                     Order order = detail.getOrder();
                     Product product = detail.getProduct();
-                    Category category = (product != null) ? product.getCategory() : null;
                     Date createdDate = order.getCreatedDate();
-                    if (order == null || product == null || category == null || createdDate == null) {
+
+                    if (product == null || createdDate == null) {
                         return null;
                     }
-                    int categoryId = category.getCategoryId();
+
+                    // Get primary category (first category in the list, usually the main component type)
+                    List<Category> categories = product.getCategories();
+                    if (categories == null || categories.isEmpty()) {
+                        return null;
+                    }
+
+                    // Primary category is the first one (component type: Mainboard, CPU, GPU, etc.)
+                    Category primaryCategory = categories.getFirst();
+                    int categoryId = primaryCategory.getCategoryId();
                     int warrantyMonths = WARRANTY_MONTHS_BY_CATEGORY.getOrDefault(categoryId, 0);
 
-                    // --- Tính ngày hết hạn ---
+                    // Calculate expiry date
                     LocalDate orderLocalDate;
                     if (createdDate instanceof java.sql.Date) {
                         orderLocalDate = ((java.sql.Date) createdDate).toLocalDate();
@@ -288,27 +294,25 @@ public class OrderService {
                     }
                     LocalDate expiryDate = orderLocalDate.plusMonths(warrantyMonths);
 
-                    // ---TÍNH TOÁN TRẠNG THÁI BẢO HÀNH---
+                    // Calculate warranty status
                     String warrantyStatus;
                     long daysUntilExpiry = ChronoUnit.DAYS.between(today, expiryDate);
 
                     if (daysUntilExpiry < 0) {
-                        warrantyStatus = "Expired"; // Đã hết hạn
-                    } else if (daysUntilExpiry <= 7) { // Còn 7 ngày (1 tuần) hoặc ít hơn
+                        warrantyStatus = "Expired";
+                    } else if (daysUntilExpiry <= 7) {
                         warrantyStatus = "Expiring Soon";
                     } else {
-                        warrantyStatus = "Active"; // Còn hạn trên 2 tuần
+                        warrantyStatus = "Active";
                     }
-                    // ------------------------------------
 
-                    // Trả về DTO với 6 trường
                     return new WarrantyDetailDTO(
-                            order.getOrderId(), // ✅ order.getOrderId() giờ sẽ trả về long
+                            order.getOrderId(),
                             product.getProductName(),
                             createdDate,
                             warrantyMonths,
                             expiryDate,
-                            warrantyStatus // <-- Truyền status đã tính
+                            warrantyStatus
                     );
                 })
                 .filter(Objects::nonNull)

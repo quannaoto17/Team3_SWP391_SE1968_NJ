@@ -9,18 +9,27 @@
 
     <div class="col-md-6">
         <label for="psu-efficiency" class="form-label">Efficiency Rating</label>
-        <input type="text" class="form-control form-control-sm" id="psu-efficiency"
-               name="psu.efficiency"
-               th:value="${psu.efficiency}"
-               placeholder="e.g., 80+ Gold, 80+ Bronze">
+        <select class="form-control form-control-sm" id="psu-efficiency"
+                name="psu.efficiency" th:value="${psu.efficiency}">
+            <option value="">-- Select Efficiency --</option>
+            <option value="80+" th:selected="${psu.efficiency == '80+'}">80+</option>
+            <option value="80+ Bronze" th:selected="${psu.efficiency == '80+ Bronze'}">80+ Bronze</option>
+            <option value="80+ Silver" th:selected="${psu.efficiency == '80+ Silver'}">80+ Silver</option>
+            <option value="80+ Gold" th:selected="${psu.efficiency == '80+ Gold'}">80+ Gold</option>
+            <option value="80+ Platinum" th:selected="${psu.efficiency == '80+ Platinum'}">80+ Platinum</option>
+            <option value="80+ Titanium" th:selected="${psu.efficiency == '80+ Titanium'}">80+ Titanium</option>
+        </select>
     </div>
 
     <div class="col-md-6">
         <label for="psu-formfactor" class="form-label">Form Factor</label>
-        <input type="text" class="form-control form-control-sm" id="psu-formfactor"
-               name="psu.formFactor"
-               th:value="${psu.formFactor}"
-               placeholder="e.g., ATX, SFX">
+        <select class="form-control form-control-sm" id="psu-formfactor"
+                name="psu.formFactor" th:value="${psu.formFactor}">
+            <option value="">-- Select Form Factor --</option>
+            <option value="ATX" th:selected="${psu.formFactor == 'ATX'}">ATX</option>
+            <option value="SFX" th:selected="${psu.formFactor == 'SFX'}">SFX</option>
+            <option value="SFX-L" th:selected="${psu.formFactor == 'SFX-L'}">SFX-L</option>
+        </select>
     </div>
 
     <div class="col-md-12 d-flex align-items-end">

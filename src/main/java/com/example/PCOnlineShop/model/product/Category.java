@@ -31,6 +31,6 @@ public class Category {
     @Column (name = "created_at")
     private Date createdAt;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
     private List<Product> products;
 }

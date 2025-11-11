@@ -141,9 +141,12 @@ public class HomeController {
         model.addAttribute("images", product.getImages());
 
         //  Lấy sản phẩm liên quan
-        if (product.getCategory() != null) {
+        List<Category> productCategories = product.getCategories();
+        if (productCategories != null && !productCategories.isEmpty()) {
+            // Use primary category (first one) for related products
+            Category primaryCategory = productCategories.getFirst();
             List<Product> related = productService.getTopRelatedProducts(
-                    product.getCategory().getCategoryId(), id);
+                    primaryCategory.getCategoryId(), id);
             model.addAttribute("relatedProducts", related);
         }
 

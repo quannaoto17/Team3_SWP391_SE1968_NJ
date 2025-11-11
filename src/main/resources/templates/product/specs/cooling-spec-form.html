@@ -2,10 +2,12 @@
 
     <div class="col-md-6">
         <label for="cl-type" class="form-label">Type</label>
-        <input type="text" class="form-control form-control-sm" id="cl-type"
-               name="cl.type"
-               th:value="${cl.type}"
-               placeholder="e.g., Air, AIO">
+        <select class="form-control form-control-sm" id="cl-type"
+                name="cl.type" th:value="${cl.type}">
+            <option value="">-- Select Type --</option>
+            <option value="Air" th:selected="${cl.type == 'Air'}">Air</option>
+            <option value="AIO" th:selected="${cl.type == 'AIO'}">AIO (All-in-One)</option>
+        </select>
     </div>
 
     <div class="col-md-6">
@@ -18,17 +20,22 @@
 
     <div class="col-md-6">
         <label for="cl-radsize" class="form-label">Radiator Size</label>
-        <input type="text" class="form-control form-control-sm" id="cl-radsize"
-               name="cl.radiatorSize"
-               th:value="${cl.radiatorSize}"
-               placeholder="e.g., 240, 360, N/A">
+        <select class="form-control form-control-sm" id="cl-radsize"
+                name="cl.radiatorSize" th:value="${cl.radiatorSize}">
+            <option value="">-- Select Radiator Size --</option>
+            <option value="N/A" th:selected="${cl.radiatorSize == 'N/A'}">N/A (Air Cooler)</option>
+            <option value="120" th:selected="${cl.radiatorSize == '120'}">120mm</option>
+            <option value="240" th:selected="${cl.radiatorSize == '240'}">240mm</option>
+            <option value="280" th:selected="${cl.radiatorSize == '280'}">280mm</option>
+            <option value="360" th:selected="${cl.radiatorSize == '360'}">360mm</option>
+        </select>
     </div>
 
     <div class="col-md-6">
         <label for="cl-tdp" class="form-label">Max TDP (W)</label>
         <input type="number" class="form-control form-control-sm" id="cl-tdp"
                name="cl.maxTdp"
-               th:value="${cl.tdp}"
+               th:value="${cl.maxTdp}"
                min="0">
     </div>
 

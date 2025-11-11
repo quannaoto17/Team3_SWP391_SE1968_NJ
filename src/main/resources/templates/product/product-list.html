@@ -203,7 +203,7 @@
                      alt="No Image" class="product-image"/>
             </td>
 
-            <td th:text="${product.category != null ? product.category.categoryName : 'N/A'}"></td>
+            <td th:text="${product.categories != null and !product.categories.isEmpty() ? product.categories[0].categoryName : 'N/A'}"></td>
             <td th:text="${product.brand != null ? product.brand.name : 'N/A'}"></td>
 
             <td>

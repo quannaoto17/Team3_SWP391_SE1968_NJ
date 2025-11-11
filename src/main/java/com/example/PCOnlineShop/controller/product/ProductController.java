@@ -5,6 +5,8 @@ import com.example.PCOnlineShop.model.build.*;
 import com.example.PCOnlineShop.repository.product.*;
 import com.example.PCOnlineShop.repository.build.*;
 import com.example.PCOnlineShop.service.product.ProductService;
+import com.example.PCOnlineShop.service.product.SpecToCategoryMappingService;
+import com.example.PCOnlineShop.service.validation.ComponentSpecValidationService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,8 @@ public class ProductController {
     private final CategoryRepository categoryRepository;
     private final BrandRepository brandRepository;
     private final ImageRepository imageRepository;
+    private final ComponentSpecValidationService specValidationService;
+    private final SpecToCategoryMappingService specToCategoryMappingService;
 
     // Repos thông số build
     private final CpuRepository cpuRepository;
@@ -56,6 +60,14 @@ public class ProductController {
         return brandRepository.findAll();
     }
 
+    // Exception handler for validation errors
+    @ExceptionHandler(IllegalArgumentException.class)
+    public String handleValidationException(IllegalArgumentException ex, Model model) {
+        model.addAttribute("error", ex.getMessage());
+        model.addAttribute("product", new Product());
+        model.addAttribute("isEdit", false);
+        return "product/product-form";
+    }
 
     // ===== DANH SÁCH =====
     @GetMapping("/list")
@@ -147,7 +159,7 @@ public class ProductController {
     @Transactional
     public String saveProduct(@Valid @ModelAttribute("product") Product product,
                               BindingResult result,
-                              @RequestParam("category.categoryId") Integer categoryId,
+                              @RequestParam(value = "categoryIds", required = false) List<Integer> categoryIds,
                               @RequestParam("brand.brandId") Integer brandId,
                               @RequestParam Map<String, String> params,
                               @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
@@ -160,25 +172,31 @@ public class ProductController {
         if (brandId == null) {
             model.addAttribute("brandError", "Please select brand");
         }
-        if (categoryId == null) {
-            model.addAttribute("categoryError", "Please select category");
+        if (categoryIds == null || categoryIds.isEmpty()) {
+            model.addAttribute("categoryError", "Please select at least one category");
         }
 
         // --- Kết thúc Validation ---
 
 
         // SỬA LỖI: Gộp tất cả điều kiện lỗi
-        if (result.hasErrors() || brandId == null || categoryId == null) {
+        if (result.hasErrors() || brandId == null || categoryIds == null || categoryIds.isEmpty()) {
             model.addAttribute("isEdit", false);
             // Gửi lại ID để JS tự động mở lại form
-            model.addAttribute("submittedCategoryId", categoryId);
+            if (categoryIds != null && !categoryIds.isEmpty()) {
+                model.addAttribute("submittedCategoryId", categoryIds.get(0)); // Primary category
+            }
             model.addAttribute("submittedBrandId", brandId);
             return "product/product-form"; // Ở lại trang
         }
 
-        Category category = categoryRepository.findById(categoryId).orElseThrow();
+        // Get all selected categories
+        List<Category> categories = categoryIds.stream()
+                .map(id -> categoryRepository.findById(id).orElseThrow())
+                .toList();
+
         Brand brand = brandRepository.findById(brandId).orElseThrow();
-        product.setCategory(category);
+        product.setCategories(new ArrayList<>(categories));
         product.setBrand(brand);
 
         Product saved = productService.addProduct(product);
@@ -191,8 +209,9 @@ public class ProductController {
             productService.updateProduct(saved); // Lưu lại tham chiếu ảnh
         }
 
-        // Save spec
-        upsertSpec(saved, categoryId, params, true);
+        // Save spec - use primary category (first one)
+        Integer primaryCategoryId = categoryIds.get(0);
+        upsertSpec(saved, primaryCategoryId, params, true);
 
         return "redirect:/staff/products/list";
     }
@@ -214,6 +233,7 @@ public class ProductController {
                                 BindingResult result,
                                 Model model,
                                 @RequestParam Map<String, String> params,
+                                @RequestParam(value = "categoryIds", required = false) List<Integer> categoryIds,
                                 @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
                                 @RequestParam(value = "deleteImageIds", required = false) String deleteImageIds
     ) throws IOException {
@@ -221,10 +241,9 @@ public class ProductController {
         Product current = productService.getProductById(incoming.getProductId());
         if (current == null) return "redirect:/staff/products/list";
 
-        int currentCategoryId = current.getCategory().getCategoryId();
-        int incomingCategoryId = (incoming.getCategory() != null)
-                ? incoming.getCategory().getCategoryId()
-                : currentCategoryId;
+        // Get primary category (first in list)
+        Integer currentPrimaryCategoryId = current.getCategories().isEmpty() ? null : current.getCategories().getFirst().getCategoryId();
+        Integer incomingPrimaryCategoryId = (categoryIds != null && !categoryIds.isEmpty()) ? categoryIds.get(0) : currentPrimaryCategoryId;
 
         // --- Validation tùy chỉnh ---
         String newName = incoming.getProductName();
@@ -236,17 +255,22 @@ public class ProductController {
             model.addAttribute("isEdit", true);
             incoming.setImages(current.getImages());
             incoming.setBrand(current.getBrand());
-            incoming.setCategory(current.getCategory());
+            incoming.setCategories(current.getCategories());
             return "product/product-update";
         }
 
-        // --- Ngăn đổi category ---
-        if (incomingCategoryId != currentCategoryId) {
-            model.addAttribute("error", "Cannot change category of an existing product. Specs will not be updated.");
+        // --- Ngăn đổi primary category ---
+        if (incomingPrimaryCategoryId != null && !incomingPrimaryCategoryId.equals(currentPrimaryCategoryId)) {
+            model.addAttribute("error", "Cannot change primary category of an existing product. Specs will not be updated.");
             model.addAttribute("isEdit", true);
-            incoming.setCategory(current.getCategory());
+            incoming.setCategories(current.getCategories());
             // Vẫn cho phép update các thông tin cơ bản, nhưng bỏ qua phần spec
-            // Không return ngay, để cho phép cập nhật các trường khác
+        } else if (categoryIds != null && !categoryIds.isEmpty()) {
+            // Update categories if primary category not changed
+            List<Category> newCategories = categoryIds.stream()
+                    .map(id -> categoryRepository.findById(id).orElseThrow())
+                    .toList();
+            current.setCategories(new ArrayList<>(newCategories));
         }
 
         // ===== Cập nhật thông tin cơ bản =====
@@ -282,10 +306,10 @@ public class ProductController {
             imageRepository.saveAll(newImgs);
         }
 
-        // ===== Chỉ cập nhật SPEC nếu category không bị đổi =====
-        if (incomingCategoryId == currentCategoryId &&
+        // ===== Chỉ cập nhật SPEC nếu primary category không bị đổi =====
+        if (incomingPrimaryCategoryId != null && incomingPrimaryCategoryId.equals(currentPrimaryCategoryId) &&
                 params.keySet().stream().anyMatch(k -> k.matches("^(mainboard|cpu|gpu|memory|storage|pcase|psu|cl)\\..*"))) {
-            upsertSpec(updated, currentCategoryId, params, false);
+            upsertSpec(updated, currentPrimaryCategoryId, params, false);
         } else {
             System.out.println("⚠️ Category changed or invalid → Spec update skipped.");
         }
@@ -352,7 +376,25 @@ public class ProductController {
                 mb.setSocket(params.get("mainboard.socket"));
                 mb.setChipset(params.get("mainboard.chipset"));
                 mb.setFormFactor(params.get("mainboard.formFactor"));
+                mb.setMemoryType(params.get("mainboard.memoryType"));
+                mb.setMemorySlots(getInt(params, "mainboard.memorySlots"));
+                mb.setMaxMemorySpeed(getInt(params, "mainboard.maxMemorySpeed"));
+                mb.setPcieVersion(params.get("mainboard.pcieVersion"));
+                mb.setM2Slots(getInt(params, "mainboard.m2Slots"));
+                mb.setSataPorts(getInt(params, "mainboard.sataPorts"));
+
+                // Validate mainboard specs
+                List<String> errors = specValidationService.validateMainboard(mb);
+                if (!errors.isEmpty()) {
+                    throw new IllegalArgumentException("Mainboard validation failed: " + String.join(", ", errors));
+                }
+
                 mainboardRepository.save(mb);
+
+                // Auto-map specs to categories
+                List<Category> allCategories = specToCategoryMappingService.getAllCategoriesForProduct(product, categoryId, mb);
+                product.setCategories(allCategories);
+                productService.updateProduct(product);
             }
             case 2 -> {
                 CPU cpu = cpuRepository.findByProduct_ProductId(product.getProductId())
@@ -364,7 +406,19 @@ public class ProductController {
                 cpu.setMemoryChannels(getInt(params, "cpu.memoryChannels"));
                 cpu.setHasIGPU(getBool(params, "cpu.hasIGPU"));
                 cpu.setPcieVersion(params.get("cpu.pcieVersion"));
+
+                // Validate CPU specs
+                List<String> errors = specValidationService.validateCpu(cpu);
+                if (!errors.isEmpty()) {
+                    throw new IllegalArgumentException("CPU validation failed: " + String.join(", ", errors));
+                }
+
                 cpuRepository.save(cpu);
+
+                // Auto-map specs to categories
+                List<Category> allCategories = specToCategoryMappingService.getAllCategoriesForProduct(product, categoryId, cpu);
+                product.setCategories(allCategories);
+                productService.updateProduct(product);
             }
             case 3 -> {
                 GPU gpu = gpuRepository.findByProduct_ProductId(product.getProductId())
@@ -376,7 +430,19 @@ public class ProductController {
                 gpu.setLength(getInt(params, "gpu.length"));
                 gpu.setGpuInterface(params.get("gpu.gpuInterface"));
                 gpu.setPcieVersion(params.get("gpu.pcieVersion"));
+
+                // Validate GPU specs
+                List<String> errors = specValidationService.validateGpu(gpu);
+                if (!errors.isEmpty()) {
+                    throw new IllegalArgumentException("GPU validation failed: " + String.join(", ", errors));
+                }
+
                 gpuRepository.save(gpu);
+
+                // Auto-map specs to categories
+                List<Category> allCategories = specToCategoryMappingService.getAllCategoriesForProduct(product, categoryId, gpu);
+                product.setCategories(allCategories);
+                productService.updateProduct(product);
             }
             case 4 -> {
                 Memory mem = memoryRepository.findByProduct_ProductId(product.getProductId())
@@ -386,7 +452,20 @@ public class ProductController {
                 mem.setType(params.get("mem.type"));
                 mem.setSpeed(getInt(params, "mem.speed"));
                 mem.setTdp(getInt(params, "mem.tdp"));
+                mem.setModules(getInt(params, "mem.modules"));
+
+                // Validate Memory specs
+                List<String> errors = specValidationService.validateMemory(mem);
+                if (!errors.isEmpty()) {
+                    throw new IllegalArgumentException("Memory validation failed: " + String.join(", ", errors));
+                }
+
                 memoryRepository.save(mem);
+
+                // Auto-map specs to categories
+                List<Category> allCategories = specToCategoryMappingService.getAllCategoriesForProduct(product, categoryId, mem);
+                product.setCategories(allCategories);
+                productService.updateProduct(product);
             }
             case 5 -> {
                 Storage st = storageRepository.findByProduct_ProductId(product.getProductId())
@@ -397,7 +476,19 @@ public class ProductController {
                 st.setInterfaceType(params.get("storage.interfaceType"));
                 st.setReadSpeed(getInt(params, "storage.readSpeed"));
                 st.setWriteSpeed(getInt(params, "storage.writeSpeed"));
+
+                // Validate Storage specs
+                List<String> errors = specValidationService.validateStorage(st);
+                if (!errors.isEmpty()) {
+                    throw new IllegalArgumentException("Storage validation failed: " + String.join(", ", errors));
+                }
+
                 storageRepository.save(st);
+
+                // Auto-map specs to categories
+                List<Category> allCategories = specToCategoryMappingService.getAllCategoriesForProduct(product, categoryId, st);
+                product.setCategories(allCategories);
+                productService.updateProduct(product);
             }
             case 6 -> {
                 Case pcCase = caseRepository.findByProduct_ProductId(product.getProductId())
@@ -405,9 +496,21 @@ public class ProductController {
                 pcCase.setProduct(product);
                 pcCase.setFormFactor(params.get("pcase.formFactor"));
                 pcCase.setGpuMaxLength(getInt(params, "pcase.gpu.maxLength"));
-                pcCase.setPsuFormFactor(params.get( "pcase.psu.formFactor"));
+                pcCase.setPsuFormFactor(params.get("pcase.psuFormFactor"));
                 pcCase.setCpuMaxCoolerHeight(getInt(params, "pcase.cpu.maxCoolerHeight"));
+
+                // Validate Case specs
+                List<String> errors = specValidationService.validateCase(pcCase);
+                if (!errors.isEmpty()) {
+                    throw new IllegalArgumentException("Case validation failed: " + String.join(", ", errors));
+                }
+
                 caseRepository.save(pcCase);
+
+                // Auto-map specs to categories
+                List<Category> allCategories = specToCategoryMappingService.getAllCategoriesForProduct(product, categoryId, pcCase);
+                product.setCategories(allCategories);
+                productService.updateProduct(product);
             }
             case 7 -> {
                 PowerSupply psu = powerSupplyRepository.findByProduct_ProductId(product.getProductId())
@@ -417,7 +520,19 @@ public class ProductController {
                 psu.setEfficiency(params.get("psu.efficiency"));
                 psu.setModular(getBool(params, "psu.modular"));
                 psu.setFormFactor(params.get("psu.formFactor"));
+
+                // Validate PSU specs
+                List<String> errors = specValidationService.validatePowerSupply(psu);
+                if (!errors.isEmpty()) {
+                    throw new IllegalArgumentException("PSU validation failed: " + String.join(", ", errors));
+                }
+
                 powerSupplyRepository.save(psu);
+
+                // Auto-map specs to categories
+                List<Category> allCategories = specToCategoryMappingService.getAllCategoriesForProduct(product, categoryId, psu);
+                product.setCategories(allCategories);
+                productService.updateProduct(product);
             }
             case 8 -> {
                 Cooling cl = coolingRepository.findByProduct_ProductId(product.getProductId())
@@ -426,8 +541,20 @@ public class ProductController {
                 cl.setType(params.get("cl.type"));
                 cl.setFanSize(getInt(params, "cl.fanSize"));
                 cl.setRadiatorSize(getInt(params, "cl.radiatorSize"));
-                cl.setTdp(getInt(params, "cl.maxTdp"));
+                cl.setTdp(getInt(params, "cl.tdp"));
+
+                // Validate Cooling specs
+                List<String> errors = specValidationService.validateCooling(cl);
+                if (!errors.isEmpty()) {
+                    throw new IllegalArgumentException("Cooling validation failed: " + String.join(", ", errors));
+                }
+
                 coolingRepository.save(cl);
+
+                // Auto-map specs to categories
+                List<Category> allCategories = specToCategoryMappingService.getAllCategoriesForProduct(product, categoryId, cl);
+                product.setCategories(allCategories);
+                productService.updateProduct(product);
             }
             // case 9 -> ... (Thêm logic cho Fan nếu cần)
             default -> { }
@@ -483,3 +610,5 @@ public class ProductController {
         return images;
     }
 }
+
+
