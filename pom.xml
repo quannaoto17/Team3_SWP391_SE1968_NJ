@@ -112,6 +112,12 @@
             <artifactId>payos-java</artifactId>
             <version>2.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.21.2</version>
+        </dependency>
+
 
     </dependencies>
 
