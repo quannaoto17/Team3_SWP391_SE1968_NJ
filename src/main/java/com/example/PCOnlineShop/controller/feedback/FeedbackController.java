@@ -24,7 +24,7 @@ public class FeedbackController {
     /**  Danh sách feedback */
     @GetMapping
     public String list(
-            @RequestParam(required = false, defaultValue = "Allow") String status,
+            @RequestParam(required = false, defaultValue = "PENDING") String status,
             @RequestParam(required = false) Integer rating,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to,
@@ -66,23 +66,30 @@ public class FeedbackController {
                         RedirectAttributes ra) {
         feedbackService.updateReply(id, reply);
         ra.addFlashAttribute("msg", "Đã phản hồi feedback thành công.");
-        return "redirect:/staff/feedback?status=Allow";
+        return "redirect:/staff/feedback";
     }
 
 
     private String buildQS(String status, Integer rating,
                            LocalDate from, LocalDate to, int size, String sort) {
         StringBuilder sb = new StringBuilder();
-        if (status != null)
+
+        if (status != null && !status.isBlank() && !"ALL".equalsIgnoreCase(status))
             sb.append("status=").append(URLEncoder.encode(status, StandardCharsets.UTF_8)).append("&");
+
         if (rating != null)
             sb.append("rating=").append(rating).append("&");
+
         if (from != null)
             sb.append("from=").append(from).append("&");
+
         if (to != null)
             sb.append("to=").append(to).append("&");
+
         sb.append("size=").append(size).append("&");
         sb.append("sort=").append(sort);
+
         return sb.toString();
     }
+
 }

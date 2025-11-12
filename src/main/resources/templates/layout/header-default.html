@@ -141,7 +141,42 @@
                 justify-content: flex-end;
             }
         }
+
+        .btn-blog {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+            border: 1px solid #e6eef8;
+            color: #1f2937;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(22, 35, 56, 0.06);
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s;
+            line-height: 1;
+        }
+
+        .btn-blog .icon {
+            font-size: 16px;
+            display: inline-block;
+            transform: translateY(-1px);
+        }
+
+        .btn-blog:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(22, 35, 56, 0.08);
+            background: linear-gradient(180deg, #ffffff 0%, #eef6ff 100%);
+        }
+
+        /* Make sure it fits small screens */
+        @media (max-width: 480px) {
+            .btn-blog { padding: 6px 10px; gap: 6px; font-size: 14px; }
+            .btn-blog .label { display: none; } /* show only icon on very small screens */
+        }
     </style>
+
     <div class="logo">
         <a th:href="@{/home}" class="logo-link" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
             <img src="/assets/image/logo.jpg" alt="Logo">
@@ -158,8 +193,10 @@
             </option>
         </select>
     </div>
-    <button th:onclick="|window.location.href='@{/blog}'|">📰 Blog</button>
-
+    <a th:href="@{/blog}" class="btn-blog" role="button" aria-label="Blog">
+        <span class="icon">📰</span>
+        <span class="label">Blog</span>
+    </a>
     <div class="search-bar">
         <input type="text" placeholder="Search products...">
         <button>Search</button>
@@ -168,7 +205,6 @@
     <div class="header-right">
         <button th:onclick="|window.location.href='@{/build/start}'|">🧩 Build PC</button>
         <button th:onclick="|window.location.href='@{/orders/list}'|">📦 My Orders</button>
-        <button th:onclick="|window.location.href='@{/chat/1}'|">💬 Chat AI</button>
 
         <a th:href="@{/cart}" class="cart">🛒My cart</a>
         <button th:onclick="|window.location.href='@{/auth/login}'|">Login</button>
