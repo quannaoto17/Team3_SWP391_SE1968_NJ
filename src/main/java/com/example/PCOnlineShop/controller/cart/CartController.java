@@ -67,6 +67,38 @@ public class CartController {
         return "redirect:" + getPreviousPage(request);
     }
 
+    @GetMapping("/addListItem")
+    public String addToCart(@ModelAttribute("productIds") List<Integer> productIds,
+                            @RequestParam(defaultValue = "1") int quantity,
+                            @AuthenticationPrincipal UserDetails currentUser,
+                            RedirectAttributes redirectAttributes,
+                            HttpServletRequest request) {
+
+        Account account = getCurrentAccount(currentUser);
+        if (account == null) return "redirect:/auth/login?required";
+
+        if (productIds == null || productIds.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "No products to add.");
+            return "redirect:" + getPreviousPage(request);
+        }
+
+        try {
+            for (Integer productId : productIds) {
+                if (productId == null) continue;
+                cartService.addToCart(account, productId, quantity);
+            }
+            redirectAttributes.addFlashAttribute("success", "Products added to cart!");
+        } catch (IllegalArgumentException | EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "An unexpected error occurred while adding to cart.");
+        }
+
+        return "redirect:" + getPreviousPage(request);
+    }
+
+
+
     // --- Cập nhật số lượng (Dùng cho AJAX từ JS thuần) ---
     // Trả về JSON thay vì redirect
     @PostMapping("/update/{productId}")

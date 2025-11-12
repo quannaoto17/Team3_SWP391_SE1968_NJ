@@ -1,0 +1,14 @@
+CREATE TABLE ChatRoom (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ChatMessage (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    chat_room_id INT NOT NULL,
+    sender ENUM('USER','AI') NOT NULL,
+    message TEXT,
+    sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chat_room_id) REFERENCES ChatRoom(id)
+);
