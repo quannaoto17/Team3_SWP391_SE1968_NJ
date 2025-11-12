@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
-<head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${product.productName} + ' – PCOnlineShop'">Product Details</title>
@@ -28,8 +28,16 @@
 <body class="bg-gray-50 text-gray-800">
 
 <!-- Header -->
-<div th:replace="~{layout/header-default :: header-default}"></div>
+<div sec:authorize="!isAuthenticated()"
+     th:replace="layout/header-default :: header-default"></div>
+<div sec:authorize="hasRole('ADMIN')"
+     th:replace="layout/header-admin :: header-admin"></div>
 
+<div sec:authorize="hasRole('STAFF')"
+     th:replace="layout/header-staff :: header-staff"></div>
+
+<div sec:authorize="hasRole('CUSTOMER')"
+     th:replace="layout/header-customer :: header-customer"></div>
 <section class="container mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-10">
     <!-- Image Gallery -->
     <div class="lg:col-span-6">
