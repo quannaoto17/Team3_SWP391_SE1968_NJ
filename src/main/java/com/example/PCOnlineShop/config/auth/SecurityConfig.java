@@ -42,7 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/home", "/auth/**").permitAll()
                         .requestMatchers("/build/**", "/api/build/**").permitAll() // Build PC feature for guests
                         .requestMatchers("/assets/**", "/css/**", "/js/**", "/image/**", "/static/**", "/webfonts/**", "/uploads/**").permitAll()
-
+                        .requestMatchers("/blog/**","/chat/**").permitAll()
                         // Admin only
                         .requestMatchers("/staff/list/**", "/staff/add/**", "/staff/edit/**", "/staff/view/**", "/staff/delete/**").hasAnyRole("ADMIN")
                         .requestMatchers("/staff/products/**", "/staff/warranty/**",  "/staff/shipping/**").hasAnyRole("STAFF", "ADMIN")

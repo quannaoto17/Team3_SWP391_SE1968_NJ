@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Bài viết - HACOM</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Arial; padding: 30px; background: #f5f6f8; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .card img { width: 100%; height: 170px; object-fit: cover; display:block; }
+        .card .body { padding: 12px; }
+        .card h3 { margin: 0 0 8px; font-size: 1.05rem; }
+        .meta { color: #666; font-size: .9rem; margin-bottom: 6px; }
+        .source { margin-top: 20px; font-size: .9rem; color: #333; }
+    </style>
+</head>
+<body>
+<h1>Bài viết từ <span th:text="${sourceName}">HACOM</span></h1>
+<p class="source">Nguồn gốc: <a th:href="${sourceUrl}" target="_blank" th:text="${sourceUrl}"></a></p>
+<p>
+    <a href="/home" style="display:inline-block; padding:8px 16px; background:#007bff; color:white; text-decoration:none; border-radius:5px;">
+        ← Quay lại trang chủ
+    </a>
+</p>
+<div th:if="${#lists.isEmpty(links)}">
+    <p>Không tìm thấy bài viết (hoặc server nguồn không phản hồi). Vui lòng thử lại sau.</p>
+</div>
+
+<div class="grid" th:if="${!#lists.isEmpty(links)}">
+    <div th:each="link : ${links}" class="card">
+        <a th:href="${link.link}" target="_blank" rel="noopener">
+            <img th:if="${link.imageUrl != null}" th:src="${link.imageUrl}" alt="thumbnail" />
+        </a>
+        <div class="body">
+            <div class="meta">Nguồn: <a th:href="${sourceUrl}" target="_blank" rel="noopener">HACOM</a></div>
+            <h3><a th:href="${link.link}" target="_blank" th:text="${link.title}"></a></h3>
+            <p th:if="${link.summary != null}" th:text="${link.summary}"></p>
+            <p><a th:href="${link.link}" target="_blank">Đọc tiếp →</a></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
