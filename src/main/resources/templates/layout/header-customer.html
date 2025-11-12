@@ -97,10 +97,11 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            position: relative; /* for dropdown positioning */
         }
 
-        .header-right button,
-        .header-right a {
+        /* Single dropdown toggle button */
+        .profile-toggle {
             padding: 8px 14px;
             border: none;
             border-radius: 6px;
@@ -108,21 +109,56 @@
             color: #333;
             cursor: pointer;
             font-size: 14px;
-            transition: all 0.2s ease;
-            text-decoration: none;
-        }
-
-        .header-right a.cart {
-            font-size: 20px;
-            background-color: #eee;
+            transition: all 0.15s ease;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
         }
 
-        .header-right button:hover,
-        .header-right a:hover {
+        .profile-toggle:hover {
             background-color: #ddd;
+        }
+
+        /* Dropdown menu */
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: #fff;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            border-radius: 8px;
+            min-width: 200px;
+            overflow: hidden;
+            display: none;
+            z-index: 200;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px 14px;
+            background: transparent;
+            border: none;
+            text-align: left;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background: #f5f5f5;
+        }
+
+        .dropdown-item.cart {
+            font-size: 16px;
+            justify-content: space-between;
         }
 
         @media (max-width: 768px) {
@@ -141,6 +177,39 @@
                 width: 100%;
                 justify-content: flex-end;
             }
+        }
+        .btn-blog {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+            border: 1px solid #e6eef8;
+            color: #1f2937;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(22, 35, 56, 0.06);
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s;
+            line-height: 1;
+        }
+
+        .btn-blog .icon {
+            font-size: 16px;
+            display: inline-block;
+            transform: translateY(-1px);
+        }
+
+        .btn-blog:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(22, 35, 56, 0.08);
+            background: linear-gradient(180deg, #ffffff 0%, #eef6ff 100%);
+        }
+
+        /* Make sure it fits small screens */
+        @media (max-width: 480px) {
+            .btn-blog { padding: 6px 10px; gap: 6px; font-size: 14px; }
+            .btn-blog .label { display: none; } /* show only icon on very small screens */
         }
     </style>
 
@@ -162,24 +231,74 @@
             </option>
         </select>
     </div>
-
-
-    <!-- Thanh tìm kiếm -->
+    <a th:href="@{/blog}" class="btn-blog" role="button" aria-label="Blog">
+        <span class="icon">📰</span>
+        <span class="label">Blog</span>
+    </a>
+    <!-- Search -->
     <div class="search-bar">
         <input type="text" placeholder="Search products...">
         <button>Search</button>
     </div>
 
-    <!-- Nút bên phải -->
+    <!-- Collapsed right-side dropdown -->
     <div class="header-right">
-        <button th:onclick="|window.location.href='@{/build/start}'|">🧩 Build PC</button>
-        <button th:onclick="|window.location.href='@{/orders/list}'|">📦 My Orders</button>
-        <a th:href="@{/cart}" class="cart">🛒My Cart</a>
-        <button th:onclick="|window.location.href='@{/profile}'|">👤 My Profile</button>
+        <button id="profileToggle" class="profile-toggle" aria-expanded="false" type="button">
+            👤 My Account
+        </button>
 
-        <!-- Nút Login (đã check role ở layout chính) -->
-        <button th:onclick="|window.location.href='@{/auth/logout}'|">Logout</button>
+        <div id="profileDropdown" class="dropdown-menu" role="menu" aria-hidden="true">
+            <a th:href="@{/build/start}" class="dropdown-item" role="menuitem">🧩 Build PC</a>
+            <a th:href="@{/orders/list}" class="dropdown-item" role="menuitem">📦 My Orders</a>
+            <a th:href="@{/cart}" class="dropdown-item cart" role="menuitem">🛒 My Cart</a>
+            <a th:href="@{/profile}" class="dropdown-item" role="menuitem">👤 My Profile</a>
+            <a th:href="@{/auth/logout}" class="dropdown-item" role="menuitem">Logout</a>
+        </div>
     </div>
+
+    <script>
+        (function() {
+            const toggle = document.getElementById('profileToggle');
+            const dropdown = document.getElementById('profileDropdown');
+
+            function openDropdown() {
+                dropdown.classList.add('show');
+                toggle.setAttribute('aria-expanded', 'true');
+                dropdown.setAttribute('aria-hidden', 'false');
+            }
+
+            function closeDropdown() {
+                dropdown.classList.remove('show');
+                toggle.setAttribute('aria-expanded', 'false');
+                dropdown.setAttribute('aria-hidden', 'true');
+            }
+
+            function toggleDropdown(event) {
+                event.stopPropagation();
+                if (dropdown.classList.contains('show')) {
+                    closeDropdown();
+                } else {
+                    openDropdown();
+                }
+            }
+
+            toggle.addEventListener('click', toggleDropdown);
+
+            // Close when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!dropdown.contains(e.target) && e.target !== toggle) {
+                    closeDropdown();
+                }
+            });
+
+            // Close on Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeDropdown();
+                }
+            });
+        })();
+    </script>
 
 </header>
 </body>
