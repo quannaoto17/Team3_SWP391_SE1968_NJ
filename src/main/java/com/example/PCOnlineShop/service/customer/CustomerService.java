@@ -36,14 +36,6 @@ public class CustomerService {
         return accountRepository.findById(id).orElse(null);
     }
 
-    // Bật / tắt tài khoản
-    public void deactivateCustomer(int id) {
-        accountRepository.findById(id).ifPresent(acc -> {
-            acc.setEnabled(!acc.getEnabled());
-            accountRepository.save(acc);
-        });
-    }
-
     // Lưu địa chỉ mặc định khi tạo customer
     public void saveDefaultAddress(Account account, String addressStr) {
         if (account == null || addressStr == null || addressStr.trim().isEmpty()) return;
@@ -61,17 +53,4 @@ public class CustomerService {
         addressRepository.save(addr);
     }
 
-    // Cập nhật địa chỉ mặc định
-    public void updateDefaultAddress(Account account, String addressStr) {
-        if (account == null || addressStr == null || addressStr.trim().isEmpty()) return;
-
-        Address defaultAddr = addressRepository.findDefaultByAccount(account).orElse(new Address());
-        defaultAddr.setAccount(account);
-        defaultAddr.setFullName(account.getFullName());
-        defaultAddr.setPhone(account.getPhoneNumber());
-        defaultAddr.setAddress(addressStr.trim());
-        defaultAddr.setDefault(true);
-
-        addressRepository.save(defaultAddr);
-    }
 }

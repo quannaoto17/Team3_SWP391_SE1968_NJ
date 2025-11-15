@@ -14,10 +14,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -28,40 +26,27 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final AccountRepository accountRepository;
     private final OrderDetailRepository orderDetailRepository;
 
-    /**  Tìm kiếm feedback cho staff */
+    /** FULL LIST – NO PAGING */
     @Override
-    public Page<Feedback> search(String status, Integer rating,
-                                 LocalDate from, LocalDate to,
-                                 int page, int size, String sortKey) {
-
-        Specification<Feedback> spec = (root, query, cb) -> cb.conjunction();
-
-        // Hiển thị tất cả hoặc lọc theo trạng thái
-        if (status != null && !"ALL".equalsIgnoreCase(status)) {
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("commentStatus"), status));
-        }
-
-        if (rating != null && rating > 0) spec = spec.and(FeedbackSpecs.rating(rating));
-        if (from != null) spec = spec.and(FeedbackSpecs.dateFrom(from));
-        if (to != null) spec = spec.and(FeedbackSpecs.dateTo(to));
-
+    public List<Feedback> findAllNoPaging(String sortKey) {
         Sort sort = toSort(sortKey);
-        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1), sort);
-
-        return feedbackRepository.findAll(spec, pageable);
+        return feedbackRepository.findAll(sort);
     }
 
+    /** SORT RULE */
     private Sort toSort(String key) {
-        if (key == null) key = "dateDesc";
+        if (key == null) key = "pendingFirst";
+
         return switch (key) {
-            case "dateAsc" -> Sort.by("createdAt").ascending();
-            case "ratingDesc" -> Sort.by(Sort.Order.desc("rating"), Sort.Order.desc("createdAt"));
-            case "ratingAsc" -> Sort.by(Sort.Order.asc("rating"), Sort.Order.desc("createdAt"));
+
+            case "pendingFirst" ->
+                    Sort.by(Sort.Order.asc("reply"), Sort.Order.desc("createdAt"));
+
             default -> Sort.by("createdAt").descending();
         };
     }
 
+    /** CRUD */
     @Override
     public Feedback get(Integer id) {
         return feedbackRepository.findById(id)
@@ -73,17 +58,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     public void updateReply(Integer id, String reply) {
         Feedback fb = get(id);
         fb.setReply(reply == null ? null : reply.trim());
-        fb.setCommentStatus("Allow"); //  đảm bảo vẫn được hiển thị
-        feedbackRepository.save(fb);
-    }
-
-
-
-    @Override
-    @Transactional
-    public void updateStatus(Integer id, String status) {
-        Feedback fb = get(id);
-        fb.setCommentStatus(status);
+        fb.setCommentStatus("Allow");
         feedbackRepository.save(fb);
     }
 
@@ -95,52 +70,37 @@ public class FeedbackServiceImpl implements FeedbackService {
         );
     }
 
-    /**  Customer tạo feedback → hiển thị luôn */
     @Override
     @Transactional
     public void createFeedback(Integer productId, Integer accountId, Integer rating, String comment) {
 
-        // Kiểm tra user đã mua sản phẩm chưa
         boolean hasPurchased = orderDetailRepository
                 .existsByOrder_Account_AccountIdAndProduct_ProductIdAndOrder_Status(
-                        accountId, productId, "Completed"
-                );
+                        accountId, productId, "Completed");
 
-        if (!hasPurchased) {
+        if (!hasPurchased)
             throw new IllegalArgumentException("Bạn chỉ có thể đánh giá sản phẩm đã mua!");
-        }
 
-        // Danh sách từ cấm
-        List<String> bannedWords = List.of(
-                "ngu", "điên", "vl", "cl", "dm", "chết", "mẹ", "đụ", "cặc", "fuck", "shit", "bitch"
-        );
+        List<String> banned = List.of("ngu", "điên", "vl", "cl", "dm", "chết",
+                "mẹ", "đụ", "cặc", "fuck", "shit", "bitch");
 
-        // Lọc từ cấm
-        String filteredComment = filterBadWords(comment, bannedWords);
+        for (String word : banned)
+            comment = comment.replaceAll("(?i)" + word, "***");
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Sản phẩm không tồn tại!"));
+
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Tài khoản không tồn tại!"));
 
-        Feedback feedback = new Feedback();
-        feedback.setProduct(product);
-        feedback.setAccount(account);
-        feedback.setRating(rating);
-        feedback.setComment(filteredComment);
-        feedback.setCommentStatus("Allow"); //  hiển thị ngay
-        feedback.setCreatedAt(LocalDateTime.now());
+        Feedback fb = new Feedback();
+        fb.setProduct(product);
+        fb.setAccount(account);
+        fb.setRating(rating);
+        fb.setComment(comment);
+        fb.setCommentStatus("Allow");
+        fb.setCreatedAt(LocalDateTime.now());
 
-        feedbackRepository.save(feedback);
+        feedbackRepository.save(fb);
     }
-
-    private String filterBadWords(String comment, List<String> bannedWords) {
-        if (comment == null) return null;
-        String filtered = comment;
-        for (String word : bannedWords) {
-            filtered = filtered.replaceAll("(?i)" + word, "***");
-        }
-        return filtered;
-    }
-
 }
