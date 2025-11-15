@@ -97,12 +97,6 @@
             </td>
             <td>
                 <a th:href="@{'/customer/view/' + ${c.accountId}}" class="btn btn-sm btn-view">View</a>
-                <a th:href="@{'/customer/edit/' + ${c.accountId}}" class="btn btn-sm btn-edit">Edit</a>
-                <a th:href="@{'/customer/delete/' + ${c.accountId}}"
-                   class="btn btn-sm"
-                   th:classappend="${c.enabled} ? 'btn-deactivate' : 'btn-activate'"
-                   th:text="${c.enabled} ? 'Deactivate' : 'Activate'">
-                </a>
             </td>
         </tr>
         </tbody>
