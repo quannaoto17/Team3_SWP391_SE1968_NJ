@@ -255,5 +255,8 @@ CREATE TABLE feedback (
     FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
 
-
+ALTER TABLE cart_item
+ADD COLUMN is_selected BIT DEFAULT 1 NOT NULL,
+ADD COLUMN is_build_item BIT DEFAULT 0 NOT NULL,
+ADD COLUMN build_id VARCHAR(50) NULL ;
 

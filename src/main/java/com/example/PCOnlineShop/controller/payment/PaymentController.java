@@ -22,9 +22,6 @@ public class PaymentController {
     private final OrderService orderService;
     private final PaymentRepository paymentRepository;
 
-    /**
-     * Constructor để tiêm (inject) tất cả các service/repository cần thiết
-     */
     public PaymentController(PaymentService paymentService,
                              OrderService orderService,
                              PaymentRepository paymentRepository) {
@@ -35,7 +32,6 @@ public class PaymentController {
 
     /**
      * Khách hàng bị redirect về đây sau khi thanh toán thành công.
-     * Dùng orderCode (timestamp) để truy vấn.
      */
     @GetMapping("/callback/success")
     public String handleSuccessCallback(@RequestParam("orderCode") long orderCode,
@@ -45,43 +41,37 @@ public class PaymentController {
             PaymentLink transaction = paymentService.queryTransaction(orderCode);
 
             if (transaction != null && "PAID".equals(transaction.getStatus())) {
-                redirectAttributes.addFlashAttribute("success", "Thanh toán thành công! Đơn hàng đang được xử lý.");
+                redirectAttributes.addFlashAttribute("success", "Successful Payment. Please wait for order confirmation.");
             } else {
-                redirectAttributes.addFlashAttribute("info", "Chúng tôi đang xác nhận thanh toán của bạn...");
+                redirectAttributes.addFlashAttribute("info", "In confirmation...");
             }
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Lỗi khi kiểm tra trạng thái thanh toán.");
+            redirectAttributes.addFlashAttribute("error", "Error while checking payment.");
         }
-        return "redirect:/orders/list"; // Luôn chuyển về trang danh sách đơn hàng
+        return "redirect:/orders/list";
     }
 
     /**
      * Khách hàng bị redirect về đây nếu hủy thanh toán.
-     * Dùng orderCode (timestamp) để tìm và hủy đơn.
      */
     @GetMapping("/callback/failed")
     public String handleFailedCallback(@RequestParam(value = "orderCode", required = true) Long orderCode,
                                        RedirectAttributes redirectAttributes) {
         if (orderCode != null) {
             try {
-                // 1. Tìm bản ghi Payment bằng orderCode (timestamp)
-                Payment payment = paymentRepository.findByOrderCode(orderCode)
-                        .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Payment: " + orderCode));
 
-                // 2. Gọi logic hủy (dùng payment_id nội bộ) để hoàn kho
+                Payment payment = paymentRepository.findByOrderCode(orderCode)
+                        .orElseThrow(() -> new EntityNotFoundException("No Found Payment: " + orderCode));
+
                 orderService.cancelOrderFromPaymentId(payment.getPaymentId());
             } catch (Exception e) {
-                System.err.println("Lỗi khi Khách hàng hủy: " + e.getMessage());
+                System.err.println("Error when Customer cancelled: " + e.getMessage());
             }
         }
-        redirectAttributes.addFlashAttribute("error", "Thanh toán đã bị hủy. Đơn hàng của bạn đã được hủy.");
+        redirectAttributes.addFlashAttribute("error", "Payment Cancelled.");
         return "redirect:/orders/list";
     }
 
-    /**
-     * WEBHOOK - PayOS sẽ gọi (POST) tới đây.
-     * Đây là nguồn tin cậy duy nhất để cập nhật trạng thái "PAID".
-     */
     @PostMapping("/webhook")
     @ResponseBody
     public ResponseEntity<String> handlePayOSWebhook(@RequestBody Object body) {
