@@ -108,6 +108,29 @@ document.addEventListener("DOMContentLoaded", function () {
         // update detail panel - name is common for all
         if (detailName) detailName.innerText = name || '';
 
+        // Update detail image
+        const detailImageDiv = document.querySelector('.detail-image');
+        if (detailImageDiv) {
+            // Tìm ảnh trong card được click
+            const cardImage = card.querySelector('.product-image img');
+            if (cardImage && cardImage.src) {
+                // Tạo hoặc cập nhật img element trong detail panel
+                let detailImg = detailImageDiv.querySelector('img');
+                if (!detailImg) {
+                    detailImg = document.createElement('img');
+                    detailImg.style.width = '100%';
+                    detailImg.style.height = 'auto';
+                    detailImg.style.objectFit = 'contain';
+                    detailImageDiv.appendChild(detailImg);
+                }
+                detailImg.src = cardImage.src;
+                detailImg.alt = name || 'Product Image';
+            } else {
+                // Nếu không có ảnh, hiển thị "No Image"
+                detailImageDiv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#999;">No Image Available</div>';
+            }
+        }
+
         // Mainboard & CPU specific
         if (detailSocket) {
             const socket = card.getAttribute('data-socket');

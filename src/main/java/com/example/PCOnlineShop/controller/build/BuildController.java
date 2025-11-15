@@ -4,6 +4,7 @@ import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import com.example.PCOnlineShop.dto.cart.CartItemDTO;
 import com.example.PCOnlineShop.model.product.Product;
 import com.example.PCOnlineShop.repository.product.ProductRepository;
+import com.example.PCOnlineShop.repository.build.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,9 +25,21 @@ import java.util.List;
 public class BuildController {
 
     private final ProductRepository productRepository;
+    private final CaseRepository caseRepository;
+    private final StorageRepository storageRepository;
+    private final PowerSupplyRepository powerSupplyRepository;
+    private final CoolingRepository coolingRepository;
 
-    public BuildController(ProductRepository productRepository) {
+    public BuildController(ProductRepository productRepository,
+                          CaseRepository caseRepository,
+                          StorageRepository storageRepository,
+                          PowerSupplyRepository powerSupplyRepository,
+                          CoolingRepository coolingRepository) {
         this.productRepository = productRepository;
+        this.caseRepository = caseRepository;
+        this.storageRepository = storageRepository;
+        this.powerSupplyRepository = powerSupplyRepository;
+        this.coolingRepository = coolingRepository;
     }
 
     @ModelAttribute("buildItems")
@@ -37,6 +50,15 @@ public class BuildController {
     @GetMapping("/start" )
     public String startBuild() {
         return "/build/build-pc";
+    }
+
+    @GetMapping("/debug-images")
+    public String debugImages(Model model) {
+        model.addAttribute("cases", caseRepository.findAll());
+        model.addAttribute("storages", storageRepository.findAll());
+        model.addAttribute("psus", powerSupplyRepository.findAll());
+        model.addAttribute("coolings", coolingRepository.findAll());
+        return "/build/debug-images";
     }
 
     @GetMapping("/preset-result")

@@ -39,7 +39,7 @@ public class Case {
     @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "PSU form factor must not contain special characters")
     private String psuFormFactor;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @MapsId // dùng chung id với Product
     @JoinColumn(name = "product_id")
     private Product product;

@@ -80,6 +80,16 @@
                      th:data-name="${storage.product.productName}"
                      th:data-type="${storage.type}"
                      th:data-capacity="${storage.capacity}">
+                    <!-- Product Image -->
+                    <div class="product-image">
+                        <img th:if="${storage.product.images != null && !storage.product.images.isEmpty()}"
+                             th:src="@{${storage.product.images[0].imageUrl}}"
+                             th:alt="${storage.product.productName}"/>
+                        <div th:unless="${storage.product.images != null && !storage.product.images.isEmpty()}"
+                             style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px;">
+                            No Image
+                        </div>
+                    </div>
                     <h4 th:text="${storage.product.productName}"></h4>
                     <p th:text="'Type: ' + ${storage.type}"></p>
                     <p th:text="'Capacity: ' + ${storage.capacity} + 'GB'"></p>

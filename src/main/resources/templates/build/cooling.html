@@ -74,6 +74,16 @@
                      th:data-type="${cl.type}"
                      th:data-fansize="${cl.fanSize}"
                      th:data-tdp="${cl.tdp}">
+                    <!-- Product Image -->
+                    <div class="product-image">
+                        <img th:if="${cl.product.images != null && !cl.product.images.isEmpty()}"
+                             th:src="@{${cl.product.images[0].imageUrl}}"
+                             th:alt="${cl.product.productName}"/>
+                        <div th:unless="${cl.product.images != null && !cl.product.images.isEmpty()}"
+                             style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px;">
+                            No Image
+                        </div>
+                    </div>
                     <h4 th:text="${cl.product.productName}"></h4>
                     <p th:text="'Type: ' + ${cl.type}"></p>
                     <p th:text="'Fan Size: ' + ${cl.fanSize}"></p>
