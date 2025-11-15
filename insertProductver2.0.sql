@@ -3438,6 +3438,61 @@ VALUES
 INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size)
 VALUES (@product_id, 'AIO', 300, 120, 360);
 
+--Insert Other Product
+INSERT INTO product (brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (6, 'Logitech K120 Office Keyboard', 12.99, 1, 'Bàn phím văn phòng đơn giản, bền, chống nước.', 'Membrane, USB', 50);
+SET @product_id = LAST_INSERT_ID();
+INSERT INTO product_category (product_id, category_id)
+VALUES (@product_id, 15);
+
+INSERT INTO product (brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (7, 'Corsair K55 RGB Pro', 49.99, 1, 'Bàn phím gaming RGB nhiều chế độ.', 'Membrane, RGB, USB', 30);
+SET @product_id = LAST_INSERT_ID();
+INSERT INTO product_category (product_id, category_id)
+VALUES (@product_id, 15);
+
+INSERT INTO product (brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (20, 'Razer BlackWidow V3 Mechanical', 129.99, 1, 'Bàn phím cơ switch xanh nổi tiếng.', 'Mechanical, RGB, USB', 25);
+SET @product_id = LAST_INSERT_ID();
+INSERT INTO product_category (product_id, category_id)
+VALUES (@product_id, 15);
+
+INSERT INTO product (brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (6, 'Logitech G102 LightSync', 19.99, 1, 'Chuột gaming giá rẻ, cảm biến chính xác.', '8000 DPI, RGB', 40);
+SET @product_id = LAST_INSERT_ID();
+INSERT INTO product_category (product_id, category_id)
+VALUES (@product_id, 15);
+
+INSERT INTO product (brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (20, 'Razer DeathAdder Essential', 29.99, 1, 'Chuột gaming huyền thoại, thiết kế công thái học.', '6400 DPI, USB', 35);
+SET @product_id = LAST_INSERT_ID();
+INSERT INTO product_category (product_id, category_id)
+VALUES (@product_id, 15);
+
+INSERT INTO product (brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (1, 'ASUS ROG Gladius III', 74.99, 1, 'Chuột gaming cao cấp, switch hot-swap.', '26000 DPI, RGB', 20);
+SET @product_id = LAST_INSERT_ID();
+INSERT INTO product_category (product_id, category_id)
+VALUES (@product_id, 15);
+
+INSERT INTO product (brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (1, 'ASUS VZ249HE 24-inch IPS', 129.99, 1, 'Màn hình IPS siêu mỏng, 75Hz.', '24 inch, IPS, 75Hz', 18);
+SET @product_id = LAST_INSERT_ID();
+INSERT INTO product_category (product_id, category_id)
+VALUES (@product_id, 15);
+
+INSERT INTO product (brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (2, 'MSI Optix G241 144Hz', 189.99, 1, 'Màn hình gaming 144Hz, màu đẹp.', '24 inch, IPS, 144Hz', 15);
+SET @product_id = LAST_INSERT_ID();
+INSERT INTO product_category (product_id, category_id)
+VALUES (@product_id, 15);
+
+INSERT INTO product (brand_id, product_name, price, status, description, specification, inventory_quantity)
+VALUES (3, 'Gigabyte G27F2 165Hz', 229.99, 1, 'Màn hình 165Hz dành cho game thủ.', '27 inch, IPS, 165Hz', 12);
+SET @product_id = LAST_INSERT_ID();
+INSERT INTO product_category (product_id, category_id)
+VALUES (@product_id, 15);
+
 -- ============================================
 -- Create Indexes for Performance
 -- ============================================
