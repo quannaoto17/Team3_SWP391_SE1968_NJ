@@ -1,32 +1,37 @@
 package com.example.PCOnlineShop.controller.build;
 
 import com.example.PCOnlineShop.dto.build.BuildItemDto;
-import com.example.PCOnlineShop.dto.cart.CartItemDTO;
-import com.example.PCOnlineShop.model.product.Product;
-import com.example.PCOnlineShop.repository.product.ProductRepository;
+import com.example.PCOnlineShop.model.account.Account;
+import com.example.PCOnlineShop.repository.account.AccountRepository;
+import com.example.PCOnlineShop.service.cart.CartService; // ✅ Tiêm CartService
+import org.springframework.security.core.annotation.AuthenticationPrincipal; // ✅ Thêm
+import org.springframework.security.core.userdetails.UserDetails; // ✅ Thêm
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
-
-import jakarta.servlet.http.HttpSession;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.support.SessionStatus;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @SessionAttributes({"buildItems"})
 @RequestMapping("/build")
 public class BuildController {
 
-    private final ProductRepository productRepository;
+    private final CartService cartService;
+    private final AccountRepository accountRepository;
 
-    public BuildController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public BuildController(CartService cartService, AccountRepository accountRepository) {
+        this.cartService = cartService;
+        this.accountRepository = accountRepository;
+    }
+
+    private Account getCurrentAccount(UserDetails userDetails) {
+        if (userDetails == null) return null;
+        if (userDetails instanceof Account) return (Account) userDetails;
+        return accountRepository.findByPhoneNumber(userDetails.getUsername()).orElse(null);
     }
 
     @ModelAttribute("buildItems")
@@ -34,70 +39,44 @@ public class BuildController {
         return new BuildItemDto();
     }
 
+
     @GetMapping("/start" )
     public String startBuild() {
         return "/build/build-pc";
     }
-
     @GetMapping("/preset-result")
     public String showPresetResult() {
         return "/build/preset-result";
     }
-
     @GetMapping("/startover")
-    public String startOver(SessionStatus sessionStatus, org.springframework.ui.Model model) {
-        // Tell Spring to clear the session-managed `buildItems`
+    public String startOver(SessionStatus sessionStatus, Model model) {
         sessionStatus.setComplete();
-
-        // Provide a fresh empty DTO so the next request's model is clean
         model.addAttribute("buildItems", new BuildItemDto());
-
-        // Redirect to the first build page (avoids reusing form values)
         return "redirect:/build/mainboard";
     }
 
-    @SuppressWarnings("unchecked")
+
     @GetMapping("/finish")
     public String finishBuild(@ModelAttribute("buildItems") BuildItemDto buildItems,
-                              HttpSession session,
+                              @AuthenticationPrincipal UserDetails currentUser,
                               SessionStatus sessionStatus,
-                              RedirectAttributes redirectAttributes, Model model) {
+                              RedirectAttributes redirectAttributes) {
+        Account account = getCurrentAccount(currentUser);
+        if (account == null) {
+            return "redirect:/auth/login";
+        }
+        try {
 
-        List<Integer> productIds = new ArrayList<>();
+            cartService.addBuildToCart(account, buildItems);
 
-        if (buildItems.getMainboard() != null ) {
-            productIds.add(buildItems.getMainboard().getProductId());
-        }
-        if (buildItems.getCpu() != null ) {
-            productIds.add(buildItems.getCpu().getProductId());
-        }
-        if (buildItems.getGpu() != null ) {
-            productIds.add(buildItems.getGpu().getProductId());
-        }
-        if (buildItems.getMemory() != null ) {
-            productIds.add(buildItems.getMemory().getProductId());
-        }
-        if (buildItems.getStorage() != null ) {
-            productIds.add(buildItems.getStorage().getProductId());
-        }
-        if (buildItems.getPowerSupply() != null ) {
-            productIds.add(buildItems.getPowerSupply().getProductId());
-        }
-        if (buildItems.getPcCase() != null ) {
-            productIds.add(buildItems.getPcCase().getProductId());
-        }
-        if (buildItems.getCooling() != null ) {
-            productIds.add(buildItems.getCooling().getProductId());
-        }
+            // Xóa "buildItems" (DTO) khỏi session
+            sessionStatus.setComplete();
+            redirectAttributes.addFlashAttribute("success", "Bộ PC đã được thêm vào giỏ hàng!");
+            return "redirect:/cart";
 
-        // Dùng flash attribute để giữ qua redirect và chắc chắn tên là "productIds"
-        redirectAttributes.addFlashAttribute("productIds", productIds);
-
-        // Option: clear the session-managed buildItems if bạn muốn
-        sessionStatus.setComplete();
-
-        // redirect tuyệt đối tới controller /cart/addListItem
-        return "redirect:/cart/addListItem";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi lưu PC Build: " + e.getMessage());
+            return "redirect:/build/start";
+        }
     }
-
 }
