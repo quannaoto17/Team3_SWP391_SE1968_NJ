@@ -64,36 +64,4 @@ public class CustomerController {
 
         return "redirect:/customer/list";
     }
-
-    // ======================== EDIT ========================
-    @GetMapping("/edit/{id}")
-    public String editCustomerForm(@PathVariable int id, Model model) {
-        model.addAttribute("account", customerService.getById(id));
-        return "customer/edit-customer";
-    }
-
-    @PostMapping("/edit")
-    public String updateCustomer(@Valid @ModelAttribute("account") Account account,
-                                 BindingResult result,
-                                 @RequestParam(name = "addressStr", required = false) String addressStr,
-                                 Model model) {
-        if (result.hasErrors()) return "customer/edit-customer";
-
-        try {
-            Account saved = authService.saveCustomer(account);
-            customerService.updateDefaultAddress(saved, addressStr);
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "customer/edit-customer";
-        }
-
-        return "redirect:/customer/list";
-    }
-
-    // ======================== DELETE ========================
-    @GetMapping("/delete/{id}")
-    public String deactivateCustomer(@PathVariable int id) {
-        customerService.deactivateCustomer(id);
-        return "redirect:/customer/list";
-    }
 }

@@ -47,7 +47,8 @@ public class Storage {
     @Pattern(regexp = "^[0-9]+$", message = "Write speed must be a valid number")
     private int writeSpeed;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
+    @MapsId
     @JoinColumn(name = "product_id")
     private Product product;
 

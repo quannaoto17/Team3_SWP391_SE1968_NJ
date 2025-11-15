@@ -40,7 +40,7 @@ public class Memory {
     @Column(name = "modules")
     private int modules; // number of modules
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @MapsId
     @JoinColumn(name = "product_id")
     private Product product;

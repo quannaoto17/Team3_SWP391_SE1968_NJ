@@ -41,6 +41,16 @@
                      th:classappend="${buildItems.other?.product?.productId == other.product.productId} ? 'selected' : ''"
                      th:attr="data-id=${other.product.productId}"
                      th:data-name="${other.product.productName}">
+                    <!-- Product Image -->
+                    <div class="product-image">
+                        <img th:if="${other.product.images != null && !other.product.images.isEmpty()}"
+                             th:src="@{${other.product.images[0].imageUrl}}"
+                             th:alt="${other.product.productName}"/>
+                        <div th:unless="${other.product.images != null && !other.product.images.isEmpty()}"
+                             style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px;">
+                            No Image
+                        </div>
+                    </div>
                     <h4 th:text="${other.product.productName}"></h4>
                     <strong th:text="'$' + ${other.product.price}"></strong>
                 </div>

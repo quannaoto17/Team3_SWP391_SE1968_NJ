@@ -25,14 +25,6 @@
                       class="star"></span>
             </div>
 
-            <div>
-                Status:
-                <span class="badge"
-                      th:classappend="${fb.commentStatus=='Allow' ? 'bg-success'
-                                      : (fb.commentStatus=='Denied' ? 'bg-danger' : 'bg-secondary')}"
-                      th:text="${fb.commentStatus}">
-                </span>
-            </div>
         </div>
     </div>
 
@@ -42,12 +34,12 @@
           onsubmit="return confirmEdit();">
         <input type="hidden" name="back" th:value="${back}">
         <div class="card">
-            <div class="card-header">Reply (1 lần nhưng cho phép sửa lại)</div>
+            <div class="card-header">Reply (Có thể sửa lại)</div>
             <div class="card-body">
                 <textarea class="form-control" name="reply" rows="6"
                           placeholder="Type here..." th:text="${fb.reply}"></textarea>
 
-                <!-- ✅ Nút Back trái - Send phải -->
+                <!-- Nút Back trái - Send phải -->
                 <div class="action-buttons mt-3">
                     <a class="btn btn-outline-secondary btn-back"
                        th:href="@{|/staff/feedback?${back}|}">← Back</a>

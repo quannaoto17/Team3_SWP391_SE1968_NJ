@@ -24,16 +24,4 @@ public class FeedbackSpecs {
         return (root, q, cb) ->
                 rating == null ? cb.conjunction() : cb.equal(root.get("rating"), rating);
     }
-
-    /** Lọc từ ngày */
-    public static Specification<Feedback> dateFrom(LocalDate from) {
-        return (root, q, cb) ->
-                from == null ? cb.conjunction() : cb.greaterThanOrEqualTo(root.get("createdAt"), from);
-    }
-
-    /** Lọc đến ngày */
-    public static Specification<Feedback> dateTo(LocalDate to) {
-        return (root, q, cb) ->
-                to == null ? cb.conjunction() : cb.lessThanOrEqualTo(root.get("createdAt"), to);
-    }
 }

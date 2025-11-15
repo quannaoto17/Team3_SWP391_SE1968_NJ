@@ -82,6 +82,16 @@
                      th:data-formfactor="${psu.formFactor}"
                      th:data-efficiency="${psu.efficiency}"
                      th:data-modular="${psu.modular}">
+                    <!-- Product Image -->
+                    <div class="product-image">
+                        <img th:if="${psu.product.images != null && !psu.product.images.isEmpty()}"
+                             th:src="@{${psu.product.images[0].imageUrl}}"
+                             th:alt="${psu.product.productName}"/>
+                        <div th:unless="${psu.product.images != null && !psu.product.images.isEmpty()}"
+                             style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px;">
+                            No Image
+                        </div>
+                    </div>
                     <h4 th:text="${psu.product.productName}"></h4>
                     <p th:text="'Wattage: ' + ${psu.wattage} + 'W'"></p>
                     <p th:text="'Form Factor: ' + ${psu.formFactor}"></p>

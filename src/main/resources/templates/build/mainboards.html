@@ -83,6 +83,16 @@
                      th:data-ramtype="${mb.memoryType}"
                      th:data-formfactor="${mb.formFactor}"
                      th:data-chipset="${mb.chipset}">
+                    <!-- Product Image -->
+                    <div class="product-image">
+                        <img th:if="${mb.product.images != null && !mb.product.images.isEmpty()}"
+                             th:src="@{${mb.product.images[0].imageUrl}}"
+                             th:alt="${mb.product.productName}"/>
+                        <div th:unless="${mb.product.images != null && !mb.product.images.isEmpty()}"
+                             style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px;">
+                            No Image
+                        </div>
+                    </div>
                     <h4 th:text="${mb.product.productName}"></h4>
                     <p th:text="'Socket: ' + ${mb.socket}"></p>
                     <p th:text="'Form: ' + ${mb.formFactor}"></p>

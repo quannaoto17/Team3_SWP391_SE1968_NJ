@@ -76,6 +76,16 @@
                      th:data-pcie="${gpu.pcieVersion}"
                      th:data-tdp="${gpu.tdp}"
                      th:data-vram="${gpu.vram}">
+                    <!-- Product Image -->
+                    <div class="product-image">
+                        <img th:if="${gpu.product.images != null && !gpu.product.images.isEmpty()}"
+                             th:src="@{${gpu.product.images[0].imageUrl}}"
+                             th:alt="${gpu.product.productName}"/>
+                        <div th:unless="${gpu.product.images != null && !gpu.product.images.isEmpty()}"
+                             style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px;">
+                            No Image
+                        </div>
+                    </div>
                     <h4 th:text="${gpu.product.productName}"></h4>
                     <p th:text="'PCIe: ' + ${gpu.pcieVersion}"></p>
                     <p th:text="'VRAM: ' + ${gpu.vram} + ' GB'"></p>

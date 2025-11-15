@@ -82,6 +82,16 @@
                      th:data-capacity="${memory.capacity}"
                      th:data-speed="${memory.speed}"
                      th:data-modules="${memory.modules}">
+                    <!-- Product Image -->
+                    <div class="product-image">
+                        <img th:if="${memory.product.images != null && !memory.product.images.isEmpty()}"
+                             th:src="@{${memory.product.images[0].imageUrl}}"
+                             th:alt="${memory.product.productName}"/>
+                        <div th:unless="${memory.product.images != null && !memory.product.images.isEmpty()}"
+                             style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px;">
+                            No Image
+                        </div>
+                    </div>
                     <h4 th:text="${memory.product.productName}"></h4>
                     <p th:text="'Type: ' + ${memory.type}"></p>
                     <p th:text="'Capacity: ' + ${memory.capacity} + 'GB (' + ${memory.modules} + 'x' + ${memory.capacity / memory.modules} + 'GB)'"></p>
