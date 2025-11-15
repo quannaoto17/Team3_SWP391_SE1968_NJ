@@ -39,7 +39,7 @@ public class Cooling {
     @Max(value = 500, message = "Max TDP must be at most 500 Watts")
     private int tdp; // in Watts
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @MapsId
     @JoinColumn(name = "product_id")
     private Product product;

@@ -24,11 +24,6 @@ CREATE INDEX idx_product_score ON product(performance_score);
 -- Composite index for price + score queries (common in AI filtering)
 CREATE INDEX idx_product_price_score ON product(price, performance_score);
 
--- Composite index for category + score (useful for filtering by component type)
-CREATE INDEX idx_product_category_score ON product(category_id, performance_score);
-
--- Composite index for category + price + score (optimal for AI queries)
-CREATE INDEX idx_product_category_price_score ON product(category_id, price, performance_score);
 
 -- ============================================
 -- Sample Score Updates (Examples)

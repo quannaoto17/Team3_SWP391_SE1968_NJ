@@ -50,7 +50,7 @@ public class CPU {
     @Pattern(regexp = "^[a-zA-Z0-9\\.\\s-]+$", message = "PCIe version must not contain special characters")
     private String pcieVersion;
 
-     @OneToOne
+     @OneToOne(fetch = FetchType.EAGER)
      @MapsId
      @JoinColumn( name = "product_id" )
      private Product product;

@@ -4,7 +4,9 @@ import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import com.example.PCOnlineShop.dto.cart.CartItemDTO;
 import com.example.PCOnlineShop.model.product.Product;
 import com.example.PCOnlineShop.repository.product.ProductRepository;
+import com.example.PCOnlineShop.repository.build.*;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,9 +25,21 @@ import java.util.List;
 public class BuildController {
 
     private final ProductRepository productRepository;
+    private final CaseRepository caseRepository;
+    private final StorageRepository storageRepository;
+    private final PowerSupplyRepository powerSupplyRepository;
+    private final CoolingRepository coolingRepository;
 
-    public BuildController(ProductRepository productRepository) {
+    public BuildController(ProductRepository productRepository,
+                          CaseRepository caseRepository,
+                          StorageRepository storageRepository,
+                          PowerSupplyRepository powerSupplyRepository,
+                          CoolingRepository coolingRepository) {
         this.productRepository = productRepository;
+        this.caseRepository = caseRepository;
+        this.storageRepository = storageRepository;
+        this.powerSupplyRepository = powerSupplyRepository;
+        this.coolingRepository = coolingRepository;
     }
 
     @ModelAttribute("buildItems")
@@ -36,6 +50,15 @@ public class BuildController {
     @GetMapping("/start" )
     public String startBuild() {
         return "/build/build-pc";
+    }
+
+    @GetMapping("/debug-images")
+    public String debugImages(Model model) {
+        model.addAttribute("cases", caseRepository.findAll());
+        model.addAttribute("storages", storageRepository.findAll());
+        model.addAttribute("psus", powerSupplyRepository.findAll());
+        model.addAttribute("coolings", coolingRepository.findAll());
+        return "/build/debug-images";
     }
 
     @GetMapping("/preset-result")
@@ -60,52 +83,43 @@ public class BuildController {
     public String finishBuild(@ModelAttribute("buildItems") BuildItemDto buildItems,
                               HttpSession session,
                               SessionStatus sessionStatus,
-                              RedirectAttributes redirectAttributes) {
-        // prepare session cartBuilds
+                              RedirectAttributes redirectAttributes, Model model) {
 
-        List<CartItemDTO> cartItems = new ArrayList<>();
+        List<Integer> productIds = new ArrayList<>();
 
-        //Fetch LazyInitializationException
-        if (buildItems.getMainboard() != null) {
-            Product product = productRepository.findByIdWithImages(buildItems.getMainboard().getProduct().getProductId());
-            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getMainboard().getProduct(), 1));
+        if (buildItems.getMainboard() != null ) {
+            productIds.add(buildItems.getMainboard().getProductId());
         }
-        if (buildItems.getCpu() != null) {
-            Product product = productRepository.findByIdWithImages(buildItems.getCpu().getProduct().getProductId());
-            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getCpu().getProduct(), 1));
+        if (buildItems.getCpu() != null ) {
+            productIds.add(buildItems.getCpu().getProductId());
         }
-        if (buildItems.getMemory() != null) {
-            Product product = productRepository.findByIdWithImages(buildItems.getMemory().getProduct().getProductId());
-            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getMemory().getProduct(), 1));
+        if (buildItems.getGpu() != null ) {
+            productIds.add(buildItems.getGpu().getProductId());
         }
-        if (buildItems.getGpu() != null) {
-            Product product = productRepository.findByIdWithImages(buildItems.getGpu().getProduct().getProductId());
-            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getGpu().getProduct(), 1));
+        if (buildItems.getMemory() != null ) {
+            productIds.add(buildItems.getMemory().getProductId());
         }
-        if (buildItems.getStorage() != null) {
-            Product product = productRepository.findByIdWithImages(buildItems.getStorage().getProduct().getProductId());
-            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getStorage().getProduct(), 1));
+        if (buildItems.getStorage() != null ) {
+            productIds.add(buildItems.getStorage().getProductId());
         }
-        if (buildItems.getPowerSupply() != null) {
-            Product product = productRepository.findByIdWithImages(buildItems.getPowerSupply().getProduct().getProductId());
-            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getPowerSupply().getProduct(), 1));
+        if (buildItems.getPowerSupply() != null ) {
+            productIds.add(buildItems.getPowerSupply().getProductId());
         }
-        if (buildItems.getPcCase() != null) {
-            Product product = productRepository.findByIdWithImages(buildItems.getPcCase().getProduct().getProductId());
-            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getPcCase().getProduct(), 1));
+        if (buildItems.getPcCase() != null ) {
+            productIds.add(buildItems.getPcCase().getProductId());
         }
-        if (buildItems.getCooling() != null) {
-            Product product = productRepository.findByIdWithImages(buildItems.getCooling().getProduct().getProductId());
-            cartItems.add(new CartItemDTO(product != null ? product : buildItems.getCooling().getProduct(), 1));
+        if (buildItems.getCooling() != null ) {
+            productIds.add(buildItems.getCooling().getProductId());
         }
 
-        session.setAttribute("cartBuilds", cartItems);
+        // Dùng flash attribute để giữ qua redirect và chắc chắn tên là "productIds"
+        redirectAttributes.addFlashAttribute("productIds", productIds);
 
-        // Clear only the session-managed buildItems using SessionStatus
+        // Option: clear the session-managed buildItems if bạn muốn
         sessionStatus.setComplete();
 
-        redirectAttributes.addFlashAttribute("message", "Build added to prepared cart.");
-        // redirect to cart preview (placeholder)
-        return "redirect:/orders/build-checkout";
+        // redirect tuyệt đối tới controller /cart/addListItem
+        return "redirect:/cart/addListItem";
     }
+
 }

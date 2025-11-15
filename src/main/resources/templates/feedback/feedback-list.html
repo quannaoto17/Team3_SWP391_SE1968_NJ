@@ -6,54 +6,45 @@
     <meta charset="UTF-8">
     <title>Feedback List</title>
 
-    <!-- CSS -->
     <link rel="stylesheet" th:href="@{/css/FeedBack.css}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 
-    <!-- DataTables -->
-    <link rel="stylesheet"
-          href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 </head>
 
 <body class="bg-light">
-<!-- ================= HEADER ================= -->
+
+<!-- HEADER -->
 <div sec:authorize="!isAuthenticated()" th:replace="layout/header-default :: header-default"></div>
-<div sec:authorize="hasRole('ADMIN')"    th:replace="layout/header-admin :: header-admin"></div>
-<div sec:authorize="hasRole('STAFF')"    th:replace="layout/header-staff :: header-staff"></div>
+<div sec:authorize="hasRole('ADMIN')" th:replace="layout/header-admin :: header-admin"></div>
+<div sec:authorize="hasRole('STAFF')" th:replace="layout/header-staff :: header-staff"></div>
 <div sec:authorize="hasRole('CUSTOMER')" th:replace="layout/header-customer :: header-customer"></div>
-<!-- =========================================== -->
 
 <div class="container py-4">
     <h3 class="mb-3">Feedback List</h3>
 
-    <!-- ✅ Thông báo -->
     <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
 
-    <!-- ================== BỘ LỌC ================== -->
-    <form method="get" th:action="@{/staff/feedback}" class="mb-3 d-flex flex-wrap" style="gap: 14px;">
-        <select name="rating" class="form-select" style="flex: 1; min-width: 120px;">
-            <option value="">All Ratings</option>
-            <option th:each="r : ${#numbers.sequence(1,5)}"
-                    th:value="${r}" th:text="${r + ' ★'}"
-                    th:selected="${rating != null and rating == r}"></option>
+    <!-- BỘ LỌC SORT -->
+    <div class="mb-3 d-flex flex-wrap" style="gap:14px;">
+
+        <!-- Sort by Date -->
+        <select id="dateSort" class="form-select" style="min-width:150px;">
+            <option value="">Sort by Date</option>
+            <option value="dateDesc">Date ↓ (Newest)</option>
+            <option value="dateAsc">Date ↑ (Oldest)</option>
         </select>
 
-        <input type="date" class="form-control" name="from" th:value="${from}" style="flex: 1; min-width: 150px;">
-        <input type="date" class="form-control" name="to" th:value="${to}" style="flex: 1; min-width: 150px;">
-
-        <select name="sort" class="form-select" style="flex: 1; min-width: 150px;">
-            <option value="dateDesc"   th:selected="${sort == 'dateDesc'}">Date ↓ (Newest)</option>
-            <option value="dateAsc"    th:selected="${sort == 'dateAsc'}">Date ↑</option>
-            <option value="ratingDesc" th:selected="${sort == 'ratingDesc'}">Rating ↓</option>
-            <option value="ratingAsc"  th:selected="${sort == 'ratingAsc'}">Rating ↑</option>
+        <!-- Sort by Rating -->
+        <select id="ratingSort" class="form-select" style="min-width:150px;">
+            <option value="">Sort by Rating</option>
+            <option value="ratingDesc">Rating (Descending)</option>
+            <option value="ratingAsc">Rating (Ascending)</option>
         </select>
+    </div>
 
-        <button class="btn btn-primary" type="submit" style="height: 44px;">Search</button>
-        <a class="btn btn-outline-secondary" th:href="@{/staff/feedback}" style="height: 44px;">Reset</a>
-    </form>
-
-    <!-- ================== BẢNG FEEDBACK ================== -->
+    <!-- TABLE -->
     <table id="feedbackTable" class="table table-hover bg-white">
         <thead>
         <tr>
@@ -61,52 +52,61 @@
             <th>User</th>
             <th>Product</th>
             <th>Comment</th>
+
+            <!-- CỘT RATING VALUE ẨN -->
+            <th style="display:none;">RatingValue</th>
+
             <th>Rating</th>
             <th>Date</th>
-            <th>Reply</th> <!-- ⚙️ ĐÃ GỠ CỘT STATUS -->
+            <th>Reply</th>
         </tr>
         </thead>
+
         <tbody>
-        <tr th:each="fb : ${data.content}">
+        <tr th:each="fb : ${data}">
             <td th:text="${fb.feedbackId}"></td>
+
             <td>
-                <div th:text="${fb.account != null ? fb.account.fullName : 'N/A'}"></div>
-                <small class="text-muted" th:text="${fb.account != null ? fb.account.email : ''}"></small>
+                <div th:text="${fb.account?.fullName}">Full Name</div>
+                <small class="text-muted" th:text="${fb.account?.email}"></small>
             </td>
-            <td class="truncate" th:text="${fb.product != null ? fb.product.productName : 'N/A'}"></td>
-            <td class="truncate" th:text="${fb.comment}"></td>
+
+            <td th:text="${fb.product?.productName}"></td>
+            <td th:text="${fb.comment}"></td>
+
+            <!-- rating số (ẩn) -->
+            <td style="display:none;" th:text="${fb.rating}"></td>
+
+            <!-- rating sao -->
             <td>
                 <span th:each="i : ${#numbers.sequence(1,5)}"
-                      th:text="${i <= (fb.rating != null ? fb.rating : 0) ? '★' : '☆'}"
+                      th:text="${i <= fb.rating ? '★' : '☆'}"
                       class="star"></span>
             </td>
+
             <td th:text="${#temporals.format(fb.createdAt, 'dd/MM/yyyy')}"></td>
+
             <td>
                 <a class="btn btn-sm btn-outline-primary"
-                   th:href="@{|/staff/feedback/${fb.feedbackId}?back=${qs}|}">
-                    <span th:text="${fb.reply == null || #strings.isEmpty(fb.reply) ? 'Add' : 'Edit'}"></span>
+                   th:href="@{|/staff/feedback/${fb.feedbackId}|}">
+                    <span th:text="${fb.reply == null ? 'Add' : 'Edit'}"></span>
                 </a>
             </td>
-        </tr>
-
-        <tr th:if="${data.content.size() == 0}">
-            <td colspan="7" class="text-center text-muted">No data</td>
         </tr>
         </tbody>
     </table>
 </div>
 
-<!-- ================== SCRIPT ================== -->
 <script>
+    let table;
+
     $(document).ready(function () {
-        $('#feedbackTable').DataTable({
-            ordering: false,
+
+        table = $('#feedbackTable').DataTable({
+            ordering: true,
             responsive: true,
-            pageLength: -1,
-            lengthMenu: [
-                [5, 10, 25, 50, -1],
-                [5, 10, 25, 50, "All"]
-            ],
+            pageLength: 5,
+            order: [],
             language: {
                 search: "Search:",
                 lengthMenu: "Show _MENU_ rows",
@@ -114,13 +114,26 @@
                 paginate: { previous: "Prev", next: "Next" },
                 zeroRecords: "No matching feedbacks found",
                 infoEmpty: "No feedbacks available"
-            },
-            columnDefs: [
-                { targets: -1, orderable: false, searchable: false },
-                { targets: 4, searchable: false }
-            ]
+            }
+        });
+
+        // SORT BY DATE
+        $('#dateSort').change(function () {
+            let value = $(this).val();
+
+            if (value === "dateDesc") table.order([6, 'desc']).draw();
+            if (value === "dateAsc")  table.order([6, 'asc']).draw();
+        });
+
+        // SORT BY RATING (THEO CỘT SỐ → INDEX = 4)
+        $('#ratingSort').change(function () {
+            let value = $(this).val();
+
+            if (value === "ratingDesc") table.order([4, 'desc']).draw();
+            if (value === "ratingAsc")  table.order([4, 'asc']).draw();
         });
     });
 </script>
+
 </body>
 </html>

@@ -81,6 +81,16 @@
                      th:data-socket="${cpu.socket}"
                      th:data-tdp="${cpu.tdp}"
                      th:data-igpu="${cpu.hasIGPU}">
+                    <!-- Product Image -->
+                    <div class="product-image">
+                        <img th:if="${cpu.product.images != null && !cpu.product.images.isEmpty()}"
+                             th:src="@{${cpu.product.images[0].imageUrl}}"
+                             th:alt="${cpu.product.productName}"/>
+                        <div th:unless="${cpu.product.images != null && !cpu.product.images.isEmpty()}"
+                             style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px;">
+                            No Image
+                        </div>
+                    </div>
                     <h4 th:text="${cpu.product.productName}"></h4>
                     <p th:text="'Socket: ' + ${cpu.socket}"></p>
                     <strong th:text="'$' + ${cpu.product.price}"></strong>

@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/profile/**").hasRole("CUSTOMER")
                         // --- Đường dẫn cập nhật chỉ cho Staff/Admin ---
                         .requestMatchers("/orders/update-all-status").hasAnyRole("STAFF", "ADMIN")
-                        .requestMatchers("/customer/list/**", "/customer/add/**", "/customer/edit/**", "/customer/view/**", "/customer/delete/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/customer/list/**", "/customer/add/**", "/customer/view/**").hasAnyRole("ADMIN", "STAFF")
                         .requestMatchers("/staff/feedback/**").hasAnyRole("STAFF")
                         .anyRequest().authenticated()
                 )

@@ -70,7 +70,7 @@ public class Mainboard {
     @Max(value = 10, message = "SATA ports must be at most 10")
     private int sataPorts;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @MapsId
     @JoinColumn(name = "product_id")
     private Product product;
