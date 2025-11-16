@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Bài viết - HACOM</title>
+    <title>Blog - HACOM</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Arial; padding: 30px; background: #f5f6f8; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
@@ -15,15 +15,15 @@
     </style>
 </head>
 <body>
-<h1>Bài viết từ <span th:text="${sourceName}">HACOM</span></h1>
-<p class="source">Nguồn gốc: <a th:href="${sourceUrl}" target="_blank" th:text="${sourceUrl}"></a></p>
+<h1>Blog from <span th:text="${sourceName}">HACOM</span></h1>
+<p class="source">Source: <a th:href="${sourceUrl}" target="_blank" th:text="${sourceUrl}"></a></p>
 <p>
     <a href="/home" style="display:inline-block; padding:8px 16px; background:#007bff; color:white; text-decoration:none; border-radius:5px;">
-        ← Quay lại trang chủ
+        ← Back to home
     </a>
 </p>
 <div th:if="${#lists.isEmpty(links)}">
-    <p>Không tìm thấy bài viết (hoặc server nguồn không phản hồi). Vui lòng thử lại sau.</p>
+    <p>Can not find the page. Please try later</p>
 </div>
 
 <div class="grid" th:if="${!#lists.isEmpty(links)}">
@@ -32,10 +32,10 @@
             <img th:if="${link.imageUrl != null}" th:src="${link.imageUrl}" alt="thumbnail" />
         </a>
         <div class="body">
-            <div class="meta">Nguồn: <a th:href="${sourceUrl}" target="_blank" rel="noopener">HACOM</a></div>
+            <div class="meta">Source: <a th:href="${sourceUrl}" target="_blank" rel="noopener">HACOM</a></div>
             <h3><a th:href="${link.link}" target="_blank" th:text="${link.title}"></a></h3>
             <p th:if="${link.summary != null}" th:text="${link.summary}"></p>
-            <p><a th:href="${link.link}" target="_blank">Đọc tiếp →</a></p>
+            <p><a th:href="${link.link}" target="_blank">Read →</a></p>
         </div>
     </div>
 </div>
