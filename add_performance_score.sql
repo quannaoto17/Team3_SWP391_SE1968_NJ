@@ -1,19 +1,4 @@
 
-
--- ============================================
--- SOLUTION: Add performance_score to PRODUCT table (Parent table)
--- ============================================
--- This is BETTER because:
--- 1. Only need to add column to 1 table instead of 8 tables
--- 2. Easier to query (no need to join multiple tables)
--- 3. Consistent with current design (product is parent table)
--- 4. AI can query directly from product without knowing component type
--- ============================================
-
-ALTER TABLE product
-ADD COLUMN performance_score INT DEFAULT 50
-CHECK (performance_score >= 0 AND performance_score <= 100);
-
 -- ============================================
 -- Create Indexes for Performance
 -- ============================================
