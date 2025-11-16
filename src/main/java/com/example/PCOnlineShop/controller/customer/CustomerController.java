@@ -24,9 +24,9 @@ public class CustomerController {
     @GetMapping("/list")
     public String listCustomers(@RequestParam(defaultValue = "active") String statusFilter,
                                 Model model) {
-
+        // Lấy toàn bộ danh sách khách hàng theo trạng thái (active/inactive)
         List<Account> customerList = customerService.getAllCustomers(statusFilter);
-
+        // Gửi dữ liệu sang view
         model.addAttribute("customerList", customerList);
         model.addAttribute("statusFilter", statusFilter);
 
@@ -43,6 +43,7 @@ public class CustomerController {
     // ======================== ADD ========================
     @GetMapping("/add")
     public String addCustomerForm(Model model) {
+        // Tạo object Account rỗng để binding vào form
         model.addAttribute("account", new Account());
         return "customer/add-customer";
     }
@@ -52,12 +53,16 @@ public class CustomerController {
                                BindingResult result,
                                @RequestParam(name = "addressStr", required = false) String addressStr,
                                Model model) {
+        // Nếu lỗi validation → quay lại form add
         if (result.hasErrors()) return "customer/add-customer";
 
         try {
+            // Lưu thông tin tài khoản khách hàng
             Account saved = authService.saveCustomer(account);
+            // Lưu địa chỉ mặc định
             customerService.saveDefaultAddress(saved, addressStr);
         } catch (IllegalArgumentException e) {
+            // Bắt lỗi duplicate email, phone,...
             model.addAttribute("errorMessage", e.getMessage());
             return "customer/add-customer";
         }

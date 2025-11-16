@@ -38,7 +38,8 @@
             <th>Tên</th>
             <th>Email</th>
             <th>Phone</th>
-            <th>Address</th> <!--  đã thêm -->
+            <th>Address</th>
+            <!--<th>Gender</th>-->
             <th>Status</th>
             <th style="min-width:200px;">Actions</th>
         </tr>
@@ -50,6 +51,7 @@
             <td th:text="${s.fullName}"></td>
             <td th:text="${s.email}"></td>
             <td th:text="${s.phoneNumber}"></td>
+           <!-- <td th:text="${s.gender} == true ? 'Male' : 'Female'"></td>-->
             <td th:text="${s.defaultAddress}"></td>
             <td>
         <span th:classappend="${s.enabled} ? 'badge badge-active' : 'badge badge-inactive'"

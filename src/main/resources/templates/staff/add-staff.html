@@ -29,6 +29,17 @@
             <tr><td>Last Name:</td><td><input type="text" th:field="*{lastname}" required></td></tr>
             <tr><td>Email:</td><td><input type="email" th:field="*{email}" required></td></tr>
             <tr><td>Phone:</td><td><input type="text" th:field="*{phoneNumber}" pattern="[0-9]{9,15}" required></td></tr>
+<!--
+            <tr>
+                <td>Gender:</td>
+                <td>
+                    <select th:field="*{gender}" class="form-control">
+                        <option value="true">Male</option>
+                        <option value="false">Female</option>
+                    </select>
+                </td>
+            </tr>
+-->
 
             <tr>
                 <td>Address:</td>

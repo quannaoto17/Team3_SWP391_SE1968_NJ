@@ -11,7 +11,6 @@
             <li th:classappend="${currentSection}=='memory' ? 'active' : ''"><a th:href="@{/build/memory}">Memory</a></li>
             <li th:classappend="${currentSection}=='storage' ? 'active' : ''"><a th:href="@{/build/storage}">Storage</a></li>
             <li th:classappend="${currentSection}=='psu' ? 'active' : ''"><a th:href="@{/build/psu}">PSU</a></li>
-            <li th:classappend="${currentSection}=='other' ? 'active' : ''"><a th:href="@{/build/other}">Other</a></li>
         </ul>
         <button class="overview-btn" id="openOverviewBtn">Overview</button>
         <a th:href="@{/build/startover}">Start over</a>
@@ -137,20 +136,6 @@
                             <span class="overview-value" th:text="${buildItems.powerSupply != null ? buildItems.powerSupply.product.productName : 'Not selected'}">Not selected</span>
                         </div>
                         <span class="overview-price" th:if="${buildItems.powerSupply != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.powerSupply.product.price, 1, 2)}"></span>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-image">
-                            <img th:if="${buildItems.other != null && buildItems.other.images != null && !buildItems.other.images.isEmpty()}"
-                                 th:src="@{${buildItems.other.images[0].imageUrl}}"
-                                 th:alt="${buildItems.other.name}"/>
-                            <div th:unless="${buildItems.other != null && buildItems.other.images != null && !buildItems.other.images.isEmpty()}"
-                                 class="no-image">?</div>
-                        </div>
-                        <div class="overview-info">
-                            <span class="overview-label">Other:</span>
-                            <span class="overview-value" th:text="${buildItems.other != null ? buildItems.other.name : 'Not selected'}">Not selected</span>
-                        </div>
-                        <span class="overview-price" th:if="${buildItems.other != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.other.price, 1, 2)}"></span>
                     </div>
                 </div>
                 <div class="overview-total">
