@@ -44,7 +44,7 @@ public class GPU {
     @Column(name = "gpu_interface")
     @NotBlank(message = "GPU interface is required")
     @Size(min = 2, max = 20, message = "GPU interface must be between 2 and 20 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "GPU interface must not contain special characters")
+    //@Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "GPU interface must not contain special characters")
     private String gpuInterface;
 
     @Column(name = "pcie_version")
@@ -55,7 +55,7 @@ public class GPU {
 
     @OneToOne(fetch = FetchType.EAGER)
     @MapsId
-    @JoinColumn(name = "product_id")
+   // @JoinColumn(name = "product_id")
     private Product product;
 
     public double getPrice() {
