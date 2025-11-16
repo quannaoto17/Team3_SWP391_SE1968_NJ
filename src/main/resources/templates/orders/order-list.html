@@ -49,13 +49,6 @@
                     <span class="status-badge status-pending" th:text="${order.status}"></span>
                 </div>
 
-                <div th:if="${order.status == 'Processing'}">
-                    <select class="status-select-processing" th:data-order-id="${order.orderId}">
-                        <option value="Processing" selected>Processing</option>
-                        <option value="Ready to Ship">Mark Ready to Ship</option>
-                        <option value="Cancelled">Hủy (Refund)</option>
-                    </select>
-                </div>
 
                 <div th:if="${order.status == 'Ready to Ship'}">
                     <span class="status-badge status-ready">Ready to Ship</span>
@@ -111,7 +104,6 @@
                 <span class="status-badge"
                       th:classappend="${
                         (order.status == 'Pending Payment' or order.status == 'Pending') ? 'status-pending' :
-                        order.status == 'Processing' ? 'status-processing' :
                         order.status == 'Ready to Ship' ? 'status-ready' :
                         order.status == 'Delivering' ? 'status-delivering' :
                         order.status == 'Completed' ? 'status-completed' :
@@ -119,10 +111,7 @@
                       }"
                       th:text="${order.status ?: 'N/A'}"> </span>
             </td>
-            <td class="action-buttons">
-                <a th:href="@{'/orders/detail/' + ${order.orderId}}" class="view-btn">View Details</a>
-                <button type="button" class="view-btn-payment" th:data-order-id="${order.orderId}">Payment Info</button>
-            </td>
+
         </tr>
         <tr th:if="${!isStaffOrAdmin and (customerOrders == null or #lists.isEmpty(customerOrders))}">
             <td colspan="5" style="text-align: center;">You have no orders.</td>
@@ -153,45 +142,6 @@
                 ]
             });
         }
-
-        // --- 2. LOGIC MỚI CHO DROPDOWN <select> ---
-        $('#orderTable tbody').on('change', '.status-select-processing', function() {
-            var $select = $(this);
-            var orderId = $select.data('order-id');
-            var newStatus = $select.val();
-
-            if (newStatus === "Processing") return; // Không thay đổi
-
-            var url = (newStatus === "Ready to Ship")
-                ? "/orders/mark-ready-to-ship"
-                : "/orders/staff-cancel";
-
-            var confirmMsg = (newStatus === "Ready to Ship")
-                ? "Chuyển đơn hàng #" + orderId + " sang Ready to Ship?"
-                : "BẠN CÓ CHẮC MUỐN HỦY ĐƠN HÀNG #" + orderId + "? \n\nHÀNH ĐỘNG NÀY SẼ KÍCH HOẠT QUY TRÌNH HOÀN TIỀN.";
-
-            if (!confirm(confirmMsg)) {
-                $select.val("Processing"); // Reset dropdown
-                return;
-            }
-
-            $select.prop('disabled', true).css('opacity', 0.5);
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: { orderId: orderId },
-                success: function(response) {
-                    alert(response.message);
-                    location.reload();
-                },
-                error: function(xhr) {
-                    alert("Lỗi: " + (xhr.responseJSON ? xhr.responseJSON.error : "Unknown error"));
-                    $select.prop('disabled', false).css('opacity', 1);
-                    $select.val("Processing"); // Reset
-                }
-            });
-        });
 
         // --- 3. LOGIC VIEW PAYMENT INFO (Giữ nguyên) ---
         const paymentModal = $('#payment-info-modal');

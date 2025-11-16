@@ -19,14 +19,22 @@ public class CartItem {
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Nên EAGER nếu hay cần thông tin product khi lấy cart item
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @Column(name = "quantity", nullable = false)
     private int quantity = 1; // Số lượng mặc định
 
-    // Constructor tiện lợi
+    @Column(name = "is_selected", nullable = false)
+    private boolean isSelected = true;
+
+    @Column(name = "is_build_item", nullable = false)
+    private boolean isBuildItem = false;
+
+    @Column(name = "build_id")
+    private String buildId;
+
     public CartItem(Cart cart, Product product, int quantity) {
         this.cart = cart;
         this.product = product;

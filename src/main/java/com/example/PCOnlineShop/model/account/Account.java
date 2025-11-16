@@ -4,6 +4,7 @@ import com.example.PCOnlineShop.constant.RoleName;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import java.util.List;
@@ -55,7 +56,7 @@ public class Account {
     @JsonManagedReference
     private List<Address> addresses;
 
-    @Transient // không lưu vào DB
+    @Transient
     private String address;
 
     @Column(name = "enabled")
@@ -64,10 +65,9 @@ public class Account {
     public String getFullName() {
         String first = (this.firstname != null) ? this.firstname : "";
         String last = (this.lastname != null) ? this.lastname : "";
-        // Dùng trim() để loại bỏ khoảng trắng thừa nếu một trong hai tên là rỗng
         return (first + " " + last).trim();
     }
-    // ✅ Helper: lấy địa chỉ mặc định hiển thị lên UI
+
     public String getDefaultAddress() {
         if (addresses == null || addresses.isEmpty()) {
             return "N/A";

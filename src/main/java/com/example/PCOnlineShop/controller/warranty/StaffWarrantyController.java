@@ -42,7 +42,7 @@ public class StaffWarrantyController {
         model.addAttribute("phone", phone);
 
         if (orderId != null) {
-            // Gọi phương thức trả về List<WarrantyDetailDTO>
+
             List<WarrantyDetailDTO> warrantyDetails = orderService.getWarrantyDetailsByOrderId(orderId);
             model.addAttribute("warrantyDetails", warrantyDetails);
             model.addAttribute("selectedOrderId", orderId);
