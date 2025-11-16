@@ -137,17 +137,17 @@
         <form th:action="@{/auth/profile/change-password}" method="post">
             <div class="form-group">
                 <label>Current Password:</label>
-                <input type="password" name="currentPassword" placeholder="Mật khẩu hiện tại" required>
+                <input type="password" name="currentPassword"  required>
             </div>
 
             <div class="form-group">
                 <label>New Password:</label>
-                <input type="password" name="newPassword" placeholder="Mật khẩu mới" required>
+                <input type="password" name="newPassword" required>
             </div>
 
             <div class="form-group">
                 <label>Confirm Password:</label>
-                <input type="password" name="confirmPassword" placeholder="Xác nhận mật khẩu" required>
+                <input type="password" name="confirmPassword"  required>
             </div>
 
             <button type="submit">Change Password</button>
@@ -164,12 +164,12 @@
         <form th:action="@{/profile/update}" method="post" th:object="${account}">
             <div class="form-group">
                 <label>Họ:</label>
-                <input type="text" th:field="*{lastname}" placeholder="Nhập họ...">
+                <input type="text" th:field="*{lastname}" >
             </div>
 
             <div class="form-group">
                 <label>Name:</label>
-                <input type="text" th:field="*{firstname}" placeholder="Nhập tên...">
+                <input type="text" th:field="*{firstname}">
             </div>
 
             <div class="form-group">
@@ -179,7 +179,7 @@
 
             <div class="form-group">
                 <label>Phone Number:</label>
-                <input type="text" th:field="*{phoneNumber}" placeholder="Nhập số điện thoại...">
+                <input type="text" th:field="*{phoneNumber}" readonly>
             </div>
 
             <div class="form-group">
