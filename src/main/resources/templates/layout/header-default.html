@@ -111,7 +111,7 @@
         }
 
         .header-right a.cart {
-            font-size: 20px;
+            font-size: 14px;
             background-color: #eee;
             display: flex;
             align-items: center;
@@ -184,27 +184,28 @@
         </a>
     </div>
 
-    <div class="menu">
-        <select onchange="location = this.value;">
+    <form class="menu" th:action="@{products}" >
+        <select onchange="this.form.submit()" name="category">
             <option>Menu</option>
             <option th:each="c : ${categories}"
-                    th:value="@{/category/{id}(id=${c.categoryId})}"
-                    th:text="${c.categoryName}">
+                    th:value="${c.categoryId}"
+                    th:text="${c.categoryName}"
+                    >
             </option>
         </select>
-    </div>
+    </form>
     <a th:href="@{/blog}" class="btn-blog" role="button" aria-label="Blog">
         <span class="icon">📰</span>
         <span class="label">Blog</span>
     </a>
-    <div class="search-bar">
-        <input type="text" placeholder="Search products...">
+    <form class="search-bar" th:action="@{products}" method="get">
+        <input name="keyword" type="text" placeholder="Search products...">
         <button>Search</button>
-    </div>
+    </form>
 
     <div class="header-right">
         <button th:onclick="|window.location.href='@{/build/start}'|">🧩 Build PC</button>
-        <button th:onclick="|window.location.href='@{/orders/list}'|">📦 My Orders</button>
+
 
         <a th:href="@{/cart}" class="cart">🛒My cart</a>
         <button th:onclick="|window.location.href='@{/auth/login}'|">Login</button>
