@@ -70,17 +70,4 @@ public class FeedbackController {
         return "redirect:/staff/feedback";
     }
 
-    /** ================= QUERY BUILDER ================= */
-    private String buildQS(String status, Integer rating, String sort) {
-        StringBuilder sb = new StringBuilder();
-
-        if (status != null && !"ALL".equalsIgnoreCase(status))
-            sb.append("status=").append(URLEncoder.encode(status, StandardCharsets.UTF_8)).append("&");
-
-        if (rating != null)
-            sb.append("rating=").append(rating).append("&");
-
-        sb.append("sort=").append(sort);
-        return sb.toString();
-    }
 }
