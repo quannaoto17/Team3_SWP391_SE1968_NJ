@@ -30,7 +30,6 @@ public class AuthController {
                            @RequestParam("confirmPassword") String confirmPassword, RedirectAttributes redirectAttributes,
                            Model model) {
 
-        // ✅ Kiểm tra xác nhận mật khẩu
         if (!account.getPassword().equals(confirmPassword)) {
             model.addAttribute("error", "⚠️ Mật khẩu xác nhận không khớp!");
             return "auth/register";

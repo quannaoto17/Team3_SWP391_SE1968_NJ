@@ -47,7 +47,6 @@ public class AuthService {
 
     @Async
     public void sendResetCode(String identifier) {
-        // Tìm theo email trước, không có thì theo phone
         Optional<Account> optionalAccount = accountRepository.findByEmail(identifier);
         if (optionalAccount.isEmpty()) {
             optionalAccount = accountRepository.findByPhoneNumber(identifier);
