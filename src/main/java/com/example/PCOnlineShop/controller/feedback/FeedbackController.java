@@ -29,11 +29,11 @@ public class FeedbackController {
 
         String sortKey = "pendingFirst";   // default
 
-        if (ratingSort != null && !ratingSort.isBlank()) {
-            sortKey = ratingSort; // ưu tiên rating
+   /*     if (ratingSort != null && !ratingSort.isBlank()) {
+            sortKey = ratingSort;
         } else if (dateSort != null && !dateSort.isBlank()) {
-            sortKey = dateSort; // nếu không chọn rating thì xử lý date
-        }
+            sortKey = dateSort;
+        }*/
 
         List<Feedback> data = feedbackService.findAllNoPaging(sortKey);
 
@@ -63,7 +63,7 @@ public class FeedbackController {
                         @RequestParam String reply,
                         @RequestParam(required = false) String back,
                         RedirectAttributes ra) {
-
+        // Gọi service để cập nhật reply
         feedbackService.updateReply(id, reply);
         ra.addFlashAttribute("msg", "Đã phản hồi feedback thành công.");
 
