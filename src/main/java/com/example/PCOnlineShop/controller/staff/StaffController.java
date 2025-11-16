@@ -74,12 +74,14 @@ public class StaffController {
                               BindingResult result,
                               @RequestParam(name = "addressStr", required = false) String addressStr,
                               Model model) {
+        // Nếu form lỗi validation → quay lại form add
         if (result.hasErrors()) return "staff/edit-staff";
 
         try {
             Account saved = authService.saveStaff(account);
             staffService.updateDefaultAddress(saved, addressStr);
         } catch (IllegalArgumentException e) {
+            // Lỗi như: Email đã tồn tại, SĐT đã tồn tại,...
             model.addAttribute("errorMessage", e.getMessage());
             return "staff/edit-staff";
         }
