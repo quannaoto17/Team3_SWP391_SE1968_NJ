@@ -1,5 +1,9 @@
 package com.example.PCOnlineShop.controller.build;
 
+// DISABLED: "Other" component has been removed from the build system
+// PSU is now the last component before finishing the build
+
+/*
 import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import com.example.PCOnlineShop.model.build.Other;
 import com.example.PCOnlineShop.model.product.Product;
@@ -55,3 +59,4 @@ public class OtherController {
         return "redirect:/build/finish";
     }
 }
+*/

@@ -15,12 +15,11 @@ public class BuildItemDto {
     private PowerSupply powerSupply;
     private Case pcCase;
     private Cooling cooling;
-    private Other other;
 
     public boolean isEmpty() {
         return mainboard == null && cpu == null && memory == null && gpu == null &&
                storage == null && powerSupply == null && pcCase == null &&
-               cooling == null && other == null;
+               cooling == null;
     }
 
     public double calculateTotalPrice() {
@@ -33,7 +32,6 @@ public class BuildItemDto {
         if (powerSupply != null) total += powerSupply.getPrice();
         if (pcCase != null) total += pcCase.getPrice();
         if (cooling != null) total += cooling.getPrice();
-        if (other != null) total += other.getPrice(); // Other has direct price field
         // Round to 2 decimal places
         return Math.round(total * 100.0) / 100.0;
     }

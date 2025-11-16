@@ -65,7 +65,7 @@ public class PowerSupplyController {
         if (psuId != null) {
             buildItem.setPowerSupply(powerSupplyService.getPowerSupplyById(psuId));
         }
-        // If psuId is null but buildItem.powerSupply exists, keep it
-        return "redirect:/build/other";
+        // Stay on PSU page after selection
+        return "redirect:/build/psu";
     }
 }
