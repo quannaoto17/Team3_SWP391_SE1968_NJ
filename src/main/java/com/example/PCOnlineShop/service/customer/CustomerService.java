@@ -17,7 +17,7 @@ public class CustomerService {
     private final AccountRepository accountRepository;
     private final AddressRepository addressRepository;
 
-    // ✅ Lấy ALL customer (client-side paging bằng DataTables)
+    // Lấy ALL customer (client-side paging bằng DataTables)
     public List<Account> getAllCustomers(String statusFilter) {
 
         if ("active".equalsIgnoreCase(statusFilter)) {

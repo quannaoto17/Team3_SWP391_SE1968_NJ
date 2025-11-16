@@ -100,6 +100,33 @@
             position: relative; /* for dropdown positioning */
         }
 
+        .header-right button,
+        .header-right a {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            background-color: #f2f2f2;
+            color: #333;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .header-right a.cart {
+            font-size: 14px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-right button:hover,
+        .header-right a:hover {
+            background-color: #ddd;
+        }
+
+
         /* Single dropdown toggle button */
         .profile-toggle {
             padding: 8px 14px;
@@ -222,35 +249,38 @@
     </div>
 
     <!-- Menu -->
-    <div class="menu">
-        <select onchange="location = this.value;">
+    <form class="menu" th:action="@{products}" >
+        <select onchange="this.form.submit()" name="category">
             <option>Menu</option>
             <option th:each="c : ${categories}"
-                    th:value="@{/category/{id}(id=${c.categoryId})}"
-                    th:text="${c.categoryName}">
+                    th:value="${c.categoryId}"
+                    th:text="${c.categoryName}"
+            >
             </option>
         </select>
-    </div>
+    </form>
     <a th:href="@{/blog}" class="btn-blog" role="button" aria-label="Blog">
         <span class="icon">📰</span>
         <span class="label">Blog</span>
     </a>
     <!-- Search -->
-    <div class="search-bar">
-        <input type="text" placeholder="Search products...">
+    <form class="search-bar" th:action="@{products}" method="get">
+        <input name="keyword" type="text" placeholder="Search products...">
         <button>Search</button>
-    </div>
+    </form>
 
     <!-- Collapsed right-side dropdown -->
     <div class="header-right">
+        <button th:onclick="|window.location.href='@{/build/start}'|">🧩 Build PC</button>
+        <button th:onclick="|window.location.href='@{/cart}'|">🛒 My Cart</button>
         <button id="profileToggle" class="profile-toggle" aria-expanded="false" type="button">
             👤 My Account
         </button>
 
         <div id="profileDropdown" class="dropdown-menu" role="menu" aria-hidden="true">
-            <a th:href="@{/build/start}" class="dropdown-item" role="menuitem">🧩 Build PC</a>
+
             <a th:href="@{/orders/list}" class="dropdown-item" role="menuitem">📦 My Orders</a>
-            <a th:href="@{/cart}" class="dropdown-item cart" role="menuitem">🛒 My Cart</a>
+
             <a th:href="@{/profile}" class="dropdown-item" role="menuitem">👤 My Profile</a>
             <a th:href="@{/auth/logout}" class="dropdown-item" role="menuitem">Logout</a>
         </div>

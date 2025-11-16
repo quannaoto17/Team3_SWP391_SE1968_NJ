@@ -117,7 +117,7 @@
                 <h3 class="font-medium mb-1 truncate" th:text="${p.productName}">Product Name</h3>
                 <p class="text-gray-600 mb-3" th:text="'$' + ${p.price}">0.00</p>
 
-                <a th:href="@{'/products/detail/' + ${p.productId}}"
+                <a th:href="@{'/products/' + ${p.productId}}"
                    class="mt-auto bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-md text-sm">
                     View Details
                 </a>

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Xác thực Email</title>
+    <title>Verify Email</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -54,18 +54,18 @@
 </head>
 <body>
 <div class="container">
-    <h2>🔒 Xác thực Email</h2>
+    <h2>🔒 Verify Email</h2>
 
     <p style="text-align:center; color:#555;">
-        Một mã xác nhận đã được gửi đến <strong th:text="${param.email}">example@gmail.com</strong>.
-        <br>Vui lòng nhập mã để tiếp tục.
+        Code have sent to <strong th:text="${param.email}">example@gmail.com</strong>.
+        <br>Please enter the code.
     </p>
 
     <form th:action="@{/auth/verify}" method="post">
-        <label for="code">Nhập mã xác nhận:</label>
+        <label for="code">Enter code:</label>
         <input type="hidden" name="email" th:value="${param.email}">
-        <input type="text" id="code" name="code" placeholder="Nhập mã 6 chữ số" required>
-        <button type="submit">Xác nhận</button>
+        <input type="text" id="code" name="code" placeholder="Enter code with 6 number" required>
+        <button type="submit">Submit</button>
     </form>
 
     <div class="message">
@@ -74,8 +74,8 @@
     </div>
 
     <p class="message" style="margin-top:15px;">
-        <a th:href="@{/auth/verify(email=${param.email})}">Gửi lại mã</a> |
-        <a th:href="@{/auth/login}">Đăng nhập khác</a>
+        <a th:href="@{/auth/verify(email=${param.email})}">Send again</a> |
+        <a th:href="@{/auth/login}">Login with other account</a>
     </p>
 </div>
 </body>

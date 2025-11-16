@@ -13,26 +13,26 @@ import lombok.NoArgsConstructor;
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "address_id") // <-- Khớp tên cột
+    @Column(name = "address_id")
     private int addressId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", nullable = false) // <-- Khớp tên cột
+    @JoinColumn(name = "account_id", nullable = false)
     @JsonBackReference
     private Account account;
 
     @NotBlank
-    @Column(name = "full_name", length = 100) // <-- Đổi tên từ shippingFullName
+    @Column(name = "full_name", length = 100)
     private String fullName;
 
     @NotBlank
-    @Column(name = "phone", length = 20) // <-- Đổi tên từ shippingPhone
+    @Column(name = "phone", length = 20)
     private String phone;
 
     @NotBlank
-    @Column(name = "address", length = 255) // <-- Đổi tên từ shippingAddress
+    @Column(name = "address", length = 255)
     private String address;
 
-    @Column(name = "is_default") // <-- Khớp tên cột
-    private boolean isDefault = false; // BIT(1) sẽ map sang boolean
+    @Column(name = "is_default")
+    private boolean isDefault = false;
 }

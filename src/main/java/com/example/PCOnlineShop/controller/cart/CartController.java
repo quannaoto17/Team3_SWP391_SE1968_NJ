@@ -7,8 +7,8 @@ import com.example.PCOnlineShop.service.cart.CartService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus; // Import HttpStatus
-import org.springframework.http.ResponseEntity; // Import ResponseEntity
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -38,9 +38,11 @@ public class CartController {
         if (account == null) return "redirect:/auth/login";
 
         List<CartItemDTO> cartItems = cartService.getCartItems(account);
-        double grandTotal = cartService.calculateGrandTotal(cartItems);
+
+        double grandTotal = cartService.calculateSelectedTotal(cartItems);
 
         model.addAttribute("isEmpty", cartItems.isEmpty());
+
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("grandTotal", grandTotal);
         return "cart/view";
@@ -53,57 +55,45 @@ public class CartController {
                             RedirectAttributes redirectAttributes,
                             HttpServletRequest request) {
         Account account = getCurrentAccount(currentUser);
-        if (account == null) return "redirect:/auth/login?required"; // Thêm param để báo lý do
+        if (account == null) return "redirect:/auth/login?required";
 
         try {
             cartService.addToCart(account, productId, quantity);
             redirectAttributes.addFlashAttribute("success", "Product added to cart!");
-        } catch (IllegalArgumentException | EntityNotFoundException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "An unexpected error occurred adding to cart.");
-            System.err.println("Error adding to cart: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:" + getPreviousPage(request);
     }
 
     @GetMapping("/addListItem")
-    public String addToCart(@ModelAttribute("productIds") List<Integer> productIds,
-                            @RequestParam(defaultValue = "1") int quantity,
-                            @AuthenticationPrincipal UserDetails currentUser,
-                            RedirectAttributes redirectAttributes,
-                            HttpServletRequest request) {
+    public String addListItemToCart(@ModelAttribute("productIds") List<Integer> productIds,
+                                    @RequestParam(defaultValue = "1") int quantity,
+                                    @AuthenticationPrincipal UserDetails currentUser,
+                                    RedirectAttributes redirectAttributes,
+                                    HttpServletRequest request) {
 
         Account account = getCurrentAccount(currentUser);
         if (account == null) return "redirect:/auth/login?required";
 
         if (productIds == null || productIds.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "No products to add.");
-            return "redirect:" + getPreviousPage(request);
+            return "redirect:/build/start";
         }
 
         try {
-            for (Integer productId : productIds) {
-                if (productId == null) continue;
-                cartService.addToCart(account, productId, quantity);
-            }
+            cartService.addListToCart(account, productIds, quantity);
             redirectAttributes.addFlashAttribute("success", "Products added to cart!");
-        } catch (IllegalArgumentException | EntityNotFoundException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "An unexpected error occurred while adding to cart.");
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
 
-        return "redirect:" + getPreviousPage(request);
+        return "redirect:/cart";
     }
 
-
-
-    // --- Cập nhật số lượng (Dùng cho AJAX từ JS thuần) ---
-    // Trả về JSON thay vì redirect
-    @PostMapping("/update/{productId}")
-    @ResponseBody // Đánh dấu trả về JSON
-    public ResponseEntity<?> updateQuantityAjax(@PathVariable int productId,
+    @PostMapping("/update/{cartItemId}")
+    @ResponseBody
+    public ResponseEntity<?> updateQuantityAjax(@PathVariable int cartItemId,
                                                 @RequestParam int quantity,
                                                 @AuthenticationPrincipal UserDetails currentUser) {
         Account account = getCurrentAccount(currentUser);
@@ -111,57 +101,73 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Please log in."));
         }
         try {
-            cartService.updateQuantity(account, productId, quantity);
-            // Lấy lại thông tin giỏ hàng sau khi cập nhật để trả về tổng tiền mới
-            List<CartItemDTO> updatedItems = cartService.getCartItems(account);
-            double newGrandTotal = cartService.calculateGrandTotal(updatedItems);
-            int updatedItemCount = updatedItems.size(); // Số lượng item mới
+            cartService.updateQuantity(account, cartItemId, quantity);
 
-            // Trả về thông tin cần thiết cho JS cập nhật UI
+            List<CartItemDTO> updatedItems = cartService.getCartItems(account);
+            double newSelectedTotal = cartService.calculateSelectedTotal(updatedItems);
+
             return ResponseEntity.ok(Map.of(
                     "message", "Quantity updated.",
-                    "newGrandTotal", newGrandTotal,
-                    "itemCount", updatedItemCount
+                    "newGrandTotal", newSelectedTotal
             ));
-        } catch (IllegalArgumentException | EntityNotFoundException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            System.err.println("Error updating cart quantity via AJAX: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Server error updating quantity."));
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    // --- Xóa sản phẩm (Dùng cho AJAX từ JS thuần) ---
-    // Trả về JSON
-    @PostMapping("/remove/{productId}")
+    @PostMapping("/remove/{cartItemId}")
     @ResponseBody
-    public ResponseEntity<?> removeFromCartAjax(@PathVariable int productId,
+    public ResponseEntity<?> removeFromCartAjax(@PathVariable int cartItemId,
                                                 @AuthenticationPrincipal UserDetails currentUser) {
         Account account = getCurrentAccount(currentUser);
         if (account == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Please log in."));
         }
         try {
-            cartService.removeFromCart(account, productId);
-            // Lấy lại thông tin giỏ hàng sau khi xóa
+            cartService.removeFromCart(account, cartItemId);
+
             List<CartItemDTO> updatedItems = cartService.getCartItems(account);
-            double newGrandTotal = cartService.calculateGrandTotal(updatedItems);
-            int updatedItemCount = updatedItems.size();
+            double newSelectedTotal = cartService.calculateSelectedTotal(updatedItems);
 
             return ResponseEntity.ok(Map.of(
                     "message", "Product removed.",
-                    "newGrandTotal", newGrandTotal,
-                    "itemCount", updatedItemCount
+                    "newGrandTotal", newSelectedTotal
             ));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            System.err.println("Error removing from cart via AJAX: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Server error removing item."));
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    // --- POST /cart/clear: Xóa toàn bộ giỏ hàng (Vẫn dùng redirect) ---
+    // CÁC ENDPOINT CHO LOGIC "CHỌN"
+
+    @PostMapping("/select/{cartItemId}")
+    @ResponseBody
+    public ResponseEntity<?> selectItem(@PathVariable int cartItemId,
+                                        @AuthenticationPrincipal UserDetails currentUser) {
+        Account account = getCurrentAccount(currentUser);
+        if (account == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        cartService.toggleSelectItem(account, cartItemId, true);
+
+        List<CartItemDTO> updatedItems = cartService.getCartItems(account);
+        double newSelectedTotal = cartService.calculateSelectedTotal(updatedItems);
+        return ResponseEntity.ok(Map.of("status", "selected", "newGrandTotal", newSelectedTotal));
+    }
+
+    @PostMapping("/deselect/{cartItemId}")
+    @ResponseBody
+    public ResponseEntity<?> deselectItem(@PathVariable int cartItemId,
+                                          @AuthenticationPrincipal UserDetails currentUser) {
+        Account account = getCurrentAccount(currentUser);
+        if (account == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        cartService.toggleSelectItem(account, cartItemId, false);
+
+        List<CartItemDTO> updatedItems = cartService.getCartItems(account);
+        double newSelectedTotal = cartService.calculateSelectedTotal(updatedItems);
+        return ResponseEntity.ok(Map.of("status", "deselected", "newGrandTotal", newSelectedTotal));
+    }
+
     @PostMapping("/clear")
     public String clearCart(@AuthenticationPrincipal UserDetails currentUser, RedirectAttributes redirectAttributes) {
         Account account = getCurrentAccount(currentUser);
@@ -171,14 +177,12 @@ public class CartController {
             redirectAttributes.addFlashAttribute("success", "Cart cleared successfully.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error clearing cart.");
-            System.err.println("Error clearing cart: " + e.getMessage());
         }
         return "redirect:/cart";
     }
 
     private String getPreviousPage(HttpServletRequest request) {
         String referrer = request.getHeader("Referer");
-        // Ưu tiên quay về trang chứa /cart/ nếu đang ở đó
         if (referrer != null && referrer.contains("/cart")) {
             return "/cart";
         }

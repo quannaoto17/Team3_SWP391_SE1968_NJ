@@ -24,8 +24,6 @@ public class AddressController {
     @Autowired
     private AccountRepository accountRepository;
 
-    // ✅ Định nghĩa các mẫu Regex cho validation
-    // 1. Chỉ chấp nhận chữ cái (bao gồm tiếng Việt có dấu) và khoảng trắng
     private static final Pattern NAME_REGEX = Pattern.compile("^[a-zA-ZÀ-ỹ\\s]+$");
     // 2. SĐT Việt Nam: 10 số, bắt đầu bằng 03, 05, 07, 08, 09
     private static final Pattern PHONE_REGEX = Pattern.compile("^(0[3|5|7|8|9])+([0-9]{8})$");
@@ -45,52 +43,46 @@ public class AddressController {
 
         Account account = getCurrentAccount(currentUserDetails);
         if (account == null) {
-            return ResponseEntity.status(401).body(Map.of("error", "Vui lòng đăng nhập lại."));
+            return ResponseEntity.status(401).body(Map.of("error", "Please login again."));
         }
 
-        // ✅ --- BẮT ĐẦU VALIDATION ---
-
-        // 1. Validate Not Blank
         if (fullName == null || fullName.isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Họ tên không được để trống."));
+            return ResponseEntity.badRequest().body(Map.of("error", "Name must not blank."));
         }
         if (phone == null || phone.isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Số điện thoại không được để trống."));
+            return ResponseEntity.badRequest().body(Map.of("error", "Phone number must not blank."));
         }
         if (address == null || address.isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Địa chỉ không được để trống."));
+            return ResponseEntity.badRequest().body(Map.of("error", "Address must not blank."));
         }
 
         // 2. Validate ký tự đặc biệt (Tên)
         if (!NAME_REGEX.matcher(fullName).matches()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Họ tên chỉ được chứa chữ cái và khoảng trắng."));
+            return ResponseEntity.badRequest().body(Map.of("error", "Name must contains character and space."));
         }
 
         // 3. Validate SĐT
         if (!PHONE_REGEX.matcher(phone).matches()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Số điện thoại không hợp lệ (10 số, bắt đầu 03, 05, 07, 08, 09)."));
+            return ResponseEntity.badRequest().body(Map.of("error", "No qualified phone number (10 numbers and start with 03, 05, 07, 08, 09)."));
         }
 
-        // --- KẾT THÚC VALIDATION ---
-
         try {
-            // Gọi service (đã bao gồm check trùng SĐT)
+
             Address newAddress = addressService.addNewAddress(account, fullName, phone, address);
 
-            // Nếu thành công, trả về 200 OK và đối tượng Address (JS sẽ đọc)
             return ResponseEntity.ok(newAddress);
 
         } catch (IllegalArgumentException e) {
-            // Bắt lỗi trùng SĐT từ Service
+
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
 
         } catch (Exception e) {
-            // Các lỗi khác (như lỗi DB)
-            return ResponseEntity.internalServerError().body(Map.of("error", "Lỗi hệ thống, không thể thêm địa chỉ."));
+
+            return ResponseEntity.internalServerError().body(Map.of("error", "Error system."));
         }
     }
 
-    // ✅ MỚI: Endpoint Cập nhật địa chỉ
+    //  Endpoint Cập nhật địa chỉ
     @PostMapping("/address/update")
     public ResponseEntity<?> updateAddress(
             @RequestParam("addressId") int addressId,
@@ -101,18 +93,17 @@ public class AddressController {
 
         Account account = getCurrentAccount(currentUserDetails);
         if (account == null) {
-            return ResponseEntity.status(401).body(Map.of("error", "Vui lòng đăng nhập lại."));
+            return ResponseEntity.status(401).body(Map.of("error", "Please login again."));
         }
 
-        // (Thực hiện validation tương tự như /add)
         if (fullName == null || fullName.isBlank() || phone == null || phone.isBlank() || address == null || address.isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Vui lòng nhập đầy đủ thông tin."));
+            return ResponseEntity.badRequest().body(Map.of("error", "Please fulfill information."));
         }
         if (!NAME_REGEX.matcher(fullName).matches()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Họ tên chỉ được chứa chữ cái và khoảng trắng."));
+            return ResponseEntity.badRequest().body(Map.of("error", "Name must contains character and space."));
         }
         if (!PHONE_REGEX.matcher(phone).matches()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Số điện thoại không hợp lệ."));
+            return ResponseEntity.badRequest().body(Map.of("error", "No qualified phone number (10 numbers and start with 03, 05, 07, 08, 09)."));
         }
 
         try {
@@ -125,11 +116,11 @@ public class AddressController {
         } catch (EntityNotFoundException | SecurityException e) { // Lỗi không tìm thấy hoặc không có quyền
             return ResponseEntity.status(403).body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", "Lỗi hệ thống, không thể cập nhật."));
+            return ResponseEntity.internalServerError().body(Map.of("error", "Error system."));
         }
     }
 
-    // ✅ MỚI: Endpoint Đặt làm mặc định
+    // Endpoint Đặt làm mặc định
     @PostMapping("/address/set-default")
     public ResponseEntity<?> setDefaultAddress(
             @RequestParam("addressId") int addressId,
@@ -137,7 +128,7 @@ public class AddressController {
 
         Account account = getCurrentAccount(currentUserDetails);
         if (account == null) {
-            return ResponseEntity.status(401).body(Map.of("error", "Vui lòng đăng nhập lại."));
+            return ResponseEntity.status(401).body(Map.of("error", "Please login again."));
         }
 
         try {
@@ -148,7 +139,7 @@ public class AddressController {
         } catch (EntityNotFoundException | SecurityException e) { // Lỗi không tìm thấy hoặc không có quyền
             return ResponseEntity.status(403).body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", "Lỗi hệ thống."));
+            return ResponseEntity.internalServerError().body(Map.of("error", "Error system."));
         }
     }
 }

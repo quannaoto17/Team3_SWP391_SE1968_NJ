@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập</title>
+    <title>Login</title>
     <style>
         /* 🌈 Reset & Layout */
         * {
@@ -169,40 +169,39 @@
 <div th:replace="layout/header-default :: header-default"></div>
 
 <div class="container">
-    <h2>Đăng nhập</h2>
+    <h2>Loin</h2>
 
-    <!-- ⚠️ Thông báo lỗi -->
     <div th:if="${param.error}" class="error-message">
-        ⚠️ Số điện thoại hoặc mật khẩu không đúng!
+        ⚠️ Email or phonenumber incorrect!
     </div>
 
     <form th:action="@{/auth/login}" method="post">
         <div class="form-group">
-            <label for="phoneNumber">📱 Số điện thoại</label>
-            <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Nhập số điện thoại" required
+            <label for="phoneNumber">📱 Phone Number</label>
+            <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Enter phone number" required
                    th:value="${phoneNumber != null} ? ${phoneNumber} : ''"/>
         </div>
 
         <div class="form-group">
-            <label for="password">🔒 Mật khẩu</label>
-            <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
+            <label for="password">🔒 Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter Password" required>
         </div>
 
         <div class="options">
-            <label><input type="checkbox" name="remember-me"> Ghi nhớ đăng nhập</label>
-            <a th:href="@{/auth/forget-password}">Quên mật khẩu?</a>
+            <label><input type="checkbox" name="remember-me"> Remember me</label>
+            <a th:href="@{/auth/forget-password}">Forget Password?</a>
         </div>
 
-        <button type="submit" class="btn">Đăng nhập</button>
+        <button type="submit" class="btn">Login</button>
     </form>
 
-    <p style="margin: 18px 0; color: #777;">Hoặc đăng nhập bằng</p>
+    <p style="margin: 18px 0; color: #777;">Or login with</p>
     <div class="google-signin">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
     </div>
 
     <p class="register-link">
-        Chưa có tài khoản? <a th:href="@{/auth/register}">Đăng ký ngay</a>
+        No account? <a th:href="@{/auth/register}">Register now</a>
     </p>
 </div>
 </body>

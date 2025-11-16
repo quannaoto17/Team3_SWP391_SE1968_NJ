@@ -114,7 +114,7 @@
 
 <body>
 
-<!-- Header động theo role -->
+
 <div sec:authorize="!isAuthenticated()"
      th:replace="~{layout/header-default :: header-default}"></div>
 <div sec:authorize="hasRole('ADMIN')"
@@ -124,39 +124,39 @@
 <div sec:authorize="hasRole('CUSTOMER')"
      th:replace="~{layout/header-customer :: header-customer}"></div>
 
-<!-- 2 form ngang nhau -->
+
 <div class="profile-wrapper">
 
-    <!-- Form đổi mật khẩu nhỏ bên trái -->
+
     <div class="password-container">
-        <h2>🔑 Đổi mật khẩu</h2>
+        <h2>🔑 Change Password</h2>
 
         <div th:if="${pwdSuccess}" class="message success" th:text="${pwdSuccess}"></div>
         <div th:if="${pwdError}" class="message error" th:text="${pwdError}"></div>
 
         <form th:action="@{/auth/profile/change-password}" method="post">
             <div class="form-group">
-                <label>Mật khẩu hiện tại:</label>
-                <input type="password" name="currentPassword" placeholder="Mật khẩu hiện tại" required>
+                <label>Current Password:</label>
+                <input type="password" name="currentPassword"  required>
             </div>
 
             <div class="form-group">
-                <label>Mật khẩu mới:</label>
-                <input type="password" name="newPassword" placeholder="Mật khẩu mới" required>
+                <label>New Password:</label>
+                <input type="password" name="newPassword" required>
             </div>
 
             <div class="form-group">
-                <label>Xác nhận:</label>
-                <input type="password" name="confirmPassword" placeholder="Xác nhận mật khẩu" required>
+                <label>Confirm Password:</label>
+                <input type="password" name="confirmPassword"  required>
             </div>
 
-            <button type="submit">Đổi mật khẩu</button>
+            <button type="submit">Change Password</button>
         </form>
     </div>
 
     <!-- Form profile -->
     <div class="profile-container">
-        <h2>👤 Thông tin cá nhân</h2>
+        <h2>👤 User Profile</h2>
 
         <div th:if="${success}" class="message success">✅ <span th:text="${success}"></span></div>
         <div th:if="${error}" class="message error">❌ <span th:text="${error}"></span></div>
@@ -164,12 +164,12 @@
         <form th:action="@{/profile/update}" method="post" th:object="${account}">
             <div class="form-group">
                 <label>Họ:</label>
-                <input type="text" th:field="*{lastname}" placeholder="Nhập họ...">
+                <input type="text" th:field="*{lastname}" >
             </div>
 
             <div class="form-group">
-                <label>Tên:</label>
-                <input type="text" th:field="*{firstname}" placeholder="Nhập tên...">
+                <label>Name:</label>
+                <input type="text" th:field="*{firstname}">
             </div>
 
             <div class="form-group">
@@ -178,19 +178,19 @@
             </div>
 
             <div class="form-group">
-                <label>Số điện thoại:</label>
-                <input type="text" th:field="*{phoneNumber}" placeholder="Nhập số điện thoại...">
+                <label>Phone Number:</label>
+                <input type="text" th:field="*{phoneNumber}" readonly>
             </div>
 
             <div class="form-group">
-                <label>Giới tính:</label>
+                <label>Gender:</label>
                 <select th:field="*{gender}">
-                    <option value="true">Nam</option>
-                    <option value="false">Nữ</option>
+                    <option value="true">Male</option>
+                    <option value="false">Female</option>
                 </select>
             </div>
 
-            <button type="submit">💾 Cập nhật thông tin</button>
+            <button type="submit">💾 Save</button>
         </form>
     </div>
 

@@ -145,9 +145,7 @@
                             <label for="category" class="form-label">Category</label>
                             <input type="text" class="form-control" id="category"
                                    th:value="${!product.categories.isEmpty() ? product.categories[0].categoryName : 'N/A'}" readonly>
-                            <div class="form-text text-muted">
-                                Category cannot be changed. Please contact Admin if needed.
-                            </div>
+
                         </div>
 
                         <!-- ✅ TECHNICAL SPECS -->
