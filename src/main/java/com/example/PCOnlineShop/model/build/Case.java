@@ -18,7 +18,7 @@ public class Case {
     @Column(name = "form_factor")
     @NotBlank(message = "Form factor is required")
     @Size(min =  1, max = 100, message = "Form factor must be between 1 and 100 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Form factor must not contain special characters")
+   // @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Form factor must not contain special characters")
     private String formFactor;
 
     @Column(name = "gpu_max_length")
@@ -36,7 +36,7 @@ public class Case {
     @Column(name = "psu_form_factor")
     @NotBlank(message = "PSU form factor is required")
     @Size(min = 1, max = 50, message = "PSU form factor must be between 1 and 50 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "PSU form factor must not contain special characters")
+  //  @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "PSU form factor must not contain special characters")
     private String psuFormFactor;
 
     @OneToOne(fetch = FetchType.EAGER)

@@ -25,7 +25,7 @@ public class PowerSupply {
     @Column(name = "efficiency")
     @NotBlank(message = "Efficiency rating is required")
     @Size(min = 2, max = 50, message = "Efficiency rating must be between 2 and 50 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s\\+]+$", message = "Efficiency rating must not contain special characters")
+   // @Pattern(regexp = "^[a-zA-Z0-9\\s\\+]+$", message = "Efficiency rating must not contain special characters")
     private String efficiency;
 
     @Column(name = "modular")
