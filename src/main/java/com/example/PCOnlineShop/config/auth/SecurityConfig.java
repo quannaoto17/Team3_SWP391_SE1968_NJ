@@ -39,7 +39,9 @@ public class SecurityConfig {
                 http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/payment/**").permitAll()
-                        .requestMatchers("/", "/home", "/auth/**").permitAll()
+                        .requestMatchers("/products/**").permitAll()
+                        .requestMatchers("/home").not().hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/", "/auth/**").permitAll()
                         .requestMatchers("/build/**", "/api/build/**").permitAll() // Build PC feature for guests
                         .requestMatchers("/assets/**", "/css/**", "/js/**", "/image/**", "/static/**", "/webfonts/**", "/uploads/**").permitAll()
                         .requestMatchers("/blog/**","/chat/**").permitAll()

@@ -18,12 +18,12 @@ public class Cart {
     @Column(name = "cart_id")
     private int cartId;
 
-    @OneToOne(fetch = FetchType.LAZY) // Mỗi account chỉ có 1 cart active
-    @JoinColumn(name = "account_id", nullable = false, unique = true) // Đảm bảo unique
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false, unique = true)
     private Account account;
 
     @Column(name = "status")
-    private String status = "Active"; // Trạng thái mặc định
+    private String status = "Active";
 
     @Temporal(TemporalType.DATE)
     @Column(name = "updated_date")

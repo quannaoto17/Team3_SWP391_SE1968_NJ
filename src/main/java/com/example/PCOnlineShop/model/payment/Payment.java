@@ -21,14 +21,14 @@ public class Payment {
     @JoinColumn(name = "order_id", nullable = false) //
     private Order order;
 
-    @Column(name = "gateway_payment_id") //
-    private String gatewayPaymentId; // ID giao dịch của PayOS
+    @Column(name = "gateway_payment_id")
+    private String gatewayPaymentId;
 
-    @Column(name = "amount") //
+    @Column(name = "amount")
     private BigDecimal amount;
 
-    @Column(name = "status") //
-    private String status; // PENDING, SUCCESS, FAILED
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "raw_payload", columnDefinition = "TEXT") //
     private String rawPayload; // Lưu trữ JSON webhook
