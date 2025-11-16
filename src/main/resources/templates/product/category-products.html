@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${category.categoryName} + ' – PCOnlineShop'">Category Products</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style> body { font-family: 'Inter', system-ui, sans-serif; } </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<div sec:authorize="hasRole('CUSTOMER')"
+     th:replace="layout/header-customer :: header-customer"></div>
+
+<section class="container mx-auto px-6 py-12">
+    <!-- Category Title -->
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-bold" th:text="'Category: ' + ${category.categoryName}">Category Name</h1>
+        <a href="/products" class="text-blue-600 hover:underline">← Back to All Products</a>
+    </div>
+
+    <!-- Grid of products -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div th:each="p : ${products}" class="bg-white border rounded-xl shadow-sm hover:shadow-md transition flex flex-col">
+            <img th:if="${p != null and p.images != null and !p.images.isEmpty()}"
+                 th:src="@{${p.images[0].imageUrl}}"
+                 alt="Product image"
+                 class="rounded-t-xl w-full h-48 object-cover">
+            <img th:if="${p == null or p.images == null or p.images.isEmpty()}"
+                 src="/images/no-image.png"
+                 alt="No image"
+                 class="rounded-t-xl w-full h-48 object-cover">
+
+            <div class="p-4 flex-1 flex flex-col">
+                <h3 class="font-medium mb-1 truncate" th:text="${p.productName}">Product Name</h3>
+                <p class="text-gray-600 mb-3" th:text="'$' + ${p.price}">0.00</p>
+                <a th:href="@{'/products/' + ${p.productId}}"
+                   class="mt-auto bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-md text-sm">
+                    View Details
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-10 flex justify-center" th:if="${pageNumbers != null}">
+        <ul class="flex space-x-2">
+            <li th:each="i : ${pageNumbers}">
+                <a th:text="${i + 1}"
+                   th:href="@{'/category/' + ${category.categoryId} + '?page=' + ${i}}"
+                   class="px-3 py-1 border rounded text-sm hover:bg-blue-50 transition"
+                   th:classappend="${i == currentPage} ? ' bg-blue-600 text-white border-blue-600' : ''"></a>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- Footer -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+</body>
+</html>
