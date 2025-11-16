@@ -11,10 +11,8 @@ import java.util.Optional;
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Integer> {
 
-    // Tìm cart của một account (bao gồm cả items)
     @Query("SELECT DISTINCT c FROM Cart c LEFT JOIN FETCH c.items ci LEFT JOIN FETCH ci.product p WHERE c.account = :account AND c.status = 'Active'")
     Optional<Cart> findByAccountAndStatusWithItems(@Param("account") Account account);
 
-    // Chỉ tìm cart theo account (không cần items)
     Optional<Cart> findByAccount(Account account);
 }

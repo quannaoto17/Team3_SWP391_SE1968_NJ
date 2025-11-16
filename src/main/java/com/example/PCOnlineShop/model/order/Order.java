@@ -24,7 +24,7 @@ public class Order {
     private Account account;
 
     @Column(name = "final_amount")
-    private Double finalAmount; // Tổng tiền cuối cùng
+    private Double finalAmount;
 
     @Column(name = "status")
     private String status;
@@ -33,7 +33,6 @@ public class Order {
     @Column(name = "created_date")
     private Date createdDate;
 
-    // Thông tin từ checkout
     @Column(name = "shipping_method", nullable = false)
     private String shippingMethod;
 

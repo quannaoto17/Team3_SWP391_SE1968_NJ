@@ -25,14 +25,6 @@
                       class="star"></span>
             </div>
 
-            <div>
-                Status:
-                <span class="badge"
-                      th:classappend="${fb.commentStatus=='Allow' ? 'bg-success'
-                                      : (fb.commentStatus=='Denied' ? 'bg-danger' : 'bg-secondary')}"
-                      th:text="${fb.commentStatus}">
-                </span>
-            </div>
         </div>
     </div>
 
