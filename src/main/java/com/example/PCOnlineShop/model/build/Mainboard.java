@@ -19,25 +19,25 @@ public class Mainboard {
     @Column(name = "form_factor")
     @NotBlank(message = "Form factor is required")
     @Size(min = 1, max = 100, message = "Form factor must be between 1 and 100 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Form factor must not contain special characters")
+   // @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Form factor must not contain special characters")
     private String formFactor;
 
     @Column(name = "chipset")
     @NotBlank(message = "Chipset is required")
     @Size(min = 1, max = 100, message = "Chipset must be between 1 and 100 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Chipset must not contain special characters")
+   // @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Chipset must not contain special characters")
     private String chipset;
 
     @Column(name = "socket")
     @NotBlank(message = "Socket type is required")
     @Size(min = 1, max = 100, message = "Socket type must be between 1 and 100 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Socket type must not contain special characters")
+ //   @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Socket type must not contain special characters")
     private String socket;
 
     @Column(name = "memory_type")
     @NotBlank(message = "Memory type is required")
     @Size(min = 2, max = 20, message = "Memory type must be between 2 and 20 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Memory type must not contain special characters")
+   // @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Memory type must not contain special characters")
     private String memoryType;
 
     @Column(name = "memory_slots")

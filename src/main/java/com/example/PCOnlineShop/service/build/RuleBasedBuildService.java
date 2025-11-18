@@ -27,17 +27,17 @@ public class RuleBasedBuildService {
     private final CompatibilityService compatibilityService;
 
     public BuildPlanDto suggestBuild(String presetName, double totalBudget) {
-        log.info("🎯 Suggesting build for preset: {}, budget: ${}", presetName, totalBudget);
+        log.info("Suggesting build for preset: {}, budget: ${}", presetName, totalBudget);
 
-        // 1. Get preset
+        // Get preset
         BuildPreset preset = BuildPreset.valueOf(presetName.toUpperCase().replace(" ", "_").replace("-", "_"));
 
-        // 2. Validate budget
+        // Validate budget
         if (totalBudget < preset.getSuggestedMinBudget()) {
-            log.warn("⚠️ Budget ${} is below recommended ${}", totalBudget, preset.getSuggestedMinBudget());
+            log.warn("Budget ${} is below recommended ${}", totalBudget, preset.getSuggestedMinBudget());
         }
 
-        // 3. Create temporary BuildItemDto for compatibility checking
+        // Create temporary BuildItemDto for compatibility checking
         BuildItemDto tempBuild = new BuildItemDto();
 
         // 4. Select components in FIXED ORDER with compatibility check
@@ -54,7 +54,7 @@ public class RuleBasedBuildService {
         // Step 1: Select Mainboard first (base for all compatibility)
         Mainboard mainboard = selectMainboardEntity(preset, totalBudget, tempBuild);
         if (mainboard == null) {
-            log.error("❌ Cannot build - No mainboard found!");
+            log.error(" Cannot build - No mainboard found!");
             return createEmptyPlan(preset, totalBudget);
         }
         tempBuild.setMainboard(mainboard);
@@ -62,7 +62,7 @@ public class RuleBasedBuildService {
         // Step 2: Select CPU (filtered by budget, checked for socket compatibility)
         CPU cpu = selectCpuEntity(preset, totalBudget, tempBuild);
         if (cpu == null) {
-            log.error("❌ Cannot build - No compatible CPU found for socket: {}", mainboard.getSocket());
+            log.error(" Cannot build - No compatible CPU found for socket: {}", mainboard.getSocket());
             return createEmptyPlan(preset, totalBudget);
         }
         tempBuild.setCpu(cpu);
@@ -70,21 +70,21 @@ public class RuleBasedBuildService {
         // Step 3: Select Memory (filtered by budget, checked for DDR type and slots)
         Memory memory = selectMemoryEntity(preset, totalBudget, tempBuild);
         if (memory == null) {
-            log.error("❌ Cannot build - No compatible Memory found for type: {}", mainboard.getMemoryType());
+            log.error(" Cannot build - No compatible Memory found for type: {}", mainboard.getMemoryType());
         }
         tempBuild.setMemory(memory);
 
         // Step 4: Select GPU (filtered by budget, checked for PCIe compatibility)
         GPU gpu = selectGpuEntity(preset, totalBudget, tempBuild);
         if (gpu == null) {
-            log.warn("⚠️ No compatible GPU found - continuing without GPU");
+            log.warn(" No compatible GPU found - continuing without GPU");
         }
         tempBuild.setGpu(gpu);
 
         // Step 5: Select Storage (filtered by budget, checked for interface support)
         Storage storage = selectStorageEntity(preset, totalBudget, tempBuild);
         if (storage == null) {
-            log.warn("⚠️ No compatible Storage found");
+            log.warn(" No compatible Storage found");
         }
         tempBuild.setStorage(storage);
 
@@ -103,7 +103,7 @@ public class RuleBasedBuildService {
         // 5. Convert to BuildPlanDto for frontend
         BuildPlanDto plan = convertToPlanDto(tempBuild, preset, totalBudget);
 
-        log.info("✅ Build suggestion completed with compatibility checks");
+        log.info("Build suggestion completed with compatibility checks");
         return plan;
     }
 
@@ -173,7 +173,7 @@ public class RuleBasedBuildService {
         List<Mainboard> mainboards = mainboardRepository.findBestMainboardsByBudgetAndScore(budget * 1.2, minScore);
 
         if (mainboards.isEmpty()) {
-            log.warn("⚠️ No mainboard with score >= {}, trying with lower score", minScore);
+            log.warn("No mainboard with score >= {}, trying with lower score", minScore);
             mainboards = mainboardRepository.findBestMainboardsByBudgetAndScore(budget * 1.3, minScore - 20);
         }
 
@@ -188,7 +188,7 @@ public class RuleBasedBuildService {
         for (Mainboard mb : mainboards) {
             double price = mb.getProduct().getPrice();
             if (price >= minPrice && price <= maxPrice) {
-                log.info("✅ Selected Mainboard (80-120% range): {} - ${} (Socket: {}, Score: {}, Budget: ${})",
+                log.info(" Selected Mainboard (80-120% range): {} - ${} (Socket: {}, Score: {}, Budget: ${})",
                          mb.getProduct().getProductName(),
                          mb.getProduct().getPrice(),
                          mb.getSocket(),
@@ -201,13 +201,13 @@ public class RuleBasedBuildService {
         // Nếu không tìm thấy trong range 80-120%, chọn thằng đầu tiên (đắt nhất)
         if (!mainboards.isEmpty()) {
             Mainboard mb = mainboards.get(0);
-            log.warn("⚠️ No mainboard in 80-120% range, selected: {} - ${}",
+            log.warn(" No mainboard in 80-120% range, selected: {} - ${}",
                      mb.getProduct().getProductName(),
                      mb.getProduct().getPrice());
             return mb;
         }
 
-        log.error("❌ No Mainboard found!");
+        log.error(" No Mainboard found!");
         return null;
     }
 
@@ -215,7 +215,7 @@ public class RuleBasedBuildService {
         double budget = preset.calculateComponentBudget("cpu", totalBudget);
         int minScore = Math.max(preset.getRequirement("cpu_score_min") - 20, 40);
 
-        log.debug("💻 Selecting CPU: budget=${} (target range: 80%-120%)", budget);
+        log.debug(" Selecting CPU: budget=${} (target range: 80%-120%)", budget);
 
         // Lấy tất cả CPU trong khoảng 120% budget (đã sort by price DESC, score DESC)
         List<CPU> cpus = cpuRepository.findBestCpusByBudgetAndScore(budget * 1.2, minScore);
@@ -236,7 +236,7 @@ public class RuleBasedBuildService {
             if (compatibilityService.checkCpuCompatibility(tempBuild, cpu)) {
                 double price = cpu.getProduct().getPrice();
                 if (price >= minPrice && price <= maxPrice) {
-                    log.info("✅ Selected CPU (80-120% range): {} - ${} (Socket: {}, Score: {}, Budget: ${})",
+                    log.info(" Selected CPU (80-120% range): {} - ${} (Socket: {}, Score: {}, Budget: ${})",
                              cpu.getProduct().getProductName(),
                              cpu.getProduct().getPrice(),
                              cpu.getSocket(),
@@ -245,22 +245,22 @@ public class RuleBasedBuildService {
                     return cpu;
                 }
             } else {
-                log.debug("⚠️ CPU {} incompatible - Socket mismatch", cpu.getProduct().getProductName());
+                log.debug(" CPU {} incompatible - Socket mismatch", cpu.getProduct().getProductName());
             }
         }
 
         // Nếu không tìm thấy trong range 80-120%, chọn thằng đầu tiên compatible
-        log.warn("⚠️ No CPU in 80-120% range, selecting any compatible within budget");
+        log.warn("️ No CPU in 80-120% range, selecting any compatible within budget");
         for (CPU cpu : cpus) {
             if (compatibilityService.checkCpuCompatibility(tempBuild, cpu)) {
-                log.info("✅ Selected CPU (fallback): {} - ${}",
+                log.info(" Selected CPU (fallback): {} - ${}",
                          cpu.getProduct().getProductName(),
                          cpu.getProduct().getPrice());
                 return cpu;
             }
         }
 
-        log.error("❌ No compatible CPU found!");
+        log.error(" No compatible CPU found!");
         return null;
     }
 
@@ -268,7 +268,7 @@ public class RuleBasedBuildService {
         double budget = preset.calculateComponentBudget("memory", totalBudget);
         int minScore = 30;
 
-        log.debug("🧠 Selecting Memory: budget=${} (target range: 80%-120%)", budget);
+        log.debug(" Selecting Memory: budget=${} (target range: 80%-120%)", budget);
 
         // Lấy tất cả Memory trong khoảng 120% budget (đã sort by price DESC)
         List<Memory> memories = memoryRepository.findBestMemoryByBudgetAndScore(budget * 1.2, minScore);
@@ -285,7 +285,7 @@ public class RuleBasedBuildService {
             if (compatibilityService.checkMemoryCompatibility(tempBuild, memory)) {
                 double price = memory.getProduct().getPrice();
                 if (price >= minPrice && price <= maxPrice) {
-                    log.info("✅ Selected Memory (80-120% range): {} - ${} (Type: {}, Modules: {}, Budget: ${})",
+                    log.info(" Selected Memory (80-120% range): {} - ${} (Type: {}, Modules: {}, Budget: ${})",
                              memory.getProduct().getProductName(),
                              memory.getProduct().getPrice(),
                              memory.getType(),
@@ -294,22 +294,22 @@ public class RuleBasedBuildService {
                     return memory;
                 }
             } else {
-                log.debug("⚠️ Memory {} incompatible", memory.getProduct().getProductName());
+                log.debug(" Memory {} incompatible", memory.getProduct().getProductName());
             }
         }
 
         // Fallback: chọn thằng đầu tiên compatible
-        log.warn("⚠️ No Memory in 80-120% range, selecting any compatible within budget");
+        log.warn(" No Memory in 80-120% range, selecting any compatible within budget");
         for (Memory memory : memories) {
             if (compatibilityService.checkMemoryCompatibility(tempBuild, memory)) {
-                log.info("✅ Selected Memory (fallback): {} - ${}",
+                log.info(" Selected Memory (fallback): {} - ${}",
                          memory.getProduct().getProductName(),
                          memory.getProduct().getPrice());
                 return memory;
             }
         }
 
-        log.error("❌ No compatible Memory found!");
+        log.error(" No compatible Memory found!");
         return null;
     }
 
@@ -317,7 +317,7 @@ public class RuleBasedBuildService {
         double budget = preset.calculateComponentBudget("gpu", totalBudget);
         int minScore = Math.max(preset.getRequirement("gpu_score_min") - 20, 40);
 
-        log.debug("🎮 Selecting GPU: budget=${} (target range: 80%-120%)", budget);
+        log.debug(" Selecting GPU: budget=${} (target range: 80%-120%)", budget);
 
         // Lấy tất cả GPU trong khoảng 120% budget (đã sort by price DESC)
         List<GPU> gpus = gpuRepository.findBestGpusByBudgetAndScore(budget * 1.2, minScore);
@@ -338,7 +338,7 @@ public class RuleBasedBuildService {
             if (compatibilityService.checkGpuCompatibility(tempBuild, gpu)) {
                 double price = gpu.getProduct().getPrice();
                 if (price >= minPrice && price <= maxPrice) {
-                    log.info("✅ Selected GPU (80-120% range): {} - ${} (Score: {}, Budget: ${})",
+                    log.info(" Selected GPU (80-120% range): {} - ${} (Score: {}, Budget: ${})",
                              gpu.getProduct().getProductName(),
                              gpu.getProduct().getPrice(),
                              gpu.getProduct().getPerformanceScore(),
@@ -346,22 +346,22 @@ public class RuleBasedBuildService {
                     return gpu;
                 }
             } else {
-                log.debug("⚠️ GPU {} incompatible - PCIe version mismatch", gpu.getProduct().getProductName());
+                log.debug(" GPU {} incompatible - PCIe version mismatch", gpu.getProduct().getProductName());
             }
         }
 
         // Fallback: chọn thằng đầu tiên compatible
-        log.warn("⚠️ No GPU in 80-120% range, selecting any compatible within budget");
+        log.warn(" No GPU in 80-120% range, selecting any compatible within budget");
         for (GPU gpu : gpus) {
             if (compatibilityService.checkGpuCompatibility(tempBuild, gpu)) {
-                log.info("✅ Selected GPU (fallback): {} - ${}",
+                log.info(" Selected GPU (fallback): {} - ${}",
                          gpu.getProduct().getProductName(),
                          gpu.getProduct().getPrice());
                 return gpu;
             }
         }
 
-        log.error("❌ No compatible GPU found!");
+        log.error(" No compatible GPU found!");
         return null;
     }
 
@@ -386,7 +386,7 @@ public class RuleBasedBuildService {
             if (compatibilityService.checkStorageCompatibility(tempBuild, storage)) {
                 double price = storage.getProduct().getPrice();
                 if (price >= minPrice && price <= maxPrice) {
-                    log.info("✅ Selected Storage (80-120% range): {} - ${} (Interface: {}, Capacity: {}GB, Budget: ${})",
+                    log.info(" Selected Storage (80-120% range): {} - ${} (Interface: {}, Capacity: {}GB, Budget: ${})",
                              storage.getProduct().getProductName(),
                              storage.getProduct().getPrice(),
                              storage.getInterfaceType(),
@@ -395,22 +395,22 @@ public class RuleBasedBuildService {
                     return storage;
                 }
             } else {
-                log.debug("⚠️ Storage {} incompatible - Interface not supported", storage.getProduct().getProductName());
+                log.debug(" Storage {} incompatible - Interface not supported", storage.getProduct().getProductName());
             }
         }
 
         // Fallback: chọn thằng đầu tiên compatible
-        log.warn("⚠️ No Storage in 80-120% range, selecting any compatible within budget");
+        log.warn(" No Storage in 80-120% range, selecting any compatible within budget");
         for (Storage storage : storages) {
             if (compatibilityService.checkStorageCompatibility(tempBuild, storage)) {
-                log.info("✅ Selected Storage (fallback): {} - ${}",
+                log.info(" Selected Storage (fallback): {} - ${}",
                          storage.getProduct().getProductName(),
                          storage.getProduct().getPrice());
                 return storage;
             }
         }
 
-        log.error("❌ No compatible Storage found!");
+        log.error(" No compatible Storage found!");
         return null;
     }
 
@@ -423,7 +423,7 @@ public class RuleBasedBuildService {
         List<PowerSupply> psus = powerSupplyRepository.findBestPsuByBudgetAndScore(budget * 1.2, 0);
 
         if (psus.isEmpty()) {
-            log.warn("⚠️ No PSU found in budget ${}, relaxing to ${}", budget, budget * 1.5);
+            log.warn(" No PSU found in budget ${}, relaxing to ${}", budget, budget * 1.5);
             psus = powerSupplyRepository.findBestPsuByBudgetAndScore(budget * 1.5, 0);
         }
 
@@ -435,7 +435,7 @@ public class RuleBasedBuildService {
             if (compatibilityService.checkPowerSupplyCompatibility(tempBuild, psu)) {
                 double price = psu.getProduct().getPrice();
                 if (price >= minPrice && price <= maxPrice) {
-                    log.info("✅ Selected PSU (80-120% range): {} - ${} ({}W, Budget: ${})",
+                    log.info(" Selected PSU (80-120% range): {} - ${} ({}W, Budget: ${})",
                              psu.getProduct().getProductName(),
                              psu.getProduct().getPrice(),
                              psu.getWattage(),
@@ -443,16 +443,16 @@ public class RuleBasedBuildService {
                     return psu;
                 }
             } else {
-                log.debug("⚠️ PSU {} incompatible - Insufficient wattage or form factor mismatch",
+                log.debug(" PSU {} incompatible - Insufficient wattage or form factor mismatch",
                          psu.getProduct().getProductName());
             }
         }
 
         // Fallback: chọn thằng đầu tiên compatible
-        log.warn("⚠️ No PSU in 80-120% range, selecting any compatible within budget");
+        log.warn(" No PSU in 80-120% range, selecting any compatible within budget");
         for (PowerSupply psu : psus) {
             if (compatibilityService.checkPowerSupplyCompatibility(tempBuild, psu)) {
-                log.info("✅ Selected PSU (fallback): {} - ${} ({}W)",
+                log.info(" Selected PSU (fallback): {} - ${} ({}W)",
                          psu.getProduct().getProductName(),
                          psu.getProduct().getPrice(),
                          psu.getWattage());
@@ -461,11 +461,11 @@ public class RuleBasedBuildService {
         }
 
         // If no PSU meets requirement in budget, find any PSU that can handle the load
-        log.warn("⚠️ No PSU in budget is compatible, searching all PSUs");
+        log.warn(" No PSU in budget is compatible, searching all PSUs");
         psus = powerSupplyRepository.findAll();
         for (PowerSupply psu : psus) {
             if (compatibilityService.checkPowerSupplyCompatibility(tempBuild, psu)) {
-                log.info("✅ Selected PSU (over budget): {} - ${} ({}W, Compatible: ✓)",
+                log.info(" Selected PSU (over budget): {} - ${} ({}W, Compatible: ✓)",
                          psu.getProduct().getProductName(),
                          psu.getProduct().getPrice(),
                          psu.getWattage());
@@ -473,14 +473,14 @@ public class RuleBasedBuildService {
             }
         }
 
-        log.error("❌ No compatible PSU found!");
+        log.error(" No compatible PSU found!");
         return null;
     }
 
     private Cooling selectCoolingEntity(BuildPreset preset, double totalBudget, BuildItemDto tempBuild) {
         double budget = preset.calculateComponentBudget("cooling", totalBudget);
 
-        log.debug("❄️ Selecting Cooling: budget=${} (target range: 80%-120%)", budget);
+        log.debug(" Selecting Cooling: budget=${} (target range: 80%-120%)", budget);
 
         // Lấy tất cả Cooling trong khoảng 120% budget (đã sort by price DESC)
         List<Cooling> coolings = coolingRepository.findBestCoolingByBudgetAndScore(budget * 1.2, 0);
@@ -497,7 +497,7 @@ public class RuleBasedBuildService {
             if (compatibilityService.checkCoolingCompatibility(tempBuild, cooling)) {
                 double price = cooling.getProduct().getPrice();
                 if (price >= minPrice && price <= maxPrice) {
-                    log.info("✅ Selected Cooling (80-120% range): {} - ${} (Type: {}, Budget: ${})",
+                    log.info(" Selected Cooling (80-120% range): {} - ${} (Type: {}, Budget: ${})",
                              cooling.getProduct().getProductName(),
                              cooling.getProduct().getPrice(),
                              cooling.getType(),
@@ -505,38 +505,38 @@ public class RuleBasedBuildService {
                     return cooling;
                 }
             } else {
-                log.debug("⚠️ Cooling {} incompatible - Size mismatch with case",
+                log.debug(" Cooling {} incompatible - Size mismatch with case",
                          cooling.getProduct().getProductName());
             }
         }
 
         // Fallback: chọn thằng đầu tiên compatible
-        log.warn("⚠️ No Cooling in 80-120% range, selecting any compatible within budget");
+        log.warn(" No Cooling in 80-120% range, selecting any compatible within budget");
         for (Cooling cooling : coolings) {
             if (compatibilityService.checkCoolingCompatibility(tempBuild, cooling)) {
-                log.info("✅ Selected Cooling (fallback): {} - ${}",
+                log.info(" Selected Cooling (fallback): {} - ${}",
                          cooling.getProduct().getProductName(),
                          cooling.getProduct().getPrice());
                 return cooling;
             }
         }
 
-        log.error("❌ No compatible Cooling found!");
+        log.error(" No compatible Cooling found!");
         return null;
     }
 
     private Case selectCaseEntity(BuildPreset preset, double totalBudget, BuildItemDto tempBuild) {
         double budget = preset.calculateComponentBudget("case", totalBudget);
 
-        log.debug("📦 Selecting Case: budget=${} (target range: 80%-120%)", budget);
+        log.debug(" Selecting Case: budget=${} (target range: 80%-120%)", budget);
 
         // Get all cases sorted by price (no score filtering)
         List<Case> cases = caseRepository.findBestCasesByBudgetAndScore(budget * 1.2, 0);
 
-        log.info("📦 Found {} cases within budget ${}", cases.size(), budget);
+        log.info(" Found {} cases within budget ${}", cases.size(), budget);
 
         // Debug: Show current build state
-        log.info("🔍 Current build state for case compatibility:");
+        log.info(" Current build state for case compatibility:");
         if (tempBuild.getMainboard() != null) {
             log.info("   Mainboard: {} (Form: {})",
                      tempBuild.getMainboard().getProduct().getProductName(),
@@ -568,7 +568,7 @@ public class RuleBasedBuildService {
             if (compatibilityService.checkCaseCompatibility(tempBuild, pcCase)) {
                 double price = pcCase.getProduct().getPrice();
                 if (price >= minPrice && price <= maxPrice) {
-                    log.info("✅ Selected Case (80-120% range): {} - ${} (Form Factor: {}, Budget: ${})",
+                    log.info(" Selected Case (80-120% range): {} - ${} (Form Factor: {}, Budget: ${})",
                              pcCase.getProduct().getProductName(),
                              pcCase.getProduct().getPrice(),
                              pcCase.getFormFactor(),
@@ -579,10 +579,10 @@ public class RuleBasedBuildService {
         }
 
         // Fallback: chọn thằng đầu tiên compatible trong budget
-        log.warn("⚠️ No Case in 80-120% range, selecting any compatible within budget");
+        log.warn(" No Case in 80-120% range, selecting any compatible within budget");
         for (Case pcCase : cases) {
             if (compatibilityService.checkCaseCompatibility(tempBuild, pcCase)) {
-                log.info("✅ Selected Case (fallback): {} - ${}",
+                log.info(" Selected Case (fallback): {} - ${}",
                          pcCase.getProduct().getProductName(),
                          pcCase.getProduct().getPrice());
                 return pcCase;
@@ -590,13 +590,13 @@ public class RuleBasedBuildService {
         }
 
         // Try 2: No compatible case in budget, try 2x budget
-        log.warn("⚠️ No Case found in budget ${}, trying with 2x budget ${}", budget, budget * 2.0);
+        log.warn(" No Case found in budget ${}, trying with 2x budget ${}", budget, budget * 2.0);
         cases = caseRepository.findBestCasesByBudgetAndScore(budget * 2.0, 0);
-        log.info("📦 Found {} cases within 2x budget ${}", cases.size(), budget * 2.0);
+        log.info(" Found {} cases within 2x budget ${}", cases.size(), budget * 2.0);
 
         for (Case pcCase : cases) {
             if (compatibilityService.checkCaseCompatibility(tempBuild, pcCase)) {
-                log.info("✅ Selected Case (2x budget): {} - ${} (Form Factor: {}, Compatible: ✓)",
+                log.info(" Selected Case (2x budget): {} - ${} (Form Factor: {}, Compatible: ✓)",
                          pcCase.getProduct().getProductName(),
                          pcCase.getProduct().getPrice(),
                          pcCase.getFormFactor());
@@ -605,13 +605,13 @@ public class RuleBasedBuildService {
         }
 
         // Try 3: No compatible case even in 2x budget, try 4x budget
-        log.warn("⚠️ No Case found in 2x budget, trying with 4x budget ${}", budget * 4.0);
+        log.warn(" No Case found in 2x budget, trying with 4x budget ${}", budget * 4.0);
         cases = caseRepository.findBestCasesByBudgetAndScore(budget * 4.0, 0);
-        log.info("📦 Found {} cases within 4x budget ${}", cases.size(), budget * 4.0);
+        log.info(" Found {} cases within 4x budget ${}", cases.size(), budget * 4.0);
 
         for (Case pcCase : cases) {
             if (compatibilityService.checkCaseCompatibility(tempBuild, pcCase)) {
-                log.info("✅ Selected Case (4x budget): {} - ${} (Form Factor: {}, Compatible: ✓)",
+                log.info(" Selected Case (4x budget): {} - ${} (Form Factor: {}, Compatible: ✓)",
                          pcCase.getProduct().getProductName(),
                          pcCase.getProduct().getPrice(),
                          pcCase.getFormFactor());
@@ -620,13 +620,13 @@ public class RuleBasedBuildService {
         }
 
         // Try 4: Last resort - search ALL cases
-        log.warn("⚠️ No Case found even in 4x budget, searching ALL cases");
+        log.warn(" No Case found even in 4x budget, searching ALL cases");
         cases = caseRepository.findAll();
-        log.info("📦 Found {} total cases in database", cases.size());
+        log.info(" Found {} total cases in database", cases.size());
 
         for (Case pcCase : cases) {
             if (compatibilityService.checkCaseCompatibility(tempBuild, pcCase)) {
-                log.info("✅ Selected Case (any price): {} - ${} (Form Factor: {}, Compatible: ✓)",
+                log.info(" Selected Case (any price): {} - ${} (Form Factor: {}, Compatible: ✓)",
                          pcCase.getProduct().getProductName(),
                          pcCase.getProduct().getPrice(),
                          pcCase.getFormFactor());
@@ -634,7 +634,7 @@ public class RuleBasedBuildService {
             }
         }
 
-        log.error("❌ No compatible Case found in entire database!");
+        log.error(" No compatible Case found in entire database!");
         return null;
     }
 
@@ -644,7 +644,7 @@ public class RuleBasedBuildService {
      * for storing in session
      */
     public BuildItemDto convertPlanToItems(BuildPlanDto plan) {
-        log.info("🔄 Converting BuildPlanDto to BuildItemDto for session storage");
+        log.info(" Converting BuildPlanDto to BuildItemDto for session storage");
 
         BuildItemDto items = new BuildItemDto();
 
@@ -689,7 +689,7 @@ public class RuleBasedBuildService {
                 .orElse(null));
         }
 
-        log.info("✅ BuildItemDto created successfully");
+        log.info(" BuildItemDto created successfully");
         return items;
     }
 }
