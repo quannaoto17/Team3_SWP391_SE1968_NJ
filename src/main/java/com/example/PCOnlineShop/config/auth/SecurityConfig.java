@@ -9,8 +9,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,7 +23,13 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/images/", "/js/", "/error");
+    }
 
     private final AccountRepository  accountRepository;
     @Bean
@@ -42,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/products/**").permitAll()
                         .requestMatchers("/home").not().hasAnyRole("ADMIN", "STAFF")
                         .requestMatchers("/", "/auth/**").permitAll()
-                        .requestMatchers("/build/**", "/api/build/**").permitAll() // Build PC feature for guests
+                        .requestMatchers("/build/**", "/api/build/**").not().hasAnyRole("ADMIN", "STAFF") // Build PC feature for guests
                         .requestMatchers("/assets/**", "/css/**", "/js/**", "/image/**", "/static/**", "/webfonts/**", "/uploads/**").permitAll()
                         .requestMatchers("/blog/**","/chat/**").permitAll()
                         // Admin only

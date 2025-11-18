@@ -55,7 +55,7 @@ public class GPU {
 
     @OneToOne(fetch = FetchType.EAGER)
     @MapsId
-   // @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id")
     private Product product;
 
     public double getPrice() {
