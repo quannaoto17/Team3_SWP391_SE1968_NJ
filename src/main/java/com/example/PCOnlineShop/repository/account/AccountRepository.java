@@ -17,13 +17,8 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     Optional<Account> findByEmail(String email);
     boolean existsByEmail(String email);
     boolean existsByPhoneNumber(String phoneNumber);
-    boolean existsByPhoneNumberAndRole(String phoneNumber, RoleName role);
-
     /* ==================== Dùng cho DataTable (trả ALL) ==================== */
     long countByRole(RoleName role);
-
-    // Không fetch address → dùng khi không cần hiển thị address
-    List<Account> findAllByRole(RoleName role);
 
     // Fetch luôn địa chỉ mặc định (JOIN FETCH)
     @Query("""
@@ -42,25 +37,4 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     List<Account> findByRoleAndEnabledWithAddresses(@Param("role") RoleName role,
                                                     @Param("enabled") boolean enabled);
 
-    /* ==================== Phân trang cũ (giữ tạm để không lỗi code khác) ==================== */
-    Page<Account> findAllByRole(RoleName role, Pageable pageable);
-
-    @Query("""
-        SELECT a FROM Account a
-        WHERE a.role = :role
-          AND (LOWER(a.phoneNumber) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
-            OR LOWER(a.email) LIKE LOWER(CONCAT('%', :searchQuery, '%')))
-    """)
-    Page<Account> findByPhoneNumberOrEmail(@Param("role") RoleName role,
-                                           @Param("searchQuery") String searchQuery,
-                                           Pageable pageable);
-
-    @Query("""
-        SELECT a FROM Account a
-        WHERE a.role = :role
-          AND a.enabled = :enabled
-    """)
-    Page<Account> findByRoleAndEnabled(@Param("role") RoleName role,
-                                       @Param("enabled") Boolean enabled,
-                                       Pageable pageable);
 }
