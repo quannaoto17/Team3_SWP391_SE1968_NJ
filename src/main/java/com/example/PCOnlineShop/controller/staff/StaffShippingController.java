@@ -1,4 +1,4 @@
-package com.example.PCOnlineShop.controller.staff; // Use appropriate package
+package com.example.PCOnlineShop.controller.staff;
 
 import com.example.PCOnlineShop.model.order.Order;
 import com.example.PCOnlineShop.service.order.OrderService;
@@ -17,42 +17,31 @@ public class StaffShippingController {
 
     private final OrderService orderService;
 
-    // GET /staff/shipping/list -> Display the shipping management list (Updated)
     @GetMapping("/list")
     public String viewShippingList(Model model) {
-        // Call the updated service method
         List<Order> shippingQueueOrders = orderService.getShippingQueueOrders();
         model.addAttribute("shippingOrders", shippingQueueOrders);
         return "staffshipping/shipping-list";
     }
 
-    // POST /staff/shipping/update-status/{orderId} -> Handle status updates (Keep as is)
     @PostMapping("/update-status/{orderId}")
     public String updateShippingOrderStatus(@PathVariable int orderId,
                                             @RequestParam String newStatus,
                                             RedirectAttributes redirectAttributes) {
         try {
-            // 1. Lấy trạng thái hiện tại của đơn hàng TRƯỚC KHI cập nhật
-            Order currentOrder = orderService.getOrderById(orderId); // Lấy thông tin đơn hàng
+            // Service trả về message kết quả (Success, No Change, hoặc Error)
+            String result = orderService.processShippingStatusUpdate(orderId, newStatus);
 
-            if (currentOrder == null) {
-                redirectAttributes.addFlashAttribute("error", "Order #" + orderId + " not found.");
-                return "redirect:/staff/shipping/list";
-            }
-
-            // 2. So sánh trạng thái mới và cũ
-            if (currentOrder.getStatus().equals(newStatus)) {
-                // Nếu trạng thái không đổi -> Báo cho người dùng biết
-                redirectAttributes.addFlashAttribute("info", "No status change detected for Order #" + orderId + ".");
+            if (result.startsWith("Success")) {
+                redirectAttributes.addFlashAttribute("success", result);
+            } else if (result.startsWith("No change")) {
+                redirectAttributes.addFlashAttribute("info", result);
             } else {
-                // Nếu trạng thái thay đổi -> Gọi service để cập nhật
-                orderService.updateShippingStatus(orderId, newStatus);
-                redirectAttributes.addFlashAttribute("success", "Order #" + orderId + " status updated to " + newStatus);
+                redirectAttributes.addFlashAttribute("error", result);
             }
         } catch (Exception e) {
-            System.err.println("Error updating shipping status: " + e.getMessage());
             redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
         }
-        return "redirect:/staff/shipping/list"; // Quay lại danh sách
+        return "redirect:/staff/shipping/list";
     }
 }
