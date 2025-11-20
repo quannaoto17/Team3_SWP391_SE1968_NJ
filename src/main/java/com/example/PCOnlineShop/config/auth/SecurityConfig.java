@@ -97,7 +97,13 @@ public class SecurityConfig {
                             } else if(authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
                                 response.sendRedirect("/dashboard/admin");
                             } else{
-                                successHandler.onAuthenticationSuccess(request, response, authentication);
+                                // Kiểm tra nếu có tham số redirect từ login URL
+                                String redirectUrl = request.getParameter("redirect");
+                                if (redirectUrl != null && !redirectUrl.isEmpty()) {
+                                    response.sendRedirect(redirectUrl);
+                                } else {
+                                    successHandler.onAuthenticationSuccess(request, response, authentication);
+                                }
                             }
                         })
                         .permitAll()

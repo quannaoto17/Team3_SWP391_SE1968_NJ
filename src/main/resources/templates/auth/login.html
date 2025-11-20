@@ -176,6 +176,9 @@
     </div>
 
     <form th:action="@{/auth/login}" method="post">
+        <!-- Giữ lại redirect URL nếu có -->
+        <input type="hidden" name="redirect" th:if="${param.redirect}" th:value="${param.redirect}">
+
         <div class="form-group">
             <label for="phoneNumber">📱 Phone Number</label>
             <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Enter phone number" required

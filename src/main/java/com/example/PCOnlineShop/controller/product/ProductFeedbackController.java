@@ -30,7 +30,8 @@ public class ProductFeedbackController {
         // Bắt buộc đăng nhập
         if (principal == null) {
             ra.addFlashAttribute("feedback_error", "Vui lòng đăng nhập để gửi đánh giá.");
-            return "redirect:/auth/login";
+            // Lưu URL redirect sau khi login thành công
+            return "redirect:/auth/login?redirect=/product/detail/" + id;
         }
 
         // Lấy account hiện tại
