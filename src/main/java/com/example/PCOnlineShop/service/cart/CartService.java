@@ -1,7 +1,8 @@
 package com.example.PCOnlineShop.service.cart;
 
-import com.example.PCOnlineShop.dto.cart.CartItemDTO;
 import com.example.PCOnlineShop.dto.build.BuildItemDto;
+import com.example.PCOnlineShop.dto.cart.CartItemDTO;
+import com.example.PCOnlineShop.dto.cart.CartSummaryDTO;
 import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.model.cart.Cart;
 import com.example.PCOnlineShop.model.cart.CartItem;
@@ -36,29 +37,27 @@ public class CartService {
                 });
     }
 
-    /**
-     * Lấy tất cả CartItemDTOs để hiển thị
-     */
     public List<CartItemDTO> getCartItems(Account account) {
         Cart cart = getOrCreateCart(account);
         List<CartItem> items = cartItemRepository.findByCart(cart);
-
         List<CartItemDTO> dtos = new ArrayList<>();
         for (CartItem item : items) {
             Product product = item.getProduct();
             if (product != null) {
                 Hibernate.initialize(product.getImages());
-
                 CartItemDTO dto = new CartItemDTO();
-                dto.setCartItemId(item.getCartItemId()); // Gán cartItemId
+                dto.setCartItemId(item.getCartItemId());
                 dto.setProductId(product.getProductId());
                 dto.setProductName(product.getProductName());
                 dto.setPrice(product.getPrice());
                 dto.setQuantity(item.getQuantity());
                 dto.setInventoryQuantity(product.getInventoryQuantity());
                 dto.setSelected(item.isSelected());
-                // dto.setImageUrl(product.getFirstImageUrl());
-
+                if(product.getImages() != null && !product.getImages().isEmpty()) {
+                    dto.setImageUrl(product.getImages().get(0).getImageUrl());
+                } else {
+                    dto.setImageUrl("/images/no-image.png");
+                }
                 dtos.add(dto);
             }
         }
@@ -73,25 +72,25 @@ public class CartService {
                 .sum();
     }
 
-    public double calculateGrandTotal(List<CartItemDTO> cartItems) {
-        return cartItems.stream().mapToDouble(CartItemDTO::getSubtotal).sum();
+    public CartSummaryDTO getCartDetails(Account account) {
+        List<CartItemDTO> items = getCartItems(account);
+        double total = calculateSelectedTotal(items);
+        return new CartSummaryDTO(items, total);
     }
 
-    /**
-     * Thêm sản phẩm thường (có kiểm tra trùng)
-     */
+    public double calculateSelectedTotalForAccount(Account account) {
+        return calculateSelectedTotal(getCartItems(account));
+    }
+
     public void addToCart(Account account, int productId, int quantity) {
         Cart cart = getOrCreateCart(account);
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
-
         if (!product.isStatus()) {
             throw new IllegalArgumentException("Product is unavailable.");
         }
-
         Optional<CartItem> existingItem = cartItemRepository
                 .findByCartAndProductAndIsBuildItem(cart, product, false);
-
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();
             item.setQuantity(item.getQuantity() + quantity);
@@ -107,13 +106,9 @@ public class CartService {
         }
     }
 
-    /**
-     * Logic lưu Build PC vào CSDL
-     */
     public void addBuildToCart(Account account, BuildItemDto buildItems) {
         Cart cart = getOrCreateCart(account);
         String buildId = UUID.randomUUID().toString();
-
         Consumer<Product> addBuildItem = (product) -> {
             if (product != null) {
                 CartItem newItem = new CartItem();
@@ -126,7 +121,6 @@ public class CartService {
                 cartItemRepository.save(newItem);
             }
         };
-
         addBuildItem.accept(buildItems.getMainboard().getProduct());
         addBuildItem.accept(buildItems.getCpu().getProduct());
         addBuildItem.accept(buildItems.getGpu().getProduct());
@@ -141,16 +135,13 @@ public class CartService {
 
     public void addListToCart(Account account, List<Integer> productIds, int quantity) {
         Cart cart = getOrCreateCart(account);
-
         for (Integer productId : productIds) {
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new EntityNotFoundException("Product not found: " + productId));
-
-            // Đánh dấu là hàng build
             CartItem newItem = new CartItem();
             newItem.setCart(cart);
             newItem.setProduct(product);
-            newItem.setQuantity(quantity); // (Thường là 1)
+            newItem.setQuantity(quantity);
             newItem.setBuildItem(true);
             newItem.setSelected(true);
             cartItemRepository.save(newItem);
@@ -163,7 +154,6 @@ public class CartService {
         if(item.getCart().getAccount().getAccountId() != account.getAccountId()) {
             throw new SecurityException("Not authorized");
         }
-
         if (quantity <= 0) {
             cartItemRepository.delete(item);
         } else {
@@ -181,9 +171,6 @@ public class CartService {
         cartItemRepository.delete(item);
     }
 
-    /**
-     * Lấy Map CÁC MỤC ĐÃ CHỌN để checkout
-     */
     public Map<Integer, CartItem> getCartMapForCheckout(Account account) {
         Cart cart = getOrCreateCart(account);
         return cartItemRepository.findByCartAndIsSelected(cart, true)
@@ -191,9 +178,6 @@ public class CartService {
                 .collect(Collectors.toMap(item -> item.getProduct().getProductId(), item -> item));
     }
 
-    /**
-     * logic chọn/bỏ chọn
-     */
     public void toggleSelectItem(Account account, int cartItemId, boolean isSelected) {
         CartItem item = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new EntityNotFoundException("Item not found"));
@@ -204,9 +188,6 @@ public class CartService {
         cartItemRepository.save(item);
     }
 
-    /**
-     * Xóa CÁC MỤC ĐÃ CHỌN
-     */
     public void clearSelectedItems(Account account) {
         Cart cart = getOrCreateCart(account);
         cartItemRepository.deleteByCartAndIsSelected(cart, true);

@@ -36,7 +36,11 @@
                     <tbody>
                     <tr th:each="d : ${details}">
                         <td class="product-cell">
-                            <span th:text="${d.product?.productName ?: 'N/A'}">Product Name</span>
+                            <a th:if="${d.product != null}"
+                               th:href="@{'/product/detail/' + ${d.product.productId}}"
+                               th:text="${d.product.productName}"
+                               style="text-decoration: none; color: #007bff; font-weight: 600;">
+                            </a>
                         </td>
                         <td th:text="${#numbers.formatInteger(d.price, 1, 'COMMA')} + ' ₫'"></td>
                         <td th:text="${d.quantity}"></td>

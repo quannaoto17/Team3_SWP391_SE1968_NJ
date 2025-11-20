@@ -414,11 +414,6 @@
                     <div class="error" th:if="${#fields.hasErrors('shippingFullName')}" th:errors="*{shippingFullName}"></div>
                     <div class="error" th:if="${#fields.hasErrors('shippingAddress')}" th:errors="*{shippingAddress}"></div>
 
-                    <div class="form-group">
-                        <label for="note">Note</label>
-                        <textarea id="note" th:field="*{note}" placeholder="Example: Deliver during business hours..." rows="3"></textarea>
-                    </div>
-
                     <input type="hidden" th:field="*{shippingFullName}" id="shippingFullNameInput" />
                     <input type="hidden" th:field="*{shippingPhone}" id="shippingPhoneInput" />
                     <input type="hidden" th:field="*{shippingAddress}" id="shippingAddressInput" />

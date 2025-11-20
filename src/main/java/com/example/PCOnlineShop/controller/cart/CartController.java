@@ -1,10 +1,9 @@
 package com.example.PCOnlineShop.controller.cart;
 
-import com.example.PCOnlineShop.dto.cart.CartItemDTO;
+import com.example.PCOnlineShop.dto.cart.CartSummaryDTO;
 import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.repository.account.AccountRepository;
 import com.example.PCOnlineShop.service.cart.CartService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,14 +36,11 @@ public class CartController {
         Account account = getCurrentAccount(currentUser);
         if (account == null) return "redirect:/auth/login";
 
-        List<CartItemDTO> cartItems = cartService.getCartItems(account);
+        CartSummaryDTO cartSummary = cartService.getCartDetails(account);
 
-        double grandTotal = cartService.calculateSelectedTotal(cartItems);
-
-        model.addAttribute("isEmpty", cartItems.isEmpty());
-
-        model.addAttribute("cartItems", cartItems);
-        model.addAttribute("grandTotal", grandTotal);
+        model.addAttribute("isEmpty", cartSummary.getItems().isEmpty());
+        model.addAttribute("cartItems", cartSummary.getItems());
+        model.addAttribute("grandTotal", cartSummary.getSelectedTotal());
         return "cart/view";
     }
 
@@ -63,31 +59,27 @@ public class CartController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:" + getPreviousPage(request);
+        return "redirect:" + (request.getHeader("Referer") != null ? request.getHeader("Referer") : "/");
     }
 
     @GetMapping("/addListItem")
     public String addListItemToCart(@ModelAttribute("productIds") List<Integer> productIds,
                                     @RequestParam(defaultValue = "1") int quantity,
                                     @AuthenticationPrincipal UserDetails currentUser,
-                                    RedirectAttributes redirectAttributes,
-                                    HttpServletRequest request) {
-
+                                    RedirectAttributes redirectAttributes) {
         Account account = getCurrentAccount(currentUser);
         if (account == null) return "redirect:/auth/login?required";
 
         if (productIds == null || productIds.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "No products to add.");
             return "redirect:/build/start";
         }
 
         try {
             cartService.addListToCart(account, productIds, quantity);
-            redirectAttributes.addFlashAttribute("success", "Products added to cart!");
+            redirectAttributes.addFlashAttribute("success", "Products added!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-
         return "redirect:/cart";
     }
 
@@ -96,96 +88,49 @@ public class CartController {
     public ResponseEntity<?> updateQuantityAjax(@PathVariable int cartItemId,
                                                 @RequestParam int quantity,
                                                 @AuthenticationPrincipal UserDetails currentUser) {
-        Account account = getCurrentAccount(currentUser);
-        if (account == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Please log in."));
-        }
-        try {
-            cartService.updateQuantity(account, cartItemId, quantity);
-
-            List<CartItemDTO> updatedItems = cartService.getCartItems(account);
-            double newSelectedTotal = cartService.calculateSelectedTotal(updatedItems);
-
-            return ResponseEntity.ok(Map.of(
-                    "message", "Quantity updated.",
-                    "newGrandTotal", newSelectedTotal
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+        return handleCartAction(currentUser, () -> cartService.updateQuantity(getCurrentAccount(currentUser), cartItemId, quantity));
     }
 
     @PostMapping("/remove/{cartItemId}")
     @ResponseBody
     public ResponseEntity<?> removeFromCartAjax(@PathVariable int cartItemId,
                                                 @AuthenticationPrincipal UserDetails currentUser) {
-        Account account = getCurrentAccount(currentUser);
-        if (account == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Please log in."));
-        }
-        try {
-            cartService.removeFromCart(account, cartItemId);
-
-            List<CartItemDTO> updatedItems = cartService.getCartItems(account);
-            double newSelectedTotal = cartService.calculateSelectedTotal(updatedItems);
-
-            return ResponseEntity.ok(Map.of(
-                    "message", "Product removed.",
-                    "newGrandTotal", newSelectedTotal
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+        return handleCartAction(currentUser, () -> cartService.removeFromCart(getCurrentAccount(currentUser), cartItemId));
     }
-
-    // CÁC ENDPOINT CHO LOGIC "CHỌN"
 
     @PostMapping("/select/{cartItemId}")
     @ResponseBody
     public ResponseEntity<?> selectItem(@PathVariable int cartItemId,
                                         @AuthenticationPrincipal UserDetails currentUser) {
-        Account account = getCurrentAccount(currentUser);
-        if (account == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
-        cartService.toggleSelectItem(account, cartItemId, true);
-
-        List<CartItemDTO> updatedItems = cartService.getCartItems(account);
-        double newSelectedTotal = cartService.calculateSelectedTotal(updatedItems);
-        return ResponseEntity.ok(Map.of("status", "selected", "newGrandTotal", newSelectedTotal));
+        return handleCartAction(currentUser, () -> cartService.toggleSelectItem(getCurrentAccount(currentUser), cartItemId, true));
     }
 
     @PostMapping("/deselect/{cartItemId}")
     @ResponseBody
     public ResponseEntity<?> deselectItem(@PathVariable int cartItemId,
                                           @AuthenticationPrincipal UserDetails currentUser) {
-        Account account = getCurrentAccount(currentUser);
-        if (account == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
-        cartService.toggleSelectItem(account, cartItemId, false);
-
-        List<CartItemDTO> updatedItems = cartService.getCartItems(account);
-        double newSelectedTotal = cartService.calculateSelectedTotal(updatedItems);
-        return ResponseEntity.ok(Map.of("status", "deselected", "newGrandTotal", newSelectedTotal));
+        return handleCartAction(currentUser, () -> cartService.toggleSelectItem(getCurrentAccount(currentUser), cartItemId, false));
     }
 
     @PostMapping("/clear")
     public String clearCart(@AuthenticationPrincipal UserDetails currentUser, RedirectAttributes redirectAttributes) {
         Account account = getCurrentAccount(currentUser);
-        if (account == null) return "redirect:/auth/login";
-        try {
+        if (account != null) {
             cartService.clearCart(account);
-            redirectAttributes.addFlashAttribute("success", "Cart cleared successfully.");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error clearing cart.");
+            redirectAttributes.addFlashAttribute("success", "Cart cleared.");
         }
         return "redirect:/cart";
     }
 
-    private String getPreviousPage(HttpServletRequest request) {
-        String referrer = request.getHeader("Referer");
-        if (referrer != null && referrer.contains("/cart")) {
-            return "/cart";
+    private ResponseEntity<?> handleCartAction(UserDetails currentUser, Runnable action) {
+        Account account = getCurrentAccount(currentUser);
+        if (account == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Please log in."));
+        try {
+            action.run();
+            double newTotal = cartService.calculateSelectedTotalForAccount(account);
+            return ResponseEntity.ok(Map.of("message", "Success", "newGrandTotal", newTotal));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
-        return (referrer != null && !referrer.isEmpty()) ? referrer : "/";
     }
 }
