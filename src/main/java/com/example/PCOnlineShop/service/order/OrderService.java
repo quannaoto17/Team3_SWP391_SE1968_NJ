@@ -1,22 +1,25 @@
 package com.example.PCOnlineShop.service.order;
 
-import com.example.PCOnlineShop.constant.RoleName;
 import com.example.PCOnlineShop.dto.cart.CartItemDTO;
 import com.example.PCOnlineShop.dto.order.CheckoutDTO;
+import com.example.PCOnlineShop.dto.order.CheckoutPageDTO;
 import com.example.PCOnlineShop.dto.warranty.WarrantyDetailDTO;
 import com.example.PCOnlineShop.model.account.Account;
-import com.example.PCOnlineShop.model.cart.CartItem; // ✅ Thêm
+import com.example.PCOnlineShop.model.account.Address;
+import com.example.PCOnlineShop.model.cart.CartItem;
 import com.example.PCOnlineShop.model.order.Order;
 import com.example.PCOnlineShop.model.order.OrderDetail;
 import com.example.PCOnlineShop.model.payment.Payment;
 import com.example.PCOnlineShop.model.product.Category;
 import com.example.PCOnlineShop.model.product.Product;
-import com.example.PCOnlineShop.repository.account.AccountRepository;
 import com.example.PCOnlineShop.repository.order.OrderDetailRepository;
 import com.example.PCOnlineShop.repository.order.OrderRepository;
 import com.example.PCOnlineShop.repository.payment.PaymentRepository;
 import com.example.PCOnlineShop.repository.product.ProductRepository;
+import com.example.PCOnlineShop.service.address.AddressService;
+import com.example.PCOnlineShop.service.cart.CartService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.payos.PayOS;
@@ -31,12 +34,12 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
-
     private final ProductRepository productRepository;
     private final PaymentRepository paymentRepository;
     private final PayOS payOS;
+    private final CartService cartService;
+    private final AddressService addressService;
 
-    // (Static Map... giữ nguyên)
     private static final Map<Integer, Integer> WARRANTY_MONTHS_BY_CATEGORY;
     static {
         Map<Integer, Integer> map = new HashMap<>();
@@ -47,20 +50,20 @@ public class OrderService {
 
     public OrderService(OrderRepository orderRepository,
                         OrderDetailRepository orderDetailRepository,
-
                         ProductRepository productRepository,
                         PaymentRepository paymentRepository,
-                        PayOS payOS) {
+                        PayOS payOS,
+                        @Lazy CartService cartService,
+                        AddressService addressService) {
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.productRepository = productRepository;
         this.paymentRepository = paymentRepository;
         this.payOS = payOS;
+        this.cartService = cartService;
+        this.addressService = addressService;
     }
 
-    /**
-     * TẠO ĐƠN HÀNG DUY NHẤT
-     */
     @Transactional
     public Order createOrder(Account customerAccount, Map<Integer, CartItem> cartItems,
                              CheckoutDTO checkoutDTO) {
@@ -69,7 +72,6 @@ public class OrderService {
         order.setAccount(customerAccount);
         order.setCreatedDate(new Date());
         order.setStatus("Pending Payment");
-
         order.setShippingMethod(checkoutDTO.getShippingMethod());
         order.setNote(checkoutDTO.getNote());
         order.setShippingFullName(checkoutDTO.getShippingFullName());
@@ -83,8 +85,6 @@ public class OrderService {
             CartItem item = entry.getValue();
             Product product = item.getProduct();
             int quantityToBuy = item.getQuantity();
-
-            // LOGIC KHO KÉP:
 
             if (!item.isBuildItem()) {
                 int currentInventory = product.getInventoryQuantity();
@@ -109,24 +109,64 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    /**
-     * Hàm Hoàn kho
-     */
+    public Order getOrderDetailForView(long orderId, Account currentAccount, boolean isAdmin) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+
+        if (!isAdmin) {
+            if (currentAccount == null || order.getAccount() == null ||
+                    order.getAccount().getAccountId() != currentAccount.getAccountId()) {
+                throw new SecurityException("You are not authorized to view this order.");
+            }
+        }
+        return order;
+    }
+
+    public CheckoutPageDTO prepareCheckoutData(Account account) {
+        List<CartItemDTO> selectedItems = cartService.getCartItems(account)
+                .stream().filter(CartItemDTO::isSelected).toList();
+
+        if (selectedItems.isEmpty()) {
+            throw new IllegalStateException("No chosen products to checkout.");
+        }
+
+        double total = selectedItems.stream().mapToDouble(CartItemDTO::getSubtotal).sum();
+
+        List<Address> addresses = addressService.getAddressesForAccount(account);
+        Address defaultAddr = addressService.getDefaultAddress(account)
+                .orElse(addresses.isEmpty() ? null : addresses.get(0));
+
+        CheckoutDTO dto = new CheckoutDTO();
+        dto.setShippingMethod("Giao hàng tận nơi");
+        if (defaultAddr != null) {
+            dto.setShippingFullName(defaultAddr.getFullName());
+            dto.setShippingPhone(defaultAddr.getPhone());
+            dto.setShippingAddress(defaultAddr.getAddress());
+        }
+
+        return new CheckoutPageDTO(dto, selectedItems, total, addresses, defaultAddr);
+    }
+
+    @Transactional
+    public Order processCheckout(Account account, CheckoutDTO checkoutDTO) {
+        Map<Integer, CartItem> checkoutMap = cartService.getCartMapForCheckout(account);
+        if (checkoutMap.isEmpty()) {
+            throw new IllegalStateException("Please choose products!");
+        }
+        return createOrder(account, checkoutMap, checkoutDTO);
+    }
+
     private void rollBackInventory(Order order) {
         List<OrderDetail> details = orderDetailRepository.findByOrder(order);
         for (OrderDetail detail : details) {
             Product product = detail.getProduct();
             if (product != null) {
-                // if (!detail.isBuildItem()) {
                 product.setInventoryQuantity(product.getInventoryQuantity() + detail.getQuantity());
                 productRepository.save(product);
-                // }
             }
         }
     }
-    /**
-     * Logic Hủy đơn
-     */
+
     @Transactional
     public void cancelOrderFromPaymentId(long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
@@ -145,7 +185,6 @@ public class OrderService {
                     payOS.paymentRequests().cancel(payment.getOrderCode(), "Cancelled by customer or out of payment time");
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi khi hủy link PayOS: " + e.getMessage());
             }
 
             paymentRepository.save(payment);
@@ -153,21 +192,21 @@ public class OrderService {
         }
     }
 
-
     public List<Order> getOrdersByAccount(Account account) {
         return orderRepository.findByAccount(account);
     }
-    public Order getOrderById(long id) {
-        return orderRepository.findById(id).orElse(null);
-    }
+
     public List<OrderDetail> getOrderDetails(long orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Đơn hàng không tồn tại: " + orderId));
+                .orElseThrow(() -> new EntityNotFoundException("Order not found: " + orderId));
         return orderDetailRepository.findByOrder(order);
     }
+
     public List<Order> findAllOrdersForAdmin() {
-        return orderRepository.findAllByRole(RoleName.Customer);
+        return orderRepository.findAll();
     }
+
+
     public List<Order> getOrdersByPhoneNumberForWarranty(String phoneNumber) {
         return orderRepository.findByAccount_PhoneNumber(phoneNumber);
     }
@@ -181,7 +220,9 @@ public class OrderService {
                 .map(detail -> {
                     Order order = detail.getOrder();
                     Product product = detail.getProduct();
-                    Category category = (product != null) ? product.getCategories().get(0) : null;
+                    Category category = (product != null && !product.getCategories().isEmpty())
+                            ? product.getCategories().get(0) : null;
+
                     Date createdDate = order.getCreatedDate();
                     if (order == null || product == null || category == null || createdDate == null) {
                         return null;
@@ -189,9 +230,11 @@ public class OrderService {
                     int categoryId = category.getCategoryId();
                     int warrantyMonths = WARRANTY_MONTHS_BY_CATEGORY.getOrDefault(categoryId, 0);
 
-                    LocalDate orderLocalDate = createdDate.toInstant()
+                    LocalDate orderLocalDate = new java.util.Date(createdDate.getTime())
+                            .toInstant()
                             .atZone(ZoneId.systemDefault())
                             .toLocalDate();
+
                     LocalDate expiryDate = orderLocalDate.plusMonths(warrantyMonths);
 
                     String warrantyStatus;
@@ -220,6 +263,24 @@ public class OrderService {
         return orderRepository.findByStatusIn(shippingStatuses);
     }
 
+
+    @Transactional
+    public String processShippingStatusUpdate(long orderId, String newStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElse(null);
+
+        if (order == null) {
+            return "Order not found.";
+        }
+
+        if (order.getStatus().equals(newStatus)) {
+            return "No change detected for Order #" + orderId;
+        }
+
+        updateShippingStatus(orderId, newStatus);
+        return "Success: Order #" + orderId + " updated to " + newStatus;
+    }
+
     @Transactional
     public void updateShippingStatus(long orderId, String newStatus) {
         Order order = orderRepository.findById(orderId)
@@ -239,8 +300,7 @@ public class OrderService {
         }
 
         if (!isValidTransition) {
-            System.err.println("Attempted invalid status transition from '" + currentStatus + "' to '" + newStatus + "' on shipping screen.");
-            return;
+            throw new IllegalArgumentException("Invalid transition from " + currentStatus + " to " + newStatus);
         }
         order.setStatus(newStatus);
         orderRepository.save(order);

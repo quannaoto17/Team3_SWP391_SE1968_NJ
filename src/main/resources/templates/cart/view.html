@@ -73,7 +73,7 @@
                            th:text="${item.productName}">Product Name</a>
                     </div>
                     <div class="item-price"
-                         th:text="${#numbers.formatInteger(item.price, 1, 'COMMA')} + ' ₫'">Price
+                         th:text="${#numbers.formatInteger(item.price, 1, 'COMMA')} + ' $'">Price
                     </div>
                     <div class="item-quantity">
                         <button type="button" class="quantity-change-btn decrease-qty-btn btn btn-sm btn-outline-secondary"
@@ -86,7 +86,7 @@
                         </button>
                     </div>
                     <div class="item-subtotal"
-                         th:text="${#numbers.formatInteger(item.subtotal, 1, 'COMMA')} + ' ₫'">Subtotal
+                         th:text="${#numbers.formatInteger(item.subtotal, 1, 'COMMA')} + ' $'">Subtotal
                     </div>
                     <div class="item-remove">
                         <button type="button" class="remove-item-btn" title="Remove item">🗑️</button>
@@ -101,14 +101,14 @@
                     <h3>Summary</h3>
                     <div class="summary-line">
                         <span>Selected Items (<span id="selected-items-count">0</span>):</span>
-                        <span id="selected-items-total">0 ₫</span>
+                        <span id="selected-items-total">0 $</span>
                     </div>
                     <hr>
                     <div class="summary-line grand-total">
                         <span>Grand Total:</span>
                         <span id="grand-total-value"
                               th:data-raw-total="${grandTotal}"
-                              th:text="${#numbers.formatInteger(grandTotal, 1, 'COMMA')} + ' ₫'">0 ₫</span>
+                              th:text="${#numbers.formatInteger(grandTotal, 1, 'COMMA')} + ' $'">0 ₫</span>
                     </div>
                     <a th:href="@{/orders/checkout}" id="checkout-link"
                        class="checkout-btn btn btn-danger w-100 mt-3"
