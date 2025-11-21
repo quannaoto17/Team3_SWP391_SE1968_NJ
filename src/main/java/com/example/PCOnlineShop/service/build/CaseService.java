@@ -16,7 +16,7 @@ public class CaseService {
     private CaseRepository caseRepository;
 
     public List<Case> getAllCases() {
-        return caseRepository.findAll();
+        return caseRepository.findAllWithImages();
     }
 
     public Case addCase(Case pcCase) {
@@ -28,7 +28,7 @@ public class CaseService {
     }
 
     public Case getCaseById(int id) {
-        return caseRepository.findById(id).orElse(null);
+        return caseRepository.findByIdWithImages(id).orElse(null);
     }
 
     public void deleteCase(int id) {

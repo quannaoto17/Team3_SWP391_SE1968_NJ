@@ -15,7 +15,7 @@ public class PowerSupplyService {
     private PowerSupplyRepository powerSupplyRepository;
 
     public List<PowerSupply> getAllPowerSupply() {
-        return powerSupplyRepository.findAll();
+        return powerSupplyRepository.findAllWithImages();
     }
 
     public PowerSupply addPowerSupply(PowerSupply powerSupply) {
@@ -27,7 +27,7 @@ public class PowerSupplyService {
     }
 
     public PowerSupply getPowerSupplyById(int id) {
-        return powerSupplyRepository.findById(id).orElse(null);
+        return powerSupplyRepository.findByIdWithImages(id).orElse(null);
     }
 
     public void deletePowerSupply(int id) {

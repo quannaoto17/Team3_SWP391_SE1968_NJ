@@ -5,6 +5,7 @@ import com.example.PCOnlineShop.model.product.Brand;
 import com.example.PCOnlineShop.repository.build.MainboardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -16,8 +17,9 @@ public class MainboardService {
     private final BuildService buildService;
 
 
+    @Transactional(readOnly = true)
     public List<Mainboard> getAllMainboards() {
-        return mainboardRepository.findAll();
+        return mainboardRepository.findAllWithImages();
     }
 
     public Mainboard addMainboard(Mainboard mainboard) {
@@ -28,8 +30,9 @@ public class MainboardService {
         return mainboardRepository.save(mainboard);
     }
 
+    @Transactional(readOnly = true)
     public Mainboard getMainboardById(int id) {
-        return mainboardRepository.findById(id).orElse(null);
+        return mainboardRepository.findByIdWithImages(id).orElse(null);
     }
 
     public void deleteMainboard(int id) {

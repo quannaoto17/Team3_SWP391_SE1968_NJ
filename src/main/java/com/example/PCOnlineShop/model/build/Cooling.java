@@ -19,7 +19,7 @@ public class Cooling {
     @Column(name = "type")
     @NotBlank(message = "Cooling type is required")
     @Size(min = 1, max = 100, message = "Cooling type must be between 1 and 100 characters")
-    //@Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Cooling type must not contain special characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Cooling type must not contain special characters")
     private String type; // e.g., Air, Liquid
 
     @Column(name = "fan_size")
