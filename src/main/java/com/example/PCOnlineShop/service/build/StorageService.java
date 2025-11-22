@@ -15,11 +15,11 @@ public class StorageService {
     private StorageRepository storageRepository;
 
     public Storage getStorageById(int id) {
-        return storageRepository.findById(id).orElse(null);
+        return storageRepository.findByIdWithImages(id).orElse(null);
     }
 
     public List<Storage> getAllStorages() {
-        return storageRepository.findAll();
+        return storageRepository.findAllWithImages();
     }
 
 

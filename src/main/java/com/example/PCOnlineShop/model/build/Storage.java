@@ -20,19 +20,19 @@ public class Storage {
     @Column(name = "capacity")
     @NotBlank(message = "Capacity is required")
     @Size(min = 1, max = 6, message = "Capacity must be between 1 and 6 digits")
- //   @Pattern(regexp = "^[0-9]+$", message = "Capacity must be a valid number")
+    @Pattern(regexp = "^[0-9]+$", message = "Capacity must be a valid number")
     private int capacity;
 
     @Column(name = "type")
     @NotBlank(message = "Storage type is required")
     @Size(min = 2, max = 20, message = "Storage type must be between 2 and 20 characters")
-   // @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Storage type must not contain special characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Storage type must not contain special characters")
     private String type;
 
     @Column(name = "interface")
     @NotBlank(message = "Interface type is required")
     @Size(min = 2, max = 20, message = "Interface type must be between 2 and 20 characters")
-  //  @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Interface type must not contain special characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Interface type must not contain special characters")
     private String interfaceType;
 
     @Column(name = "read_speed")

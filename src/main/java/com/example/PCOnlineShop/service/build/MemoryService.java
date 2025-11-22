@@ -15,7 +15,7 @@ public class MemoryService {
     private MemoryRepository memoryRepository;
 
     public List<Memory> getAllMemory() {
-        return memoryRepository.findAll();
+        return memoryRepository.findAllWithImages();
     }
 
     public Memory addMemory(Memory memory) {
@@ -27,7 +27,7 @@ public class MemoryService {
     }
 
     public Memory getMemoryById(int id) {
-        return memoryRepository.findById(id).orElse(null);
+        return memoryRepository.findByIdWithImages(id).orElse(null);
     }
 
     public void deleteMemory(int id) {

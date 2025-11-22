@@ -25,7 +25,7 @@ public class Memory {
     @Column(name = "type")
     @NotBlank(message = "Memory type is required")
     @Size(min = 2, max = 20, message = "Memory type must be between 2 and 20 characters")
-    //@Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Memory type must not contain special characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Memory type must not contain special characters")
     private String type;
 
     @Column(name = "speed")

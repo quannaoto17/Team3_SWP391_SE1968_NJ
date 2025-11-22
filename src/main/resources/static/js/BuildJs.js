@@ -359,15 +359,70 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // ===============================
+    // Search Box Real-time Filtering
+    // ===============================
+    const searchBox = document.getElementById("searchBox");
+    if (searchBox) {
+        let searchTimeout;
+
+        // Real-time filter with debounce (wait 300ms after user stops typing)
+        searchBox.addEventListener("input", function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                filterProducts();
+            }, 300);
+        });
+
+        // Handle Enter key
+        searchBox.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                clearTimeout(searchTimeout);
+                filterProducts();
+            }
+        });
+
+        // Clear filter when search box is cleared
+        searchBox.addEventListener("change", function() {
+            if (!this.value.trim()) {
+                clearFilter();
+            }
+        });
+    }
+
     // If needed, recalc originalTotalPrice whenever server re-renders or other changes appear. We keep one-time read for now.
 });
 
 function filterProducts() {
     const sb = document.getElementById("searchBox");
-    const query = sb ? sb.value.toLowerCase() : '';
+    if (!sb) return;
+
+    // Normalize query: trim, lowercase, remove extra spaces, remove special chars
+    let query = sb.value
+        .trim()                           // Remove leading/trailing spaces
+        .toLowerCase()                     // Case insensitive
+        .replace(/\s+/g, ' ')             // Replace multiple spaces with single space
+        .replace(/[^\w\s\-]/g, '');       // Remove special chars except dash and alphanumeric
+
+    // If query is empty after normalization, show all
+    if (!query) {
+        document.querySelectorAll(".product-card").forEach(card => {
+            card.style.display = "block";
+        });
+        return;
+    }
+
     document.querySelectorAll(".product-card").forEach(card => {
-        const name = (card.getAttribute("data-name") || "").toLowerCase();
-        card.style.display = name.includes(query) ? "block" : "none";
+        // Normalize product name the same way
+        const name = (card.getAttribute("data-name") || "")
+            .toLowerCase()
+            .replace(/\s+/g, ' ')
+            .replace(/[^\w\s\-]/g, '');
+
+        // Show if normalized name includes normalized query
+        const matches = name.includes(query);
+        card.style.display = matches ? "block" : "none";
     });
 }
 function clearFilter() {

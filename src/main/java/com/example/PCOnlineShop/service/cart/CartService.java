@@ -107,8 +107,14 @@ public class CartService {
     }
 
     public void addBuildToCart(Account account, BuildItemDto buildItems) {
+        // Validate input
+        if (buildItems == null) {
+            throw new IllegalArgumentException("Build items cannot be null");
+        }
+
         Cart cart = getOrCreateCart(account);
         String buildId = UUID.randomUUID().toString();
+
         Consumer<Product> addBuildItem = (product) -> {
             if (product != null) {
                 CartItem newItem = new CartItem();
@@ -121,13 +127,29 @@ public class CartService {
                 cartItemRepository.save(newItem);
             }
         };
-        addBuildItem.accept(buildItems.getMainboard().getProduct());
-        addBuildItem.accept(buildItems.getCpu().getProduct());
-        addBuildItem.accept(buildItems.getGpu().getProduct());
-        addBuildItem.accept(buildItems.getMemory().getProduct());
-        addBuildItem.accept(buildItems.getStorage().getProduct());
-        addBuildItem.accept(buildItems.getPowerSupply().getProduct());
-        addBuildItem.accept(buildItems.getPcCase().getProduct());
+
+        // Add components with null safety checks
+        if (buildItems.getMainboard() != null) {
+            addBuildItem.accept(buildItems.getMainboard().getProduct());
+        }
+        if (buildItems.getCpu() != null) {
+            addBuildItem.accept(buildItems.getCpu().getProduct());
+        }
+        if (buildItems.getGpu() != null) {
+            addBuildItem.accept(buildItems.getGpu().getProduct());
+        }
+        if (buildItems.getMemory() != null) {
+            addBuildItem.accept(buildItems.getMemory().getProduct());
+        }
+        if (buildItems.getStorage() != null) {
+            addBuildItem.accept(buildItems.getStorage().getProduct());
+        }
+        if (buildItems.getPowerSupply() != null) {
+            addBuildItem.accept(buildItems.getPowerSupply().getProduct());
+        }
+        if (buildItems.getPcCase() != null) {
+            addBuildItem.accept(buildItems.getPcCase().getProduct());
+        }
         if (buildItems.getCooling() != null) {
             addBuildItem.accept(buildItems.getCooling().getProduct());
         }

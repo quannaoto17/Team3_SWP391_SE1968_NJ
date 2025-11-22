@@ -20,7 +20,7 @@ public class CPU {
     @Column(name = "socket")
     @NotBlank(message = "Socket type is required")
     @Size(min = 1, max = 100, message = "Socket type must be between 1 and 100 characters")
-    //@Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Socket type must not contain special characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Socket type must not contain special characters")
     private String socket;
 
     @Column(name = "tdp")
@@ -47,7 +47,7 @@ public class CPU {
     @Column(name = "pcie_version")
     @NotBlank(message = "PCIe version is required")
     @Size(min = 1, max = 100, message = "PCIe version must be between 1 and 100 characters")
- //   @Pattern(regexp = "^[a-zA-Z0-9\\.\\s-]+$", message = "PCIe version must not contain special characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\.\\s-]+$", message = "PCIe version must not contain special characters")
     private String pcieVersion;
 
      @OneToOne(fetch = FetchType.EAGER)

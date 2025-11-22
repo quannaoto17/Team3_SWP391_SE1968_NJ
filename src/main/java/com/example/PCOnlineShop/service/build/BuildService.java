@@ -34,7 +34,7 @@ public class BuildService {
      * Returns all mainboards if build is empty, otherwise filters by compatibility
      */
     public List<Mainboard> getCompatibleMainboards(BuildItemDto buildItem) {
-        List<Mainboard> allMainboards = mainboardRepository.findAll();
+        List<Mainboard> allMainboards = mainboardRepository.findAllWithImages();
 
         if (buildItem.isEmpty()) {
             log.debug("Build is empty, returning all {} mainboards", allMainboards.size());
@@ -53,7 +53,7 @@ public class BuildService {
      * Get compatible CPUs based on mainboard socket
      */
     public List<CPU> getCompatibleCpus(BuildItemDto buildItem) {
-        List<CPU> allCpus = cpuRepository.findAll();
+        List<CPU> allCpus = cpuRepository.findAllWithImages();
 
         if (buildItem.getMainboard() == null) {
             log.debug("No mainboard selected, returning all {} CPUs", allCpus.size());
@@ -74,7 +74,7 @@ public class BuildService {
      * Get compatible GPUs - all GPUs are compatible, sorted by performance
      */
     public List<GPU> getCompatibleGPUs(BuildItemDto buildItem) {
-        List<GPU> allGpus = gpuRepository.findAll();
+        List<GPU> allGpus = gpuRepository.findAllWithImages();
 
         List<GPU> compatible = allGpus.stream()
                 .filter(gpu -> compatibilityService.checkGpuCompatibility(buildItem, gpu))
@@ -88,7 +88,7 @@ public class BuildService {
      * Get compatible cases based on form factor, GPU length, and cooler height
      */
     public List<Case> getCompatibleCases(BuildItemDto buildItem) {
-        List<Case> allCases = caseRepository.findAll();
+        List<Case> allCases = caseRepository.findAllWithImages();
 
         if (buildItem.isEmpty()) {
             log.debug("Build is empty, returning all {} cases", allCases.size());
@@ -107,7 +107,7 @@ public class BuildService {
      * Get compatible memory based on mainboard's memory type
      */
     public List<Memory> getCompatibleMemory(BuildItemDto buildItem) {
-        List<Memory> allMemory = memoryRepository.findAll();
+        List<Memory> allMemory = memoryRepository.findAllWithImages();
 
         if (buildItem.getMainboard() == null) {
             log.debug("No mainboard selected, returning all {} memory", allMemory.size());
@@ -128,7 +128,7 @@ public class BuildService {
      * Get compatible storage - all storage is compatible
      */
     public List<Storage> getCompatibleStorage(BuildItemDto buildItem) {
-        List<Storage> allStorage = storageRepository.findAll();
+        List<Storage> allStorage = storageRepository.findAllWithImages();
 
         List<Storage> compatible = allStorage.stream()
                 .filter(storage -> compatibilityService.checkStorageCompatibility(buildItem, storage))
@@ -142,7 +142,7 @@ public class BuildService {
      * Get compatible power supplies based on required wattage and form factor
      */
     public List<PowerSupply> getCompatiblePowerSupplies(BuildItemDto buildItem) {
-        List<PowerSupply> allPowerSupplies = powerSupplyRepository.findAll();
+        List<PowerSupply> allPowerSupplies = powerSupplyRepository.findAllWithImages();
 
         if (buildItem.isEmpty()) {
             log.debug("Build is empty, returning all {} PSUs", allPowerSupplies.size());
@@ -161,7 +161,7 @@ public class BuildService {
      * Get compatible cooling based on CPU TDP and case cooler height
      */
     public List<Cooling> getCompatibleCoolings(BuildItemDto buildItem) {
-        List<Cooling> allCoolings = coolingRepository.findAll();
+        List<Cooling> allCoolings = coolingRepository.findAllWithImages();
 
         if (buildItem.getCpu() == null) {
             log.debug("No CPU selected, returning all {} cooling solutions", allCoolings.size());

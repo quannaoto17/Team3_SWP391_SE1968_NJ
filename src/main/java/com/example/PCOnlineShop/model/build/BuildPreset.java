@@ -56,24 +56,24 @@ public enum BuildPreset {
     WORKSTATION(
         "Workstation",
         "For 3D rendering, video editing, CAD",
-        1800,
+        1400,                   // LOWERED: More realistic min budget
         Map.of(
-            "cpu", 0.30,
-            "memory", 0.20,
-            "gpu", 0.25,
-            "storage", 0.15,
-            "psu", 0.05,
-            "mainboard", 0.03,
-            "case", 0.03,       // $54 (was $18) - INCREASED
-            "cooling", 0.01
+            "cpu", 0.30,        // $420
+            "memory", 0.20,     // $280
+            "gpu", 0.25,        // $350
+            "storage", 0.12,    // $168
+            "mainboard", 0.06,  // $84
+            "psu", 0.05,        // $70
+            "case", 0.03,       // $42
+            "cooling", 0.02     // $28
         ),
         Map.of(
-            "cpu_score_min", 85,
-            "gpu_score_min", 75,
-            "memory_capacity_min", 32,
-            "memory_speed_min", 3200,
-            "storage_capacity_min", 1000,
-            "psu_wattage_min", 750
+            "cpu_score_min", 75,                // LOWERED: i5/Ryzen 5 level is OK
+            "gpu_score_min", 65,                // LOWERED: RTX 3060/RX 6600 XT level
+            "memory_capacity_min", 16,          // LOWERED: 16GB is fine for entry workstation
+            "memory_speed_min", 3200,           // OK
+            "storage_capacity_min", 500,        // LOWERED: 500GB is OK for start
+            "psu_wattage_min", 650              // LOWERED: 650W is enough
         )
     ),
 
@@ -82,21 +82,21 @@ public enum BuildPreset {
         "For office work, web browsing, light tasks",
         600,
         Map.of(
-            "cpu", 0.25,
-            "memory", 0.20,
-            "storage", 0.20,
-            "mainboard", 0.15,
-            "psu", 0.10,
-            "gpu", 0.05,
-            "case", 0.05,       // $30 (was $12) - INCREASED
-            "cooling", 0.03
+            "cpu", 0.25,        // $150
+            "memory", 0.20,     // $120
+            "storage", 0.20,    // $120
+            "mainboard", 0.15,  // $90
+            "psu", 0.10,        // $60
+            "gpu", 0.05,        // $30 (optional, iGPU is fine)
+            "case", 0.05,       // $30
+            "cooling", 0.03     // $18
         ),
         Map.of(
-            "cpu_score_min", 50,
-            "memory_capacity_min", 16,
-            "memory_speed_min", 2400,
-            "storage_capacity_min", 500,
-            "psu_wattage_min", 450
+            "cpu_score_min", 40,                // LOWERED: Pentium/i3/Ryzen 3 level
+            "memory_capacity_min", 8,           // LOWERED: 8GB is enough for office
+            "memory_speed_min", 2400,           // OK
+            "storage_capacity_min", 240,        // LOWERED: 240GB SSD is fine
+            "psu_wattage_min", 450              // OK
         )
     ),
 
@@ -140,7 +140,7 @@ public enum BuildPreset {
         ),
         Map.of(
             "cpu_score_min", 80,
-            "gpu_score_min", 75,
+            "gpu_score_min", 70,
             "memory_capacity_min", 32,
             "memory_speed_min", 3200,
             "storage_capacity_min", 1000,

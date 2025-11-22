@@ -14,7 +14,7 @@ public class CpuService {
     private final CpuRepository cpuRepository;
 
     public List<CPU> getAllCpus() {
-        return cpuRepository.findAll();
+        return cpuRepository.findAllWithImages();
     }
 
     public CPU addCpu(CPU cpu) {
@@ -26,7 +26,7 @@ public class CpuService {
     }
 
     public CPU getCpuById(int id) {
-        return cpuRepository.findById(id).orElse(null);
+        return cpuRepository.findByIdWithImages(id).orElse(null);
     }
 
     public void deleteCpu(int id) {
