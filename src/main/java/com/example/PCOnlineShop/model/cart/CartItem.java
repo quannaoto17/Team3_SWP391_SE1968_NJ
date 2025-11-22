@@ -35,9 +35,4 @@ public class CartItem {
     @Column(name = "build_id")
     private String buildId;
 
-    public CartItem(Cart cart, Product product, int quantity) {
-        this.cart = cart;
-        this.product = product;
-        this.quantity = quantity;
-    }
 }
