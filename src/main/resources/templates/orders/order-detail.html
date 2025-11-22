@@ -27,7 +27,7 @@
                 <table class="product-table">
                     <thead>
                     <tr>
-                        <th>Product</th>
+                        <th>Product Name</th>
                         <th>Price</th>
                         <th>Quantity</th>
                         <th>Subtotal</th>
@@ -42,9 +42,9 @@
                                style="text-decoration: none; color: #007bff; font-weight: 600;">
                             </a>
                         </td>
-                        <td th:text="${#numbers.formatInteger(d.price, 1, 'COMMA')} + ' ₫'"></td>
+                        <td th:text="${#numbers.formatInteger(d.price, 1, 'COMMA')} + ' $'"></td>
                         <td th:text="${d.quantity}"></td>
-                        <td th:text="${#numbers.formatInteger(d.quantity * d.price, 1, 'COMMA')} + ' ₫'"></td>
+                        <td th:text="${#numbers.formatInteger(d.quantity * d.price, 1, 'COMMA')} + ' $'"></td>
                     </tr>
                     <tr th:if="${details == null or #lists.isEmpty(details)}">
                         <td colspan="4" style="text-align: center;">No product details found.</td>

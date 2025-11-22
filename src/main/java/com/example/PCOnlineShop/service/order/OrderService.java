@@ -86,14 +86,14 @@ public class OrderService {
             Product product = item.getProduct();
             int quantityToBuy = item.getQuantity();
 
-            if (!item.isBuildItem()) {
-                int currentInventory = product.getInventoryQuantity();
-                if (currentInventory < quantityToBuy) {
-                    throw new IllegalStateException("Product " + product.getProductName() + " not enough inventory.");
-                }
-                product.setInventoryQuantity(currentInventory - quantityToBuy);
-                productRepository.save(product);
-            }
+//            if (!item.isBuildItem()) {
+//                int currentInventory = product.getInventoryQuantity();
+//                if (currentInventory < quantityToBuy) {
+//                    throw new IllegalStateException("Product " + product.getProductName() + " not enough inventory.");
+//                }
+//                product.setInventoryQuantity(currentInventory - quantityToBuy);
+//                productRepository.save(product);
+//            }
 
             OrderDetail detail = new OrderDetail();
             detail.setOrder(order);
