@@ -83,7 +83,7 @@ public class HomeController {
     }
 
     /**
-     * ✅ Trang Product Home - hiển thị toàn bộ sản phẩm (phân trang + lọc)
+     *  Trang Product Home - hiển thị toàn bộ sản phẩm (phân trang + lọc)
      */
     @GetMapping("/products")
     public String productHome(

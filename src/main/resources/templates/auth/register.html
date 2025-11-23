@@ -86,10 +86,10 @@
     <form th:action="@{/auth/register}" th:object="${account}" method="post" onsubmit="return validatePassword()">
 
         <label for="firstname">First Name</label>
-        <input type="text" id="firstname" th:field="*{firstname}" placeholder="Nhập họ" required>
+        <input type="text" id="firstname" th:field="*{firstname}" placeholder="First Name" required>
 
         <label for="lastname">Last Name</label>
-        <input type="text" id="lastname" th:field="*{lastname}" placeholder="Nhập tên" required>
+        <input type="text" id="lastname" th:field="*{lastname}" placeholder="Last Name" required>
 
         <label for="gender">Gender</label>
         <select id="gender" th:field="*{gender}">
@@ -98,8 +98,24 @@
             <option value="false">Female</option>
         </select>
 
-        <label for="address">Address</label>
-        <input type="text" id="address" th:field="*{address}" placeholder="Enter address" required>
+        <label>Address</label>
+
+        <div class="address-group">
+            <select id="province" class="form-control">
+                <option value="">-- Province --</option>
+            </select>
+
+            <select id="district" class="form-control">
+                <option value="">-- District --</option>
+            </select>
+
+            <select id="ward" class="form-control">
+                <option value="">-- Ward --</option>
+            </select>
+        </div>
+
+        <input type="hidden" id="address" th:field="*{address}">
+
 
         <label for="email">Email</label>
         <input type="email" id="email" th:field="*{email}" placeholder="example@gmail.com" required>
@@ -135,6 +151,68 @@
         }
         return true;
     }
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const provinceSelect = document.getElementById("province");
+        const districtSelect = document.getElementById("district");
+        const wardSelect = document.getElementById("ward");
+        const addressInput = document.getElementById("address");
+
+        fetch("https://provinces.open-api.vn/api/p/")
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(p => {
+                    provinceSelect.innerHTML += `<option value="${p.name}" data-code="${p.code}">${p.name}</option>`;
+                });
+            });
+
+
+        provinceSelect.addEventListener("change", () => {
+            districtSelect.innerHTML = `<option value="">-- Chọn Quận/Huyện --</option>`;
+            wardSelect.innerHTML = `<option value="">-- Chọn Phường/Xã --</option>`;
+
+            let provinceCode = provinceSelect.selectedOptions[0].dataset.code;
+
+            fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+                .then(res => res.json())
+                .then(data => {
+                    data.districts.forEach(d => {
+                        districtSelect.innerHTML += `<option value="${d.name}" data-code="${d.code}">${d.name}</option>`;
+                    });
+                });
+
+            updateHiddenAddress();
+        });
+
+        /* --- 3. Load Phường/Xã khi chọn Quận --- */
+        districtSelect.addEventListener("change", () => {
+            wardSelect.innerHTML = `<option value="">-- Chọn Phường/Xã --</option>`;
+            let districtCode = districtSelect.selectedOptions[0].dataset.code;
+
+            fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+                .then(res => res.json())
+                .then(data => {
+                    data.wards.forEach(w => {
+                        wardSelect.innerHTML += `<option value="${w.name}">${w.name}</option>`;
+                    });
+                });
+
+            updateHiddenAddress();
+        });
+
+
+        wardSelect.addEventListener("change", updateHiddenAddress);
+
+        function updateHiddenAddress() {
+            let province = provinceSelect.value;
+            let district = districtSelect.value;
+            let ward = wardSelect.value;
+
+            if (province && district && ward) {
+                addressInput.value = `${ward}, ${district}, ${province}`;
+            }
+        }
+    });
 </script>
 </body>
 </html>
