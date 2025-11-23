@@ -193,6 +193,47 @@
             }
         }
 
+             /* My Profile button */
+         .profile-btn {
+             display: inline-flex;
+             align-items: center;
+             gap: 10px;
+             padding: 8px 14px;
+             background: linear-gradient(90deg, #3b82f6, #2563eb);
+             color: #fff;
+             border: none;
+             border-radius: 999px;
+             font-weight: 600;
+             cursor: pointer;
+             box-shadow: 0 6px 18px rgba(37,99,235,0.18);
+             transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+             text-decoration: none;
+             -webkit-tap-highlight-color: transparent;
+         }
+        .profile-btn .icon {
+            font-size: 16px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .profile-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(37,99,235,0.22);
+        }
+        .profile-btn:active { transform: translateY(0); }
+        .profile-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.18);
+        }
+
+        /* Responsive: hide label on very small widths */
+        @media (max-width: 420px) {
+            .profile-btn .label { display: none; }
+            .profile-btn { padding: 8px 10px; }
+        }
+
+
     </style>
 
     <div class="header-wrapper">
@@ -201,6 +242,7 @@
             <img src="https://via.placeholder.com/60" alt="Profile">
             <h2>Role: Staff</h2>
             <nav>
+                <a th:href="@{/dashboard/staff}" class="sidebar-link">Dashboard</a>
                 <a th:href="@{/staff/products/list}" class="sidebar-link">Product Manage</a>
                 <a th:href="@{/staff/warranty/check}" class="sidebar-link">Check Warranty</a>
                 <a th:href="@{/staff/feedback}" class="sidebar-link">Feedback Management</a>
@@ -217,10 +259,19 @@
         <div class="topbar">
             <div class="menu-icon" id="menu-btn">☰</div>
 
-            <form th:action="@{/auth/logout}" method="get">
-                <button type="submit" class="logout-btn">Logout</button>
-            </form>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button type="button" class="profile-btn"
+                        th:onclick="|window.location.href='@{/profile}'|">
+                    <span class="icon" aria-hidden="true">👤</span>
+                    <span class="label">My Profile</span>
+                </button>
+
+                <form th:action="@{/auth/logout}" method="get">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
         </div>
+
     </div>
 
     <script>
