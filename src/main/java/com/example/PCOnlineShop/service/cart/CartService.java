@@ -100,7 +100,6 @@ public class CartService {
             newItem.setCart(cart);
             newItem.setProduct(product);
             newItem.setQuantity(quantity);
-//            newItem.setBuildItem(false);
             newItem.setSelected(true);
             cartItemRepository.save(newItem);
         }
@@ -113,18 +112,11 @@ public class CartService {
         }
 
         Cart cart = getOrCreateCart(account);
-//        String buildId = UUID.randomUUID().toString();
+
 
         Consumer<Product> addBuildItem = (product) -> {
             if (product != null) {
-//                CartItem newItem = new CartItem();
-//                newItem.setCart(cart);
-//                newItem.setProduct(product);
-//                newItem.setQuantity(1);
-////                newItem.setBuildItem(true);
-////                newItem.setBuildId(buildId);
-//                newItem.setSelected(true);
-//                cartItemRepository.save(newItem);
+
                 addToCart(account, product.getProductId(), 1);
             }
         };
@@ -168,7 +160,6 @@ public class CartService {
             newItem.setCart(cart);
             newItem.setProduct(product);
             newItem.setQuantity(quantity);
-//            newItem.setBuildItem(true);
             newItem.setSelected(true);
             cartItemRepository.save(newItem);
         }

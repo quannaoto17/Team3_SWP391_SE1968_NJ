@@ -43,6 +43,18 @@ public class PaymentController {
         return "redirect:/orders/list";
     }
 
+    @GetMapping("/continue/{orderId}")
+    public String continuePayment(@PathVariable long orderId, RedirectAttributes redirectAttributes) {
+        try {
+            String checkoutUrl = paymentService.getOrRegeneratePaymentUrl(orderId);
+            return "redirect:" + checkoutUrl;
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Unable to retrieve payment link: " + e.getMessage());
+            return "redirect:/orders/detail/" + orderId;
+        }
+    }
+
     @PostMapping("/webhook")
     @ResponseBody
     public ResponseEntity<String> handlePayOSWebhook(@RequestBody Object body) {

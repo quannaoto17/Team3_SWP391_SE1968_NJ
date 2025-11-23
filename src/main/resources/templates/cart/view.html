@@ -31,14 +31,13 @@
     </div>
 
     <div th:if="${isEmpty}" class="empty-cart text-center p-5">
-        <img th:src="@{/images/empty-cart.png}" alt="Empty Cart" style="width: 200px;"/>
         <h3>Your cart is empty!</h3>
         <p>Looks like you haven't added anything to your cart yet.</p>
         <a th:href="@{/}" class="btn btn-primary">Continue Shopping</a>
     </div>
 
     <div th:unless="${isEmpty}" class="row g-4">
-        <div class="col-lg-8 col-md-7">
+        <div class="col-lg-8 col-12">
             <div class="cart-header">
                 <div class="select-all-container">
                     <input type="checkbox" id="select-all-checkbox" class="cart-checkbox form-check-input">
@@ -96,7 +95,7 @@
             </div>
         </div>
 
-        <div class="col-lg-4 col-md-5">
+        <div class="col-lg-4 col-12">
             <div class="summary-wrapper sticky-top">
                 <div class="cart-summary">
                     <h3>Summary</h3>

@@ -80,6 +80,30 @@ public class PaymentService {
     }
 
     @Transactional
+    public String getOrRegeneratePaymentUrl(long orderId) throws Exception {
+        Payment payment = paymentRepository.findByOrder_OrderId(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Payment info not found for order: " + orderId));
+
+        if (!"Pending Payment".equals(payment.getOrder().getStatus())) {
+            throw new IllegalStateException("Order is not in Pending Payment state.");
+        }
+
+        try {
+            if (payment.getOrderCode() != null) {
+                PaymentLink currentLink = payOS.paymentRequests().get(payment.getOrderCode());
+                if ("PAID".equals(currentLink.getStatus())) {
+
+                    throw new IllegalStateException("Payment has already been completed for this order.");
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Can't check out-date status: " + e.getMessage());
+        }
+
+        return createPayOSLink(payment);
+    }
+
+    @Transactional
     public void handleWebhook(Object body) throws Exception {
         WebhookData webhookData = payOS.webhooks().verify(body);
         long orderCode = webhookData.getOrderCode();
