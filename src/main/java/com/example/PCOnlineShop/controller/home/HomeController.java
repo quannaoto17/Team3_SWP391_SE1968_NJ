@@ -84,7 +84,7 @@ public class HomeController {
     }
 
     /**
-     * ✅ Trang Product Home - hiển thị toàn bộ sản phẩm (phân trang + lọc)
+     *  Trang Product Home - hiển thị toàn bộ sản phẩm (phân trang + lọc)
      */
     @GetMapping("/products")
     public String productHome(
@@ -99,6 +99,9 @@ public class HomeController {
             @RequestParam(defaultValue = "12") int size,
             Model model
     ) {
+        if (keyword != null) {
+            keyword = keyword.trim().replaceAll("\\s+", " ");
+        }
         Sort sort = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by(sortField).ascending()
                 : Sort.by(sortField).descending();
@@ -154,6 +157,12 @@ public class HomeController {
         //  Lấy toàn bộ feedback đã được duyệt (Allow) — không phân trang
         var feedbackPage = feedbackService.getAllowedByProduct(id, 0, Integer.MAX_VALUE);
         model.addAttribute("feedbackPage", feedbackPage);
+
+        Double avgRating = feedbackService.getAverageRating(id);
+        model.addAttribute("avgRating", avgRating);
+
+        long feedbackCount = feedbackPage.getTotalElements();
+        model.addAttribute("feedbackCount", feedbackCount);
 
         return "product/product-details";
     }
