@@ -59,6 +59,6 @@ public class PowerSupplyController {
             buildItem.setPowerSupply(powerSupplyService.getPowerSupplyById(psuId));
         }
         // Stay on PSU page after selection
-        return "redirect:/build/psu";
+        return "redirect:/build/other";
     }
 }

@@ -153,6 +153,9 @@ public class CartService {
         if (buildItems.getCooling() != null) {
             addBuildItem.accept(buildItems.getCooling().getProduct());
         }
+        if (buildItems.getOther() != null) {
+            addBuildItem.accept(buildItems.getOther());
+        }
     }
 
     public void addListToCart(Account account, List<Integer> productIds, int quantity) {

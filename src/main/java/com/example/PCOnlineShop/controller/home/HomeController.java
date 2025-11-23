@@ -61,7 +61,8 @@ public class HomeController {
             model.addAttribute("currentUser", user);
         }
 
-        List<Category> categories = categoryRepository.findAll();
+        // Get only main categories (Mainboard, CPU, GPU, Memory, Storage, Case, Power Supply, Cooling, Other)
+        List<Category> categories = categoryRepository.findMainCategories();
         List<Brand> brands = brandRepository.findAll();
         List<Product> products;
 
@@ -114,8 +115,8 @@ public class HomeController {
                 java.util.stream.IntStream.range(0, productPage.getTotalPages()).boxed().toList());
 
         // Truyền các giá trị filter về view
-        model.addAttribute("categories", categoryRepository.findAll());
-        model.addAttribute("brands", brandRepository.findAll());
+        // Truyền các giá trị filter về view - only main categories
+        model.addAttribute("categories", categoryRepository.findMainCategories());
         model.addAttribute("selectedCategory", category);
         model.addAttribute("selectedBrand", brand);
         model.addAttribute("minPrice", minPrice);

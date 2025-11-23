@@ -11,6 +11,7 @@
             <li th:classappend="${currentSection}=='memory' ? 'active' : ''"><a th:href="@{/build/memory}">Memory</a></li>
             <li th:classappend="${currentSection}=='storage' ? 'active' : ''"><a th:href="@{/build/storage}">Storage</a></li>
             <li th:classappend="${currentSection}=='psu' ? 'active' : ''"><a th:href="@{/build/psu}">PSU</a></li>
+            <li th:classappend="${currentSection}=='other' ? 'active' : ''"><a th:href="@{/build/other}">Other</a></li>
         </ul>
         <button class="overview-btn" id="openOverviewBtn">Overview</button>
         <a th:href="@{/build/startover}">Start over</a>
@@ -25,122 +26,153 @@
             </div>
             <div class="overview-body">
                 <div class="overview-section">
+                    <!-- Mainboard -->
                     <div class="overview-item">
                         <div class="overview-image">
-                            <img th:if="${buildItems.mainboard != null && buildItems.mainboard.product.images != null && !buildItems.mainboard.product.images.isEmpty()}"
+                            <img th:if="${buildItems != null && buildItems.mainboard != null && buildItems.mainboard.product.images != null && !buildItems.mainboard.product.images.isEmpty()}"
                                  th:src="@{${buildItems.mainboard.product.images[0].imageUrl}}"
                                  th:alt="${buildItems.mainboard.product.productName}"/>
-                            <div th:unless="${buildItems.mainboard != null && buildItems.mainboard.product.images != null && !buildItems.mainboard.product.images.isEmpty()}"
+                            <div th:unless="${buildItems != null && buildItems.mainboard != null && buildItems.mainboard.product.images != null && !buildItems.mainboard.product.images.isEmpty()}"
                                  class="no-image">?</div>
                         </div>
                         <div class="overview-info">
                             <span class="overview-label">Mainboard:</span>
-                            <span class="overview-value" th:text="${buildItems.mainboard != null ? buildItems.mainboard.product.productName : 'Not selected'}">Not selected</span>
+                            <span class="overview-value" th:text="${buildItems != null && buildItems.mainboard != null ? buildItems.mainboard.product.productName : 'Not selected'}">Not selected</span>
                         </div>
-                        <span class="overview-price" th:if="${buildItems.mainboard != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.mainboard.product.price, 1, 2)}"></span>
+                        <span class="overview-price" th:if="${buildItems != null && buildItems.mainboard != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.mainboard.product.price, 1, 2)}"></span>
                     </div>
+
+                    <!-- CPU -->
                     <div class="overview-item">
                         <div class="overview-image">
-                            <img th:if="${buildItems.cpu != null && buildItems.cpu.product.images != null && !buildItems.cpu.product.images.isEmpty()}"
+                            <img th:if="${buildItems != null && buildItems.cpu != null && buildItems.cpu.product.images != null && !buildItems.cpu.product.images.isEmpty()}"
                                  th:src="@{${buildItems.cpu.product.images[0].imageUrl}}"
                                  th:alt="${buildItems.cpu.product.productName}"/>
-                            <div th:unless="${buildItems.cpu != null && buildItems.cpu.product.images != null && !buildItems.cpu.product.images.isEmpty()}"
+                            <div th:unless="${buildItems != null && buildItems.cpu != null && buildItems.cpu.product.images != null && !buildItems.cpu.product.images.isEmpty()}"
                                  class="no-image">?</div>
                         </div>
                         <div class="overview-info">
                             <span class="overview-label">CPU:</span>
-                            <span class="overview-value" th:text="${buildItems.cpu != null ? buildItems.cpu.product.productName : 'Not selected'}">Not selected</span>
+                            <span class="overview-value" th:text="${buildItems != null && buildItems.cpu != null ? buildItems.cpu.product.productName : 'Not selected'}">Not selected</span>
                         </div>
-                        <span class="overview-price" th:if="${buildItems.cpu != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.cpu.product.price, 1, 2)}"></span>
+                        <span class="overview-price" th:if="${buildItems != null && buildItems.cpu != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.cpu.product.price, 1, 2)}"></span>
                     </div>
+
+                    <!-- GPU -->
                     <div class="overview-item">
                         <div class="overview-image">
-                            <img th:if="${buildItems.gpu != null && buildItems.gpu.product.images != null && !buildItems.gpu.product.images.isEmpty()}"
+                            <img th:if="${buildItems != null && buildItems.gpu != null && buildItems.gpu.product.images != null && !buildItems.gpu.product.images.isEmpty()}"
                                  th:src="@{${buildItems.gpu.product.images[0].imageUrl}}"
                                  th:alt="${buildItems.gpu.product.productName}"/>
-                            <div th:unless="${buildItems.gpu != null && buildItems.gpu.product.images != null && !buildItems.gpu.product.images.isEmpty()}"
+                            <div th:unless="${buildItems != null && buildItems.gpu != null && buildItems.gpu.product.images != null && !buildItems.gpu.product.images.isEmpty()}"
                                  class="no-image">?</div>
                         </div>
                         <div class="overview-info">
                             <span class="overview-label">GPU:</span>
-                            <span class="overview-value" th:text="${buildItems.gpu != null ? buildItems.gpu.product.productName : 'Not selected'}">Not selected</span>
+                            <span class="overview-value" th:text="${buildItems != null && buildItems.gpu != null ? buildItems.gpu.product.productName : 'Not selected'}">Not selected</span>
                         </div>
-                        <span class="overview-price" th:if="${buildItems.gpu != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.gpu.product.price, 1, 2)}"></span>
+                        <span class="overview-price" th:if="${buildItems != null && buildItems.gpu != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.gpu.product.price, 1, 2)}"></span>
                     </div>
+
+                    <!-- Case -->
                     <div class="overview-item">
                         <div class="overview-image">
-                            <img th:if="${buildItems.pcCase != null && buildItems.pcCase.product.images != null && !buildItems.pcCase.product.images.isEmpty()}"
+                            <img th:if="${buildItems != null && buildItems.pcCase != null && buildItems.pcCase.product.images != null && !buildItems.pcCase.product.images.isEmpty()}"
                                  th:src="@{${buildItems.pcCase.product.images[0].imageUrl}}"
                                  th:alt="${buildItems.pcCase.product.productName}"/>
-                            <div th:unless="${buildItems.pcCase != null && buildItems.pcCase.product.images != null && !buildItems.pcCase.product.images.isEmpty()}"
+                            <div th:unless="${buildItems != null && buildItems.pcCase != null && buildItems.pcCase.product.images != null && !buildItems.pcCase.product.images.isEmpty()}"
                                  class="no-image">?</div>
                         </div>
                         <div class="overview-info">
                             <span class="overview-label">Case:</span>
-                            <span class="overview-value" th:text="${buildItems.pcCase != null ? buildItems.pcCase.product.productName : 'Not selected'}">Not selected</span>
+                            <span class="overview-value" th:text="${buildItems != null && buildItems.pcCase != null ? buildItems.pcCase.product.productName : 'Not selected'}">Not selected</span>
                         </div>
-                        <span class="overview-price" th:if="${buildItems.pcCase != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.pcCase.product.price, 1, 2)}"></span>
+                        <span class="overview-price" th:if="${buildItems != null && buildItems.pcCase != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.pcCase.product.price, 1, 2)}"></span>
                     </div>
+
+                    <!-- Cooling -->
                     <div class="overview-item">
                         <div class="overview-image">
-                            <img th:if="${buildItems.cooling != null && buildItems.cooling.product.images != null && !buildItems.cooling.product.images.isEmpty()}"
+                            <img th:if="${buildItems != null && buildItems.cooling != null && buildItems.cooling.product.images != null && !buildItems.cooling.product.images.isEmpty()}"
                                  th:src="@{${buildItems.cooling.product.images[0].imageUrl}}"
                                  th:alt="${buildItems.cooling.product.productName}"/>
-                            <div th:unless="${buildItems.cooling != null && buildItems.cooling.product.images != null && !buildItems.cooling.product.images.isEmpty()}"
+                            <div th:unless="${buildItems != null && buildItems.cooling != null && buildItems.cooling.product.images != null && !buildItems.cooling.product.images.isEmpty()}"
                                  class="no-image">?</div>
                         </div>
                         <div class="overview-info">
                             <span class="overview-label">Cooling:</span>
-                            <span class="overview-value" th:text="${buildItems.cooling != null ? buildItems.cooling.product.productName : 'Not selected'}">Not selected</span>
+                            <span class="overview-value" th:text="${buildItems != null && buildItems.cooling != null ? buildItems.cooling.product.productName : 'Not selected'}">Not selected</span>
                         </div>
-                        <span class="overview-price" th:if="${buildItems.cooling != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.cooling.product.price, 1, 2)}"></span>
+                        <span class="overview-price" th:if="${buildItems != null && buildItems.cooling != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.cooling.product.price, 1, 2)}"></span>
                     </div>
+
+                    <!-- Memory -->
                     <div class="overview-item">
                         <div class="overview-image">
-                            <img th:if="${buildItems.memory != null && buildItems.memory.product.images != null && !buildItems.memory.product.images.isEmpty()}"
+                            <img th:if="${buildItems != null && buildItems.memory != null && buildItems.memory.product.images != null && !buildItems.memory.product.images.isEmpty()}"
                                  th:src="@{${buildItems.memory.product.images[0].imageUrl}}"
                                  th:alt="${buildItems.memory.product.productName}"/>
-                            <div th:unless="${buildItems.memory != null && buildItems.memory.product.images != null && !buildItems.memory.product.images.isEmpty()}"
+                            <div th:unless="${buildItems != null && buildItems.memory != null && buildItems.memory.product.images != null && !buildItems.memory.product.images.isEmpty()}"
                                  class="no-image">?</div>
                         </div>
                         <div class="overview-info">
                             <span class="overview-label">Memory:</span>
-                            <span class="overview-value" th:text="${buildItems.memory != null ? buildItems.memory.product.productName : 'Not selected'}">Not selected</span>
+                            <span class="overview-value" th:text="${buildItems != null && buildItems.memory != null ? buildItems.memory.product.productName : 'Not selected'}">Not selected</span>
                         </div>
-                        <span class="overview-price" th:if="${buildItems.memory != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.memory.product.price, 1, 2)}"></span>
+                        <span class="overview-price" th:if="${buildItems != null && buildItems.memory != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.memory.product.price, 1, 2)}"></span>
                     </div>
+
+                    <!-- Storage -->
                     <div class="overview-item">
                         <div class="overview-image">
-                            <img th:if="${buildItems.storage != null && buildItems.storage.product.images != null && !buildItems.storage.product.images.isEmpty()}"
+                            <img th:if="${buildItems != null && buildItems.storage != null && buildItems.storage.product.images != null && !buildItems.storage.product.images.isEmpty()}"
                                  th:src="@{${buildItems.storage.product.images[0].imageUrl}}"
                                  th:alt="${buildItems.storage.product.productName}"/>
-                            <div th:unless="${buildItems.storage != null && buildItems.storage.product.images != null && !buildItems.storage.product.images.isEmpty()}"
+                            <div th:unless="${buildItems != null && buildItems.storage != null && buildItems.storage.product.images != null && !buildItems.storage.product.images.isEmpty()}"
                                  class="no-image">?</div>
                         </div>
                         <div class="overview-info">
                             <span class="overview-label">Storage:</span>
-                            <span class="overview-value" th:text="${buildItems.storage != null ? buildItems.storage.product.productName : 'Not selected'}">Not selected</span>
+                            <span class="overview-value" th:text="${buildItems != null && buildItems.storage != null ? buildItems.storage.product.productName : 'Not selected'}">Not selected</span>
                         </div>
-                        <span class="overview-price" th:if="${buildItems.storage != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.storage.product.price, 1, 2)}"></span>
+                        <span class="overview-price" th:if="${buildItems != null && buildItems.storage != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.storage.product.price, 1, 2)}"></span>
                     </div>
+
+                    <!-- PSU -->
                     <div class="overview-item">
                         <div class="overview-image">
-                            <img th:if="${buildItems.powerSupply != null && buildItems.powerSupply.product.images != null && !buildItems.powerSupply.product.images.isEmpty()}"
+                            <img th:if="${buildItems != null && buildItems.powerSupply != null && buildItems.powerSupply.product.images != null && !buildItems.powerSupply.product.images.isEmpty()}"
                                  th:src="@{${buildItems.powerSupply.product.images[0].imageUrl}}"
                                  th:alt="${buildItems.powerSupply.product.productName}"/>
-                            <div th:unless="${buildItems.powerSupply != null && buildItems.powerSupply.product.images != null && !buildItems.powerSupply.product.images.isEmpty()}"
+                            <div th:unless="${buildItems != null && buildItems.powerSupply != null && buildItems.powerSupply.product.images != null && !buildItems.powerSupply.product.images.isEmpty()}"
                                  class="no-image">?</div>
                         </div>
                         <div class="overview-info">
                             <span class="overview-label">PSU:</span>
-                            <span class="overview-value" th:text="${buildItems.powerSupply != null ? buildItems.powerSupply.product.productName : 'Not selected'}">Not selected</span>
+                            <span class="overview-value" th:text="${buildItems != null && buildItems.powerSupply != null ? buildItems.powerSupply.product.productName : 'Not selected'}">Not selected</span>
                         </div>
-                        <span class="overview-price" th:if="${buildItems.powerSupply != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.powerSupply.product.price, 1, 2)}"></span>
+                        <span class="overview-price" th:if="${buildItems != null && buildItems.powerSupply != null}" th:text="'$' + ${#numbers.formatDecimal(buildItems.powerSupply.product.price, 1, 2)}"></span>
+                    </div>
+
+                    <!-- Other Component (Optional) -->
+                    <div class="overview-item" th:if="${buildItems != null && buildItems.other != null}">
+                        <div class="overview-image">
+                            <img th:if="${buildItems.other.images != null && !buildItems.other.images.isEmpty()}"
+                                 th:src="@{${buildItems.other.images[0].imageUrl}}"
+                                 th:alt="${buildItems.other.productName}"/>
+                            <div th:unless="${buildItems.other.images != null && !buildItems.other.images.isEmpty()}"
+                                 class="no-image">?</div>
+                        </div>
+                        <div class="overview-info">
+                            <span class="overview-label">Other:</span>
+                            <span class="overview-value" th:text="${buildItems.other.productName}">Not selected</span>
+                        </div>
+                        <span class="overview-price" th:text="'$' + ${#numbers.formatDecimal(buildItems.other.price, 1, 2)}"></span>
                     </div>
                 </div>
                 <div class="overview-total">
                     <span class="overview-total-label">Total Price:</span>
-                    <span class="overview-total-price" th:text="'$' + ${buildItems.formattedTotalPrice}">$0.00</span>
+                    <span class="overview-total-price" th:text="${buildItems != null ? '$' + buildItems.formattedTotalPrice : '$0.00'}">$0.00</span>
                 </div>
             </div>
             <div class="overview-footer">
@@ -152,3 +184,4 @@
         </div>
     </div>
 </div>
+
