@@ -2,7 +2,10 @@ package com.example.PCOnlineShop.service.auth;
 
 import com.example.PCOnlineShop.constant.RoleName;
 import com.example.PCOnlineShop.model.account.Account;
+import com.example.PCOnlineShop.model.account.Address;
 import com.example.PCOnlineShop.repository.account.AccountRepository;
+import com.example.PCOnlineShop.repository.account.AddressRepository;
+import com.example.PCOnlineShop.service.address.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -22,13 +25,14 @@ public class AuthService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
+    private final AddressRepository addressRepository;
 
     // Lưu mã reset tạm thời (theo email/phone)
     private final Map<String, String> resetCodeMap = new HashMap<>();
 
     /* ===================== AUTH (CUSTOMER) ===================== */
 
-    public void register(Account account) {
+    public void register(Account account, String addressStr) {
         if (accountRepository.existsByEmail(account.getEmail())) {
             throw new IllegalArgumentException("Email đã tồn tại!");
         }
@@ -38,7 +42,16 @@ public class AuthService {
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         account.setRole(RoleName.Customer);
         account.setEnabled(false);
-        accountRepository.save(account);
+        Account savedAccount = accountRepository.save(account);
+        if (addressStr != null && !addressStr.isEmpty()) {
+            Address addr = new Address();
+            addr.setAccount(savedAccount);
+            addr.setFullName(account.getFirstname() + " " + account.getLastname()); // phải set
+            addr.setPhone(account.getPhoneNumber()); // phải set
+            addr.setAddress(addressStr); // chú ý: tên đúng field
+            addr.setDefault(true);
+            addressRepository.save(addr);
+        }
     }
     public Account getByPhoneNumber(String phoneNumber) {
         return accountRepository.findByPhoneNumber(phoneNumber).orElse(null);

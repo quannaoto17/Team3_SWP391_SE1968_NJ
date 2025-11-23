@@ -7,8 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.example.PCOnlineShop.model.account.Address;
+
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,19 +28,22 @@ public class CustomerProfileController {
             return "redirect:/auth/login";
         }
 
-        String phoneNumber = principal.getName(); //
+        String phoneNumber = principal.getName();
         Account account = authService.getByPhoneNumber(phoneNumber);
 
         if (account == null) {
             model.addAttribute("error", "Không tìm thấy tài khoản!");
-            model.addAttribute("account", new Account()); // tránh lỗi form
+            model.addAttribute("account", new Account());
             return "profile/view-profile";
         }
 
+        // Lấy danh sách địa chỉ từ bảng account_address
+        List<Address> addresses = account.getAddresses();
         model.addAttribute("account", account);
+        model.addAttribute("addresses", addresses);
+
         return "profile/view-profile";
     }
-
 
 
 

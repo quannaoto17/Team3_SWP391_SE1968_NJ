@@ -27,6 +27,7 @@ public class AuthController {
     // 🔹 Xử lý đăng ký
     @PostMapping("/register")
     public String register(@ModelAttribute("account") Account account,
+                           @RequestParam("address") String addressStr,
                            @RequestParam("confirmPassword") String confirmPassword, RedirectAttributes redirectAttributes,
                            Model model) {
 
@@ -36,7 +37,7 @@ public class AuthController {
         }
 
         try {
-            authService.register(account);  // 🔹 Gọi service để lưu vào DB
+            authService.register(account, addressStr);  // 🔹 Gọi service để lưu vào DB
             redirectAttributes.addFlashAttribute("phoneNumber", account.getPhoneNumber());
             redirectAttributes.addFlashAttribute("password", account.getPassword());
             return "redirect:/auth/verify?email=" + account.getEmail();
