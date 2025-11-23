@@ -154,6 +154,12 @@ public class HomeController {
         var feedbackPage = feedbackService.getAllowedByProduct(id, 0, Integer.MAX_VALUE);
         model.addAttribute("feedbackPage", feedbackPage);
 
+        Double avgRating = feedbackService.getAverageRating(id);
+        model.addAttribute("avgRating", avgRating);
+
+        long feedbackCount = feedbackPage.getTotalElements();
+        model.addAttribute("feedbackCount", feedbackCount);
+
         return "product/product-details";
     }
 }
