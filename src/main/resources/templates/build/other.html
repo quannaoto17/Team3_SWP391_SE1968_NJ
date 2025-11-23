@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -8,6 +9,7 @@
 </head>
 
 <body>
+
 <div sec:authorize="!isAuthenticated()"
      th:replace="layout/header-default :: header-default"></div>
 <div sec:authorize="hasRole('ADMIN')"
@@ -18,64 +20,189 @@
 
 <div sec:authorize="hasRole('CUSTOMER')"
      th:replace="layout/header-customer :: header-customer"></div>
-
 <div class="layout">
-<div class="container">
-    <!-- Sidebar -->
-    <div th:replace="~{layout/build-sidebar :: buildSidebar('other')}"></div>
+    <div class="container">
+        <!-- Sidebar -->
+        <div th:replace="~{layout/build-sidebar :: buildSidebar('other')}"></div>
 
-    <!-- Main content -->
-    <div class="main-content">
-        <!-- Filter -->
-        <div class="filter-bar">
-            <input type="text" placeholder="Search..." id="searchBox"/>
-            <button type="button" onclick="filterProducts()">Go!</button>
-        </div>
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- Error message -->
+            <div th:if="${error}" style="background-color: #f44336; color: white; padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+                <strong>⚠️ Error:</strong> <span th:text="${error}"></span>
+            </div>
 
-        <!-- Product Grid -->
-        <form th:action="@{/build/selectOther}" method="post" id="otherForm">
-            <input type="hidden" name="otherId" id="selectedOtherId"/>
-            <div class="product-grid">
-                <div th:each="other : ${others}"
-                     class="product-card"
-                     th:classappend="${buildItems.other?.product?.productId == other.product.productId} ? 'selected' : ''"
-                     th:attr="data-id=${other.product.productId}"
-                     th:data-name="${other.product.productName}">
-                    <!-- Product Image -->
-                    <div class="product-image">
-                        <img th:if="${other.product.images != null && !other.product.images.isEmpty()}"
-                             th:src="@{${other.product.images[0].imageUrl}}"
-                             th:alt="${other.product.productName}"/>
-                        <div th:unless="${other.product.images != null && !other.product.images.isEmpty()}"
-                             style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px;">
-                            No Image
+            <!-- Success message -->
+            <div th:if="${message}" style="background-color: #4CAF50; color: white; padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+                <strong>✓</strong> <span th:text="${message}"></span>
+            </div>
+
+            <!-- Filter -->
+            <div class="filter-bar">
+                <input type="text" placeholder="Search..." id="searchBox"/>
+                <button type="button" onclick="filterProducts()">Go!</button>
+                <button type="button" id="openFilterPopup">Filter</button>
+            </div>
+
+            <!-- Filter Popup -->
+            <div id="filterPopup" class="popup" style="display:none;">
+                <div class="popup-content">
+                    <div>
+                        <h4>Filter By Category:</h4>
+                        <div>
+                            <input type="radio" name="categoryFilter" value="all" id="cat-all" checked onclick="filterByCategory('all')">
+                            <label for="cat-all">All</label>
                         </div>
+                        <div>
+                            <input type="radio" name="categoryFilter" value="keyboard" id="cat-keyboard" onclick="filterByCategory('keyboard')">
+                            <label for="cat-keyboard">Keyboard</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="categoryFilter" value="mouse" id="cat-mouse" onclick="filterByCategory('mouse')">
+                            <label for="cat-mouse">Mouse</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="categoryFilter" value="monitor" id="cat-monitor" onclick="filterByCategory('monitor')">
+                            <label for="cat-monitor">Monitor</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="categoryFilter" value="addon" id="cat-addon" onclick="filterByCategory('addon')">
+                            <label for="cat-addon">Add-on</label>
+                        </div>
+
+                        <h4 style="margin-top: 20px;">Sort By:</h4>
+                        <select id="sortSelect" onchange="sortProducts(this.value)">
+                            <option value="">-- No Sort --</option>
+                            <option value="priceAsc">Price: Low to High</option>
+                            <option value="priceDesc">Price: High to Low</option>
+                            <option value="nameAsc">Name: A-Z</option>
+                            <option value="nameDesc">Name: Z-A</option>
+                        </select>
+
+                        <button type="button" id="closeFilterPopup" style="margin-top: 10px;">Close</button>
                     </div>
-                    <h4 th:text="${other.product.productName}"></h4>
-                    <strong th:text="'$' + ${other.product.price}"></strong>
                 </div>
             </div>
 
-            <!-- Footer -->
-            <div class="footer-bar">
-                <span>Total Price: <strong id="priceTotal" th:text="'$' + ${buildItems.formattedTotalPrice}"></strong></span>
-            </div>
-        </form>
-    </div>
+            <!-- Product Grid -->
+            <form th:action="@{/build/selectOther}" method="post" id="otherForm">
+                <input type="hidden" name="otherId" id="selectedOtherId"
+                       th:value="${buildItems.other?.productId ?: ''}"/>
+                <div class="product-grid">
+                    <div th:each="other : ${others}"
+                         class="product-card"
+                         th:classappend="${buildItems.other?.productId == other.productId} ? 'selected' : ''"
+                         th:attr="data-id=${other.productId},data-price=${other.price}"
+                         th:data-name="${other.productName}"
+                         th:data-category="other"
+                         th:data-description="${other.description}">
+                        <!-- Product Image -->
+                        <div class="product-image">
+                            <img th:if="${other.images != null && !other.images.isEmpty()}"
+                                 th:src="@{${other.images[0].imageUrl}}"
+                                 th:alt="${other.productName}"/>
+                            <div th:unless="${other.images != null && !other.images.isEmpty()}"
+                                 style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px;">
+                                No Image
+                            </div>
+                        </div>
+                        <h4 th:text="${other.productName}"></h4>
+                        <p th:text="${other.description}" style="font-size: 12px; color: #666;"></p>
+                        <strong th:text="'$' + ${other.price}"></strong>
+                    </div>
+                </div>
 
-    <!-- Detail panel -->
-    <div class="detail-panel">
-        <div class="detail-header">SELECT OTHER COMPONENTS</div>
-        <div class="detail-body">
-            <h3 id="detailName">Name Product</h3>
-            <div class="detail-image"></div>
+                <!-- Footer -->
+                <div class="footer-bar">
+                    <span>Total Price: <strong id="priceTotal" th:text="'$' + ${buildItems.formattedTotalPrice}"></strong></span>
+                    <button type="submit" class="next-btn">Choose</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Detail panel -->
+        <div class="detail-panel">
+            <div class="detail-header">SELECT OTHER COMPONENTS</div>
+            <div class="detail-body">
+                <h3 id="detailName">Name Product</h3>
+                <div class="detail-image"></div>
+                <div class="detail-spec">
+                    <h4>DESCRIPTION</h4>
+                    <p id="detailDescription">...</p>
+                    <p id="detailPrice" style="font-size: 18px; font-weight: bold; color: #007bff;">Price: $0.00</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-</div>
-</div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script th:src="@{/js/BuildJs.js}"></script>
+<script>
+    // Filter by category for Other components
+    function filterByCategory(category) {
+        const cards = document.querySelectorAll('.product-card');
+        cards.forEach(card => {
+            const cardCategory = card.getAttribute('data-category');
+            if (category === 'all' || cardCategory === category) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // Sort products
+    function sortProducts(sortType) {
+        const grid = document.querySelector('.product-grid');
+        const cards = Array.from(document.querySelectorAll('.product-card'));
+
+        cards.sort((a, b) => {
+            const priceA = parseFloat(a.getAttribute('data-price'));
+            const priceB = parseFloat(b.getAttribute('data-price'));
+            const nameA = a.getAttribute('data-name').toLowerCase();
+            const nameB = b.getAttribute('data-name').toLowerCase();
+
+            switch(sortType) {
+                case 'priceAsc': return priceA - priceB;
+                case 'priceDesc': return priceB - priceA;
+                case 'nameAsc': return nameA.localeCompare(nameB);
+                case 'nameDesc': return nameB.localeCompare(nameA);
+                default: return 0;
+            }
+        });
+
+        cards.forEach(card => grid.appendChild(card));
+    }
+
+    // Open/Close filter popup
+    document.getElementById('openFilterPopup')?.addEventListener('click', function() {
+        document.getElementById('filterPopup').style.display = 'flex';
+    });
+
+    document.getElementById('closeFilterPopup')?.addEventListener('click', function() {
+        document.getElementById('filterPopup').style.display = 'none';
+    });
+
+    // Update detail panel when clicking on a product
+    document.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const name = this.getAttribute('data-name');
+            const description = this.getAttribute('data-description');
+            const price = this.getAttribute('data-price');
+            const imgSrc = this.querySelector('.product-image img')?.src || '';
+
+            document.getElementById('detailName').textContent = name;
+            document.getElementById('detailDescription').textContent = description || 'No description available';
+            document.getElementById('detailPrice').textContent = 'Price: $' + price;
+
+            const detailImage = document.querySelector('.detail-image');
+            if (imgSrc) {
+                detailImage.innerHTML = '<img src="' + imgSrc + '" alt="' + name + '" style="max-width: 100%; border-radius: 8px;">';
+            } else {
+                detailImage.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No Image</div>';
+            }
+        });
+    });
+</script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 body {
     background-color: #f8f9fa;
-    padding-top: 70px; /* Adjust if needed */
+    margin: 0;
+    padding: 0;
 }
 
 /* Use Bootstrap container class for consistent padding/width */
@@ -9,7 +10,8 @@ body {
     box-shadow: none;
     padding-left: var(--bs-gutter-x, .75rem); /* Match Bootstrap padding */
     padding-right: var(--bs-gutter-x, .75rem);
-    margin-top: 20px;
+    padding-top: 90px; /* Space for fixed header */
+    margin-top: 0;
     margin-bottom: 20px;
 }
 

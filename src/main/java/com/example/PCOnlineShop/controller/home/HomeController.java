@@ -61,7 +61,8 @@ public class HomeController {
             model.addAttribute("currentUser", user);
         }
 
-        List<Category> categories = categoryRepository.findAll();
+        // Get only main categories (Mainboard, CPU, GPU, Memory, Storage, Case, Power Supply, Cooling, Other)
+        List<Category> categories = categoryRepository.findMainCategories();
         List<Brand> brands = brandRepository.findAll();
         List<Product> products;
 
@@ -83,7 +84,7 @@ public class HomeController {
     }
 
     /**
-     * ✅ Trang Product Home - hiển thị toàn bộ sản phẩm (phân trang + lọc)
+     *  Trang Product Home - hiển thị toàn bộ sản phẩm (phân trang + lọc)
      */
     @GetMapping("/products")
     public String productHome(
@@ -98,6 +99,9 @@ public class HomeController {
             @RequestParam(defaultValue = "12") int size,
             Model model
     ) {
+        if (keyword != null) {
+            keyword = keyword.trim().replaceAll("\\s+", " ");
+        }
         Sort sort = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by(sortField).ascending()
                 : Sort.by(sortField).descending();
@@ -114,8 +118,8 @@ public class HomeController {
                 java.util.stream.IntStream.range(0, productPage.getTotalPages()).boxed().toList());
 
         // Truyền các giá trị filter về view
-        model.addAttribute("categories", categoryRepository.findAll());
-        model.addAttribute("brands", brandRepository.findAll());
+        // Truyền các giá trị filter về view - only main categories
+        model.addAttribute("categories", categoryRepository.findMainCategories());
         model.addAttribute("selectedCategory", category);
         model.addAttribute("selectedBrand", brand);
         model.addAttribute("minPrice", minPrice);
@@ -153,6 +157,12 @@ public class HomeController {
         //  Lấy toàn bộ feedback đã được duyệt (Allow) — không phân trang
         var feedbackPage = feedbackService.getAllowedByProduct(id, 0, Integer.MAX_VALUE);
         model.addAttribute("feedbackPage", feedbackPage);
+
+        Double avgRating = feedbackService.getAverageRating(id);
+        model.addAttribute("avgRating", avgRating);
+
+        long feedbackCount = feedbackPage.getTotalElements();
+        model.addAttribute("feedbackCount", feedbackCount);
 
         return "product/product-details";
     }

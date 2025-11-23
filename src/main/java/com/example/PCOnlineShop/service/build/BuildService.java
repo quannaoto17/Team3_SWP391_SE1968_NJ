@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -250,24 +251,21 @@ public class BuildService {
         }
         return 0.0;
     }
-
     // Other (generic product)
     public List<Product> getOtherProducts() {
-        // For now, return empty list as we focus on main components
-        // Can be expanded later to include accessories, peripherals, etc.
-        return List.of();
+        List<Product> otherProducts = new ArrayList<>();
+        otherProducts= productRepository.findAllWithImages().stream()
+                .filter(p -> p
+                        .getCategories().stream().anyMatch(c -> c
+                                .getCategoryName().equalsIgnoreCase("Other"))).toList();
+        return sortByPerformanceAndPrice(otherProducts);
     }
 
-    public Optional<Other> findOtherByProductId(Integer productId) {
+    public Optional<Product> findOtherByProductId(Integer productId) {
         Optional<Product> opt = productRepository.findById(productId);
         if (opt.isEmpty()) return Optional.empty();
         Product p = opt.get();
-        Other o = new Other();
-        o.setName(p.getProductName());
-        o.setBrand(p.getBrand() != null ? p.getBrand().getName() : null);
-        o.setType("Other");
-        o.setDescription(p.getDescription());
-        o.setPrice(p.getPrice());
-        return Optional.of(o);
+        // Ensure it's not a build-specific component
+        return Optional.of(p);
     }
 }

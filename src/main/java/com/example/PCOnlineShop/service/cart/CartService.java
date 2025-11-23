@@ -90,7 +90,7 @@ public class CartService {
             throw new IllegalArgumentException("Product is unavailable.");
         }
         Optional<CartItem> existingItem = cartItemRepository
-                .findByCartAndProductAndIsBuildItem(cart, product, false);
+                .findByCartAndProduct(cart, product);
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();
             item.setQuantity(item.getQuantity() + quantity);
@@ -100,7 +100,7 @@ public class CartService {
             newItem.setCart(cart);
             newItem.setProduct(product);
             newItem.setQuantity(quantity);
-            newItem.setBuildItem(false);
+//            newItem.setBuildItem(false);
             newItem.setSelected(true);
             cartItemRepository.save(newItem);
         }
@@ -113,18 +113,19 @@ public class CartService {
         }
 
         Cart cart = getOrCreateCart(account);
-        String buildId = UUID.randomUUID().toString();
+//        String buildId = UUID.randomUUID().toString();
 
         Consumer<Product> addBuildItem = (product) -> {
             if (product != null) {
-                CartItem newItem = new CartItem();
-                newItem.setCart(cart);
-                newItem.setProduct(product);
-                newItem.setQuantity(1);
-                newItem.setBuildItem(true);
-                newItem.setBuildId(buildId);
-                newItem.setSelected(true);
-                cartItemRepository.save(newItem);
+//                CartItem newItem = new CartItem();
+//                newItem.setCart(cart);
+//                newItem.setProduct(product);
+//                newItem.setQuantity(1);
+////                newItem.setBuildItem(true);
+////                newItem.setBuildId(buildId);
+//                newItem.setSelected(true);
+//                cartItemRepository.save(newItem);
+                addToCart(account, product.getProductId(), 1);
             }
         };
 
@@ -153,6 +154,9 @@ public class CartService {
         if (buildItems.getCooling() != null) {
             addBuildItem.accept(buildItems.getCooling().getProduct());
         }
+        if (buildItems.getOther() != null) {
+            addBuildItem.accept(buildItems.getOther());
+        }
     }
 
     public void addListToCart(Account account, List<Integer> productIds, int quantity) {
@@ -164,7 +168,7 @@ public class CartService {
             newItem.setCart(cart);
             newItem.setProduct(product);
             newItem.setQuantity(quantity);
-            newItem.setBuildItem(true);
+//            newItem.setBuildItem(true);
             newItem.setSelected(true);
             cartItemRepository.save(newItem);
         }
