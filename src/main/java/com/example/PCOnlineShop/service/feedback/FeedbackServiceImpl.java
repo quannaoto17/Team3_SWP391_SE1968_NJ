@@ -102,5 +102,12 @@ public class FeedbackServiceImpl implements FeedbackService {
         fb.setCreatedAt(LocalDateTime.now());
 
         feedbackRepository.save(fb);
+
     }
+    @Override
+    public Double getAverageRating(Integer productId) {
+        Double avg = feedbackRepository.getAverageRating(productId);
+        return (avg == null) ? 0.0 : avg;
+    }
+
 }

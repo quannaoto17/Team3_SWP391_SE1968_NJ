@@ -59,6 +59,21 @@
     <!-- Product Info -->
     <div class="lg:col-span-6">
         <h1 class="text-3xl font-bold mb-3" th:text="${product.productName}">Product Name</h1>
+        <!--  average rating -->
+        <div class="flex items-center gap-2 mb-3">
+            <div class="text-yellow-400 text-xl">
+        <span th:each="i : ${#numbers.sequence(1,5)}"
+              th:text="${i <= avgRating} ? '★' : '☆'"></span>
+            </div>
+
+            <div class="text-gray-700 text-sm">
+                <span th:text="${#numbers.formatDecimal(avgRating, 1, 1)}"></span> / 5
+            </div>
+
+            <div class="text-gray-500 text-sm">
+                (<span th:text="${feedbackCount}"></span> reviews)
+            </div>
+        </div>
         <div class="text-2xl font-semibold text-slate-900 mb-4" th:text="'$' + ${product.price}">0.00</div>
         <p class="text-gray-700 mb-6" th:utext="${product.description}">Product description here.</p>
 
