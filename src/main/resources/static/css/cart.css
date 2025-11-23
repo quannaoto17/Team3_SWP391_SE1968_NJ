@@ -225,3 +225,67 @@ body {
 .remove-item-btn:hover {
     color: #dc3545; /* Đỏ khi hover */
 }
+
+@media (max-width: 991px) {
+    /* 1. Ẩn tiêu đề cột (Price, Quantity...) vì không còn dạng bảng */
+    .cart-header {
+        grid-template-columns: 1fr auto; /* Chỉ giữ Select All và nút Xóa */
+        padding: 10px 15px;
+    }
+    .cart-column-headers span {
+        display: none;
+    }
+    #clear-cart-form {
+        grid-column: 2;
+    }
+
+    /* 2. Chuyển Cart Item sang dạng Card */
+    .cart-item {
+        display: grid;
+        /* Định nghĩa layout cho mobile:
+           Cột 1: Checkbox
+           Cột 2: Ảnh
+           Cột 3: Thông tin
+        */
+        grid-template-columns: 40px 80px 1fr;
+        grid-template-areas:
+            "check img detail"
+            "check img price"
+            "check img quantity"
+            "check img subtotal"
+            "check img remove";
+        gap: 8px;
+        padding: 15px;
+        align-items: start; /* Căn lề trên */
+    }
+
+    /* Gán các thành phần vào vùng Grid đã định nghĩa */
+    .item-selection { grid-area: check; align-self: center; }
+    .item-image     { grid-area: img; }
+    .item-details   { grid-area: detail; margin-bottom: 5px; }
+    .item-price     { grid-area: price; text-align: left; font-size: 14px; color: #666; }
+    .item-quantity  { grid-area: quantity; justify-content: start; margin: 5px 0; }
+    .item-subtotal  { grid-area: subtotal; text-align: left; margin-bottom: 5px;}
+    .item-remove    { grid-area: remove; text-align: right; position: absolute; top: 15px; right: 15px;}
+
+    /* Style lại một chút cho mobile */
+    .item-image img {
+        max-height: 80px;
+        width: 100%;
+        object-fit: contain;
+    }
+
+    /* Thêm nhãn mobile cho dễ hiểu (Optional) */
+    .item-price::before { content: "Đơn giá: "; font-weight: normal; }
+    .item-subtotal::before { content: "Thành tiền: "; font-weight: normal; color: #333; }
+}
+
+@media (max-width: 576px) {
+    /* Màn hình siêu nhỏ (điện thoại dọc) */
+    .cart-container h1 {
+        font-size: 20px;
+    }
+    .cart-item {
+        font-size: 14px;
+    }
+}

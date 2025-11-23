@@ -75,7 +75,7 @@
                 </p>
                 <p class="grand-total">
                     <b>Total Amount:</b>
-                    <span th:text="${#numbers.formatInteger(order.finalAmount, 1, 'COMMA')} + ' ₫'"></span>
+                    <span th:text="${#numbers.formatInteger(order.finalAmount, 1, 'COMMA')} + ' $'"></span>
                 </p>
             </div>
 
@@ -92,7 +92,7 @@
             <div class="card" th:if="${paymentInfo != null}">
                 <h3>Payment Information</h3>
                 <p><b>Transaction ID:</b> <span th:text="${paymentInfo.gatewayPaymentId ?: 'N/A'}"></span></p>
-                <p><b>Amount Paid:</b> <span th:text="${#numbers.formatInteger(paymentInfo.amount, 1, 'COMMA')} + ' ₫'"></span></p>
+                <p><b>Amount Paid:</b> <span th:text="${#numbers.formatInteger(paymentInfo.amount, 1, 'COMMA')} + ' $'"></span></p>
                 <p><b>Payment Status:</b>
                     <span class="status-badge"
                           th:classappend="${
@@ -109,24 +109,14 @@
             <div class="card" th:unless="${isStaffOrAdmin}">
                 <h3>Actions</h3>
 
-                <button th:if="${order.status == 'Pending Payment'}"
-                        class="btn-action btn-customer-cancel"
-                        th:data-order-id="${order.orderId}">
-                    Cancel Order
-                </button>
-
-                <button th:if="${order.status == 'Processing'}"
-                        class="btn-action btn-customer-cancel-refund"
-                        th:data-order-id="${order.orderId}">
-                    Cancel Order (Request Refund)
-                </button>
-
-                <button th:if="${order.status == 'Completed'}"
-                        class="btn-action btn-return"
-                        th:data-order-id="${order.orderId}">
-                    Request Return/Refund
-                </button>
-                <p th:if="${order.status == 'Cancelled' or order.status == 'Delivering' or order.status == 'Ready to Ship'}">
+                <div th:if="${order.status == 'Pending Payment'}" style="margin-bottom: 10px;">
+                    <a th:href="@{'/payment/continue/' + ${order.orderId}}"
+                       class="btn-action"
+                       style="background-color: #007bff; color: white; display: block; text-align: center; padding: 10px; text-decoration: none; border-radius: 4px;">
+                        Continue Payment
+                    </a>
+                </div>
+                <p th:if="${order.status != 'Pending Payment'}">
                     No actions available for this order status.
                 </p>
             </div>
