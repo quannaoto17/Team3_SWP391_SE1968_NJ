@@ -53,14 +53,7 @@ public class PowerSupplyController {
 
     @PostMapping("/selectPsu")
     public String selectPsu(@RequestParam(value = "psuId", required = false) Integer psuId,
-                            @ModelAttribute("buildItems") BuildItemDto buildItem,
-                            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
-        // PSU is REQUIRED - must select one
-        if (psuId == null && buildItem.getPowerSupply() == null) {
-            redirectAttributes.addFlashAttribute("error", "Please select a power supply to continue.");
-            return "redirect:/build/psu";
-        }
-
+                            @ModelAttribute("buildItems") BuildItemDto buildItem) {
         // Only update if user selected new PSU
         if (psuId != null) {
             buildItem.setPowerSupply(powerSupplyService.getPowerSupplyById(psuId));

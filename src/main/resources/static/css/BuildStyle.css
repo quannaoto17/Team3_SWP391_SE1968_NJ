@@ -58,6 +58,27 @@ body {
     background: #1e3a8a;
 }
 
+.sidebar li.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.sidebar li.disabled:hover {
+    background: transparent;
+}
+
+.sidebar li.disabled a {
+    color: #666;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.sidebar a.disabled-link {
+    color: #666 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
 .overview-btn {
     margin-top: auto;
     padding: 8px;

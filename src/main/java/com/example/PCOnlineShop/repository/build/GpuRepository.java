@@ -13,12 +13,28 @@ import java.util.Optional;
 public interface GpuRepository extends JpaRepository<GPU, Integer> {
     Optional<GPU> findByProduct_ProductId(int id);
 
-    @Query("SELECT g FROM GPU g " +
-           "WHERE g.product.price <= :maxPrice " +
-           "AND (g.product.performanceScore IS NULL OR g.product.performanceScore >= :minScore) " +
-           "AND g.product.status = true " +
-           "AND (g.product.inventoryQuantity IS NULL OR g.product.inventoryQuantity > 0) " +
-           "ORDER BY COALESCE(g.product.performanceScore, 50) DESC, g.product.price ASC")
+    @Query("SELECT DISTINCT g FROM GPU g " +
+           "LEFT JOIN FETCH g.product p " +
+           "LEFT JOIN FETCH p.images " +
+           "LEFT JOIN FETCH p.brand " +
+           "WHERE p.price <= :maxPrice " +
+           "AND (p.performanceScore IS NULL OR p.performanceScore >= :minScore) " +
+           "AND p.status = true " +
+           "AND (p.inventoryQuantity IS NULL OR p.inventoryQuantity > 0) " +
+           "ORDER BY COALESCE(p.performanceScore, 50) DESC, p.price ASC")
     List<GPU> findBestGpusByBudgetAndScore(@Param("maxPrice") double maxPrice,
                                             @Param("minScore") int minScore);
+
+    @Query("SELECT DISTINCT g FROM GPU g " +
+           "LEFT JOIN FETCH g.product p " +
+           "LEFT JOIN FETCH p.images " +
+           "LEFT JOIN FETCH p.brand")
+    List<GPU> findAllWithImages();
+
+    @Query("SELECT DISTINCT g FROM GPU g " +
+           "LEFT JOIN FETCH g.product p " +
+           "LEFT JOIN FETCH p.images " +
+           "LEFT JOIN FETCH p.brand " +
+           "WHERE g.id = :id")
+    Optional<GPU> findByIdWithImages(@Param("id") int id);
 }

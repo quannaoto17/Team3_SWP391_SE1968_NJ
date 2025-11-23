@@ -23,9 +23,9 @@ public class StaffController {
     @GetMapping("/list")
     public String listStaff(@RequestParam(defaultValue = "active") String statusFilter,
                             Model model) {
-
+        // Lấy toàn bộ danh sách khách hàng theo trạng thái (active/inactive)
         List<Account> staffList = staffService.getAllStaff(statusFilter);
-
+        // Gửi dữ liệu sang view
         model.addAttribute("staffList", staffList);
         model.addAttribute("statusFilter", statusFilter);
 
@@ -50,12 +50,15 @@ public class StaffController {
                             BindingResult result,
                             @RequestParam(name = "addressStr", required = false) String addressStr,
                             Model model) {
+        // Nếu form có lỗi validate → quay lại trang add
         if (result.hasErrors()) return "staff/add-staff";
 
         try {
+            // Lưu tài khoản staff (bao gồm check email/phone trùng, mã hóa password,…)
             Account saved = authService.saveStaff(account);
             staffService.saveDefaultAddress(saved, addressStr);
         } catch (IllegalArgumentException e) {
+            // Các lỗi như email trùng, SĐT trùng → báo lỗi
             model.addAttribute("errorMessage", e.getMessage());
             return "staff/add-staff";
         }

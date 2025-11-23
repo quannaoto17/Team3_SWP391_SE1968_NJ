@@ -15,7 +15,7 @@ public class GpuService {
     private  GpuRepository gpuRepository;
 
     public List<GPU> getAllGpu() {
-        return gpuRepository.findAll();
+        return gpuRepository.findAllWithImages();
     }
 
     public GPU addGpu(GPU gpu) {
@@ -27,7 +27,7 @@ public class GpuService {
     }
 
     public GPU getGpuById(int id) {
-        return gpuRepository.findById(id).orElse(null);
+        return gpuRepository.findByIdWithImages(id).orElse(null);
     }
 
     public void deleteGpu(int id) {

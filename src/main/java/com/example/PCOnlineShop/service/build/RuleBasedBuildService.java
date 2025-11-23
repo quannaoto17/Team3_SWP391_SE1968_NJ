@@ -40,17 +40,6 @@ public class RuleBasedBuildService {
         // 3. Create temporary BuildItemDto for compatibility checking
         BuildItemDto tempBuild = new BuildItemDto();
 
-        // 4. Select components in FIXED ORDER with compatibility check
-        // ORDER IS CRITICAL: Each component depends on previous selections
-        // - Mainboard: Base component (defines socket, DDR type, PCIe, M.2, SATA, form factor)
-        // - CPU: Must match mainboard socket (performance score + compatibility)
-        // - Memory: Must match mainboard DDR type and slots (performance score + compatibility)
-        // - GPU: Must match PCIe version (performance score + compatibility)
-        // - Storage: Must have compatible interface M.2/SATA (performance score + compatibility)
-        // - PSU: Must provide sufficient wattage for all components (compatibility ONLY, no score)
-        // - Cooling: Must fit in case (compatibility ONLY, no score)
-        // - Case: Must support mainboard form factor and PSU form factor (compatibility ONLY, no score)
-
         // Step 1: Select Mainboard first (base for all compatibility)
         Mainboard mainboard = selectMainboardEntity(preset, totalBudget, tempBuild);
         if (mainboard == null) {

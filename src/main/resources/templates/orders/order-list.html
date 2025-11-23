@@ -49,7 +49,6 @@
                     <span class="status-badge status-pending" th:text="${order.status}"></span>
                 </div>
 
-
                 <div th:if="${order.status == 'Ready to Ship'}">
                     <span class="status-badge status-ready">Ready to Ship</span>
                 </div>
@@ -76,7 +75,6 @@
 
             <td class="action-buttons">
                 <a th:href="@{'/orders/detail/' + ${order.orderId}}" class="view-btn">View</a>
-                <button type="button" class="view-btn-payment" th:data-order-id="${order.orderId}">Payment</button>
             </td>
         </tr>
         <tr th:if="${isStaffOrAdmin and (adminOrderList == null or #lists.isEmpty(adminOrderList))}">
@@ -85,6 +83,9 @@
         </tbody>
     </table>
 
+    <!-- -------------------------
+         BẢNG CHO CUSTOMER (ĐÃ THÊM CỘT ACTION)
+         ------------------------- -->
     <table class="customer-order-table" th:unless="${isStaffOrAdmin}">
         <thead>
         <tr>
@@ -92,7 +93,7 @@
             <th>Created Date</th>
             <th>Final Amount</th>
             <th>Status</th>
-            <th>Action</th>
+            <th>Action</th> <!-- <- thêm cột Action -->
         </tr>
         </thead>
         <tbody>
@@ -112,6 +113,10 @@
                       th:text="${order.status ?: 'N/A'}"> </span>
             </td>
 
+            <!-- Nút View cho customer - dùng cùng class view-btn -->
+            <td class="action-buttons">
+                <a th:href="@{'/orders/detail/' + ${order.orderId}}" class="view-btn">View</a>
+            </td>
         </tr>
         <tr th:if="${!isStaffOrAdmin and (customerOrders == null or #lists.isEmpty(customerOrders))}">
             <td colspan="5" style="text-align: center;">You have no orders.</td>

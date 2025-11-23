@@ -180,41 +180,43 @@ public class ProductController {
 
 
         // SỬA LỖI: Gộp tất cả điều kiện lỗi
+        // Gộp validate vào đây
         if (result.hasErrors() || brandId == null || categoryIds == null || categoryIds.isEmpty()) {
+
+            if (brandId == null) model.addAttribute("brandError", "Please select brand");
+            if (categoryIds == null || categoryIds.isEmpty()) model.addAttribute("categoryError", "Please select category");
+
             model.addAttribute("isEdit", false);
-            // Gửi lại ID để JS tự động mở lại form
-            if (categoryIds != null && !categoryIds.isEmpty()) {
-                model.addAttribute("submittedCategoryId", categoryIds.get(0)); // Primary category
-            }
-            model.addAttribute("submittedBrandId", brandId);
-            return "product/product-form"; // Ở lại trang
+            return "product/product-form";  // CHỈ return 1 lần
         }
+
 
         // Get all selected categories
-        List<Category> categories = categoryIds.stream()
-                .map(id -> categoryRepository.findById(id).orElseThrow())
-                .toList();
+            List<Category> categories = categoryIds.stream()
+                    .map(id -> categoryRepository.findById(id).orElseThrow())
+                    .toList();
 
-        Brand brand = brandRepository.findById(brandId).orElseThrow();
-        product.setCategories(new ArrayList<>(categories));
-        product.setBrand(brand);
+            Brand brand = brandRepository.findById(brandId).orElseThrow();
+            product.setCategories(new ArrayList<>(categories));
+            product.setBrand(brand);
 
-        Product saved = productService.addProduct(product);
+            Product saved = productService.addProduct(product);
 
-        // Save images
-        if (imageFiles != null && !imageFiles.isEmpty()) {
-            List<Image> imgs = saveImagesToStatic(imageFiles, saved);
-            imageRepository.saveAll(imgs);
-            saved.setImages(imgs);
-            productService.updateProduct(saved); // Lưu lại tham chiếu ảnh
+            // Save images
+            if (imageFiles != null && !imageFiles.isEmpty()) {
+                List<Image> imgs = saveImagesToStatic(imageFiles, saved);
+                imageRepository.saveAll(imgs);
+                saved.setImages(imgs);
+                productService.updateProduct(saved); // Lưu lại tham chiếu ảnh
+            }
+
+            // Save spec - use primary category (first one)
+            Integer primaryCategoryId = categoryIds.get(0);
+            upsertSpec(saved, primaryCategoryId, params, true);
+
+            return "redirect:/staff/products/list";
         }
 
-        // Save spec - use primary category (first one)
-        Integer primaryCategoryId = categoryIds.get(0);
-        upsertSpec(saved, primaryCategoryId, params, true);
-
-        return "redirect:/staff/products/list";
-    }
 
     // ===== FORM SỬA =====
     @GetMapping("/edit/{id}")

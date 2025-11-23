@@ -13,12 +13,28 @@ import java.util.Optional;
 public interface PowerSupplyRepository extends JpaRepository<PowerSupply,Integer> {
     Optional<PowerSupply> findByProduct_ProductId(int id);
 
-    @Query("SELECT p FROM PowerSupply p " +
-           "WHERE p.product.price <= :maxPrice " +
-           "AND (p.product.performanceScore IS NULL OR p.product.performanceScore >= :minScore) " +
-           "AND p.product.status = true " +
-           "AND (p.product.inventoryQuantity IS NULL OR p.product.inventoryQuantity > 0) " +
-           "ORDER BY COALESCE(p.product.performanceScore, 50) DESC, p.product.price ASC")
+    @Query("SELECT DISTINCT p FROM PowerSupply p " +
+           "LEFT JOIN FETCH p.product pr " +
+           "LEFT JOIN FETCH pr.images " +
+           "LEFT JOIN FETCH pr.brand " +
+           "WHERE pr.price <= :maxPrice " +
+           "AND (pr.performanceScore IS NULL OR pr.performanceScore >= :minScore) " +
+           "AND pr.status = true " +
+           "AND (pr.inventoryQuantity IS NULL OR pr.inventoryQuantity > 0) " +
+           "ORDER BY COALESCE(pr.performanceScore, 50) DESC, pr.price ASC")
     List<PowerSupply> findBestPsuByBudgetAndScore(@Param("maxPrice") double maxPrice,
                                                    @Param("minScore") int minScore);
+
+    @Query("SELECT DISTINCT p FROM PowerSupply p " +
+           "LEFT JOIN FETCH p.product pr " +
+           "LEFT JOIN FETCH pr.images " +
+           "LEFT JOIN FETCH pr.brand")
+    List<PowerSupply> findAllWithImages();
+
+    @Query("SELECT DISTINCT p FROM PowerSupply p " +
+           "LEFT JOIN FETCH p.product pr " +
+           "LEFT JOIN FETCH pr.images " +
+           "LEFT JOIN FETCH pr.brand " +
+           "WHERE p.id = :id")
+    Optional<PowerSupply> findByIdWithImages(@Param("id") int id);
 }

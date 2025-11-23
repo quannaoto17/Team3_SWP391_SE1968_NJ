@@ -16,7 +16,7 @@ public class CoolingService {
 
     public List<Cooling> getCoolings()
     {
-        return coolingRepository.findAll();
+        return coolingRepository.findAllWithImages();
     }
 
     public Cooling addCooling(Cooling cooling)
@@ -29,7 +29,7 @@ public class CoolingService {
     }
 
     public Cooling getCoolingById(int id) {
-        return coolingRepository.findById(id).orElse(null);
+        return coolingRepository.findByIdWithImages(id).orElse(null);
     }
 
     public void deleteCooling(int id) {

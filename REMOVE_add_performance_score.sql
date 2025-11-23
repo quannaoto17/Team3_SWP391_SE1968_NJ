@@ -1,19 +1,4 @@
 
-
--- ============================================
--- SOLUTION: Add performance_score to PRODUCT table (Parent table)
--- ============================================
--- This is BETTER because:
--- 1. Only need to add column to 1 table instead of 8 tables
--- 2. Easier to query (no need to join multiple tables)
--- 3. Consistent with current design (product is parent table)
--- 4. AI can query directly from product without knowing component type
--- ============================================
-
-ALTER TABLE product
-ADD COLUMN performance_score INT DEFAULT 50
-CHECK (performance_score >= 0 AND performance_score <= 100);
-
 -- ============================================
 -- Create Indexes for Performance
 -- ============================================
@@ -75,6 +60,19 @@ JOIN cpu c ON p.product_id = c.product_id
 SET p.performance_score = 50
 WHERE p.product_name LIKE '%i3-%' OR p.product_name LIKE '%Ryzen 3%';
 
+-- Entry-level CPUs for Office/Work (Budget: $50-150)
+UPDATE product p
+JOIN cpu c ON p.product_id = c.product_id
+SET p.performance_score = 40
+WHERE p.product_name LIKE '%Pentium%' OR p.product_name LIKE '%Celeron%'
+   OR p.product_name LIKE '%Athlon%' OR p.product_name LIKE '%A6%' OR p.product_name LIKE '%A8%';
+
+-- Set default score for CPUs without score (fallback for any remaining)
+UPDATE product p
+JOIN cpu c ON p.product_id = c.product_id
+SET p.performance_score = 45
+WHERE p.performance_score IS NULL;
+
 -- GPU Examples
 UPDATE product p
 JOIN gpu g ON p.product_id = g.product_id
@@ -131,6 +129,19 @@ JOIN gpu g ON p.product_id = g.product_id
 SET p.performance_score = 40
 WHERE p.product_name LIKE '%GTX 1650%' OR p.product_name LIKE '%RX 5500 XT%';
 
+-- Entry-level GPUs (Office/Light Work don't need these, but set low score)
+UPDATE product p
+JOIN gpu g ON p.product_id = g.product_id
+SET p.performance_score = 30
+WHERE p.product_name LIKE '%GT 1030%' OR p.product_name LIKE '%GT 730%'
+   OR p.product_name LIKE '%RX 550%' OR p.product_name LIKE '%GTX 1050%';
+
+-- Set default score for GPUs without score (fallback)
+UPDATE product p
+JOIN gpu g ON p.product_id = g.product_id
+SET p.performance_score = 35
+WHERE p.performance_score IS NULL;
+
 -- Memory Examples (based on capacity and speed)
 UPDATE product p
 JOIN memory m ON p.product_id = m.product_id
@@ -172,6 +183,18 @@ JOIN memory m ON p.product_id = m.product_id
 SET p.performance_score = 60
 WHERE p.product_name LIKE '%8GB%' AND p.product_name LIKE '%3200%';
 
+-- Entry-level Memory for Office/Work (8GB DDR4 2400-2666)
+UPDATE product p
+JOIN memory m ON p.product_id = m.product_id
+SET p.performance_score = 50
+WHERE p.product_name LIKE '%8GB%' AND (p.product_name LIKE '%2400%' OR p.product_name LIKE '%2666%');
+
+-- Set default score for Memory without score
+UPDATE product p
+JOIN memory m ON p.product_id = m.product_id
+SET p.performance_score = 55
+WHERE p.performance_score IS NULL;
+
 -- Storage Examples
 UPDATE product p
 JOIN storage s ON p.product_id = s.product_id
@@ -202,6 +225,19 @@ UPDATE product p
 JOIN storage s ON p.product_id = s.product_id
 SET p.performance_score = 45
 WHERE p.product_name LIKE '%HDD%' AND p.product_name LIKE '%2TB%';
+
+-- Entry-level Storage for Office/Work (120-240GB SSD or 1TB HDD)
+UPDATE product p
+JOIN storage s ON p.product_id = s.product_id
+SET p.performance_score = 40
+WHERE (p.product_name LIKE '%SSD%' AND (p.product_name LIKE '%120GB%' OR p.product_name LIKE '%240GB%'))
+   OR (p.product_name LIKE '%HDD%' AND p.product_name LIKE '%1TB%');
+
+-- Set default score for Storage without score
+UPDATE product p
+JOIN storage s ON p.product_id = s.product_id
+SET p.performance_score = 50
+WHERE p.performance_score IS NULL;
 
 -- PSU Examples
 UPDATE product p
@@ -244,7 +280,20 @@ JOIN power_supply ps ON p.product_id = ps.product_id
 SET p.performance_score = 60
 WHERE p.product_name LIKE '%550W%';
 
--- Case Examples (simpler, based on size)
+-- Entry-level PSU for Office/Work (450-600W Bronze/White)
+UPDATE product p
+JOIN power_supply ps ON p.product_id = ps.product_id
+SET p.performance_score = 50
+WHERE (p.product_name LIKE '%500W%' OR p.product_name LIKE '%450W%' OR p.product_name LIKE '%600W%')
+   AND (p.product_name LIKE '%Bronze%' OR p.product_name LIKE '%White%' OR p.product_name LIKE '%80+%');
+
+-- Set default score for PSU without score
+UPDATE product p
+JOIN power_supply ps ON p.product_id = ps.product_id
+SET p.performance_score = 55
+WHERE p.performance_score IS NULL;
+
+-- Mainboard Examples (based on chipset tier)
 UPDATE product p
 JOIN pc_case pc ON p.product_id = pc.product_id
 SET p.performance_score = 85
@@ -291,6 +340,25 @@ JOIN cooling co ON p.product_id = co.product_id
 SET p.performance_score = 65
 WHERE p.product_name LIKE '%Air%' OR p.product_name LIKE '%Tower%';
 
+-- Entry-level Cooling for Office/Work (Stock cooler level)
+UPDATE product p
+JOIN cooling co ON p.product_id = co.product_id
+SET p.performance_score = 50
+WHERE p.product_name LIKE '%Hyper 212%' OR p.product_name LIKE '%Stock%'
+   OR p.product_name LIKE '%Basic%' OR p.product_name LIKE '%Low Profile%';
+
+-- Set default score for Cooling without score
+UPDATE product p
+JOIN cooling co ON p.product_id = co.product_id
+SET p.performance_score = 55
+WHERE p.performance_score IS NULL;
+
+-- Set default score for Case without score
+UPDATE product p
+JOIN pc_case pc ON p.product_id = pc.product_id
+SET p.performance_score = 55
+WHERE p.performance_score IS NULL;
+
 -- Mainboard Examples (based on chipset tier)
 UPDATE product p
 JOIN mainboard mb ON p.product_id = mb.product_id
@@ -316,6 +384,19 @@ UPDATE product p
 JOIN mainboard mb ON p.product_id = mb.product_id
 SET p.performance_score = 60
 WHERE p.product_name LIKE '%A620%' OR p.product_name LIKE '%H510%';
+
+-- Entry-level Mainboards for Office/Work (Budget: $40-100) - CRITICAL FOR OFFICE BUILDS!
+UPDATE product p
+JOIN mainboard mb ON p.product_id = mb.product_id
+SET p.performance_score = 50
+WHERE p.product_name LIKE '%H310%' OR p.product_name LIKE '%A320%'
+   OR p.product_name LIKE '%H410%' OR p.product_name LIKE '%B365%';
+
+-- Set default score for Mainboards without score (fallback)
+UPDATE product p
+JOIN mainboard mb ON p.product_id = mb.product_id
+SET p.performance_score = 55
+WHERE p.performance_score IS NULL;
 
 -- ============================================
 -- Verification Queries

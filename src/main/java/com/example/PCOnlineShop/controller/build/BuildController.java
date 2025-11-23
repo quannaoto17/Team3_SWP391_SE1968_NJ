@@ -4,6 +4,7 @@ import com.example.PCOnlineShop.dto.build.BuildItemDto;
 import com.example.PCOnlineShop.model.account.Account;
 import com.example.PCOnlineShop.repository.account.AccountRepository;
 import com.example.PCOnlineShop.service.cart.CartService; // ✅ Tiêm CartService
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal; // ✅ Thêm
 import org.springframework.security.core.userdetails.UserDetails; // ✅ Thêm
 import org.springframework.stereotype.Controller;
@@ -55,16 +56,13 @@ public class BuildController {
         return "redirect:/build/mainboard";
     }
 
-
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/finish")
     public String finishBuild(@ModelAttribute("buildItems") BuildItemDto buildItems,
                               @AuthenticationPrincipal UserDetails currentUser,
                               SessionStatus sessionStatus,
                               RedirectAttributes redirectAttributes) {
         Account account = getCurrentAccount(currentUser);
-        if (account == null) {
-            return "redirect:/auth/login";
-        }
         try {
 
             cartService.addBuildToCart(account, buildItems);

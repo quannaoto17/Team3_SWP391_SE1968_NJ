@@ -1,7 +1,4 @@
 
--- ==============================================
--- CATEGORY SEED DATA (Technical specs for compatibility)
--- ==============================================
 INSERT INTO category (category_name, description, display_order)
 VALUES
 -- Component types
@@ -3438,7 +3435,7 @@ VALUES
 INSERT INTO cooling (product_id, type, max_tdp, fan_size, radiator_size)
 VALUES (@product_id, 'AIO', 300, 120, 360);
 
---Insert Other Product
+-- Insert Other Product
 INSERT INTO product (brand_id, product_name, price, status, description, specification, inventory_quantity)
 VALUES (6, 'Logitech K120 Office Keyboard', 12.99, 1, 'Bàn phím văn phòng đơn giản, bền, chống nước.', 'Membrane, USB', 50);
 SET @product_id = LAST_INSERT_ID();
@@ -3493,6 +3490,7 @@ SET @product_id = LAST_INSERT_ID();
 INSERT INTO product_category (product_id, category_id)
 VALUES (@product_id, 15);
 
+
 -- ============================================
 -- Create Indexes for Performance
 -- ============================================
@@ -3507,7 +3505,6 @@ CREATE INDEX idx_product_price_score ON product(price, performance_score);
 -- ============================================
 -- Sample Score Updates (Examples)
 -- ============================================
-
 -- CPU Examples
 UPDATE product p
     JOIN cpu c ON p.product_id = c.product_id
@@ -3553,6 +3550,19 @@ UPDATE product p
     JOIN cpu c ON p.product_id = c.product_id
     SET p.performance_score = 50
 WHERE p.product_name LIKE '%i3-%' OR p.product_name LIKE '%Ryzen 3%';
+
+-- Entry-level CPUs for Office/Work (Budget: $50-150)
+UPDATE product p
+    JOIN cpu c ON p.product_id = c.product_id
+    SET p.performance_score = 40
+WHERE p.product_name LIKE '%Pentium%' OR p.product_name LIKE '%Celeron%'
+   OR p.product_name LIKE '%Athlon%' OR p.product_name LIKE '%A6%' OR p.product_name LIKE '%A8%';
+
+-- Set default score for CPUs without score (fallback for any remaining)
+UPDATE product p
+    JOIN cpu c ON p.product_id = c.product_id
+    SET p.performance_score = 45
+WHERE p.performance_score IS NULL;
 
 -- GPU Examples
 UPDATE product p
@@ -3610,6 +3620,19 @@ UPDATE product p
     SET p.performance_score = 40
 WHERE p.product_name LIKE '%GTX 1650%' OR p.product_name LIKE '%RX 5500 XT%';
 
+-- Entry-level GPUs (Office/Light Work don't need these, but set low score)
+UPDATE product p
+    JOIN gpu g ON p.product_id = g.product_id
+    SET p.performance_score = 30
+WHERE p.product_name LIKE '%GT 1030%' OR p.product_name LIKE '%GT 730%'
+   OR p.product_name LIKE '%RX 550%' OR p.product_name LIKE '%GTX 1050%';
+
+-- Set default score for GPUs without score (fallback)
+UPDATE product p
+    JOIN gpu g ON p.product_id = g.product_id
+    SET p.performance_score = 35
+WHERE p.performance_score IS NULL;
+
 -- Memory Examples (based on capacity and speed)
 UPDATE product p
     JOIN memory m ON p.product_id = m.product_id
@@ -3651,6 +3674,18 @@ UPDATE product p
     SET p.performance_score = 60
 WHERE p.product_name LIKE '%8GB%' AND p.product_name LIKE '%3200%';
 
+-- Entry-level Memory for Office/Work (8GB DDR4 2400-2666)
+UPDATE product p
+    JOIN memory m ON p.product_id = m.product_id
+    SET p.performance_score = 50
+WHERE p.product_name LIKE '%8GB%' AND (p.product_name LIKE '%2400%' OR p.product_name LIKE '%2666%');
+
+-- Set default score for Memory without score
+UPDATE product p
+    JOIN memory m ON p.product_id = m.product_id
+    SET p.performance_score = 55
+WHERE p.performance_score IS NULL;
+
 -- Storage Examples
 UPDATE product p
     JOIN storage s ON p.product_id = s.product_id
@@ -3681,6 +3716,19 @@ UPDATE product p
     JOIN storage s ON p.product_id = s.product_id
     SET p.performance_score = 45
 WHERE p.product_name LIKE '%HDD%' AND p.product_name LIKE '%2TB%';
+
+-- Entry-level Storage for Office/Work (120-240GB SSD or 1TB HDD)
+UPDATE product p
+    JOIN storage s ON p.product_id = s.product_id
+    SET p.performance_score = 40
+WHERE (p.product_name LIKE '%SSD%' AND (p.product_name LIKE '%120GB%' OR p.product_name LIKE '%240GB%'))
+   OR (p.product_name LIKE '%HDD%' AND p.product_name LIKE '%1TB%');
+
+-- Set default score for Storage without score
+UPDATE product p
+    JOIN storage s ON p.product_id = s.product_id
+    SET p.performance_score = 50
+WHERE p.performance_score IS NULL;
 
 -- PSU Examples
 UPDATE product p
@@ -3723,7 +3771,20 @@ UPDATE product p
     SET p.performance_score = 60
 WHERE p.product_name LIKE '%550W%';
 
--- Case Examples (simpler, based on size)
+-- Entry-level PSU for Office/Work (450-600W Bronze/White)
+UPDATE product p
+    JOIN power_supply ps ON p.product_id = ps.product_id
+    SET p.performance_score = 50
+WHERE (p.product_name LIKE '%500W%' OR p.product_name LIKE '%450W%' OR p.product_name LIKE '%600W%')
+  AND (p.product_name LIKE '%Bronze%' OR p.product_name LIKE '%White%' OR p.product_name LIKE '%80+%');
+
+-- Set default score for PSU without score
+UPDATE product p
+    JOIN power_supply ps ON p.product_id = ps.product_id
+    SET p.performance_score = 55
+WHERE p.performance_score IS NULL;
+
+-- Mainboard Examples (based on chipset tier)
 UPDATE product p
     JOIN pc_case pc ON p.product_id = pc.product_id
     SET p.performance_score = 85
@@ -3770,6 +3831,25 @@ UPDATE product p
     SET p.performance_score = 65
 WHERE p.product_name LIKE '%Air%' OR p.product_name LIKE '%Tower%';
 
+-- Entry-level Cooling for Office/Work (Stock cooler level)
+UPDATE product p
+    JOIN cooling co ON p.product_id = co.product_id
+    SET p.performance_score = 50
+WHERE p.product_name LIKE '%Hyper 212%' OR p.product_name LIKE '%Stock%'
+   OR p.product_name LIKE '%Basic%' OR p.product_name LIKE '%Low Profile%';
+
+-- Set default score for Cooling without score
+UPDATE product p
+    JOIN cooling co ON p.product_id = co.product_id
+    SET p.performance_score = 55
+WHERE p.performance_score IS NULL;
+
+-- Set default score for Case without score
+UPDATE product p
+    JOIN pc_case pc ON p.product_id = pc.product_id
+    SET p.performance_score = 55
+WHERE p.performance_score IS NULL;
+
 -- Mainboard Examples (based on chipset tier)
 UPDATE product p
     JOIN mainboard mb ON p.product_id = mb.product_id
@@ -3796,22 +3876,301 @@ UPDATE product p
     SET p.performance_score = 60
 WHERE p.product_name LIKE '%A620%' OR p.product_name LIKE '%H510%';
 
+-- Entry-level Mainboards for Office/Work (Budget: $40-100) - CRITICAL FOR OFFICE BUILDS!
+UPDATE product p
+    JOIN mainboard mb ON p.product_id = mb.product_id
+    SET p.performance_score = 50
+WHERE p.product_name LIKE '%H310%' OR p.product_name LIKE '%A320%'
+   OR p.product_name LIKE '%H410%' OR p.product_name LIKE '%B365%';
+
+-- Set default score for Mainboards without score (fallback)
+UPDATE product p
+    JOIN mainboard mb ON p.product_id = mb.product_id
+    SET p.performance_score = 55
+WHERE p.performance_score IS NULL;
 
 
+INSERT INTO image (product_id, image_url) VALUES
+(1, '/image/ASUS PRIME B550M-A Mainboard.jpg'),
+    (2, '/image/MSI MPG X670E CARBON Mainboard.jpg'),
+    (3, '/image/GIGABYTE B760M DS3H DDR4 Mainboard.jpg'),
+    (4, '/image/ASRock A620M-HDVM2 Mainboard.jpg'),
+    (5, '/image/ASUS ROG STRIX Z790-E GAMING Mainboard.jpg'),
+    (6, '/image/MSI PRO H610M-E DDR4 Mainboard.jpg'),
+    (7, '/image/GIGABYTE X570 AORUS ELITE Mainboard.jpg'),
+    (8, '/image/ASUS TUF GAMING B550-PLUS Mainboard.jpg'),
+    (9, '/image/ASRock H510M-HDV Mainboard.jpg'),
+    (10, '/image/MSI B450 TOMAHAWK MAX II Mainboard.jpg'),
+    (11, '/image/GIGABYTE B650 AORUS ELITE Mainboard.jpg'),
+    (12, '/image/ASUS PRIME H610M-K D4 Mainboard.jpg'),
+    (13, '/image/ASRock Z690 PG RIPTIDE Mainboard.jpg'),
+    (14, '/image/MSI MAG B550 TOMAHAWK Mainboard.jpg'),
+    (15, '/image/Gigabyte AORUS Gen4 7000s 1TB SSD.jpg'),
+    (16, '/image/ASUS ROG CROSSHAIR X670E HERO Mainboard.jpg'),
+    (17, '/image/MSI MPG B650M EDGE WIFI Mainboard.jpg'),
+    (18, '/image/ASRock X570 PHANTOM GAMING 4 Mainboard.jpg'),
+    (19, '/image/GIGABYTE A520M S2H Mainboard.jpg'),
+    (20, '/image/ASUS PRIME B450M-K II Mainboard.jpg'),
+    (21, '/image/MSI Z590 PRO WIFI Mainboard.jpg'),
+    (22, '/image/GIGABYTE B365M DS3H Mainboard.jpg'),
+    (23, '/image/ASRock B450M PRO4 Mainboard.jpg'),
+    (24, '/image/ASUS PRIME X570-P Mainboard.jpg'),
+    (25, '/image/MSI B650 TOMAHAWK WIFI Mainboard.jpg'),
+    (26, '/image/GIGABYTE X399 AORUS XTREME Mainboard.jpg'),
+    (27, '/image/ASRock Z790M-ITX WIFI Mainboard.jpg'),
+    (28, '/image/ASUS ROG STRIX B650E-F GAMING WIFI Mainboard.jpg'),
+    (29, '/image/MSI PRO X670-P WIFI Mainboard.jpg'),
+    (30, '/image/GIGABYTE B550I AORUS PRO AX Mainboard.jpg'),
+    (31, '/image/ASUS PRIME B450M-K II Mainboard.jpg'),
+    (32, '/image/MSI B450 TOMAHAWK MAX II Mainboard.jpg'),
+    (33, '/image/GIGABYTE A520M S2H Mainboard.jpg'),
+    (34, '/image/ASRock A620M-HDVM2 Mainboard.jpg'),
+    (35, '/image/MSI B450 TOMAHAWK MAX II Mainboard.jpg'),
+    (36, '/image/GIGABYTE A520M S2H Mainboard.jpg'),
+    (37, '/image/ASRock A620M-HDVM2 Mainboard.jpg'),
+    (39, '/image/ASUS PRIME B450M-K II Mainboard.jpg'),
+    (40, '/image/MSI B450 TOMAHAWK MAX II Mainboard.jpg'),
+    (42, '/image/AMD Ryzen 5 5600X CPU.jpg'),
+    (43, '/image/Intel Core i5-12400F CPU.jpg'),
+    (44, '/image/Intel Core i7-13700K CPU.jpg'),
+    (45, '/image/AMD Ryzen 9 7950X CPU.jpg'),
+    (46, '/image/AMD Ryzen 7 5800X3D CPU.jpg'),
+    (47, '/image/Intel Core i9-13900K CPU.jpg'),
+    (48, '/image/AMD Ryzen 5 7600 CPU.jpg'),
+    (49, '/image/Intel Core i3-12100F CPU.jpg'),
+    (50, '/image/AMD Radeon RX 7700 XT GPU.jpg'),
+    (51, '/image/Intel Core i5-13600K CPU.jpg'),
+    (52, '/image/AMD Ryzen 9 5950X CPU.jpg'),
+    (53, '/image/Intel Core i9-12900KS CPU.jpg'),
+    (54, '/image/AMD Ryzen 3 4100 CPU.jpg'),
+    (55, '/image/Intel Core i5-14600K CPU.jpg'),
+    (56, '/image/AMD Ryzen 5 5500 CPU.jpg'),
+    (57, '/image/AMD Ryzen 9 7900X CPU.jpg'),
+    (58, '/image/AMD Ryzen 7 7800X3D CPU.jpg'),
+    (59, '/image/Intel Core i9-14900K CPU.jpg'),
+    (60, '/image/Intel Core i7-12700F CPU.jpg'),
+    (61, '/image/Intel Core i5-12400 CPU.jpg'),
+    (62, '/image/Intel Core i3-13100 CPU.jpg'),
+    (63, '/image/AMD Ryzen 5 4600G APU.jpg'),
+    (64, '/image/AMD Ryzen 7 5700G APU.jpg'),
+    (65, '/image/AMD Ryzen 3 5300G APU.jpg'),
+    (66, '/image/Intel Core i5-11400F CPU.jpg'),
+    (67, '/image/Intel Core i7-11700K CPU.jpg'),
+    (68, '/image/AMD Ryzen 9 5900X CPU.jpg'),
+    (69, '/image/AMD Ryzen 5 7500F CPU.jpg'),
+    (70, '/image/Intel Core i9-11900K CPU.jpg'),
+    (71, '/image/AMD Ryzen 3 3200G APU.jpg'),
+    (72, '/image/NVIDIA GeForce RTX 3060 GPU.jpg'),
+    (73, '/image/AMD Radeon RX 6600 XT GPU.jpg'),
+    (74, '/image/NVIDIA GeForce RTX 4070 GPU.jpg'),
+    (75, '/image/AMD Radeon RX 5500 XT GPU.jpg'),
+    (76, '/image/NVIDIA GeForce RTX 2060 GPU.jpg'),
+    (77, '/image/AMD Radeon RX 5500 XT GPU.jpg'),
+    (78, '/image/NVIDIA GeForce RTX 3050 GPU.jpg'),
+    (79, '/image/AMD Radeon RX 6500 XT GPU.jpg'),
+    (80, '/image/NVIDIA GeForce RTX 4070 Ti GPU.jpg'),
+    (81, '/image/AMD Radeon RX 7800 XT GPU.jpg'),
+    (82, '/image/NVIDIA GeForce RTX 4060 GPU.jpg'),
+    (83, '/image/AMD Radeon RX 6700 XT GPU.jpg'),
+    (84, '/image/NVIDIA GeForce GTX 1650 SUPER GPU.jpg'),
+    (85, '/image/AMD Radeon RX 5600 XT GPU.jpg'),
+    (86, '/image/NVIDIA GeForce RTX 2080 SUPER GPU.jpg'),
+    (87, '/image/NVIDIA GeForce RTX 4090 GPU.jpg'),
+    (88, '/image/AMD Radeon RX 7600 GPU.jpg'),
+    (89, '/image/NVIDIA GeForce RTX 4060 Ti GPU.jpg'),
+    (90, '/image/AMD Radeon RX 6950 XT GPU.jpg'),
+    (91, '/image/NVIDIA GeForce RTX 3070 GPU.jpg'),
+    (92, '/image/NVIDIA GeForce RTX 3090 GPU.jpg'),
+    (93, '/image/NVIDIA GeForce RTX 4070 SUPER GPU.jpg'),
+    (94, '/image/AMD Radeon RX 7700 XT GPU.jpg'),
+    (95, '/image/AMD Radeon RX 5500 XT GPU.jpg'),
+    (96, '/image/NVIDIA GeForce RTX 2060 GPU.jpg'),
+    (97, '/image/NVIDIA GeForce GTX 1650 SUPER GPU.jpg'),
+    (98, '/image/AMD Radeon RX 5500 XT GPU.jpg'),
+    (99, '/image/NVIDIA GeForce RTX 2080 Ti GPU.jpg'),
+    (100, '/image/NVIDIA GeForce RTX 4060 SUPER GPU.jpg'),
+    (101, '/image/AMD Radeon RX 6400 GPU.jpg'),
+    (102, '/image/Corsair Vengeance LPX 16GB RAM.jpg'),
+    (104, '/image/Kingston Fury Beast 8GB RAM.jpg'),
+    (105, '/image/Crucial Ballistix 32GB RAM.jpg'),
+    (106, '/image/Teamgroup T-Force Vulcan Z 16GB RAM.jpg'),
+    (108, '/image/Corsair Dominator Platinum RGB 32GB DDR5 RAM.jpg'),
+    (109, '/image/Kingston Fury Beast 32GB RAM.jpg'),
+    (110, '/image/Crucial 16GB DDR5 4800MHz RAM.jpg'),
+    (111, '/image/GSkill Ripjaws V 32GB RAM 4000MHz.jpg'),
+    (112, '/image/Corsair Vengeance LPX 16GB RAM.jpg'),
+    (113, '/image/Teamgroup T-Create Expert 32GB RAM.jpg'),
+    (114, '/image/Kingston Fury Renegade 16GB RAM.jpg'),
+    (115, '/image/GSkill Trident Z Royal Silver 32GB RAM.jpg'),
+    (116, '/image/Corsair Vengeance LPX 32GB RAM 3600MHz.jpg'),
+    (117, '/image/Corsair Vengeance 32GB DDR5 RAM.jpg'),
+    (118, '/image/GSkill Trident Z5 RGB 32GB DDR5 RAM.jpg'),
+    (119, '/image/Kingston Fury Beast 16GB DDR5 RAM.jpg'),
+    (120, '/image/Crucial Pro 32GB DDR5 RAM.jpg'),
+    (121, '/image/Teamgroup T-Force Delta RGB 32GB DDR5 RAM.jpg'),
+    (122, '/image/Corsair Dominator Platinum RGB 32GB DDR5 RAM.jpg'),
+    (123, '/image/GSkill Ripjaws S5 32GB DDR5 RAM.jpg'),
+    (124, '/image/Kingston Fury Renegade 32GB DDR5 RAM 6400MHz.jpg'),
+    (125, '/image/GSkill Trident Z5 RGB 64GB DDR5 RAM.jpg'),
+    (126, '/image/Corsair Vengeance 32GB DDR5 RAM.jpg'),
+    (127, '/image/Crucial 16GB DDR5 4800MHz RAM.jpg'),
+    (128, '/image/Teamgroup T-Force Xtreem 32GB DDR5 RAM 7600MHz.jpg'),
+    (129, '/image/Kingston Fury Beast 64GB DDR5 RAM.jpg'),
+    (130, '/image/GSkill Flare X5 32GB DDR5 RAM CL30.jpg'),
+    (131, '/image/Corsair Vengeance 64GB DDR5 5200MHz RAM.jpg'),
+    (133, '/image/Kingston Fury Beast 8GB RAM.jpg'),
+    (134, '/image/Corsair Vengeance LPX 16GB RAM.jpg'),
+    (136, '/image/Crucial 16GB DDR5 4800MHz RAM.jpg'),
+    (137, '/image/Kingston Fury Beast 16GB DDR5 RAM.jpg'),
+    (139, '/image/Teamgroup T-Force Vulcan Z 16GB RAM.jpg'),
+    (140, '/image/Corsair Vengeance LPX 16GB RAM.jpg'),
+    (142, '/image/Samsung 980 Pro 1TB SSD.jpg'),
+    (143, '/image/WD Black SN850X 1TB SSD.jpg'),
+    (144, '/image/Crucial P5 Plus 1TB SSD.jpg'),
+    (145, '/image/Kingston KC3000 1TB SSD.jpg'),
+    (146, '/image/Samsung 970 Evo Plus 500GB SSD.jpg'),
+    (147, '/image/WD Blue SN570 1TB SSD.jpg'),
+    (148, '/image/SK Hynix Platinum P41 2TB SSD.jpg'),
+    (149, '/image/Crucial P3 1TB SSD.jpg'),
+    (150, '/image/Samsung 990 Pro 2TB SSD.jpg'),
+    (151, '/image/Kingston NV2 500GB SSD.jpg'),
+    (152, '/image/WD Black SN770 500GB SSD.jpg'),
+    (153, '/image/Sabrent Rocket 4 Plus 1TB SSD.jpg'),
+    (154, '/image/Gigabyte AORUS Gen4 7000s 1TB SSD.jpg'),
+    (155, '/image/Corsair MP600 PRO LPX 1TB SSD.jpg'),
+    (156, '/image/Adata XPG Gammix S70 Blade 1TB SSD.jpg'),
+    (157, '/image/Samsung 870 Evo 1TB SATA SSD.jpg'),
+    (158, '/image/Crucial MX500 1TB SATA SSD.jpg'),
+    (159, '/image/WD Blue 500GB SATA SSD.jpg'),
+    (160, '/image/Kingston A400 480GB SATA SSD.jpg'),
+    (161, '/image/Samsung 870 QVO 2TB SATA SSD.jpg'),
+    (162, '/image/SanDisk Ultra 3D 1TB SATA SSD.jpg'),
+    (163, '/image/Crucial BX500 240GB SATA SSD.jpg'),
+    (164, '/image/Gigabyte SSD 120GB SATA SSD.jpg'),
+    (165, '/image/Seagate Barracuda 1TB HDD.jpg'),
+    (166, '/image/WD Blue 2TB HDD.jpg'),
+    (167, '/image/Seagate IronWolf 4TB NAS HDD.jpg'),
+    (168, '/image/WD Black 4TB HDD.jpg'),
+    (169, '/image/Toshiba P300 1TB HDD.jpg'),
+    (170, '/image/Seagate SkyHawk 2TB HDD.jpg'),
+    (171, '/image/WD Purple 4TB HDD.jpg'),
+    (172, '/image/Cooler Master MasterBox Q300L Case.jpg'),
+    (173, '/image/Corsair Carbide Series 175R RGB Case.jpg'),
+    (174, '/image/Thermaltake Versa H18 Case.jpg'),
+    (175, '/image/NZXT H510 Matte White Case.jpg'),
+    (176, '/image/Phanteks Eclipse P300A Mesh Case.jpg'),
+    (177, '/image/Fractal Design Meshify C TG Case.jpg'),
+    (178, '/image/Lian Li Lancool 215 Black Case.jpg'),
+    (179, '/image/Cooler Master MasterBox TD500 Mesh ARGB Case.jpg'),
+    (180, '/image/Corsair 4000D Airflow Black Case.jpg'),
+    (181, '/image/NZXT H5 Flow Black Case.jpg'),
+    (182, '/image/ASUS TUF Gaming GT301 Case.jpg'),
+    (183, '/image/Phanteks Eclipse G360A Black Case.jpg'),
+    (184, '/image/Lian Li O11 Dynamic EVO Black Case.jpg'),
+    (185, '/image/Corsair 5000D Airflow White Case.jpg'),
+    (186, '/image/Fractal Design Meshify C TG Case.jpg'),
+    (187, '/image/NZXT H7 Flow White Case.jpg'),
+    (188, '/image/Cooler Master MasterBox TD500 Mesh ARGB Case.jpg'),
+    (189, '/image/Phanteks Enthoo Evolv X Glass Case.jpg'),
+    (190, '/image/Lian Li Lancool III RGB Black Case.jpg'),
+    (191, '/image/Corsair 7000D Airflow Black Case.jpg'),
+    (192, '/image/Cooler Master Cosmos C700M Case.jpg'),
+    (193, '/image/Thermaltake The Tower 900 Black Case.jpg'),
+    (202, '/image/Antec NeoECO Gold Zen 700W PSU.jpg'),
+    (203, '/image/Arctic Liquid Freezer II 280 AIO.jpg'),
+    (205, '/image/Cooler Master Cosmos C700M Case.jpg'),
+    (206, '/image/Thermaltake Versa H18 Case.jpg'),
+    (207, '/image/ASUS TUF Gaming GT301 Case.jpg'),
+    (209, '/image/AMD Radeon RX 5500 XT GPU.jpg'),
+    (210, '/image/Cooler Master MasterBox TD500 Mesh ARGB Case.jpg'),
+    (212, '/image/Cooler Master Cosmos C700M Case.jpg'),
+    (214, '/image/Fractal Design Define 7 XL Case.jpg'),
+    (215, '/image/Cooler Master MasterBox NR200P White Case.jpg'),
+    (216, '/image/Lian Li A4-H2O Black Case.jpg'),
+    (217, '/image/NZXT H1 V2 Matte Black Case.jpg'),
+    (218, '/image/Fractal Design Terra Jade Case.jpg'),
+    (219, '/image/ASUS ROG Strix Helios White Case.jpg'),
+    (220, '/image/Thermaltake Core P3 TG Black Case.jpg'),
+    (221, '/image/Hyte Y60 Black Case.jpg'),
+    (222, '/image/Corsair CV550 PSU.jpg'),
+    (223, '/image/Cooler Master MWE Bronze V2 650W PSU.jpg'),
+    (224, '/image/Seasonic S12III 550W PSU.jpg'),
+    (225, '/image/Thermaltake Smart BX1 650W PSU.jpg'),
+    (226, '/image/EVGA 600 W1 PSU.jpg'),
+    (227, '/image/be quiet System Power 9 500W PSU.jpg'),
+    (228, '/image/Corsair CX650M 650W PSU.jpg'),
+    (229, '/image/Corsair RM750e 750W PSU.jpg'),
+    (230, '/image/Seasonic Focus Plus Gold 850W PSU.jpg'),
+    (231, '/image/Cooler Master MWE Gold V2 850W PSU.jpg'),
+    (232, '/image/ASUS ROG Strix 850G PSU.jpg'),
+    (233, '/image/Thermaltake Toughpower GF1 750W PSU.jpg'),
+    (234, '/image/EVGA SuperNOVA 850 G6 PSU.jpg'),
+    (235, '/image/be quiet Pure Power 11 FM 750W PSU.jpg'),
+    (236, '/image/Corsair RM850x SHIFT 850W PSU.jpg'),
+    (237, '/image/NZXT C850 Gold V2 850W PSU.jpg'),
+    (238, '/image/Corsair RM1000e 1000W PSU.jpg'),
+    (239, '/image/Seasonic PRIME TX-1000 PSU.jpg'),
+    (240, '/image/Cooler Master V1300 Platinum 1300W PSU.jpg'),
+    (241, '/image/ASUS ROG Thor 1200P2 PSU.jpg'),
+    (242, '/image/EVGA SuperNOVA 1600 P PSU.jpg'),
+    (243, '/image/be quiet Dark Power Pro 12 1500W PSU.jpg'),
+    (244, '/image/Thermaltake Toughpower PF1 1200W PSU.jpg'),
+    (245, '/image/Corsair SF750 750W SFX PSU.jpg'),
+    (246, '/image/Cooler Master V850 SFX Gold 850W PSU.jpg'),
+    (247, '/image/Lian Li SP850 850W SFX PSU.jpg'),
+    (248, '/image/Deepcool PQ1000M 1000W PSU.jpg'),
+    (249, '/image/FSP Hydro G Pro 1000W PSU.jpg'),
+    (250, '/image/MSI MPG A850G 850W PSU PCIE5.jpg'),
+    (251, '/image/ASUS ROG Thor 1200P2 PSU.jpg'),
+    (252, '/image/EVGA SuperNOVA 1600 P PSU.jpg'),
+    (253, '/image/be quiet Dark Power Pro 12 1500W PSU.jpg'),
+    (254, '/image/Thermaltake Toughpower PF1 1200W PSU.jpg'),
+    (255, '/image/Corsair SF750 750W SFX PSU.jpg'),
+    (256, '/image/Cooler Master V850 SFX Gold 850W PSU.jpg'),
+    (257, '/image/Lian Li SP850 850W SFX PSU.jpg'),
+    (258, '/image/Deepcool PQ1000M 1000W PSU.jpg'),
+    (259, '/image/FSP Hydro G Pro 1000W PSU.jpg'),
+    (260, '/image/MSI MPG A850G 850W PSU PCIE5.jpg'),
+    (261, '/image/Antec NeoECO Gold Zen 700W PSU.jpg'),
+    (262, '/image/Cooler Master Hyper 212 Spectrum V3 Cooler.jpg'),
+    (263, '/image/Noctua NH-D15 chromaxblack Cooler.jpg'),
+    (264, '/image/Deepcool AK400 Performance Cooler.jpg'),
+    (265, '/image/Thermalright Phantom Spirit 120 SE ARGB Cooler.jpg'),
+    (266, '/image/Deepcool AK620 Black Cooler.jpg'),
+    (267, '/image/Noctua NH-U12A Cooler.jpg'),
+    (268, '/image/Cooler Master MasterAir MA624 Stealth Cooler.jpg'),
+    (269, '/image/Noctua NH-L9i-17xx Cooler.jpg'),
+    (270, '/image/Thermalright Assassin X 120 Refined SE Cooler.jpg'),
+    (271, '/image/be quiet Dark Rock Pro 4 Cooler.jpg'),
+    (272, '/image/Cooler Master MasterLiquid 240L Core ARGB AIO.jpg'),
+    (273, '/image/Corsair H150i Elite Capellix XT White AIO.jpg'),
+    (274, '/image/NZXT Kraken 240 RGB Black AIO.jpg'),
+    (275, '/image/Lian Li Galahad II Trinity 360 ARGB AIO.jpg'),
+    (276, '/image/Deepcool LT720 WH 360mm AIO.jpg'),
+    (277, '/image/Arctic Liquid Freezer II 280 AIO.jpg'),
+    (278, '/image/Corsair H100i RGB PRO XT AIO.jpg'),
+    (279, '/image/ASUS ROG RYUJIN III 360 ARGB AIO.jpg'),
+    (280, '/image/NZXT Kraken Elite 360 RGB White AIO.jpg'),
+    (281, '/image/Thermalright Frozen Notte 360 Black ARGB AIO.jpg'),
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    -- === PRODUCTS THIẾU ẢNH (chỉ trong phạm vi 1-281) ===
+    (38, '/image/GIGABYTE A520M S2H Mainboard.jpg'),
+    (41, '/image/GIGABYTE B365M DS3H Mainboard.jpg'),
+    (103, '/image/GSkill Ripjaws V 32GB RAM 4000MHz.jpg'),
+    (107, '/image/GSkill Trident Z Royal Silver 32GB RAM.jpg'),
+    (132, '/image/Crucial Ballistix 32GB RAM.jpg'),
+    (135, '/image/GSkill Ripjaws V 32GB RAM 4000MHz.jpg'),
+    (138, '/image/Kingston Fury Beast 16GB DDR5 RAM.jpg'),
+    (141, '/image/Kingston Fury Beast 8GB RAM.jpg'),
+    (194, '/image/Cooler Master MasterBox Q300L Case.jpg'),
+    (195, '/image/Thermaltake Versa H18 Case.jpg'),
+    (196, '/image/Cooler Master MasterBox Q300L Case.jpg'),
+    (197, '/image/Thermaltake Versa H18 Case.jpg'),
+    (198, '/image/Cooler Master MasterBox Q300L Case.jpg'),
+    (199, '/image/Cooler Master MasterBox Q300L Case.jpg'),
+    (200, '/image/Thermaltake Versa H18 Case.jpg'),
+    (201, '/image/Cooler Master MasterBox Q300L Case.jpg'),
+    (204, '/image/Cooler Master MasterBox Q300L Case.jpg'),
+    (208, '/image/Thermaltake Versa H18 Case.jpg'),
+    (211, '/image/Thermaltake Versa H18 Case.jpg'),
+    (213, '/image/Cooler Master MasterBox Q300L Case.jpg');
