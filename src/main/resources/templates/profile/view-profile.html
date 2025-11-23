@@ -189,6 +189,12 @@
                     <option value="false">Female</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label>Addresses:</label>
+                <ul>
+                    <li th:each="addr : ${addresses}" th:text="${addr.address}"></li>
+                </ul>
+            </div>
 
             <button type="submit">💾 Save</button>
         </form>

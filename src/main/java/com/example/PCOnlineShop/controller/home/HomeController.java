@@ -98,6 +98,9 @@ public class HomeController {
             @RequestParam(defaultValue = "12") int size,
             Model model
     ) {
+        if (keyword != null) {
+            keyword = keyword.trim().replaceAll("\\s+", " ");
+        }
         Sort sort = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by(sortField).ascending()
                 : Sort.by(sortField).descending();
