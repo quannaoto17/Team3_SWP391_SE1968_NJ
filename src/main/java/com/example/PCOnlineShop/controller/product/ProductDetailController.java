@@ -21,9 +21,6 @@ public class ProductDetailController {
     private final CategoryService categoryService;
     private final FeedbackService feedbackService;
 
-    /**
-     * Trang chi tiết sản phẩm — hiển thị sản phẩm, ảnh, sản phẩm liên quan, và toàn bộ feedback (Allow)
-     */
     @GetMapping("/detail/{id}")
     public String showProductDetail(@PathVariable("id") Integer id, Model model) {
         //  Lấy sản phẩm
@@ -37,7 +34,6 @@ public class ProductDetailController {
         //  Lấy sản phẩm liên quan
         List<Category> productCategories = product.getCategories();
         if (productCategories != null && !productCategories.isEmpty()) {
-            // Use primary category (first one) for related products
             Category primaryCategory = productCategories.getFirst();
             List<Product> related = productService.getTopRelatedProducts(
                     primaryCategory.getCategoryId(), id);
@@ -48,7 +44,17 @@ public class ProductDetailController {
         var feedbackPage = feedbackService.getAllowedByProduct(id, 0, Integer.MAX_VALUE);
         model.addAttribute("feedbackPage", feedbackPage);
 
+
+        //  lấy số sao trung bình
+
+        Double avgRating = feedbackService.getAverageRating(id);
+        model.addAttribute("avgRating", avgRating);
+
+        long feedbackCount = feedbackPage.getTotalElements();
+        model.addAttribute("feedbackCount", feedbackCount);
+
         return "product/product-details";
     }
+
 
 }
