@@ -139,80 +139,10 @@
     </form>
 </div>
 
-<script>
-    function validatePassword() {
-        const password = document.getElementById("password").value;
-        const confirm = document.getElementById("confirmPassword").value;
-        const errorText = document.getElementById("errorText");
-
-        if (password !== confirm) {
-            errorText.textContent = "⚠️ Confirm password not true!";
-            return false;
-        }
-        return true;
-    }
-    document.addEventListener("DOMContentLoaded", () => {
-
-        const provinceSelect = document.getElementById("province");
-        const districtSelect = document.getElementById("district");
-        const wardSelect = document.getElementById("ward");
-        const addressInput = document.getElementById("address");
-
-        fetch("https://provinces.open-api.vn/api/p/")
-            .then(res => res.json())
-            .then(data => {
-                data.forEach(p => {
-                    provinceSelect.innerHTML += `<option value="${p.name}" data-code="${p.code}">${p.name}</option>`;
-                });
-            });
+<script src="/js/register.js">
 
 
-        provinceSelect.addEventListener("change", () => {
-            districtSelect.innerHTML = `<option value="">-- Chọn Quận/Huyện --</option>`;
-            wardSelect.innerHTML = `<option value="">-- Chọn Phường/Xã --</option>`;
 
-            let provinceCode = provinceSelect.selectedOptions[0].dataset.code;
-
-            fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
-                .then(res => res.json())
-                .then(data => {
-                    data.districts.forEach(d => {
-                        districtSelect.innerHTML += `<option value="${d.name}" data-code="${d.code}">${d.name}</option>`;
-                    });
-                });
-
-            updateHiddenAddress();
-        });
-
-        /* --- 3. Load Phường/Xã khi chọn Quận --- */
-        districtSelect.addEventListener("change", () => {
-            wardSelect.innerHTML = `<option value="">-- Chọn Phường/Xã --</option>`;
-            let districtCode = districtSelect.selectedOptions[0].dataset.code;
-
-            fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
-                .then(res => res.json())
-                .then(data => {
-                    data.wards.forEach(w => {
-                        wardSelect.innerHTML += `<option value="${w.name}">${w.name}</option>`;
-                    });
-                });
-
-            updateHiddenAddress();
-        });
-
-
-        wardSelect.addEventListener("change", updateHiddenAddress);
-
-        function updateHiddenAddress() {
-            let province = provinceSelect.value;
-            let district = districtSelect.value;
-            let ward = wardSelect.value;
-
-            if (province && district && ward) {
-                addressInput.value = `${ward}, ${district}, ${province}`;
-            }
-        }
-    });
 </script>
 </body>
 </html>
