@@ -227,6 +227,16 @@
         <input id="inventory" type="number" th:field="*{inventoryQuantity}" min="0" step="1" placeholder="VD: 100" required/>
         <div class="error" th:if="${#fields.hasErrors('inventoryQuantity')}" th:errors="*{inventoryQuantity}"></div>
         <label>Specification</label>
+
+        <!-- Spec Validation Errors -->
+        <div th:if="${specErrors != null and !specErrors.isEmpty()}"
+             style="background: #fee; border: 1px solid var(--error); border-radius: var(--radius-md); padding: 12px; margin-bottom: 16px;">
+            <strong style="color: var(--error);">❌ Specification Validation Errors:</strong>
+            <ul style="margin: 8px 0 0 20px; color: var(--error);">
+                <li th:each="err : ${specErrors}" th:text="${err}"></li>
+            </ul>
+        </div>
+
         <div id="specFormContainer" class="card" style="padding: 16px; box-shadow: none; background: var(--bg);">
             <p class="hint" style="margin:0"></p>
         </div>
@@ -315,6 +325,20 @@
             specContainer.innerHTML = '<p class="error">Error loading specification form!</p>';
         }
     }
+
+    // DEBUG: Log form submission
+    productForm.addEventListener('submit', (e) => {
+        console.log('=== FORM SUBMIT DEBUG ===');
+        const formData = new FormData(productForm);
+        console.log('Brand ID:', formData.get('brand.brandId'));
+        console.log('Category IDs:', formData.getAll('categoryIds'));
+        console.log('Product Name:', formData.get('productName'));
+        console.log('All form data:');
+        for (let [key, value] of formData.entries()) {
+            console.log(`  ${key}: ${value}`);
+        }
+        console.log('========================');
+    });
 
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');

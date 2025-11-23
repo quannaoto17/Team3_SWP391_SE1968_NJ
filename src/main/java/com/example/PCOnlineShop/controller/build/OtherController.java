@@ -52,7 +52,6 @@ public class OtherController {
         }
 
         buildItems.setOther(otherOpt.get());
-        redirectAttributes.addFlashAttribute("message", "Other component selected successfully.");
         return "redirect:/build/other";
     }
 }

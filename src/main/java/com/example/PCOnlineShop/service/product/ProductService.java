@@ -52,6 +52,10 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    public void deleteProduct(int productId) {
+        productRepository.deleteById(productId);
+    }
+
     public Page<Product> getAllProduct(int page, int size) {
         return productRepository.findAll(PageRequest.of(page, size));
     }
